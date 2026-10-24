@@ -227,7 +227,14 @@ ALTER TABLE products ENABLE ROW LEVEL SECURITY;
 ALTER TABLE channels ENABLE ROW LEVEL SECURITY;
 ALTER TABLE challenges ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Public categories are viewable by everyone" ON categories;
 CREATE POLICY "Public categories are viewable by everyone" ON categories FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Public products are viewable by everyone" ON products;
 CREATE POLICY "Public products are viewable by everyone" ON products FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Public channels are viewable by everyone" ON channels;
 CREATE POLICY "Public channels are viewable by everyone" ON channels FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Public challenges are viewable by everyone" ON challenges;
 CREATE POLICY "Public challenges are viewable by everyone" ON challenges FOR SELECT USING (true);
