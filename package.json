@@ -6,13 +6,16 @@
   "scripts": {
     "start": "node server/index.js",
     "dev": "node --watch server/index.js",
-    "server": "node server/index.js"
+    "server": "node server/index.js",
+    "supabase:test": "node server/test-supabase.js",
+    "supabase:sync": "node server/sync-to-supabase.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@supabase/supabase-js": "^2.118.0",
     "adm-zip": "^0.6.1",
     "archiver": "^8.0.0",
     "bcryptjs": "^3.0.3",

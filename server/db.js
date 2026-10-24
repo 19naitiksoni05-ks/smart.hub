@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const bcrypt = require('bcryptjs');
+const { supabase, isConfigured } = require('./supabase');
 
 const DATA_DIR = path.join(__dirname, 'data');
 const DB_FILE = path.join(DATA_DIR, 'database.json');
@@ -110,6 +111,35 @@ class Database {
     return this.findOne(collection, item => item.id === id);
   }
 
+  syncSupabase(action, collection, item) {
+    if (!isConfigured() || !supabase) return;
+
+    const tableMap = {
+      channelMessages: 'channel_messages',
+      chatMessages: 'chat_messages'
+    };
+    const tableName = tableMap[collection] || collection;
+
+    // Async background sync without blocking local write
+    setImmediate(async () => {
+      try {
+        if (action === 'insert' || action === 'update') {
+          // Map camelCase keys to snake_case for Supabase
+          const row = {};
+          for (const [k, v] of Object.entries(item)) {
+            const snakeKey = k.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
+            row[snakeKey] = v;
+          }
+          await supabase.from(tableName).upsert(row, { onConflict: tableName === 'categories' ? 'name' : 'id' });
+        } else if (action === 'delete') {
+          await supabase.from(tableName).delete().eq('id', item.id);
+        }
+      } catch (err) {
+        console.warn(`[Supabase Sync] Warning syncing ${action} on ${tableName}:`, err.message);
+      }
+    });
+  }
+
   insert(collection, item) {
     const list = this.get(collection);
     if (!item.id) {
@@ -120,6 +150,7 @@ class Database {
     }
     list.unshift(item);
     this.save();
+    this.syncSupabase('insert', collection, item);
     return item;
   }
 
@@ -129,6 +160,7 @@ class Database {
     if (index === -1) return null;
     list[index] = { ...list[index], ...updates, updatedAt: new Date().toISOString() };
     this.save();
+    this.syncSupabase('update', collection, list[index]);
     return list[index];
   }
 
@@ -136,8 +168,10 @@ class Database {
     const list = this.get(collection);
     const index = list.findIndex(item => item.id === id);
     if (index === -1) return false;
+    const removed = list[index];
     list.splice(index, 1);
     this.save();
+    this.syncSupabase('delete', collection, removed);
     return true;
   }
 }
