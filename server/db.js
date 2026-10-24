@@ -51,7 +51,8 @@ function getInitialSeedData() {
       { id: 'ms006', title: 'Milestone 6: Cryptographic Licensing & Escrow Delivery Token', desc: 'Configure automated encrypted hash token delivery, tamper-evident checksums, and verified instant source code delivery for buyers.', difficulty: 3, xp: 600, participants: 0, completed: false, category: 'Milestone', deadline: '2026-12-31', skills: ['Cryptography', 'License Escrow', 'Digital Distribution'] }
     ],
     leaderboard: [],
-    reviews: []
+    reviews: [],
+    apiKeys: []
   };
 }
 
@@ -116,7 +117,8 @@ class Database {
 
     const tableMap = {
       channelMessages: 'channel_messages',
-      chatMessages: 'chat_messages'
+      chatMessages: 'chat_messages',
+      apiKeys: 'api_keys'
     };
     const tableName = tableMap[collection] || collection;
 

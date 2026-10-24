@@ -60,7 +60,19 @@
     }
   ],
   "orders": [],
-  "transactions": [],
+  "transactions": [
+    {
+      "id": "t_1792868634515",
+      "userId": "u_1792868634513",
+      "type": "credit",
+      "title": "🎁 Welcome Bonus Credited",
+      "amount": 500,
+      "date": "2026-10-24",
+      "icon": "🎁",
+      "method": "SmartHub Grant",
+      "createdAt": "2026-10-24T19:03:54.515Z"
+    }
+  ],
   "posts": [],
   "channels": [
     {
@@ -230,5 +242,20 @@
     }
   ],
   "leaderboard": [],
-  "reviews": []
+  "reviews": [],
+  "apiKeys": [
+    {
+      "id": "key_1792868634515",
+      "userId": "u_1792868634513",
+      "name": "Default Production Key",
+      "keyHash": "df8dec78789dd9a6bbe82d1233ef2c64c0ff96c9f03c89f6cebacc6155187e16",
+      "keyPrefix": "sh_live_c615",
+      "lastFour": "4b89",
+      "scope": "full_access",
+      "status": "active",
+      "lastUsedAt": "2026-10-24T19:03:54.532Z",
+      "createdAt": "2026-10-24T19:03:54.516Z",
+      "updatedAt": "2026-10-24T19:03:54.532Z"
+    }
+  ]
 }

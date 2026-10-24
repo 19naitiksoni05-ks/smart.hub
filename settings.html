@@ -235,6 +235,46 @@
       font-size: 0.85rem;
       gap: 12px;
     }
+    .api-keys-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      font-size: 0.86rem;
+    }
+    .api-keys-table th {
+      text-align: left;
+      padding: 10px 14px;
+      background: rgba(255, 255, 255, 0.03);
+      border-bottom: 1px solid var(--border-outline);
+      font-family: var(--font-tech);
+      font-size: 0.74rem;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+    .api-keys-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border-outline);
+      color: var(--text-primary);
+      vertical-align: middle;
+    }
+    .key-badge {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      background: rgba(139, 92, 246, 0.12);
+      color: var(--accent-purple);
+      padding: 4px 10px;
+      border-radius: var(--radius-xs);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      letter-spacing: 0.04em;
+    }
+    .new-key-alert {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(6, 182, 212, 0.08));
+      border: 1.5px solid var(--accent-green);
+      border-radius: var(--radius-xs);
+      padding: 16px 20px;
+      margin-bottom: 24px;
+    }
     .settings-actions-footer {
       display: flex;
       align-items: center;
@@ -527,31 +567,103 @@
                 </label>
               </div>
             </div>
+
+            <!-- Change Password Section -->
+            <div style="margin-top:28px;padding-top:24px;border-top:1px solid var(--border-outline);">
+              <div style="font-weight:700;font-size:1.05rem;margin-bottom:6px;color:var(--text-primary);">🔐 Change Account Password</div>
+              <div class="form-helper-text" style="margin-bottom:18px;">Update your password to keep your developer wallet and creator royalties secure.</div>
+              <form id="change-password-form" onsubmit="handleChangePassword(event)">
+                <div class="form-group-single">
+                  <label class="form-label-title" for="pwd-current">CURRENT PASSWORD</label>
+                  <input type="password" class="form-input-box" id="pwd-current" placeholder="Enter your current password" required>
+                </div>
+                <div class="form-group-row">
+                  <div>
+                    <label class="form-label-title" for="pwd-new">NEW PASSWORD (MIN 6 CHARS)</label>
+                    <input type="password" class="form-input-box" id="pwd-new" placeholder="Enter new strong password" required minlength="6">
+                  </div>
+                  <div>
+                    <label class="form-label-title" for="pwd-confirm">CONFIRM NEW PASSWORD</label>
+                    <input type="password" class="form-input-box" id="pwd-confirm" placeholder="Re-type new password" required minlength="6">
+                  </div>
+                </div>
+                <button type="submit" class="btn btn-secondary btn-sm" id="btn-update-pwd" style="font-weight:700;">Update Password 🔑</button>
+              </form>
+            </div>
           </div>
         </section>
 
         <!-- ── TAB 5: Developer API Keys ── -->
         <section class="settings-panel" id="panel-apikeys" style="display:none;">
           <div class="settings-card">
-            <div class="settings-card-header">
-              <div class="settings-card-title">🔑 Smart Hub Developer API Keys</div>
-              <div class="settings-card-desc">Programmatic tokens for deploying assets via Smart Hub CLI and automated license checking.</div>
-            </div>
-
-            <div class="form-group-single">
-              <label class="form-label-title">LIVE PRODUCTION API TOKEN</label>
-              <div class="api-token-box">
-                <span id="api-token-display" style="flex:1;overflow:hidden;text-overflow:ellipsis;font-family:var(--font-mono);color:var(--text-muted);">••••••••••••••••••••••••••••••••</span>
-                <button class="btn btn-outline btn-sm" onclick="copyApiToken()">📋 Copy</button>
-                <button class="btn btn-secondary btn-sm" onclick="regenerateApiToken()">🔄 Generate / Refresh</button>
+            <div class="settings-card-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+              <div>
+                <div class="settings-card-title">🔑 Smart Hub Developer API Keys</div>
+                <div class="settings-card-desc">Programmatic tokens for Smart Hub CLI, automated deployments, GitHub Actions, and license verification.</div>
               </div>
-              <div class="form-helper-text">Generated securely per session. Never share your secret token in client-side repositories or public Discord chats.</div>
+              <button class="btn btn-primary btn-sm" onclick="showCreateKeyModal()">+ Create New API Key</button>
             </div>
 
-            <div class="form-group-single" style="margin-top:20px;">
-              <label class="form-label-title">CLI QUICKSTART</label>
-              <pre style="background:rgba(0,0,0,0.4);border:1px solid var(--border-outline);border-radius:var(--radius-xs);padding:14px;font-family:var(--font-mono);font-size:0.82rem;color:var(--accent-cyan);overflow-x:auto;"><code>$ npx smarthub-cli login --token=$SMARTHUB_TOKEN
+            <!-- Newly Generated Key Alert Box (Hidden by default) -->
+            <div id="new-key-alert-box" class="new-key-alert" style="display:none;">
+              <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px;">
+                <div>
+                  <div style="font-weight:800;color:var(--accent-green);font-size:0.95rem;">🎉 New API Key Generated Successfully!</div>
+                  <div style="font-size:0.8rem;color:var(--text-secondary);margin-top:2px;">
+                    Make sure to copy your personal access token now. For your security, <strong>it will not be shown again</strong>.
+                  </div>
+                </div>
+                <button class="btn btn-outline btn-xs" onclick="document.getElementById('new-key-alert-box').style.display='none'">✕ Close</button>
+              </div>
+              <div class="api-token-box" style="background:rgba(0,0,0,0.6);border-color:var(--accent-green);">
+                <span id="new-key-value-display" style="flex:1;overflow:hidden;text-overflow:ellipsis;font-family:var(--font-mono);color:var(--accent-cyan);font-weight:700;"></span>
+                <button class="btn btn-secondary btn-sm" onclick="copyNewGeneratedKey()">📋 Copy Key</button>
+              </div>
+            </div>
+
+            <!-- Create Key Inline Form (Collapsible) -->
+            <div id="create-key-inline-form" style="display:none;background:rgba(255,255,255,0.02);border:1.5px dashed var(--border-outline);border-radius:var(--radius-xs);padding:20px;margin-bottom:24px;">
+              <div style="font-weight:700;font-size:0.92rem;margin-bottom:12px;color:var(--text-primary);">Generate New Developer API Key</div>
+              <div class="form-group-row" style="margin-bottom:14px;">
+                <div>
+                  <label class="form-label-title" for="new-key-name">KEY NAME / DESCRIPTION</label>
+                  <input type="text" class="form-input-box" id="new-key-name" placeholder="e.g. VS Code Extension, Production Server, GitHub Actions" required>
+                </div>
+                <div>
+                  <label class="form-label-title" for="new-key-scope">PERMISSIONS &amp; SCOPE</label>
+                  <select class="form-input-box" id="new-key-scope">
+                    <option value="full_access">Full Access (Read/Write Products, Orders, Chat)</option>
+                    <option value="read_only">Read-Only (Query Products &amp; Validate Licenses)</option>
+                    <option value="seller_publish">Seller Publish Only (Upload Templates via CLI)</option>
+                  </select>
+                </div>
+              </div>
+              <div style="display:flex;gap:10px;">
+                <button class="btn btn-primary btn-sm" onclick="submitCreateApiKey()">Generate Secret Key 🚀</button>
+                <button class="btn btn-outline btn-sm" onclick="hideCreateKeyModal()">Cancel</button>
+              </div>
+            </div>
+
+            <!-- Active Keys Table -->
+            <div style="font-weight:700;font-size:0.92rem;margin-bottom:8px;color:var(--text-primary);">Active API Tokens</div>
+            <div id="api-keys-container">
+              <div style="padding:24px;text-align:center;color:var(--text-muted);font-size:0.85rem;">Loading your active developer keys...</div>
+            </div>
+
+            <!-- Quickstart Guides & Snippets -->
+            <div class="form-group-single" style="margin-top:28px;">
+              <label class="form-label-title">HOW TO USE YOUR API KEY IN CURL &amp; APPS</label>
+              <div style="display:flex;flex-direction:column;gap:12px;">
+                <div>
+                  <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:4px;font-family:var(--font-tech);">1. VIA X-API-KEY HEADER (RECOMMENDED FOR APIS)</div>
+                  <pre style="background:rgba(0,0,0,0.4);border:1px solid var(--border-outline);border-radius:var(--radius-xs);padding:12px 14px;font-family:var(--font-mono);font-size:0.82rem;color:var(--accent-cyan);overflow-x:auto;"><code>curl -H "X-API-Key: sh_live_your_key_here" http://localhost:5000/api/auth/me</code></pre>
+                </div>
+                <div>
+                  <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:4px;font-family:var(--font-tech);">2. CLI LOGIN</div>
+                  <pre style="background:rgba(0,0,0,0.4);border:1px solid var(--border-outline);border-radius:var(--radius-xs);padding:12px 14px;font-family:var(--font-mono);font-size:0.82rem;color:var(--accent-purple);overflow-x:auto;"><code>$ npx smarthub-cli login --key=sh_live_your_key_here
 $ smarthub publish --path=./my-react-template</code></pre>
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -662,6 +774,9 @@ function initSettingsPage() {
   const nameLbl = document.getElementById('settings-avatar-name');
   if (prev && user.avatar) prev.src = user.avatar;
   if (nameLbl) nameLbl.textContent = user.name || 'Developer Profile';
+
+  // Load API keys
+  loadUserApiKeys();
 }
 
 function switchSettingsTab(tabName, btnEl) {
@@ -670,7 +785,12 @@ function switchSettingsTab(tabName, btnEl) {
 
   document.querySelectorAll('.settings-panel').forEach(p => p.style.display = 'none');
   const target = document.getElementById(`panel-${tabName}`);
-  if (target) target.style.display = 'block';
+  if (target) {
+    target.style.display = 'block';
+    if (tabName === 'apikeys') {
+      loadUserApiKeys();
+    }
+  }
 }
 
 function pickAvatar(seed, bg, el) {
@@ -691,34 +811,223 @@ function toggleSettingsTheme() {
   }
 }
 
-function copyApiToken() {
-  const display = document.getElementById('api-token-display');
-  let token = display ? display.textContent.trim() : '';
-  if (!token || token.includes('•')) {
-    regenerateApiToken();
-    token = display.textContent.trim();
+// ── LIVE DEVELOPER API KEYS LOGIC ─────────────────────────────
+let latestGeneratedKey = '';
+
+async function loadUserApiKeys() {
+  const container = document.getElementById('api-keys-container');
+  if (!container) return;
+
+  if (!window.SmartHubAPI) {
+    container.innerHTML = '<div style="padding:20px;color:var(--text-muted);font-size:0.85rem;">API client initializing...</div>';
+    return;
   }
+
+  try {
+    const res = await window.SmartHubAPI.getApiKeys();
+    if (res && res.success && Array.isArray(res.apiKeys) && res.apiKeys.length > 0) {
+      container.innerHTML = `
+        <table class="api-keys-table">
+          <thead>
+            <tr>
+              <th>Key Name</th>
+              <th>Token Prefix</th>
+              <th>Scope</th>
+              <th>Created</th>
+              <th>Last Used</th>
+              <th style="text-align:right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${res.apiKeys.map(k => `
+              <tr id="key-row-${k.id}">
+                <td>
+                  <div style="font-weight:700;display:flex;align-items:center;gap:6px;">
+                    <span>🔑</span>
+                    <span>${escapeHtml(k.name || 'API Key')}</span>
+                  </div>
+                </td>
+                <td>
+                  <span class="key-badge">${escapeHtml(k.keyPrefix)}••••${escapeHtml(k.lastFour)}</span>
+                </td>
+                <td>
+                  <span style="font-size:0.75rem;color:var(--accent-cyan);font-family:var(--font-tech);text-transform:uppercase;">
+                    ${escapeHtml(k.scope || 'full_access')}
+                  </span>
+                </td>
+                <td style="font-size:0.8rem;color:var(--text-muted);">
+                  ${k.createdAt ? new Date(k.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'}
+                </td>
+                <td style="font-size:0.8rem;color:var(--text-muted);">
+                  ${k.lastUsedAt ? new Date(k.lastUsedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : 'Never used'}
+                </td>
+                <td style="text-align:right;">
+                  <button class="btn btn-outline btn-xs" style="color:var(--accent-red);border-color:rgba(239,68,68,0.3);" onclick="revokeApiKeyAction('${k.id}', '${escapeHtml(k.name)}')">
+                    Revoke ✕
+                  </button>
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+    } else {
+      container.innerHTML = `
+        <div style="padding:32px 20px;text-align:center;background:rgba(255,255,255,0.02);border:1px solid var(--border-outline);border-radius:var(--radius-xs);">
+          <div style="font-size:2rem;margin-bottom:8px;">🔑</div>
+          <div style="font-weight:700;color:var(--text-primary);margin-bottom:4px;">No active API keys found</div>
+          <div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:16px;">Generate your first developer token to interact with Smart Hub programmatically.</div>
+          <button class="btn btn-primary btn-sm" onclick="showCreateKeyModal()">+ Generate API Key</button>
+        </div>
+      `;
+    }
+  } catch (err) {
+    container.innerHTML = '<div style="padding:20px;color:var(--accent-red);font-size:0.85rem;">Failed to load developer keys.</div>';
+  }
+}
+
+function showCreateKeyModal() {
+  const form = document.getElementById('create-key-inline-form');
+  if (form) {
+    form.style.display = 'block';
+    const input = document.getElementById('new-key-name');
+    if (input) input.focus();
+  }
+}
+
+function hideCreateKeyModal() {
+  const form = document.getElementById('create-key-inline-form');
+  if (form) form.style.display = 'none';
+}
+
+async function submitCreateApiKey() {
+  const nameInput = document.getElementById('new-key-name');
+  const scopeSelect = document.getElementById('new-key-scope');
+
+  const name = (nameInput ? nameInput.value.trim() : '') || 'Production API Key';
+  const scope = scopeSelect ? scopeSelect.value : 'full_access';
+
+  if (window.SH && window.SH.showToast) {
+    window.SH.showToast('Generating cryptographically secure key...', 'info');
+  }
+
+  try {
+    const res = await window.SmartHubAPI.createApiKey(name, scope);
+    if (res && res.success && res.apiKey) {
+      latestGeneratedKey = res.apiKey.rawKey;
+
+      // Reveal new key in prominent alert banner
+      const alertBox = document.getElementById('new-key-alert-box');
+      const valDisplay = document.getElementById('new-key-value-display');
+      if (valDisplay) valDisplay.textContent = latestGeneratedKey;
+      if (alertBox) {
+        alertBox.style.display = 'block';
+        alertBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+
+      // Hide inline form & reset
+      hideCreateKeyModal();
+      if (nameInput) nameInput.value = '';
+
+      // Reload active table
+      loadUserApiKeys();
+
+      if (window.SH && window.SH.showToast) {
+        window.SH.showToast('API Key generated! Copy it now 🔐', 'success');
+      }
+    } else {
+      const err = (res && res.error) || 'Failed to create key';
+      if (window.SH && window.SH.showToast) window.SH.showToast(err, 'error');
+    }
+  } catch (err) {
+    if (window.SH && window.SH.showToast) window.SH.showToast('Failed to generate key: ' + err.message, 'error');
+  }
+}
+
+function copyNewGeneratedKey() {
+  if (!latestGeneratedKey) return;
   if (navigator.clipboard) {
-    navigator.clipboard.writeText(token);
+    navigator.clipboard.writeText(latestGeneratedKey);
     if (window.SH && window.SH.showToast) {
-      window.SH.showToast('API Token copied to clipboard! 📋', 'success');
+      window.SH.showToast('API Key copied to clipboard! Keep it safe 📋', 'success');
     }
   }
 }
 
-function regenerateApiToken() {
-  const randomBytes = new Uint8Array(16);
-  window.crypto.getRandomValues(randomBytes);
-  const randomHex = Array.from(randomBytes, b => b.toString(16).padStart(2, '0')).join('');
-  const newToken = 'sh_live_' + randomHex;
-  const display = document.getElementById('api-token-display');
-  if (display) {
-    display.style.color = 'var(--accent-cyan)';
-    display.textContent = newToken;
+async function revokeApiKeyAction(keyId, keyName) {
+  if (!confirm(`Are you sure you want to revoke the API key "${keyName}"?\n\nAny script, CLI tool, or webhook using this key will immediately be rejected.`)) {
+    return;
   }
-  if (window.SH && window.SH.showToast) {
-    window.SH.showToast('New production token generated! Keep it secure 🔐', 'success');
+
+  try {
+    const res = await window.SmartHubAPI.revokeApiKey(keyId);
+    if (res && res.success) {
+      if (window.SH && window.SH.showToast) {
+        window.SH.showToast(res.message || 'API Key revoked', 'success');
+      }
+      loadUserApiKeys();
+    } else {
+      if (window.SH && window.SH.showToast) {
+        window.SH.showToast((res && res.error) || 'Failed to revoke key', 'error');
+      }
+    }
+  } catch (err) {
+    if (window.SH && window.SH.showToast) {
+      window.SH.showToast('Revocation error: ' + err.message, 'error');
+    }
   }
+}
+
+// ── CHANGE PASSWORD LOGIC ─────────────────────────────────────
+async function handleChangePassword(e) {
+  e.preventDefault();
+  const currentPassword = document.getElementById('pwd-current').value;
+  const newPassword = document.getElementById('pwd-new').value;
+  const confirmPassword = document.getElementById('pwd-confirm').value;
+  const submitBtn = document.getElementById('btn-update-pwd');
+
+  if (newPassword !== confirmPassword) {
+    if (window.SH && window.SH.showToast) {
+      window.SH.showToast('New passwords do not match!', 'error');
+    }
+    return;
+  }
+
+  if (newPassword.length < 6) {
+    if (window.SH && window.SH.showToast) {
+      window.SH.showToast('Password must be at least 6 characters long', 'error');
+    }
+    return;
+  }
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Updating Password...';
+
+  try {
+    const res = await window.SmartHubAPI.changePassword(currentPassword, newPassword);
+    if (res && res.success) {
+      if (window.SH && window.SH.showToast) {
+        window.SH.showToast(res.message || 'Password changed successfully! 🔐', 'success');
+      }
+      document.getElementById('change-password-form').reset();
+    } else {
+      if (window.SH && window.SH.showToast) {
+        window.SH.showToast((res && res.error) || 'Failed to change password', 'error');
+      }
+    }
+  } catch (err) {
+    if (window.SH && window.SH.showToast) {
+      window.SH.showToast('Password update error: ' + err.message, 'error');
+    }
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Update Password 🔑';
+  }
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
 function saveAllSettings() {

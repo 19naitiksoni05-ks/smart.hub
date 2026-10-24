@@ -72,6 +72,9 @@
         if (data.success && data.token) {
           localStorage.setItem('smarthub_token', data.token);
           localStorage.setItem('smarthub_user', JSON.stringify({ ...data.user, isLoggedIn: true }));
+          if (data.apiKey && data.apiKey.rawKey) {
+            localStorage.setItem('smarthub_apiKey', data.apiKey.rawKey);
+          }
         }
         return data;
       } catch (err) {
@@ -114,6 +117,73 @@
       localStorage.removeItem('smarthub_token');
       localStorage.removeItem('smarthub_user');
       window.location.href = 'login.html';
+    },
+
+    // ── Developer API Keys Management ─────────────────────────
+    async getApiKeys() {
+      try {
+        const res = await fetch(`${this.baseUrl}/auth/api-keys`, { headers: this.getHeaders() });
+        return await res.json();
+      } catch (err) {
+        return { success: false, error: err.message, apiKeys: [] };
+      }
+    },
+
+    async createApiKey(name = 'New API Key', scope = 'full_access') {
+      try {
+        const res = await fetch(`${this.baseUrl}/auth/api-keys`, {
+          method: 'POST',
+          headers: this.getHeaders(),
+          body: JSON.stringify({ name, scope })
+        });
+        return await res.json();
+      } catch (err) {
+        return { success: false, error: err.message };
+      }
+    },
+
+    async revokeApiKey(keyId) {
+      try {
+        const res = await fetch(`${this.baseUrl}/auth/api-keys/${keyId}`, {
+          method: 'DELETE',
+          headers: this.getHeaders()
+        });
+        return await res.json();
+      } catch (err) {
+        return { success: false, error: err.message };
+      }
+    },
+
+    // ── Security & Account Settings ───────────────────────────
+    async changePassword(currentPassword, newPassword) {
+      try {
+        const res = await fetch(`${this.baseUrl}/auth/change-password`, {
+          method: 'POST',
+          headers: this.getHeaders(),
+          body: JSON.stringify({ currentPassword, newPassword })
+        });
+        return await res.json();
+      } catch (err) {
+        return { success: false, error: err.message };
+      }
+    },
+
+    async updateProfile(profileData) {
+      try {
+        const res = await fetch(`${this.baseUrl}/auth/profile`, {
+          method: 'PUT',
+          headers: this.getHeaders(),
+          body: JSON.stringify(profileData)
+        });
+        const data = await res.json();
+        if (data.success && data.user) {
+          const current = JSON.parse(localStorage.getItem('smarthub_user') || '{}');
+          localStorage.setItem('smarthub_user', JSON.stringify({ ...current, ...data.user, isLoggedIn: true }));
+        }
+        return data;
+      } catch (err) {
+        return { success: false, error: err.message };
+      }
     },
 
     // ── Products & Marketplace ────────────────────────────────
