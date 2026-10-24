@@ -1,5 +1,21 @@
 {
-  "users": [],
+  "users": [
+    {
+      "id": "b9f83b04-538c-4aab-9d88-f35a2ecb1cbe",
+      "name": "Naitik Soni",
+      "username": "@naitik19",
+      "email": "naitik19ansh@gmail.com",
+      "passwordHash": "$2b$10$Ap4//Ylal2v1aUmWzTwtGugZJRgxl7HAFAdPpYK9Cr8rnj.fcAZTK",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=naitik19&backgroundColor=ff5b36",
+      "walletBalance": 500,
+      "role": "buyer",
+      "xp": 0,
+      "badges": 0,
+      "location": "India",
+      "headline": "Smart Hub Developer",
+      "createdAt": "2026-10-24T19:15:56.573Z"
+    }
+  ],
   "products": [],
   "categories": [
     {
@@ -61,6 +77,17 @@
   ],
   "orders": [],
   "transactions": [
+    {
+      "id": "t_1792869356574",
+      "userId": "b9f83b04-538c-4aab-9d88-f35a2ecb1cbe",
+      "type": "credit",
+      "title": "🎁 Welcome Bonus Credited",
+      "amount": 500,
+      "date": "2026-10-24",
+      "icon": "🎁",
+      "method": "SmartHub Grant",
+      "createdAt": "2026-10-24T19:15:56.574Z"
+    },
     {
       "id": "t_1792868634515",
       "userId": "u_1792868634513",
@@ -244,6 +271,20 @@
   "leaderboard": [],
   "reviews": [],
   "apiKeys": [
+    {
+      "id": "key_1792869526297",
+      "userId": "b9f83b04-538c-4aab-9d88-f35a2ecb1cbe",
+      "name": "new api key",
+      "keyHash": "7f7b55c1f372ab87407475b72f5d5d3305e6628f346987cd9c5abc81e9b4143c",
+      "keyPrefix": "sh_live_98ff",
+      "lastFour": "8ee8",
+      "scope": "full_access",
+      "status": "active",
+      "lastUsedAt": "2026-10-24T19:22:12.203Z",
+      "createdAt": "2026-10-24T19:18:46.297Z",
+      "updatedAt": "2026-10-24T19:28:39.781Z",
+      "encryptedKey": "6de3b68064a75f5ab1ed9051975e90e9:5802e11b7b262aba160e1cba31e3f3c9e978abe02865904e5d110f8a0baa699f718acc775afff52d65ff716115cb62533155e67f9b297a0e63bb778a7d8444df"
+    },
     {
       "id": "key_1792868634515",
       "userId": "u_1792868634513",

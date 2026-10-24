@@ -864,7 +864,10 @@ async function loadUserApiKeys() {
                 <td style="font-size:0.8rem;color:var(--text-muted);">
                   ${k.lastUsedAt ? new Date(k.lastUsedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : 'Never used'}
                 </td>
-                <td style="text-align:right;">
+                <td style="text-align:right;white-space:nowrap;">
+                  <button class="btn btn-outline btn-xs" style="color:var(--accent-cyan);border-color:rgba(6,182,212,0.4);margin-right:6px;" onclick="promptRevealKey('${k.id}', '${escapeHtml(k.name)}')">
+                    👁️ View
+                  </button>
                   <button class="btn btn-outline btn-xs" style="color:var(--accent-red);border-color:rgba(239,68,68,0.3);" onclick="revokeApiKeyAction('${k.id}', '${escapeHtml(k.name)}')">
                     Revoke ✕
                   </button>
@@ -1139,6 +1142,104 @@ function saveAllSettings() {
   }
 }
 
+// ── REVEAL API KEY VIA PASSWORD LOGIC ─────────────────────────
+let pendingRevealKeyId = null;
+let currentRevealedKey = '';
+
+function promptRevealKey(keyId, keyName) {
+  pendingRevealKeyId = keyId;
+  currentRevealedKey = '';
+  const modal = document.getElementById('reveal-key-modal');
+  const nameEl = document.getElementById('reveal-modal-key-name');
+  const pwdInput = document.getElementById('reveal-password-input');
+  const stepVerify = document.getElementById('reveal-modal-step-verify');
+  const stepResult = document.getElementById('reveal-modal-step-result');
+
+  if (nameEl) nameEl.textContent = `"${keyName}"`;
+  if (pwdInput) pwdInput.value = '';
+  if (stepVerify) stepVerify.style.display = 'block';
+  if (stepResult) stepResult.style.display = 'none';
+
+  if (modal) {
+    modal.style.display = 'flex';
+    setTimeout(() => pwdInput && pwdInput.focus(), 100);
+  }
+}
+
+function closeRevealModal() {
+  const modal = document.getElementById('reveal-key-modal');
+  if (modal) modal.style.display = 'none';
+  pendingRevealKeyId = null;
+  currentRevealedKey = '';
+}
+
+async function submitRevealKeyPassword(e) {
+  e.preventDefault();
+  const pwdInput = document.getElementById('reveal-password-input');
+  const submitBtn = document.getElementById('btn-submit-reveal');
+  const password = pwdInput ? pwdInput.value : '';
+
+  if (!password || !pendingRevealKeyId) return;
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Verifying Security...';
+
+  try {
+    const res = await window.SmartHubAPI.revealApiKey(pendingRevealKeyId, password);
+    if (res && res.success && res.rawKey) {
+      currentRevealedKey = res.rawKey;
+
+      const stepVerify = document.getElementById('reveal-modal-step-verify');
+      const stepResult = document.getElementById('reveal-modal-step-result');
+      const display = document.getElementById('reveal-modal-token-display');
+
+      if (display) {
+        display.value = currentRevealedKey;
+      }
+      if (stepVerify) stepVerify.style.display = 'none';
+      if (stepResult) stepResult.style.display = 'block';
+
+      if (window.SH && window.SH.showToast) {
+        window.SH.showToast('Key decrypted successfully! 🔓', 'success');
+      }
+    } else {
+      const err = (res && res.error) || 'Failed to verify password';
+      if (window.SH && window.SH.showToast) {
+        window.SH.showToast(err, 'error');
+      }
+    }
+  } catch (err) {
+    if (window.SH && window.SH.showToast) {
+      window.SH.showToast('Verification error: ' + err.message, 'error');
+    }
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Verify & Reveal Key 🔓';
+  }
+}
+
+async function copyModalKey() {
+  if (!currentRevealedKey) return;
+  await copyToClipboard(currentRevealedKey);
+  const btn = document.getElementById('btn-copy-modal-key');
+  if (btn) {
+    const orig = btn.innerHTML;
+    btn.innerHTML = '✓ Copied!';
+    btn.style.background = 'var(--accent-green)';
+    btn.style.borderColor = 'var(--accent-green)';
+    btn.style.color = '#fff';
+    setTimeout(() => {
+      btn.innerHTML = orig;
+      btn.style.background = '';
+      btn.style.borderColor = '';
+      btn.style.color = '';
+    }, 2000);
+  }
+  if (window.SH && window.SH.showToast) {
+    window.SH.showToast('API Key copied to clipboard! 📋', 'success');
+  }
+}
+
 function resetSettingsForm() {
   initSettingsPage();
   if (window.SH && window.SH.showToast) {
@@ -1150,5 +1251,47 @@ document.addEventListener('DOMContentLoaded', () => {
   initSettingsPage();
 });
 </script>
+
+<!-- ── API Key Password Reveal Modal ────────────────────── -->
+<div id="reveal-key-modal" class="modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(6px);z-index:9999;align-items:center;justify-content:center;">
+  <div style="background:var(--bg-card);border:1.5px solid var(--border-outline);border-radius:var(--radius-sm);width:90%;max-width:480px;padding:28px;box-shadow:0 20px 40px rgba(0,0,0,0.5);animation:fadeIn 0.25s ease;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+      <div style="font-weight:800;font-size:1.1rem;display:flex;align-items:center;gap:8px;color:var(--text-primary);">
+        <span>🔐</span> Security Verification Required
+      </div>
+      <button class="btn btn-outline btn-xs" onclick="closeRevealModal()">✕</button>
+    </div>
+    
+    <div id="reveal-modal-step-verify">
+      <p style="font-size:0.86rem;color:var(--text-secondary);margin-bottom:16px;line-height:1.5;">
+        To reveal secret key <strong id="reveal-modal-key-name" style="color:var(--accent-cyan);"></strong>, enter your account password:
+      </p>
+      
+      <form onsubmit="submitRevealKeyPassword(event)">
+        <div style="margin-bottom:18px;">
+          <input type="password" id="reveal-password-input" class="form-input-box" placeholder="Enter your login password" required autofocus>
+        </div>
+        <div style="display:flex;gap:10px;justify-content:flex-end;">
+          <button type="button" class="btn btn-outline btn-sm" onclick="closeRevealModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary btn-sm" id="btn-submit-reveal" style="font-weight:700;">Verify &amp; Reveal Key 🔓</button>
+        </div>
+      </form>
+    </div>
+
+    <div id="reveal-modal-step-result" style="display:none;">
+      <div style="background:rgba(16,185,129,0.12);border:1.5px solid var(--accent-green);border-radius:var(--radius-xs);padding:14px;margin-bottom:16px;">
+        <div style="font-size:0.75rem;color:var(--accent-green);font-weight:800;text-transform:uppercase;margin-bottom:6px;letter-spacing:0.05em;">Decrypted Secret Token:</div>
+        <input type="text" readonly id="reveal-modal-token-display" 
+               style="width:100%;background:rgba(0,0,0,0.5);border:1px solid var(--border-outline);border-radius:var(--radius-xs);padding:10px 12px;font-family:var(--font-mono);color:var(--accent-cyan);font-weight:700;font-size:0.86rem;cursor:pointer;" 
+               onclick="this.select()"
+               title="Click to select all">
+      </div>
+      <div style="display:flex;gap:10px;justify-content:flex-end;">
+        <button type="button" class="btn btn-secondary btn-sm" id="btn-copy-modal-key" onclick="copyModalKey()">📋 Copy Key</button>
+        <button type="button" class="btn btn-primary btn-sm" onclick="closeRevealModal()">Done ✓</button>
+      </div>
+    </div>
+  </div>
+</div>
 </body>
 </html>

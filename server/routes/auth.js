@@ -13,6 +13,27 @@ function sanitizeUser(user) {
   return safeUser;
 }
 
+// ── AES-256 Key Vault Encryption ─────────────────────────────
+function encryptApiKey(rawKey) {
+  const iv = crypto.randomBytes(16);
+  const keyBuffer = crypto.scryptSync(JWT_SECRET, 'smarthub_vault_salt_2026', 32);
+  const cipher = crypto.createCipheriv('aes-256-cbc', keyBuffer, iv);
+  let encrypted = cipher.update(rawKey, 'utf8', 'hex');
+  encrypted += cipher.final('hex');
+  return iv.toString('hex') + ':' + encrypted;
+}
+
+function decryptApiKey(payload) {
+  if (!payload || !payload.includes(':')) return null;
+  const [ivHex, encryptedHex] = payload.split(':');
+  const iv = Buffer.from(ivHex, 'hex');
+  const keyBuffer = crypto.scryptSync(JWT_SECRET, 'smarthub_vault_salt_2026', 32);
+  const decipher = crypto.createDecipheriv('aes-256-cbc', keyBuffer, iv);
+  let decrypted = decipher.update(encryptedHex, 'hex', 'utf8');
+  decrypted += decipher.final('utf8');
+  return decrypted;
+}
+
 // ── 1. Register Account ───────────────────────────────────────
 router.post('/register', async (req, res) => {
   try {
@@ -100,6 +121,7 @@ router.post('/register', async (req, res) => {
       userId: newUser.id,
       name: 'Default Production Key',
       keyHash: hashApiKey(rawApiKey),
+      encryptedKey: encryptApiKey(rawApiKey),
       keyPrefix: rawApiKey.slice(0, 12),
       lastFour: rawApiKey.slice(-4),
       scope: 'full_access',
@@ -363,6 +385,7 @@ router.post('/api-keys', authRequired, (req, res) => {
       userId: req.user.id,
       name: keyName,
       keyHash,
+      encryptedKey: encryptApiKey(rawKey),
       keyPrefix,
       lastFour,
       scope: keyScope,
@@ -389,6 +412,55 @@ router.post('/api-keys', authRequired, (req, res) => {
   } catch (err) {
     console.error('Create API key error:', err);
     res.status(500).json({ success: false, error: 'Failed to generate API key' });
+  }
+});
+
+// ── 9. DEVELOPER API KEYS: Reveal Secret Key with Password Verification ──
+router.post('/api-keys/:id/reveal', authRequired, (req, res) => {
+  try {
+    const { password } = req.body;
+    const keyId = req.params.id;
+
+    if (!password) {
+      return res.status(400).json({ success: false, error: 'Account password is required to reveal this secret API key' });
+    }
+
+    const user = db.findById('users', req.user.id);
+    if (!user) {
+      return res.status(404).json({ success: false, error: 'User not found' });
+    }
+
+    // Verify account password
+    const isMatch = bcrypt.compareSync(password, user.passwordHash);
+    if (!isMatch) {
+      return res.status(401).json({ success: false, error: 'Incorrect password! Security verification failed.' });
+    }
+
+    const keyRecord = db.findById('apiKeys', keyId);
+    if (!keyRecord || keyRecord.userId !== req.user.id) {
+      return res.status(404).json({ success: false, error: 'API key not found' });
+    }
+
+    if (!keyRecord.encryptedKey) {
+      return res.status(400).json({
+        success: false,
+        error: 'This key was created before the encrypted vault was enabled. Please create a new key to enable password-protected reveal.'
+      });
+    }
+
+    const rawKey = decryptApiKey(keyRecord.encryptedKey);
+    if (!rawKey) {
+      return res.status(500).json({ success: false, error: 'Failed to decrypt key from secure vault' });
+    }
+
+    res.json({
+      success: true,
+      rawKey,
+      name: keyRecord.name
+    });
+  } catch (err) {
+    console.error('Reveal key error:', err);
+    res.status(500).json({ success: false, error: 'Internal server error while revealing key' });
   }
 });
 

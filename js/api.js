@@ -154,6 +154,19 @@
       }
     },
 
+    async revealApiKey(keyId, password) {
+      try {
+        const res = await fetch(`${this.baseUrl}/auth/api-keys/${keyId}/reveal`, {
+          method: 'POST',
+          headers: this.getHeaders(),
+          body: JSON.stringify({ password })
+        });
+        return await res.json();
+      } catch (err) {
+        return { success: false, error: err.message };
+      }
+    },
+
     // ── Security & Account Settings ───────────────────────────
     async changePassword(currentPassword, newPassword) {
       try {
