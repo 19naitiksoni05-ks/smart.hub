@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Marketplace — Smart Hub | Buy & Sell Digital Products</title>
+  <meta name="description" content="Browse verified developer digital products — React apps, Flutter templates, AI tools, UI kits, WordPress themes and more. Priced in ₹ INR.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛒</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/cards.css">
+  <link rel="stylesheet" href="css/pages.css">
+  <style>
+    .marketplace-main { padding-bottom: 60px; }
+    .product-detail-overlay { position:fixed;inset:0;background:rgba(0,0,0,0.8);backdrop-filter:blur(12px);z-index:900;display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;pointer-events:none;transition:var(--transition); }
+    .product-detail-overlay.active { opacity:1;pointer-events:all; }
+    .product-detail { background:var(--bg-secondary);border:1px solid var(--glass-border);border-radius:var(--radius-xl);width:100%;max-width:900px;max-height:90vh;overflow-y:auto;display:grid;grid-template-columns:1fr 1fr; }
+    .product-detail-image img { width:100%;height:100%;object-fit:cover;border-radius:var(--radius-xl) 0 0 var(--radius-xl); }
+    .product-detail-info { padding:40px; }
+    .purchase-confirm { background:var(--bg-secondary);border:1px solid var(--glass-border);border-radius:var(--radius-xl);padding:32px;width:100%;max-width:480px; }
+    @media(max-width:768px) { .product-detail{grid-template-columns:1fr} .product-detail-image{display:none} .product-detail-info{padding:24px} }
+  </style>
+</head>
+<body>
+<div id="page-header"></div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     MARKETPLACE HERO BANNER
+═══════════════════════════════════════════════════════════ -->
+<div>
+  <div class="container">
+    <div class="marketplace-hero animate-fadeInUp" style="margin-top:28px;">
+      <div>
+        <div class="hero-eyebrow" style="display:inline-flex;margin-bottom:12px;">🛒 Marketplace</div>
+        <h2 style="margin-bottom:8px;">Find Your Next <span class="gradient-text">Digital Asset</span></h2>
+        <p>Verified developer source code • Transparent Indian pricing in ₹ • Instant encrypted delivery</p>
+        <div style="display:flex;gap:24px;margin-top:20px;flex-wrap:wrap;">
+          <div style="font-size:0.88rem;color:var(--text-secondary);">✅ Wallet-based payments in ₹</div>
+          <div style="font-size:0.88rem;color:var(--text-secondary);">🔐 Encrypted key delivery</div>
+          <div style="font-size:0.88rem;color:var(--text-secondary);">📧 Sent to your email</div>
+          <div style="font-size:0.88rem;color:var(--text-secondary);">♻️ Free updates</div>
+        </div>
+      </div>
+      <div style="text-align:right;">
+        <div class="glass-card" style="padding:24px;text-align:center;min-width:200px;">
+          <div style="font-size:0.82rem;color:var(--text-muted);">Your Wallet</div>
+          <div style="font-size:2rem;font-weight:900;color:var(--accent-green);" class="wallet-display">₹0</div>
+          <a href="wallet.html" class="btn btn-secondary btn-sm" style="margin-top:12px;width:100%;justify-content:center;">+ Add Money</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     CATEGORY PILLS
+═══════════════════════════════════════════════════════════ -->
+<div class="container" style="padding-top:32px;">
+  <div class="category-pills" id="cat-pills">
+    <div class="category-pill active" data-cat="all" onclick="filterByCategory('all', this)">🌐 All</div>
+    <div class="category-pill" data-cat="React" onclick="filterByCategory('React', this)">⚛️ React</div>
+    <div class="category-pill" data-cat="Mobile" onclick="filterByCategory('Mobile', this)">📱 Mobile</div>
+    <div class="category-pill" data-cat="AI/ML" onclick="filterByCategory('AI/ML', this)">🤖 AI/ML</div>
+    <div class="category-pill" data-cat="Templates" onclick="filterByCategory('Templates', this)">🎨 Templates</div>
+    <div class="category-pill" data-cat="Backend" onclick="filterByCategory('Backend', this)">⚙️ Backend</div>
+    <div class="category-pill" data-cat="Blockchain" onclick="filterByCategory('Blockchain', this)">🔗 Blockchain</div>
+    <div class="category-pill" data-cat="Data Science" onclick="filterByCategory('Data Science', this)">📊 Data Science</div>
+    <div class="category-pill" data-cat="UI Kit" onclick="filterByCategory('UI Kit', this)">🎭 UI Kits</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     MAIN LAYOUT
+═══════════════════════════════════════════════════════════ -->
+<div class="container marketplace-main" style="padding-top:32px;">
+  <div class="marketplace-layout" style="padding-top:0;">
+
+    <!-- ── Sidebar ────────────────────────────────────────── -->
+    <aside class="marketplace-sidebar" id="sidebar">
+
+      <!-- Price Range -->
+      <div class="sidebar-section">
+        <div class="sidebar-title">💰 Price Range</div>
+        <div class="price-range">
+          <input type="range" id="price-slider" min="0" max="9999" value="9999" oninput="filterByPrice(this.value)">
+          <div class="price-display">
+            <span>₹0</span>
+            <span id="price-max-label">₹9,999</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Category Filter -->
+      <div class="sidebar-section">
+        <div class="sidebar-title">📦 Category</div>
+        <div class="sidebar-options" id="cat-sidebar">
+          <div class="sidebar-option active" onclick="filterByCategory('all', this, true)">All Categories</div>
+          <div class="sidebar-option" onclick="filterByCategory('React', this, true)">⚛️ React</div>
+          <div class="sidebar-option" onclick="filterByCategory('Mobile', this, true)">📱 Mobile</div>
+          <div class="sidebar-option" onclick="filterByCategory('AI/ML', this, true)">🤖 AI/ML</div>
+          <div class="sidebar-option" onclick="filterByCategory('Templates', this, true)">🎨 Templates</div>
+          <div class="sidebar-option" onclick="filterByCategory('Backend', this, true)">⚙️ Backend</div>
+          <div class="sidebar-option" onclick="filterByCategory('Blockchain', this, true)">🔗 Blockchain</div>
+        </div>
+      </div>
+
+      <!-- Rating Filter -->
+      <div class="sidebar-section">
+        <div class="sidebar-title">⭐ Min Rating</div>
+        <div class="sidebar-options">
+          <div class="sidebar-option active" onclick="setSidebarActive(this)">Any Rating</div>
+          <div class="sidebar-option" onclick="setSidebarActive(this)">★★★★★ 4.5+</div>
+          <div class="sidebar-option" onclick="setSidebarActive(this)">★★★★☆ 4.0+</div>
+          <div class="sidebar-option" onclick="setSidebarActive(this)">★★★☆☆ 3.0+</div>
+        </div>
+      </div>
+
+      <!-- Product Type -->
+      <div class="sidebar-section">
+        <div class="sidebar-title">🏷️ Product Type</div>
+        <div class="sidebar-options">
+          <div class="sidebar-option active" onclick="setSidebarActive(this)">All Types</div>
+          <div class="sidebar-option" onclick="setSidebarActive(this)">Web App</div>
+          <div class="sidebar-option" onclick="setSidebarActive(this)">Mobile App</div>
+          <div class="sidebar-option" onclick="setSidebarActive(this)">UI Kit</div>
+          <div class="sidebar-option" onclick="setSidebarActive(this)">Template</div>
+          <div class="sidebar-option" onclick="setSidebarActive(this)">SDK / Library</div>
+          <div class="sidebar-option" onclick="setSidebarActive(this)">Script</div>
+        </div>
+      </div>
+
+      <!-- Top Sellers -->
+      <div class="sidebar-section">
+        <div class="sidebar-title">🌟 Top Sellers</div>
+        <div style="display:flex;flex-direction:column;gap:12px;margin-top:8px;" id="top-sellers"></div>
+      </div>
+    </aside>
+
+    <!-- ── Main Content ───────────────────────────────────── -->
+    <main>
+      <!-- Filter Bar -->
+      <div class="filter-bar">
+        <div style="font-size:0.9rem;color:var(--text-muted);">
+          Showing <span id="result-count" style="color:var(--text-primary);font-weight:700;">0</span> results
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <select class="filter-select" id="sort-select" onchange="sortProducts(this.value)">
+            <option value="popular">Sort: Most Popular</option>
+            <option value="latest">Sort: Latest</option>
+            <option value="price-low">Sort: Price Low to High</option>
+            <option value="price-high">Sort: Price High to Low</option>
+            <option value="rating">Sort: Highest Rated</option>
+          </select>
+          <div style="display:flex;gap:4px;">
+            <button class="icon-btn active" id="grid-view-btn" onclick="setView('grid')" title="Grid View">▦</button>
+            <button class="icon-btn" id="list-view-btn" onclick="setView('list')" title="List View">☰</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Products Grid -->
+      <div class="projects-grid" id="products-grid"></div>
+
+      <!-- Pagination -->
+      <div style="display:flex;justify-content:center;gap:8px;margin-top:48px;" id="pagination">
+        <button class="btn btn-secondary btn-sm" disabled>← Prev</button>
+        <button class="btn btn-primary btn-sm">1</button>
+        <button class="btn btn-secondary btn-sm">2</button>
+        <button class="btn btn-secondary btn-sm">3</button>
+        <button class="btn btn-secondary btn-sm">Next →</button>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     PRODUCT DETAIL MODAL
+═══════════════════════════════════════════════════════════ -->
+<div class="product-detail-overlay" id="product-detail-overlay" onclick="closeProductDetail(event)">
+  <div class="product-detail" id="product-detail-modal">
+    <div class="product-detail-image" id="detail-image">
+      <img src="" alt="" id="detail-img">
+    </div>
+    <div class="product-detail-info">
+      <button onclick="closeProductDetail()" style="background:rgba(255,255,255,0.1);border:none;color:white;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;margin-left:auto;margin-bottom:16px;">✕</button>
+      <div id="detail-badge"></div>
+      <div id="detail-cat" style="font-size:0.78rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent-cyan);margin:8px 0;"></div>
+      <h3 id="detail-title"></h3>
+      <div style="display:flex;align-items:center;gap:12px;margin:12px 0;" id="detail-meta"></div>
+      <p id="detail-desc" style="font-size:0.9rem;margin-bottom:20px;"></p>
+      <div id="detail-tags" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;"></div>
+      <div style="padding:20px;background:rgba(255,255,255,0.04);border-radius:var(--radius-md);margin-bottom:24px;" id="detail-pricing"></div>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <button class="btn btn-primary" id="buy-btn" onclick="confirmPurchase()">
+          🛒 Buy Now — Pay with Wallet
+        </button>
+        <button class="btn btn-secondary" onclick="addToWishlist()">♡ Add to Wishlist</button>
+      </div>
+      <p style="font-size:0.78rem;color:var(--text-muted);text-align:center;margin-top:12px;">🔐 Delivered to your email with encryption key</p>
+    </div>
+  </div>
+</div>
+
+<!-- Purchase Confirm Modal -->
+<div class="modal-overlay" id="modal-purchase">
+  <div class="purchase-confirm">
+    <div style="text-align:center;margin-bottom:24px;">
+      <div style="font-size:3rem;">🛒</div>
+      <h3>Confirm Purchase</h3>
+    </div>
+    <div id="purchase-summary"></div>
+    <div style="padding:16px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);border-radius:var(--radius-md);margin:20px 0;">
+      <div style="font-size:0.85rem;color:var(--text-muted);">Delivery Method</div>
+      <div style="font-size:0.78rem;color:var(--text-muted);margin-top:2px;">License Security: <span style="font-family:var(--font-mono);color:var(--accent-green);">Auto-Generated on Purchase (Multi-Factor AES-256)</span></div>
+    </div>
+    <div style="display:flex;gap:12px;">
+      <button class="btn btn-secondary" style="flex:1;justify-content:center;" onclick="SH.closeModal('modal-purchase')">Cancel</button>
+      <button class="btn btn-primary" style="flex:1;justify-content:center;" onclick="completePurchase()">✅ Confirm & Pay</button>
+    </div>
+  </div>
+</div>
+
+<div id="page-footer"></div>
+
+<script src="js/data.js"></script>
+<script src="js/api.js"></script>
+<script src="js/main.js"></script>
+<script src="js/layout.js"></script>
+<script>
+let filteredProducts = [];
+let currentProduct = null;
+let currentView = 'grid';
+let currentCategory = 'all';
+let maxPrice = 9999;
+
+function formatNum(n) {
+  if(n>=1e3) return (n/1e3).toFixed(1)+'k';
+  return n;
+}
+
+// ── Render Products ──────────────────────────────────────────
+function renderProducts(products) {
+  const grid = document.getElementById('products-grid');
+  const count = document.getElementById('result-count');
+  const paginationEl = document.getElementById('pagination');
+  if (paginationEl) paginationEl.style.display = products.length > 12 ? 'flex' : 'none';
+  if (!grid) return;
+  count.textContent = products.length;
+
+  if (products.length === 0) {
+    grid.innerHTML = `
+      <div class="glass-card" style="grid-column:1/-1;text-align:center;padding:64px 24px;border:1px dashed var(--border-outline);">
+        <div style="font-size:3rem;margin-bottom:16px;">📦</div>
+        <h3 style="margin-bottom:8px;">No Products Found</h3>
+        <p style="color:var(--text-muted);font-size:0.9rem;margin-bottom:24px;max-width:440px;margin-left:auto;margin-right:auto;">
+          The marketplace catalog is ready for creator listings. Be the first to publish a verified digital asset!
+        </p>
+        <a href="seller-dashboard.html" class="btn btn-primary">List Your First Product →</a>
+      </div>
+    `;
+    return;
+  }
+
+  grid.innerHTML = products.map(p => {
+    const discount = p.oldPrice ? Math.round((1 - p.price/p.oldPrice)*100) : 0;
+    return `
+    <div class="product-card" onclick="window.location.href='product-detail.html?id=${p.id}'">
+      <div class="product-card-thumb">
+        <img src="${p.thumb}" alt="${p.title}" loading="lazy">
+        <div class="product-card-overlay">
+          <div class="product-card-actions">
+            <a href="product-detail.html?id=${p.id}" class="btn btn-primary btn-sm" onclick="event.stopPropagation()">View Details →</a>
+          </div>
+        </div>
+        ${p.badge ? `<div class="badge badge-${p.badge==='Bestseller'?'orange':p.badge==='New'?'cyan':p.badge==='Hot'?'pink':'purple'}" style="position:absolute;top:12px;left:12px;">${p.badge}</div>` : ''}
+        <div class="badge badge-blue" style="position:absolute;top:12px;right:12px;font-size:0.7rem;">${p.type}</div>
+      </div>
+      <div class="product-card-body">
+        <div class="product-card-category">${p.category}</div>
+        <div class="product-card-title">${p.title}</div>
+        <div class="product-card-meta">
+          <div class="product-card-author">
+            <img src="${p.author.avatar}" alt="${p.author.name}">
+            ${p.author.name}
+          </div>
+          <div class="product-card-stats">
+            <div class="product-card-stat">★ ${p.rating}</div>
+            <div class="product-card-stat">(${p.reviews})</div>
+          </div>
+        </div>
+        <div class="tag-cloud">
+          ${p.tags.slice(0,3).map(t=>`<span class="tag">${t}</span>`).join('')}
+        </div>
+      </div>
+      <div class="product-card-footer">
+        <div class="product-card-price">
+          <div class="price"><span class="currency">₹</span>${p.price.toLocaleString('en-IN')}</div>
+          ${p.oldPrice ? `<div style="display:flex;gap:8px;align-items:center;margin-top:2px;"><span class="price-old">₹${p.oldPrice.toLocaleString('en-IN')}</span><span class="price-discount">-${discount}%</span></div>` : ''}
+        </div>
+        <div style="display:flex;gap:6px;">
+          <button class="btn btn-outline btn-sm" onclick="event.stopPropagation();window.addToCart('${p.id}')" title="Add to Cart">🛒</button>
+          <a href="checkout.html?id=${p.id}" class="btn btn-primary btn-sm" onclick="event.stopPropagation()">Buy ₹${p.price.toLocaleString('en-IN')}</a>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── Filters ──────────────────────────────────────────────────
+function applyFilters() {
+  let products = [...SmartHubData.products];
+  if (currentCategory !== 'all') products = products.filter(p => p.category === currentCategory);
+  products = products.filter(p => p.price <= maxPrice);
+  filteredProducts = products;
+  renderProducts(products);
+}
+
+function filterByCategory(cat, el, isSidebar = false) {
+  currentCategory = cat;
+  // Update pills
+  document.querySelectorAll('.category-pill').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sidebar-option').forEach(o => o.classList.remove('active'));
+  if (el) el.classList.add('active');
+  applyFilters();
+}
+
+function filterByPrice(val) {
+  maxPrice = parseInt(val);
+  document.getElementById('price-max-label').textContent = `₹${parseInt(val).toLocaleString('en-IN')}`;
+  applyFilters();
+}
+
+function sortProducts(val) {
+  const products = [...filteredProducts];
+  if (val === 'latest') products.sort((a,b) => b.id.localeCompare(a.id));
+  else if (val === 'price-low') products.sort((a,b) => a.price - b.price);
+  else if (val === 'price-high') products.sort((a,b) => b.price - a.price);
+  else if (val === 'rating') products.sort((a,b) => b.rating - a.rating);
+  else products.sort((a,b) => b.sales - a.sales);
+  renderProducts(products);
+}
+
+function setSidebarActive(el) {
+  el.closest('.sidebar-options').querySelectorAll('.sidebar-option').forEach(o => o.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function setView(view) {
+  currentView = view;
+  const grid = document.getElementById('products-grid');
+  document.getElementById('grid-view-btn').classList.toggle('active', view === 'grid');
+  document.getElementById('list-view-btn').classList.toggle('active', view === 'list');
+  if (view === 'list') { grid.style.gridTemplateColumns = '1fr'; }
+  else { grid.style.gridTemplateColumns = ''; }
+}
+
+// ── Product Detail ───────────────────────────────────────────
+function openProductDetail(id) {
+  const product = SmartHubData.products.find(p => p.id === id);
+  if (!product) return;
+  currentProduct = product;
+
+  document.getElementById('detail-img').src = product.thumb;
+  document.getElementById('detail-img').alt = product.title;
+  document.getElementById('detail-cat').textContent = product.category;
+  document.getElementById('detail-title').textContent = product.title;
+  document.getElementById('detail-desc').textContent = product.description;
+  document.getElementById('detail-badge').innerHTML = product.badge ? `<span class="badge badge-orange">${product.badge}</span>` : '';
+  document.getElementById('detail-tags').innerHTML = product.tags.map(t=>`<span class="tag">${t}</span>`).join('');
+  document.getElementById('detail-meta').innerHTML = `
+    <img src="${product.author.avatar}" class="avatar avatar-sm" alt="${product.author.name}">
+    <span style="font-weight:600;font-size:0.9rem;">${product.author.name}</span>
+    <span class="badge badge-purple">★ ${product.rating} (${product.reviews})</span>
+    <span class="badge badge-green">💾 ${formatNum(product.sales)} sales</span>
+  `;
+  const discount = product.oldPrice ? Math.round((1 - product.price/product.oldPrice)*100) : 0;
+  let feePct = 2.0;
+  if (product.price >= 10000) feePct = 0.5;
+  else if (product.price >= 3000) feePct = 1.2;
+  else if (product.price >= 1000) feePct = 2.0;
+  else feePct = 3.0;
+  const platformFee = Math.round(product.price * (feePct / 100));
+  const statutoryTax = Math.round(platformFee * 0.18);
+  const total = product.price + platformFee + statutoryTax;
+
+  document.getElementById('detail-pricing').innerHTML = `
+    <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+      <div class="price price-large"><span class="currency">₹</span>${product.price.toLocaleString('en-IN')}</div>
+      ${product.oldPrice ? `<span class="price-old" style="font-size:1.1rem;">₹${product.oldPrice.toLocaleString('en-IN')}</span><span class="price-discount">Save ${discount}%</span>` : ''}
+    </div>
+    <div style="font-size:0.82rem;color:var(--text-muted);margin-top:8px;">
+      Total: <strong style="color:var(--text-primary);">₹${total.toLocaleString('en-IN')}</strong> (incl. ${feePct}% platform fee + 18% GST)
+    </div>
+    <div style="font-size:0.75rem;color:var(--accent-green);margin-top:2px;">
+      ✓ 0% fee on wallet deposits · Fees apply only on purchases &amp; sales
+    </div>
+  `;
+  document.getElementById('buy-btn').textContent = `🛒 Buy Now — ₹${total.toLocaleString('en-IN')}`;
+  document.getElementById('product-detail-overlay').classList.add('active');
+}
+
+function closeProductDetail(e) {
+  if (!e || e.target === document.getElementById('product-detail-overlay')) {
+    document.getElementById('product-detail-overlay').classList.remove('active');
+  }
+}
+
+function confirmPurchase() {
+  if (!currentProduct) return;
+  let feePct = 2.0;
+  if (currentProduct.price >= 10000) feePct = 0.5;
+  else if (currentProduct.price >= 3000) feePct = 1.2;
+  else if (currentProduct.price >= 1000) feePct = 2.0;
+  else feePct = 3.0;
+  const platformFee = Math.round(currentProduct.price * (feePct / 100));
+  const statutoryTax = Math.round(platformFee * 0.18);
+  const total = currentProduct.price + platformFee + statutoryTax;
+
+  document.getElementById('purchase-summary').innerHTML = `
+    <div style="display:flex;gap:12px;padding:16px;background:rgba(255,255,255,0.04);border-radius:var(--radius-md);">
+      <img src="${currentProduct.thumb}" style="width:64px;height:48px;border-radius:8px;object-fit:cover;">
+      <div style="flex:1;">
+        <div style="font-weight:700;font-size:0.92rem;">${currentProduct.title}</div>
+        <div style="font-size:0.8rem;color:var(--text-muted);">by ${currentProduct.author.name}</div>
+        <div style="color:var(--text-primary);font-weight:700;margin-top:4px;">Base Price: ₹${currentProduct.price.toLocaleString('en-IN')}</div>
+      </div>
+    </div>
+    <div style="margin-top:12px;padding:12px 14px;background:var(--bg-card);border:1px solid var(--border-outline-subtle);border-radius:var(--radius-xs);font-size:0.82rem;">
+      <div style="display:flex;justify-content:space-between;color:var(--text-secondary);margin-bottom:4px;">
+        <span>Platform Fee (${feePct}%):</span>
+        <span style="font-family:var(--font-mono);">₹${platformFee.toLocaleString('en-IN')}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;color:var(--text-secondary);margin-bottom:6px;">
+        <span>Statutory Tax (18% GST):</span>
+        <span style="font-family:var(--font-mono);">₹${statutoryTax.toLocaleString('en-IN')}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-weight:800;color:var(--accent-green);border-top:1px dashed var(--border-outline);padding-top:6px;font-size:0.95rem;">
+        <span>Total Payable:</span>
+        <span style="font-family:var(--font-mono);">₹${total.toLocaleString('en-IN')}</span>
+      </div>
+    </div>
+    <div style="font-size:0.75rem;color:var(--text-muted);text-align:center;margin-top:8px;">
+      0% fee to add money to wallet. Platform fees + tax apply only during purchase &amp; sale transactions.
+    </div>
+  `;
+  SH.openModal('modal-purchase');
+}
+
+function quickBuy(id) {
+  const product = SmartHubData.products.find(p => p.id === id);
+  if (!product) return;
+  currentProduct = product;
+  confirmPurchase();
+}
+
+function addToWishlist() {
+  SH.showToast('Added to wishlist! ♥', 'success');
+}
+
+function completePurchase() {
+  if (!currentProduct) return;
+  SH.closeModal('modal-purchase');
+  SH.showToast(`Purchase successful! Check your email for the encryption key 🔐`, 'success');
+  document.getElementById('product-detail-overlay').classList.remove('active');
+}
+
+// ── Top Sellers ──────────────────────────────────────────────
+function renderTopSellers() {
+  const el = document.getElementById('top-sellers');
+  if (!el) return;
+  el.innerHTML = `
+    <div style="font-size:0.8rem;color:var(--text-muted);padding:8px 0;">
+      Rankings will populate as creator sales activate!
+    </div>
+  `;
+}
+
+// ── Init ─────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  const user = (window.getCurrentUser && window.getCurrentUser());
+  document.querySelectorAll('.wallet-display').forEach(el => {
+    el.textContent = `₹${(user ? user.walletBalance || 0 : 0).toLocaleString('en-IN')}`;
+  });
+
+  filteredProducts = [...SmartHubData.products];
+  renderProducts(filteredProducts);
+  renderTopSellers();
+
+  // Check URL params
+  const params = new URLSearchParams(window.location.search);
+  const cat = params.get('cat');
+  const id = params.get('id');
+  const query = params.get('q');
+  const filter = params.get('filter');
+
+  if (query) {
+    const q = query.toLowerCase();
+    filteredProducts = SmartHubData.products.filter(p =>
+      p.title.toLowerCase().includes(q) ||
+      p.category.toLowerCase().includes(q) ||
+      (p.tags && p.tags.some(t => t.toLowerCase().includes(q))) ||
+      (p.description && p.description.toLowerCase().includes(q))
+    );
+    renderProducts(filteredProducts);
+    SH.showToast(`Showing search results for "${query}"`, 'info');
+  } else if (filter === 'sale') {
+    filteredProducts = SmartHubData.products.filter(p => p.oldPrice);
+    renderProducts(filteredProducts);
+    SH.showToast('Showing discounted products on sale', 'info');
+  } else if (cat && cat !== 'all') {
+    const pill = document.querySelector(`[data-cat="${cat}"]`);
+    filterByCategory(cat, pill);
+  }
+
+  if (id) {
+    setTimeout(() => openProductDetail(id), 500);
+  }
+
+  // Live backend sync
+  if (window.SmartHubAPI) {
+    window.SmartHubAPI.getProducts().then(prods => {
+      if (prods && prods.length > 0) {
+        filteredProducts = [...prods];
+        applyFilters();
+      }
+    }).catch(() => {});
+  }
+});
+</script>
+</body>
+</html>

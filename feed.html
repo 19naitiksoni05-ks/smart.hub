@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Feed — Smart Hub | Posts, Projects & Developer Stories</title>
+  <meta name="description" content="Discover developer stories, project launches, tutorials, and community posts. LinkedIn meets Instagram for Indian developers.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📰</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/cards.css">
+  <link rel="stylesheet" href="css/pages.css">
+  <style>
+    .feed-page { min-height: 100vh; background: var(--bg-primary); }
+    .create-post-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px; margin-bottom: 24px; }
+    .create-post-top { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+    .create-post-input { flex: 1; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: var(--radius-full); padding: 10px 18px; color: var(--text-primary); font-family: var(--font-primary); font-size: 0.92rem; cursor: pointer; outline: none; }
+    .create-post-input:focus { border-color: var(--accent-purple); }
+    .create-post-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .post-action { display: flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: var(--radius-full); font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: var(--transition-fast); background: rgba(255,255,255,0.04); border: 1px solid var(--border); color: var(--text-secondary); }
+    .post-action:hover { background: rgba(255,255,255,0.08); color: var(--text-primary); }
+    .feed-left-sidebar { display: flex; flex-direction: column; gap: 16px; position: sticky; top: calc(var(--header-h) + 24px); height: fit-content; }
+    .sidebar-profile-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+    .sidebar-profile-cover { height: 72px; background: var(--grad-primary); }
+    .sidebar-profile-body { padding: 0 16px 16px; }
+    .sidebar-profile-avatar { width: 56px; height: 56px; border-radius: 50%; border: 3px solid var(--bg-card); margin-top: -28px; object-fit: cover; }
+    .sidebar-profile-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 16px; }
+    .sidebar-stat { text-align: center; padding: 10px; background: rgba(255,255,255,0.04); border-radius: var(--radius-sm); }
+    .sidebar-stat-val { font-weight: 800; font-size: 1.1rem; }
+    .sidebar-stat-lbl { font-size: 0.72rem; color: var(--text-muted); }
+    .trending-tag { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); cursor: pointer; }
+    .trending-tag:last-child { border-bottom: none; }
+    .trending-tag:hover .trending-tag-name { color: var(--accent-purple); }
+    .trending-tag-name { font-weight: 600; font-size: 0.88rem; }
+    .trending-tag-count { font-size: 0.78rem; color: var(--text-muted); }
+    .story-strip { display: flex; gap: 12px; margin-bottom: 24px; overflow-x: auto; padding-bottom: 4px; }
+    .story-item { display: flex; flex-direction: column; align-items: center; gap: 6px; flex-shrink: 0; cursor: pointer; }
+    .story-ring { padding: 2px; background: var(--grad-primary); border-radius: 50%; }
+    .story-ring.viewed { background: rgba(255,255,255,0.15); }
+    .story-ring img { display: block; border: 2px solid var(--bg-primary); border-radius: 50%; }
+    .story-name { font-size: 0.72rem; color: var(--text-secondary); max-width: 60px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .post-full-modal { background: var(--bg-secondary); border: 1px solid var(--glass-border); border-radius: var(--radius-xl); width: 100%; max-width: 640px; max-height: 90vh; overflow-y: auto; }
+    .comment-item { display: flex; gap: 10px; padding: 10px 0; }
+    .comment-bubble { background: rgba(255,255,255,0.04); border-radius: var(--radius-md); padding: 10px 14px; flex: 1; }
+    .comment-author { font-weight: 700; font-size: 0.85rem; margin-bottom: 4px; }
+    .comment-text { font-size: 0.88rem; color: var(--text-secondary); }
+    @media(max-width:1024px) { .feed-layout { grid-template-columns: 1fr 280px; } .feed-left-sidebar { display:none; } }
+    @media(max-width:768px) { .feed-layout { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+<div id="page-header"></div>
+
+<div class="feed-page">
+  <div class="container">
+    <div class="feed-layout" style="padding-top:32px;">
+
+      <!-- ── Left Sidebar ─────────────────────────────────────── -->
+      <aside class="feed-left-sidebar">
+        <div class="sidebar-profile-card">
+          <div class="sidebar-profile-cover"></div>
+          <div class="sidebar-profile-body">
+            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=user&backgroundColor=6366f1" id="feed-user-avatar" class="sidebar-profile-avatar" alt="User">
+            <div style="margin-top:8px;">
+              <div style="font-weight:800;font-size:1rem;" id="feed-user-name">Developer</div>
+              <div style="font-size:0.78rem;color:var(--text-muted);" id="feed-user-handle">@developer · Full Stack Builder</div>
+              <div style="margin-top:4px;" class="badge badge-purple" id="feed-user-level">Level 1 — Builder</div>
+            </div>
+            <div class="sidebar-profile-stats">
+              <div class="sidebar-stat">
+                <div class="sidebar-stat-val gradient-text" id="feed-user-posts">0</div>
+                <div class="sidebar-stat-lbl">Posts</div>
+              </div>
+              <div class="sidebar-stat">
+                <div class="sidebar-stat-val gradient-text" id="feed-user-followers">0</div>
+                <div class="sidebar-stat-lbl">Followers</div>
+              </div>
+              <div class="sidebar-stat">
+                <div class="sidebar-stat-val" id="feed-user-xp">0</div>
+                <div class="sidebar-stat-lbl">XP</div>
+              </div>
+              <div class="sidebar-stat">
+                <div class="sidebar-stat-val" style="color:var(--accent-green);" id="feed-user-earned">₹0</div>
+                <div class="sidebar-stat-lbl">Earned</div>
+              </div>
+            </div>
+            <a href="profile.html" class="btn btn-secondary btn-sm" style="width:100%;justify-content:center;margin-top:12px;">View Profile</a>
+          </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="glass-card" style="padding:16px;">
+          <h5 style="font-size:0.85rem;margin-bottom:12px;">Quick Links</h5>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <a href="marketplace.html" style="font-size:0.88rem;color:var(--text-secondary);display:flex;align-items:center;gap:8px;transition:var(--transition-fast);" onmouseover="this.style.color='var(--accent-purple)'" onmouseout="this.style.color='var(--text-secondary)'">🛒 My Products</a>
+            <a href="challenges.html" style="font-size:0.88rem;color:var(--text-secondary);display:flex;align-items:center;gap:8px;" onmouseover="this.style.color='var(--accent-purple)'" onmouseout="this.style.color='var(--text-secondary)'">🏆 Challenges</a>
+            <a href="wallet.html" style="font-size:0.88rem;color:var(--text-secondary);display:flex;align-items:center;gap:8px;" onmouseover="this.style.color='var(--accent-purple)'" onmouseout="this.style.color='var(--text-secondary)'">💰 Wallet</a>
+            <a href="community.html" style="font-size:0.88rem;color:var(--text-secondary);display:flex;align-items:center;gap:8px;" onmouseover="this.style.color='var(--accent-purple)'" onmouseout="this.style.color='var(--text-secondary)'">💬 Community</a>
+          </div>
+        </div>
+      </aside>
+
+      <!-- ── Main Feed ─────────────────────────────────────────── -->
+      <main>
+        <!-- Stories Strip -->
+        <div class="story-strip" id="stories-strip">
+          <div class="story-item" onclick="SH.showToast('Stories feature coming soon!','info')">
+            <div style="width:60px;height:60px;border-radius:50%;background:var(--grad-primary);display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;">+</div>
+            <span class="story-name">Add Story</span>
+          </div>
+          <!-- Rendered by JS -->
+        </div>
+
+        <!-- Feed Tabs -->
+        <div style="margin-bottom:20px;" data-tabs>
+          <div class="tabs" style="max-width:360px;">
+            <button class="tab active" data-tab="all">🌐 All</button>
+            <button class="tab" data-tab="following">👥 Following</button>
+            <button class="tab" data-tab="projects">📦 Projects</button>
+          </div>
+        </div>
+
+        <!-- Create Post -->
+        <div class="create-post-card">
+          <div class="create-post-top">
+            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=user&backgroundColor=6366f1" id="create-post-avatar" class="avatar avatar-md" style="border-radius:50%;" alt="You">
+            <input class="create-post-input" type="text" placeholder="Share a project, tip, or thought…" onclick="openCreatePost()" readonly>
+          </div>
+          <div class="create-post-actions">
+            <div class="post-action" onclick="openCreatePost()">🖼️ Photo</div>
+            <div class="post-action" onclick="openCreatePost()">📦 Project</div>
+            <div class="post-action" onclick="openCreatePost()">📝 Article</div>
+            <div class="post-action" onclick="openCreatePost()">🏆 Achievement</div>
+          </div>
+        </div>
+
+        <!-- Posts Feed -->
+        <div id="posts-feed">
+          <!-- Rendered by JS -->
+        </div>
+
+        <div style="text-align:center;padding:20px;">
+          <button class="btn btn-secondary" onclick="SH.showToast('Loading more posts…','info')">Load More Posts</button>
+        </div>
+      </main>
+
+      <!-- ── Right Sidebar ─────────────────────────────────────── -->
+      <aside style="display:flex;flex-direction:column;gap:16px;position:sticky;top:calc(var(--header-h) + 24px);height:fit-content;">
+
+        <!-- Trending Tags -->
+        <div class="glass-card" style="padding:16px;">
+          <h5 style="font-size:0.88rem;margin-bottom:16px;">🔥 Trending Today</h5>
+          <div id="trending-tags">
+            <div class="trending-tag"><div><div class="trending-tag-name">#ReactJS</div><div class="trending-tag-count">Web Apps & UI</div></div><span class="badge badge-purple">Hot</span></div>
+            <div class="trending-tag"><div><div class="trending-tag-name">#FlutterDev</div><div class="trending-tag-count">Mobile Dev</div></div></div>
+            <div class="trending-tag"><div><div class="trending-tag-name">#SmartHubChallenge</div><div class="trending-tag-count">Dev Challenges</div></div><span class="badge badge-cyan">New</span></div>
+            <div class="trending-tag"><div><div class="trending-tag-name">#IndianDev</div><div class="trending-tag-count">Community</div></div></div>
+            <div class="trending-tag"><div><div class="trending-tag-name">#OpenSource</div><div class="trending-tag-count">Code Showcase</div></div></div>
+            <div class="trending-tag"><div><div class="trending-tag-name">#AITools</div><div class="trending-tag-count">AI & ML</div></div></div>
+          </div>
+        </div>
+
+        <!-- People to Follow -->
+        <div class="glass-card" style="padding:16px;">
+          <h5 style="font-size:0.88rem;margin-bottom:16px;">👤 People to Follow</h5>
+          <div id="people-follow" style="display:flex;flex-direction:column;gap:12px;"></div>
+        </div>
+
+        <!-- Active Challenges -->
+        <div class="glass-card" style="padding:16px;">
+          <h5 style="font-size:0.88rem;margin-bottom:12px;">🏆 Active Challenges</h5>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <div style="padding:10px;background:rgba(139,92,246,0.1);border-radius:var(--radius-md);border:1px solid rgba(139,92,246,0.2);">
+              <div style="font-weight:700;font-size:0.85rem;">Git &amp; VCS Architecture</div>
+              <div style="font-size:0.75rem;color:var(--text-muted);">0 participants · 150 XP</div>
+              <div class="progress-bar" style="margin-top:8px;height:4px;"><div class="progress-fill" data-progress="0"></div></div>
+            </div>
+            <a href="challenges.html" class="btn btn-secondary btn-sm" style="width:100%;justify-content:center;">View All Challenges</a>
+          </div>
+        </div>
+      </aside>
+
+    </div>
+  </div>
+</div>
+
+<!-- Create Post Modal -->
+<div class="modal-overlay" id="modal-create-post">
+  <div class="modal" style="max-width:580px;">
+    <div class="modal-header">
+      <h3>Create Post</h3>
+      <span class="modal-close" onclick="SH.closeModal('modal-create-post')">✕</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+      <img id="modal-post-avatar" src="https://api.dicebear.com/7.x/avataaars/svg?seed=user&backgroundColor=6366f1" class="avatar avatar-md" style="border-radius:50%;">
+      <div>
+        <div style="font-weight:700;" id="modal-post-author">Developer</div>
+        <select class="filter-select" style="margin-top:4px;padding:4px 24px 4px 8px;font-size:0.78rem;">
+          <option>🌐 Public</option>
+          <option>👥 Followers</option>
+          <option>🔒 Only Me</option>
+        </select>
+      </div>
+    </div>
+    <textarea class="input" rows="5" placeholder="What's on your mind? Share a project, tip, or achievement…" id="post-text" style="resize:none;border-radius:var(--radius-md);"></textarea>
+    <div style="display:flex;gap:8px;margin:12px 0;flex-wrap:wrap;">
+      <button class="post-action" onclick="SH.showToast('Photo attached!','success')">🖼️ Photo</button>
+      <button class="post-action" onclick="SH.showToast('Project linked!','success')">📦 Link Project</button>
+      <button class="post-action" onclick="SH.showToast('Tag added!','info')">#️⃣ Add Tags</button>
+    </div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="createPost()">Post 🚀</button>
+  </div>
+</div>
+
+<!-- Post Detail Modal -->
+<div class="modal-overlay" id="modal-post-detail">
+  <div class="post-full-modal">
+    <div style="padding:20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;">
+      <h4>Post</h4>
+      <span class="modal-close" onclick="SH.closeModal('modal-post-detail')">✕</span>
+    </div>
+    <div id="post-detail-content" style="padding:20px;"></div>
+    <div style="padding:0 20px 20px;">
+      <h5 style="margin-bottom:12px;font-size:0.88rem;">Comments</h5>
+      <div id="post-comments"></div>
+      <div style="display:flex;gap:10px;margin-top:12px;">
+        <img id="comment-current-avatar" src="https://api.dicebear.com/7.x/avataaars/svg?seed=user&backgroundColor=6366f1" class="avatar avatar-sm" style="border-radius:50%;">
+        <div class="chat-input-wrap" style="flex:1;">
+          <input type="text" placeholder="Add a comment…" id="comment-input" style="background:transparent;border:none;outline:none;color:var(--text-primary);font-family:var(--font-primary);width:100%;" onkeydown="if(event.key==='Enter')addComment()">
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="addComment()">Post</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="page-footer"></div>
+
+<script src="js/data.js"></script>
+<script src="js/api.js"></script>
+<script src="js/main.js"></script>
+<script src="js/layout.js"></script>
+<script>
+
+const storyUsers = [];
+const peopleToFollow = [];
+const feedComments = [];
+
+function renderStories() {
+  const strip = document.getElementById('stories-strip');
+  if (!strip) return;
+  const addStory = strip.children[0];
+  storyUsers.forEach(s => {
+    const el = document.createElement('div');
+    el.className = 'story-item';
+    el.onclick = () => SH.showToast(`Viewing ${s.name}'s story`, 'info');
+    el.innerHTML = `
+      <div class="story-ring ${s.viewed ? 'viewed' : ''}">
+        <img src="${s.avatar}" width="56" height="56" style="border-radius:50%;" alt="${s.name}">
+      </div>
+      <span class="story-name">${s.name}</span>`;
+    strip.appendChild(el);
+  });
+}
+
+function renderPosts() {
+  const feed = document.getElementById('posts-feed');
+  if (!feed) return;
+  const list = SmartHubData.posts || [];
+  if (list.length === 0) {
+    feed.innerHTML = `
+      <div class="glass-card" style="padding:48px 24px;text-align:center;color:var(--text-muted);border:1px dashed var(--border);">
+        <div style="font-size:2.5rem;margin-bottom:12px;">📰</div>
+        <h4 style="margin-bottom:8px;">No Feed Posts Yet</h4>
+        <p style="font-size:0.88rem;margin-bottom:16px;">Be the first developer to share a code release, milestone, or tip with the community!</p>
+        <button class="btn btn-primary btn-sm" onclick="openCreatePost()">Create First Post ✍️</button>
+      </div>
+    `;
+    return;
+  }
+  feed.innerHTML = list.map(post => `
+    <div class="post-card" id="post-${post.id}">
+      <!-- Author -->
+      <div class="post-header">
+        <img src="${post.author.avatar}" class="avatar avatar-md" alt="${post.author.name}" style="border-radius:50%;">
+        <div class="post-author-info">
+          <div class="post-author-name">
+            ${post.author.name}
+            ${post.author.verified ? '<span class="badge badge-purple" style="font-size:0.65rem;padding:2px 6px;">✓</span>' : ''}
+          </div>
+          <div class="post-time">${post.author.username} · ${post.time} ago</div>
+        </div>
+      </div>
+
+      <!-- Body -->
+      <div class="post-body">
+        <p class="post-text">${post.content.replace(/\n/g, '<br>')}</p>
+        ${post.image ? `<div class="post-image"><img src="${post.image}" alt="Post image" loading="lazy"></div>` : ''}
+        <div class="post-tags">
+          ${(post.tags || []).map(t => `<span class="tag">#${t}</span>`).join('')}
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div style="padding:8px 20px;display:flex;gap:24px;font-size:0.82rem;color:var(--text-muted);border-top:1px solid var(--border);">
+        <span>❤️ ${post.likes} likes</span>
+        <span>💬 ${post.comments} comments</span>
+        <span>🔄 ${post.shares} shares</span>
+      </div>
+
+      <!-- Actions -->
+      <div class="post-actions">
+        <button class="post-action-btn" onclick="toggleLike(this, ${post.likes})">
+          <span>♡</span> Like
+        </button>
+        <button class="post-action-btn" onclick="openPostDetail('${post.id}')">
+          <span>💬</span> Comment
+        </button>
+        <button class="post-action-btn" onclick="SH.showToast('Link copied!','success')">
+          <span>🔗</span> Share
+        </button>
+        <button class="post-action-btn" onclick="SH.showToast('Post saved!','success')">
+          <span>🔖</span> Save
+        </button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderPeopleToFollow() {
+  const el = document.getElementById('people-follow');
+  if (!el) return;
+  if (peopleToFollow.length === 0) {
+    el.innerHTML = `<div style="font-size:0.8rem;color:var(--text-muted);padding:8px 0;">New developers will appear here as they register!</div>`;
+    return;
+  }
+  el.innerHTML = peopleToFollow.map(p => `
+    <div style="display:flex;align-items:center;gap:10px;">
+      <img src="${p.avatar}" class="avatar avatar-sm" style="border-radius:50%;" alt="${p.name}">
+      <div style="flex:1;">
+        <div style="font-weight:700;font-size:0.85rem;">${p.name}</div>
+        <div style="font-size:0.72rem;color:var(--text-muted);">${p.role} · ${p.followers}</div>
+      </div>
+      <button class="btn btn-secondary btn-sm" onclick="SH.showToast('Following ${p.name}!','success')">Follow</button>
+    </div>
+  `).join('');
+}
+
+async function toggleLike(btn, currentLikes, postId = 'post001') {
+  const isLiked = btn.classList.toggle('liked');
+  const span = btn.querySelector('span');
+  if (span) span.textContent = isLiked ? '♥' : '♡';
+  const newCount = isLiked ? currentLikes + 1 : currentLikes;
+  btn.innerHTML = `<span>${isLiked ? '♥' : '♡'}</span> ${newCount}`;
+
+  if (window.SmartHubAPI) {
+    try {
+      await window.SmartHubAPI.likePost(postId);
+    } catch (e) {}
+  }
+}
+
+function openCreatePost() {
+  const user = (window.getCurrentUser && window.getCurrentUser()) || { name: 'Developer', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=user&backgroundColor=6366f1' };
+  const av = document.getElementById('modal-post-avatar');
+  const nm = document.getElementById('modal-post-author');
+  if (av) av.src = user.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(user.name)}&backgroundColor=6366f1`;
+  if (nm) nm.textContent = user.name;
+  SH.openModal('modal-create-post');
+}
+
+async function createPost() {
+  const text = document.getElementById('post-text').value.trim();
+  if (!text) { SH.showToast('Please write something!', 'error'); return; }
+
+  if (window.SmartHubAPI) {
+    try {
+      const res = await window.SmartHubAPI.createPost(text, ['Launch', 'DevLife']);
+      if (res && res.success) {
+        SH.showToast('Post published to developer feed! 🚀', 'success');
+        SH.closeModal('modal-create-post');
+        document.getElementById('post-text').value = '';
+        if (res.post) {
+          SmartHubData.posts.unshift(res.post);
+          renderPosts();
+        }
+        return;
+      }
+    } catch (e) {}
+  }
+
+  SH.showToast('Post published! 🚀', 'success');
+  SH.closeModal('modal-create-post');
+  document.getElementById('post-text').value = '';
+}
+
+function openPostDetail(id) {
+  const post = SmartHubData.posts.find(p => p.id === id);
+  if (!post) return;
+  const user = (window.getCurrentUser && window.getCurrentUser());
+  const cav = document.getElementById('comment-current-avatar');
+  if (cav && user && user.avatar) cav.src = user.avatar;
+  document.getElementById('post-detail-content').innerHTML = `
+    <div style="display:flex;gap:12px;margin-bottom:12px;">
+      <img src="${post.author.avatar}" class="avatar avatar-md" style="border-radius:50%;">
+      <div>
+        <div style="font-weight:700;">${post.author.name}</div>
+        <div style="font-size:0.78rem;color:var(--text-muted);">${post.author.username} · ${post.time} ago</div>
+      </div>
+    </div>
+    <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:12px;">${post.content.replace(/\n/g,'<br>')}</p>
+    ${post.image ? `<img src="${post.image}" style="width:100%;border-radius:var(--radius-md);margin-bottom:12px;">` : ''}
+  `;
+  document.getElementById('post-comments').innerHTML = feedComments.map(c => `
+    <div class="comment-item">
+      <img src="${c.avatar}" class="avatar avatar-sm" style="border-radius:50%;">
+      <div class="comment-bubble">
+        <div class="comment-author">${c.user}</div>
+        <div class="comment-text">${c.text}</div>
+      </div>
+    </div>`).join('');
+  SH.openModal('modal-post-detail');
+}
+
+function addComment() {
+  const input = document.getElementById('comment-input');
+  const text = input.value.trim();
+  if (!text) return;
+  const commentsEl = document.getElementById('post-comments');
+  const user = (window.getCurrentUser && window.getCurrentUser()) || { name: 'Verified Developer' };
+  const newComment = document.createElement('div');
+  newComment.className = 'comment-item animate-fadeInUp';
+  newComment.innerHTML = `
+    <img src="${user.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=user'}" class="avatar avatar-sm" style="border-radius:50%;">
+    <div class="comment-bubble">
+      <div class="comment-author">${user.name} (You)</div>
+      <div class="comment-text">${text}</div>
+    </div>`;
+  commentsEl.appendChild(newComment);
+  input.value = '';
+  SH.showToast('Comment posted!', 'success');
+}
+
+async function loadBackendFeed() {
+  try {
+    if (window.SmartHubAPI) {
+      const data = await window.SmartHubAPI.getFeedPosts();
+      if (data && data.posts) {
+        SmartHubData.posts = data.posts;
+        renderPosts();
+      }
+    }
+  } catch (e) {}
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const user = (window.getCurrentUser && window.getCurrentUser());
+  if (user) {
+    const nameEl = document.getElementById('feed-user-name');
+    if (nameEl) nameEl.textContent = user.name;
+    const handleEl = document.getElementById('feed-user-handle');
+    if (handleEl) handleEl.textContent = `${user.username || '@' + user.name.toLowerCase()} · Full Stack Developer`;
+    const avatarEl = document.getElementById('feed-user-avatar');
+    if (avatarEl) avatarEl.src = user.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(user.name)}&backgroundColor=6366f1`;
+    const createAvatar = document.getElementById('create-post-avatar');
+    if (createAvatar) createAvatar.src = user.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(user.name)}&backgroundColor=6366f1`;
+    const xpEl = document.getElementById('feed-user-xp');
+    if (xpEl) xpEl.textContent = (user.xp || 0).toLocaleString('en-IN');
+    const earnEl = document.getElementById('feed-user-earned');
+    if (earnEl) earnEl.textContent = `₹${(user.walletBalance || 0).toLocaleString('en-IN')}`;
+    const levelEl = document.getElementById('feed-user-level');
+    if (levelEl) levelEl.textContent = `Level ${user.level || 1} — Builder`;
+  }
+
+  renderStories();
+  renderPosts();
+  renderPeopleToFollow();
+  loadBackendFeed();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Challenges — Smart Hub | Grow Your Dev Skills</title>
+  <meta name="description" content="Take on real-world project challenges, earn XP, badges, and climb the leaderboard. Like LeetCode but for full-stack developers.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏆</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/cards.css">
+  <link rel="stylesheet" href="css/pages.css">
+  <style>
+    .challenges-page { padding-top: var(--header-h); min-height: 100vh; }
+    .challenges-hero-inner { background: linear-gradient(135deg, rgba(139,92,246,0.2), rgba(6,182,212,0.15)); border: 1px solid rgba(139,92,246,0.3); border-radius: var(--radius-xl); padding: 56px; margin-bottom: 48px; position: relative; overflow: hidden; }
+    .xp-bar { background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; margin-bottom: 20px; }
+    .badges-grid { display: flex; gap: 12px; flex-wrap: wrap; }
+    .badge-item { width: 56px; height: 56px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; transition: var(--transition-fast); position: relative; }
+    .badge-item:hover { transform: scale(1.15); }
+    .badge-item.locked { filter: grayscale(1) opacity(0.4); cursor: not-allowed; }
+    .badge-item.locked:hover { transform: none; }
+    .challenge-detail-panel { background: var(--bg-secondary); border: 1px solid var(--glass-border); border-radius: var(--radius-xl); padding: 32px; max-width: 640px; width: 100%; max-height: 90vh; overflow-y: auto; }
+    .skill-tag { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: var(--radius-full); background: rgba(255,255,255,0.06); border: 1px solid var(--border); font-size: 0.82rem; font-weight: 500; }
+    .challenges-layout { display: grid; grid-template-columns: 1fr 300px; gap: 32px; }
+    .filter-chip { padding: 6px 16px; border-radius: var(--radius-full); font-size: 0.85rem; font-weight: 600; cursor: pointer; border: 1px solid var(--border); background: rgba(255,255,255,0.04); color: var(--text-secondary); transition: var(--transition-fast); }
+    .filter-chip.active { background: var(--grad-primary); border-color: transparent; color: #fff; }
+    .filter-chip:hover:not(.active) { border-color: var(--border-accent); color: var(--text-primary); }
+    .streak-indicator { display: flex; gap: 4px; }
+    .streak-day { width: 12px; height: 12px; border-radius: 3px; }
+    .streak-day.done { background: var(--accent-green); }
+    .streak-day.today { background: var(--accent-purple); animation: pulse-glow 1.5s infinite; }
+    .streak-day.missed { background: rgba(255,255,255,0.1); }
+    @media(max-width:1024px) { .challenges-layout { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+<div id="page-header"></div>
+
+<div class="challenges-page">
+  <div class="container">
+
+    <!-- ── Hero ──────────────────────────────────────────────── -->
+    <div class="challenges-hero-inner" style="margin-top:32px;">
+      <div class="bg-glow bg-glow-purple" style="width:400px;height:400px;right:-100px;top:-100px;"></div>
+      <div style="display:grid;grid-template-columns:1fr auto;gap:40px;align-items:center;position:relative;z-index:1;">
+        <div>
+          <div class="hero-eyebrow" style="display:inline-flex;margin-bottom:16px;">🏆 Developer Challenges</div>
+          <h1 style="font-size:2.5rem;margin-bottom:12px;">Dev Skill <span class="gradient-text">Challenges</span></h1>
+          <p style="max-width:500px;">Smart Hub challenges are practical, production-level problems. Build real features, submit code, earn XP, and unlock badges for your profile.</p>
+
+          <div style="display:flex;gap:32px;margin-top:24px;flex-wrap:wrap;">
+            <div>
+              <div style="font-size:2rem;font-weight:900;color:var(--accent-purple);" id="chal-user-xp">0</div>
+              <div style="font-size:0.82rem;color:var(--text-muted);">Your XP</div>
+            </div>
+            <div>
+              <div style="font-size:2rem;font-weight:900;color:var(--accent-orange);" id="chal-user-badges">0</div>
+              <div style="font-size:0.82rem;color:var(--text-muted);">Badges Earned</div>
+            </div>
+            <div>
+              <div style="font-size:2rem;font-weight:900;color:var(--accent-green);" id="chal-user-streak">🔥 0</div>
+              <div style="font-size:0.82rem;color:var(--text-muted);">Day Streak</div>
+            </div>
+            <div>
+              <div style="font-size:2rem;font-weight:900;color:var(--accent-cyan);" id="chal-user-rank">Unranked</div>
+              <div style="font-size:0.82rem;color:var(--text-muted);">Leaderboard Rank</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Weekly Streak -->
+        <div class="glass-card" style="padding:24px;text-align:center;min-width:220px;">
+          <div style="font-weight:700;margin-bottom:12px;">This Week's Streak 🔥</div>
+          <div class="streak-indicator" style="justify-content:center;margin-bottom:12px;">
+            <div class="streak-day today" title="Mon"></div>
+            <div class="streak-day missed" title="Tue"></div>
+            <div class="streak-day missed" title="Wed"></div>
+            <div class="streak-day missed" title="Thu"></div>
+            <div class="streak-day missed" title="Fri"></div>
+            <div class="streak-day missed" title="Sat"></div>
+            <div class="streak-day missed" title="Sun"></div>
+          </div>
+          <div style="font-size:0.82rem;color:var(--text-muted);">Mon — Sun</div>
+          <div style="margin-top:16px;font-size:0.88rem;">Next challenge in:</div>
+          <div style="font-size:1.4rem;font-weight:900;color:var(--accent-purple);font-family:var(--font-mono);" id="countdown">06:42:18</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── XP Progress ────────────────────────────────────────── -->
+    <div class="xp-bar" data-animate>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <div>
+          <div style="font-weight:800;font-size:1.1rem;" id="chal-level-title">Level 1 — Novice Builder <span class="badge badge-purple">🌱</span></div>
+          <div style="font-size:0.82rem;color:var(--text-muted);" id="chal-xp-needed">500 XP to Level 2</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-weight:800;color:var(--accent-purple);" id="chal-xp-ratio">0 / 500 XP</div>
+          <div style="font-size:0.78rem;color:var(--text-muted);" id="chal-xp-percent">0% to next level</div>
+        </div>
+      </div>
+      <div class="progress-bar" style="height:8px;">
+        <div class="progress-fill" data-progress="0"></div>
+      </div>
+    </div>
+
+    <!-- ── Filter Row ─────────────────────────────────────────── -->
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:32px;" data-animate>
+      <div class="filter-chip active" onclick="filterChallenges('all', this)">All Challenges</div>
+      <div class="filter-chip" onclick="filterChallenges('easy', this)">Easy</div>
+      <div class="filter-chip" onclick="filterChallenges('medium', this)">Medium</div>
+      <div class="filter-chip" onclick="filterChallenges('hard', this)">Hard</div>
+    </div>
+
+    <!-- ── Main Layout ────────────────────────────────────────── -->
+    <div class="challenges-layout">
+
+      <!-- Challenge Cards -->
+      <div>
+        <div id="challenges-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:20px;"></div>
+      </div>
+
+      <!-- Right Sidebar -->
+      <aside style="display:flex;flex-direction:column;gap:20px;">
+
+        <!-- Leaderboard -->
+        <div class="glass-card" style="padding:20px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+            <h4>🏆 Leaderboard</h4>
+            <button class="btn btn-ghost btn-sm" onclick="toggleLeaderboardTimeframe(this)" style="font-size:0.75rem;padding:2px 8px;border:1px solid var(--border-outline);cursor:pointer;">🗓️ All Time</button>
+          </div>
+          <div id="full-leaderboard"></div>
+        </div>
+
+        <!-- My Badges -->
+        <div class="glass-card" style="padding:20px;">
+          <h4 style="margin-bottom:16px;">🎖️ My Badges</h4>
+          <div class="badges-grid" id="badges-grid"></div>
+          <div style="margin-top:12px;font-size:0.78rem;color:var(--text-muted);" id="badges-status-desc">Complete challenges to unlock your first badges!</div>
+        </div>
+
+        <!-- How Challenges Work -->
+        <div class="glass-card" style="padding:20px;">
+          <h4 style="margin-bottom:16px;">📖 How Challenges Work</h4>
+          <div style="display:flex;flex-direction:column;gap:12px;">
+            <div style="display:flex;gap:10px;align-items:flex-start;">
+              <div style="width:28px;height:28px;border-radius:50%;background:var(--grad-primary);display:flex;align-items:center;justify-content:center;font-size:0.78rem;font-weight:700;color:#fff;flex-shrink:0;">1</div>
+              <div style="font-size:0.85rem;color:var(--text-secondary);">Browse active challenges filtered by difficulty and tech category</div>
+            </div>
+            <div style="display:flex;gap:10px;align-items:flex-start;">
+              <div style="width:28px;height:28px;border-radius:50%;background:var(--grad-warm);display:flex;align-items:center;justify-content:center;font-size:0.78rem;font-weight:700;color:#fff;flex-shrink:0;">2</div>
+              <div style="font-size:0.85rem;color:var(--text-secondary);">Build the solution locally and submit your code before the deadline</div>
+            </div>
+            <div style="display:flex;gap:10px;align-items:flex-start;">
+              <div style="width:28px;height:28px;border-radius:50%;background:var(--grad-green);display:flex;align-items:center;justify-content:center;font-size:0.78rem;font-weight:700;color:#fff;flex-shrink:0;">3</div>
+              <div style="font-size:0.85rem;color:var(--text-secondary);">Pass automated code audits to earn verified XP and badges</div>
+            </div>
+            <div style="display:flex;gap:10px;align-items:flex-start;">
+              <div style="width:28px;height:28px;border-radius:50%;background:var(--grad-cool);display:flex;align-items:center;justify-content:center;font-size:0.78rem;font-weight:700;color:#fff;flex-shrink:0;">4</div>
+              <div style="font-size:0.85rem;color:var(--text-secondary);">Climb the national leaderboard and unlock creator perks</div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<!-- Challenge Detail Modal -->
+<div class="modal-overlay" id="modal-challenge">
+  <div class="challenge-detail-panel">
+    <button onclick="SH.closeModal('modal-challenge')" style="background:rgba(255,255,255,0.1);border:none;color:white;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;margin-left:auto;margin-bottom:16px;">✕</button>
+    <div id="challenge-detail-content"></div>
+  </div>
+</div>
+
+<div id="page-footer"></div>
+
+<script src="js/data.js"></script>
+<script src="js/api.js"></script>
+<script src="js/main.js"></script>
+<script src="js/layout.js"></script>
+<script>
+
+const badges = [
+  { emoji: '🌱', name: 'First Step', earned: false },
+  { emoji: '⚛️', name: 'React Pro', earned: false },
+  { emoji: '🚀', name: 'Launcher', earned: false },
+  { emoji: '🔥', name: 'On Fire', earned: false },
+  { emoji: '💪', name: 'Persistent', earned: false },
+  { emoji: '🧠', name: 'Problem Solver', earned: false },
+  { emoji: '🌐', name: 'Fullstack', earned: false },
+  { emoji: '🤖', name: 'AI Builder', earned: false },
+  { emoji: '🏆', name: 'Champion', earned: false },
+];
+
+function renderChallengeCard(ch) {
+  const difficulties = ['', 'Easy', 'Medium', 'Hard'];
+  const diffColors = ['', 'var(--accent-green)', 'var(--accent-orange)', 'var(--accent-pink)'];
+  const diffBg = ['', 'rgba(16,185,129,0.1)', 'rgba(245,158,11,0.1)', 'rgba(236,72,153,0.1)'];
+  const filled = ch.difficulty;
+
+  return `
+    <div class="challenge-card" onclick="openChallengeDetail('${ch.id}')">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <div class="badge" style="background:${diffBg[filled]};color:${diffColors[filled]};border:1px solid ${diffColors[filled]}4D;">
+          ${filled === 1 ? '🟢' : filled === 2 ? '🟡' : '🔴'} ${difficulties[filled]}
+        </div>
+        ${ch.completed ? '<div class="badge badge-green">✅ Completed</div>' : '<div class="badge badge-purple">🔓 Open</div>'}
+      </div>
+
+      <div>
+        <h4 style="margin-bottom:6px;font-size:1rem;">${ch.title}</h4>
+        <p style="font-size:0.83rem;display:-webkit-box;-webkit-line-clamp:2;line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${ch.desc}</p>
+      </div>
+
+      <div class="challenge-meta">
+        <span class="badge badge-cyan">📦 ${ch.category}</span>
+        <span class="badge badge-orange">⚡ ${ch.xp} XP</span>
+      </div>
+
+      <div style="display:flex;flex-wrap:wrap;gap:6px;">
+        ${ch.skills.map(s => `<span class="tag">${s}</span>`).join('')}
+      </div>
+
+      <div class="challenge-progress-section">
+        <div class="challenge-progress-label">
+          <span>👥 ${ch.participants.toLocaleString('en-IN')} participants</span>
+          <span>📅 Due: ${new Date(ch.deadline).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" data-progress="${ch.participants > 0 ? Math.min(100, Math.floor(ch.participants * 2)) : 0}" style="background:${ch.completed ? 'var(--grad-green)' : 'var(--grad-primary)'}"></div>
+        </div>
+      </div>
+
+      <button class="btn ${ch.completed ? 'btn-secondary' : 'btn-primary'} btn-sm" style="align-self:flex-start;" onclick="event.stopPropagation();${ch.completed ? "SH.showToast('Challenge already completed!','info')" : `openChallengeDetail('${ch.id}')`}">
+        ${ch.completed ? '✓ Completed' : '🎯 View Challenge'}
+      </button>
+    </div>`;
+}
+
+function renderChallenges(challenges) {
+  const grid = document.getElementById('challenges-grid');
+  if (grid) grid.innerHTML = challenges.map(renderChallengeCard).join('');
+  // Re-init progress bars
+  document.querySelectorAll('.progress-fill[data-progress]').forEach(bar => {
+    setTimeout(() => { bar.style.width = bar.dataset.progress + '%'; }, 300);
+  });
+}
+
+function filterChallenges(cat, el) {
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  const challenges = SmartHubData.challenges || [];
+  let filtered = challenges;
+  if (cat === 'easy') filtered = challenges.filter(c => c.difficulty === 1);
+  else if (cat === 'medium') filtered = challenges.filter(c => c.difficulty === 2);
+  else if (cat === 'hard') filtered = challenges.filter(c => c.difficulty === 3);
+  else if (cat !== 'all') filtered = challenges.filter(c => c.category.toLowerCase() === cat.toLowerCase());
+  renderChallenges(filtered.length ? filtered : challenges);
+}
+
+function openChallengeDetail(id) {
+  const ch = SmartHubData.challenges.find(c => c.id === id);
+  if (!ch) return;
+  const difficulties = ['', 'Easy', 'Medium', 'Hard'];
+  const diffColors = ['', 'var(--accent-green)', 'var(--accent-orange)', 'var(--accent-pink)'];
+
+  document.getElementById('challenge-detail-content').innerHTML = `
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap;">
+      <h2 style="font-size:1.5rem;flex:1;">${ch.title}</h2>
+      <div class="badge" style="color:${diffColors[ch.difficulty]};">${difficulties[ch.difficulty]}</div>
+      <div class="badge badge-orange">⚡ ${ch.xp} XP</div>
+    </div>
+
+    <p style="margin-bottom:24px;line-height:1.7;">${ch.desc}</p>
+
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px;">
+      ${ch.skills.map(s => `<span class="skill-tag">💻 ${s}</span>`).join('')}
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;">
+      <div style="padding:16px;background:rgba(255,255,255,0.04);border-radius:var(--radius-md);">
+        <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:4px;">Category</div>
+        <div style="font-weight:700;">📦 ${ch.category}</div>
+      </div>
+      <div style="padding:16px;background:rgba(255,255,255,0.04);border-radius:var(--radius-md);">
+        <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:4px;">Deadline</div>
+        <div style="font-weight:700;">📅 ${new Date(ch.deadline).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'long' })}</div>
+      </div>
+      <div style="padding:16px;background:rgba(255,255,255,0.04);border-radius:var(--radius-md);">
+        <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:4px;">Participants</div>
+        <div style="font-weight:700;">👥 ${ch.participants.toLocaleString('en-IN')}</div>
+      </div>
+      <div style="padding:16px;background:rgba(255,255,255,0.04);border-radius:var(--radius-md);">
+        <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:4px;">Reward</div>
+        <div style="font-weight:700;color:var(--accent-orange);">⚡ ${ch.xp} XP + Badge</div>
+      </div>
+    </div>
+
+    <div style="padding:20px;background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.2);border-radius:var(--radius-md);margin-bottom:24px;">
+      <h5 style="color:var(--accent-purple);margin-bottom:8px;">📋 Challenge Requirements</h5>
+      <ul style="list-style:none;display:flex;flex-direction:column;gap:6px;">
+        <li style="font-size:0.88rem;color:var(--text-secondary);">✅ Follow clean architecture and repository directory conventions</li>
+        <li style="font-size:0.88rem;color:var(--text-secondary);">✅ Pass automated AST security scans with zero leaked secrets</li>
+        <li style="font-size:0.88rem;color:var(--text-secondary);">✅ Include unit tests with build pass criteria</li>
+        <li style="font-size:0.88rem;color:var(--text-secondary);">✅ Comply with SHA-256 package checksum verification</li>
+      </ul>
+    </div>
+
+    ${ch.completed ? 
+      '<div class="badge badge-green" style="font-size:1rem;padding:12px 20px;margin-bottom:16px;">✅ Challenge Completed! Earned ' + ch.xp + ' XP</div>' :
+      `<button class="btn btn-primary btn-lg" style="width:100%;justify-content:center;" onclick="acceptChallenge('${ch.id}')">🚀 Accept Challenge</button>`
+    }
+    <p style="font-size:0.78rem;color:var(--text-muted);text-align:center;margin-top:8px;">You have until ${new Date(ch.deadline).toLocaleDateString('en-IN')} to submit</p>
+  `;
+  SH.openModal('modal-challenge');
+}
+
+async function acceptChallenge(id) {
+  SH.closeModal('modal-challenge');
+  if (window.SmartHubAPI) {
+    try {
+      const res = await window.SmartHubAPI.submitChallenge(id, '// Solution submission');
+      if (res && res.success) {
+        SH.showToast(res.message, 'success');
+        const ch = SmartHubData.challenges.find(c => c.id === id);
+        if (ch) ch.completed = true;
+        renderChallenges(SmartHubData.challenges);
+        return;
+      }
+    } catch (e) {}
+  }
+  SH.showToast('Challenge accepted! 🚀 Check your profile for submission guide.', 'success');
+}
+
+function renderLeaderboard() {
+  const el = document.getElementById('full-leaderboard');
+  if (!el) return;
+  const list = SmartHubData.leaderboard || [];
+  if (list.length === 0) {
+    el.innerHTML = `
+      <div style="text-align:center;padding:36px;color:var(--text-muted);font-size:0.85rem;">
+        <div style="font-size:2rem;margin-bottom:8px;">🏆</div>
+        Leaderboard rankings will open as developers submit challenge solutions!
+      </div>
+    `;
+    return;
+  }
+  el.innerHTML = list.map((u, i) => {
+    const medals = ['🥇', '🥈', '🥉'];
+    const rankClass = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : '';
+    return `
+      <div class="leaderboard-row ${u.isYou ? 'active' : ''}" style="${u.isYou ? 'background:rgba(139,92,246,0.1);border-radius:var(--radius-sm);' : ''}">
+        <div class="leaderboard-rank ${rankClass}">${i < 3 ? medals[i] : '#' + u.rank}</div>
+        <div class="leaderboard-user">
+          <img src="${u.avatar}" class="avatar avatar-sm" style="border-radius:50%;" alt="${u.name}">
+          <div>
+            <div style="font-size:0.85rem;font-weight:${u.isYou ? '900' : '600'};">${u.name}${u.isYou ? ' (You)' : ''}</div>
+            <div style="font-size:0.72rem;color:var(--text-muted);">${u.location}</div>
+          </div>
+        </div>
+        <div class="leaderboard-score">${u.xp.toLocaleString('en-IN')} XP</div>
+      </div>`;
+  }).join('');
+}
+
+function renderBadges() {
+  const el = document.getElementById('badges-grid');
+  if (!el) return;
+  el.innerHTML = badges.map(b => `
+    <div class="badge-item ${!b.earned ? 'locked' : ''}" title="${b.name}" style="background:rgba(255,255,255,0.06);border:1px solid var(--border);">
+      ${b.emoji}
+    </div>`).join('');
+}
+
+// Countdown timer
+function updateCountdown() {
+  const now = new Date();
+  const next = new Date();
+  next.setHours(23, 59, 59, 0);
+  const diff = next - now;
+  const h = String(Math.floor(diff / 3600000)).padStart(2, '0');
+  const m = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
+  const s = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
+  const el = document.getElementById('countdown');
+  if (el) el.textContent = `${h}:${m}:${s}`;
+}
+
+async function loadBackendLeaderboard() {
+  try {
+    if (window.SmartHubAPI) {
+      const res = await window.SmartHubAPI.getLeaderboard();
+      if (res && res.leaderboard) {
+        SmartHubData.leaderboard = res.leaderboard;
+        renderLeaderboard();
+      }
+    }
+  } catch (e) {}
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const user = (window.getCurrentUser && window.getCurrentUser());
+  if (user) {
+    const xp = user.xp || 0;
+    const xpEl = document.getElementById('chal-user-xp');
+    if (xpEl) xpEl.textContent = xp.toLocaleString('en-IN');
+    const ratioEl = document.getElementById('chal-xp-ratio');
+    if (ratioEl) ratioEl.textContent = `${xp} / 500 XP`;
+  }
+
+  renderChallenges(SmartHubData.challenges);
+  renderLeaderboard();
+  renderBadges();
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+  loadBackendLeaderboard();
+});
+
+function toggleLeaderboardTimeframe(btn) {
+  const isAll = btn.textContent.includes('All Time');
+  if (isAll) {
+    btn.textContent = '🗓️ This Month';
+    renderLeaderboard();
+    if (window.SH) SH.showToast('Filtered: October 2026 Monthly Leaderboard 📅', 'success');
+  } else {
+    btn.textContent = '🗓️ All Time';
+    renderLeaderboard();
+    if (window.SH) SH.showToast('Showing All-Time Hall of Fame 🏆', 'info');
+  }
+}
+</script>
+</body>
+</html>

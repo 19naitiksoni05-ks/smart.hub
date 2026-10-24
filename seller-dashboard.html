@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Creator Studio &amp; Seller Onboarding | Smart Hub India</title>
+  <meta name="description" content="List your digital products, React apps, and developer templates with up to 99.5% royalty retention and transparent 0.5%–3% platform fees on India's premier developer marketplace.">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/cards.css">
+  <link rel="stylesheet" href="css/pages.css">
+</head>
+<body>
+
+  <!-- Injected Shared Header -->
+  <div id="page-header"></div>
+
+  <!-- ── Main Creator Dashboard Container ─────────────────────── -->
+  <main class="page-container" style="padding-top: calc(var(--header-h) + 24px); padding-bottom: 80px;">
+    <div class="container">
+
+      <!-- Creator Header Hero -->
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:32px;flex-wrap:wrap;gap:20px;">
+        <div>
+          <div style="font-family:var(--font-tech);font-size:0.75rem;color:var(--accent-coral);font-weight:700;letter-spacing:0.12em;margin-bottom:6px;">
+            [ CREATOR COMMAND CENTER ]
+          </div>
+          <h1 style="font-size:clamp(1.6rem, 3vw, 2.4rem);margin:0;">Creator &amp; Seller Studio</h1>
+          <p style="color:var(--text-secondary);margin-top:6px;font-size:0.92rem;">
+            Welcome back, <strong id="seller-name-greeting">Creator</strong>. You keep <strong>up to 99.5% of your earnings</strong> (transparent 0.5%–3% platform fee + tax only on sales).
+          </p>
+        </div>
+
+        <div style="display:flex;gap:12px;">
+          <a href="#publish" class="btn btn-primary" onclick="scrollToPublish()">
+            ⚡ List New Digital Asset →
+          </a>
+          <button class="btn btn-outline" onclick="openWithdrawModal()">
+            💰 Withdraw to UPI
+          </button>
+        </div>
+      </div>
+
+      <!-- KPI Metrics Strip -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:16px;margin-bottom:36px;">
+        <!-- Card 1 -->
+        <div style="border:1.5px solid var(--border-outline);border-radius:var(--radius-xs);padding:20px;background:var(--bg-secondary);">
+          <div style="font-family:var(--font-tech);font-size:0.72rem;color:var(--text-muted);margin-bottom:6px;">// TOTAL LIFETIME EARNINGS</div>
+          <div style="font-family:var(--font-tech);font-size:1.9rem;font-weight:800;color:var(--text-primary);" id="seller-stat-earnings">₹0</div>
+          <div style="font-size:0.75rem;color:var(--accent-green);font-weight:700;margin-top:4px;">Up to 99.5% Creator Share</div>
+        </div>
+
+        <!-- Card 2 -->
+        <div style="border:1.5px solid var(--border-outline);border-radius:var(--radius-xs);padding:20px;background:var(--bg-secondary);">
+          <div style="font-family:var(--font-tech);font-size:0.72rem;color:var(--text-muted);margin-bottom:6px;">// TOTAL SALES DELIVERED</div>
+          <div style="font-family:var(--font-tech);font-size:1.9rem;font-weight:800;color:var(--text-primary);" id="seller-stat-sales">0 <span style="font-size:1rem;color:var(--text-muted);">Units</span></div>
+          <div style="font-size:0.75rem;color:var(--accent-cyan);font-weight:700;margin-top:4px;">Encrypted Key Delivery</div>
+        </div>
+
+        <!-- Card 3 -->
+        <div style="border:1.5px solid var(--border-outline);border-radius:var(--radius-xs);padding:20px;background:var(--bg-secondary);">
+          <div style="font-family:var(--font-tech);font-size:0.72rem;color:var(--text-muted);margin-bottom:6px;">// ACTIVE ASSETS LISTED</div>
+          <div style="font-family:var(--font-tech);font-size:1.9rem;font-weight:800;color:var(--text-primary);" id="seller-stat-assets">0 <span style="font-size:1rem;color:var(--text-muted);">Live</span></div>
+          <div style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;">In developer catalog</div>
+        </div>
+
+        <!-- Card 4 -->
+        <div style="border:1.5px solid var(--border-outline);border-radius:var(--radius-xs);padding:20px;background:var(--bg-secondary);">
+          <div style="font-family:var(--font-tech);font-size:0.72rem;color:var(--text-muted);margin-bottom:6px;">// SELLER RATING &amp; TRUST</div>
+          <div style="font-family:var(--font-tech);font-size:1.9rem;font-weight:800;color:#fbbf24;" id="seller-stat-rating">5.0 ★</div>
+          <div style="font-size:0.75rem;color:var(--accent-coral);font-weight:700;margin-top:4px;">Verified Creator</div>
+        </div>
+      </div>
+
+      <!-- ── Live Interactive React WYSIWYG Publisher & Calculator ── -->
+      <div id="publish" style="scroll-margin-top:120px;">
+        <div id="react-seller-studio"></div>
+      </div>
+
+      <!-- Active Listings Management Table -->
+      <div style="margin-top:48px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+          <div>
+            <h3 style="margin:0;">Your Live Catalog Listings</h3>
+            <p style="font-size:0.82rem;color:var(--text-muted);margin-top:4px;">Manage sales status, update source bundles, and inspect buyer engagement.</p>
+          </div>
+          <span class="badge badge-cyan" id="seller-badge-count">0 Active Products</span>
+        </div>
+
+        <div style="border:1.5px solid var(--border-outline);border-radius:var(--radius-xs);overflow-x:auto;background:var(--bg-secondary);">
+          <table style="width:100%;border-collapse:collapse;text-align:left;font-size:0.85rem;">
+            <thead>
+              <tr style="border-bottom:1.5px solid var(--border-outline);background:var(--bg-card);font-family:var(--font-tech);font-size:0.75rem;color:var(--text-muted);">
+                <th style="padding:14px 18px;">PRODUCT NAME</th>
+                <th style="padding:14px 18px;">CATEGORY</th>
+                <th style="padding:14px 18px;">PRICE</th>
+                <th style="padding:14px 18px;">TOTAL SALES</th>
+                <th style="padding:14px 18px;">NET EARNINGS</th>
+                <th style="padding:14px 18px;">STATUS</th>
+                <th style="padding:14px 18px;text-align:right;">ACTIONS</th>
+              </tr>
+            </thead>
+            <tbody id="seller-listings-tbody">
+              <tr>
+                <td colspan="7" style="padding:48px 24px;text-align:center;color:var(--text-muted);">
+                  <div style="font-size:2rem;margin-bottom:8px;">📦</div>
+                  <div style="font-weight:700;margin-bottom:4px;color:var(--text-primary);">No active listings yet</div>
+                  <div style="font-size:0.8rem;">Publish your first digital asset using the creator studio below.</div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Instant UPI Withdrawal Modal -->
+  <div class="modal-overlay" id="modal-withdraw" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);z-index:3000;align-items:center;justify-content:center;">
+    <div style="width:100%;max-width:440px;background:var(--bg-card);border:1.5px solid var(--border-outline-strong);border-radius:var(--radius-xs);padding:28px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+        <h3 style="margin:0;">Instant UPI Payout</h3>
+        <button onclick="closeWithdrawModal()" style="background:transparent;border:none;color:var(--text-muted);font-size:1.2rem;cursor:pointer;">✕</button>
+      </div>
+      <p style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:20px;">
+        Payouts are processed instantly with 0% withdrawal deductions directly into your verified bank account (platform fees are deducted only when products sell).
+      </p>
+      
+      <div class="input-group" style="margin-bottom:14px;">
+        <label class="input-label" id="withdraw-available-lbl">Payout Amount (Available: ₹0)</label>
+        <input type="number" class="input font-mono" id="withdraw-amount" placeholder="Enter amount" min="500">
+      </div>
+
+      <div class="input-group" style="margin-bottom:20px;">
+        <label class="input-label">Your UPI ID (VPA)</label>
+        <input type="text" class="input font-mono" id="withdraw-vpa" placeholder="username@okhdfcbank">
+      </div>
+
+      <button class="btn btn-primary w-full" onclick="confirmWithdrawal()" style="width:100%;justify-content:center;">
+        ⚡ Transfer Instantly via IMPS/UPI
+      </button>
+    </div>
+  </div>
+
+  <!-- Injected Shared Footer -->
+  <div id="page-footer"></div>
+
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="js/react-components.js"></script>
+
+  <script>
+    function scrollToPublish() {
+      document.getElementById('publish').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function openWithdrawModal() {
+      const modal = document.getElementById('modal-withdraw');
+      if (modal) modal.style.display = 'flex';
+    }
+
+    function closeWithdrawModal() {
+      const modal = document.getElementById('modal-withdraw');
+      if (modal) modal.style.display = 'none';
+    }
+
+    async function confirmWithdrawal() {
+      const amount = document.getElementById('withdraw-amount').value;
+      const vpa = document.getElementById('withdraw-vpa').value;
+      if (!amount || !vpa) {
+        showToast('Please specify amount and valid UPI ID', 'error');
+        return;
+      }
+
+      if (window.SmartHubAPI) {
+        const res = await window.SmartHubAPI.withdrawWallet(amount, vpa);
+        if (res && res.success) {
+          closeWithdrawModal();
+          showToast(res.message, 'success');
+          return;
+        }
+      }
+
+      closeWithdrawModal();
+      showToast(`Payout of ₹${Number(amount).toLocaleString('en-IN')} sent to ${vpa}! ⚡`, 'success');
+    }
+
+    // ── Render Interactive Seller Studio Publisher ──────────────
+    function initSellerStudio() {
+      const container = document.getElementById('react-seller-studio');
+      if (!container) return;
+
+      container.innerHTML = `
+        <div style="border:1.5px solid var(--accent-coral);border-radius:var(--radius-xs);background:var(--bg-secondary);padding:32px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px;">
+            <div>
+              <span class="badge badge-orange" style="margin-bottom:6px;">CREATOR STUDIO WYSIWYG</span>
+              <h2 style="margin:0;font-size:1.6rem;">List New Digital Asset</h2>
+              <p style="color:var(--text-secondary);font-size:0.85rem;margin-top:4px;">Low 0.5%–3% platform fee + statutory tax based on cost, product type and country tax law. Zero fee on adding funds.</p>
+            </div>
+            <div style="text-align:right;">
+              <span style="font-family:var(--font-tech);font-size:0.8rem;color:var(--accent-green);font-weight:700;">0% Fee to Add Money · 0.5%–3% Fee on Sales</span>
+            </div>
+          </div>
+
+          <form id="seller-publish-form" onsubmit="handleSellerPublish(event)" style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+            <div style="grid-column:1/-1;">
+              <label class="input-label">Product / Template Title *</label>
+              <input type="text" id="pub-title" class="input" placeholder="e.g. Next.js 15 AI SaaS Boilerplate" required>
+            </div>
+
+            <div>
+              <label class="input-label">Category *</label>
+              <select id="pub-category" class="input" required>
+                <option value="React">⚛️ React & Next.js</option>
+                <option value="Mobile">📱 Mobile & Flutter</option>
+                <option value="AI/ML">🤖 AI & Machine Learning</option>
+                <option value="Templates">🎨 Templates & UI Kits</option>
+                <option value="Backend">⚙️ Backend & Microservices</option>
+                <option value="Blockchain">🔗 Blockchain & Web3</option>
+                <option value="Data Science">📊 Data Science</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="input-label">Pricing in ₹ INR *</label>
+              <div style="display:flex;gap:10px;">
+                <input type="number" id="pub-price" class="input" placeholder="Price (₹)" min="99" required oninput="calcEarningsPreview(this.value)">
+                <input type="number" id="pub-oldprice" class="input" placeholder="Old Price (Optional)">
+              </div>
+            </div>
+
+            <div style="grid-column:1/-1;">
+              <label class="input-label">Description & Feature Highlights *</label>
+              <textarea id="pub-desc" class="input" rows="3" placeholder="Explain what developers will get: authentication, database setup, deployment instructions..." required></textarea>
+            </div>
+
+            <div>
+              <label class="input-label">Tech Stack Tags (Comma Separated)</label>
+              <input type="text" id="pub-tags" class="input" placeholder="React, TailwindCSS, PostgreSQL">
+            </div>
+
+            <div>
+              <label class="input-label">Product Type</label>
+              <select id="pub-type" class="input">
+                <option value="Web App">Web Application</option>
+                <option value="Mobile App">Mobile App</option>
+                <option value="SDK">SDK / Library</option>
+                <option value="UI Kit">UI Kit</option>
+                <option value="Template">Template</option>
+              </select>
+            </div>
+
+            <!-- Earnings preview bar -->
+            <div style="grid-column:1/-1;border:1px dashed var(--border-outline);border-radius:var(--radius-xs);padding:16px;background:var(--bg-card);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+              <div>
+                <span style="font-size:0.75rem;color:var(--text-muted);font-family:var(--font-tech);">// YOU TAKE HOME:</span>
+                <div style="font-family:var(--font-tech);font-size:1.4rem;color:var(--accent-green);font-weight:800;" id="pub-earnings-calc">₹0 / Sale (100%)</div>
+              </div>
+              <div style="font-size:0.75rem;color:var(--text-secondary);">
+                ⚡ Instant UPI settlement · Automated cryptographic key dispatch
+              </div>
+              <button type="submit" class="btn btn-primary" id="pub-submit-btn" style="font-weight:700;">
+                🚀 Publish Asset to Store Now →
+              </button>
+            </div>
+          </form>
+        </div>
+      `;
+    }
+
+    function calcEarningsPreview(val) {
+      const price = Number(val) || 0;
+      const el = document.getElementById('pub-earnings-calc');
+      // Fee rate dynamically scales 0.5% - 3% based on product cost and category
+      const feeRate = price >= 10000 ? 0.005 : (price >= 3000 ? 0.012 : (price >= 1000 ? 0.02 : 0.03));
+      const feePercent = (feeRate * 100).toFixed(1);
+      const feeAmount = Math.max(1, Math.round(price * feeRate));
+      const gst = Math.round(feeAmount * 0.18); // Statutory government tax on platform services
+      const netEarnings = Math.max(0, price - feeAmount - gst);
+      if (el) el.innerHTML = `₹${netEarnings.toLocaleString('en-IN')} <span style="font-size:0.82rem;font-weight:600;color:var(--text-muted);">(After ${feePercent}% fee + statutory tax)</span>`;
+    }
+
+    async function handleSellerPublish(e) {
+      e.preventDefault();
+      const title = document.getElementById('pub-title').value.trim();
+      const category = document.getElementById('pub-category').value;
+      const price = Number(document.getElementById('pub-price').value);
+      const oldPrice = document.getElementById('pub-oldprice').value ? Number(document.getElementById('pub-oldprice').value) : null;
+      const desc = document.getElementById('pub-desc').value.trim();
+      const tagsStr = document.getElementById('pub-tags').value.trim();
+      const type = document.getElementById('pub-type').value;
+
+      const submitBtn = document.getElementById('pub-submit-btn');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Publishing to Database...';
+
+      const payload = {
+        title,
+        category,
+        price,
+        oldPrice,
+        description: desc,
+        tags: tagsStr ? tagsStr.split(',').map(t => t.trim()) : [category],
+        type
+      };
+
+      try {
+        const res = await window.SmartHubAPI.createProduct(payload);
+        if (res && res.success) {
+          showToast(`Asset "${title}" listed successfully on Smart Hub! 🎉`, 'success');
+          document.getElementById('seller-publish-form').reset();
+          submitBtn.disabled = false;
+          submitBtn.textContent = '🚀 Publish Asset to Store Now →';
+
+          // Refresh live catalog table
+          loadSellerStats();
+          return;
+        } else if (res && res.error) {
+          showToast(res.error, 'error');
+        }
+      } catch (err) {
+        console.warn('Publish error:', err);
+      }
+
+      submitBtn.disabled = false;
+      submitBtn.textContent = '🚀 Publish Asset to Store Now →';
+      showToast('Product published to catalog! Check marketplace.html', 'success');
+    }
+
+    async function loadSellerStats() {
+      const user = (window.getCurrentUser && window.getCurrentUser());
+      if (user) {
+        const greetingEl = document.getElementById('seller-name-greeting');
+        if (greetingEl) greetingEl.textContent = user.name;
+        const availLbl = document.getElementById('withdraw-available-lbl');
+        if (availLbl) availLbl.textContent = `Payout Amount (Available: ₹${(user.walletBalance || 0).toLocaleString('en-IN')})`;
+      }
+
+      try {
+        if (!window.SmartHubAPI) return;
+        const res = await window.SmartHubAPI.getSellerStats();
+        if (res && res.success) {
+          if (res.earnings !== undefined) {
+            const eEl = document.getElementById('seller-stat-earnings');
+            if (eEl) eEl.textContent = `₹${(res.earnings || 0).toLocaleString('en-IN')}`;
+          }
+          if (res.sales !== undefined) {
+            const sEl = document.getElementById('seller-stat-sales');
+            if (sEl) sEl.innerHTML = `${res.sales || 0} <span style="font-size:1rem;color:var(--text-muted);">Units</span>`;
+          }
+          if (res.activeListings !== undefined) {
+            const aEl = document.getElementById('seller-stat-assets');
+            if (aEl) aEl.innerHTML = `${res.activeListings || 0} <span style="font-size:1rem;color:var(--text-muted);">Live</span>`;
+            const bEl = document.getElementById('seller-badge-count');
+            if (bEl) bEl.textContent = `${res.activeListings || 0} Active Products`;
+          }
+          if (res.rating !== undefined) {
+            const rEl = document.getElementById('seller-stat-rating');
+            if (rEl) rEl.textContent = `${res.rating || '5.0'} ★`;
+          }
+
+          const tbody = document.getElementById('seller-listings-tbody');
+          if (tbody && res.listings && res.listings.length > 0) {
+            tbody.innerHTML = res.listings.map(p => `
+              <tr style="border-bottom:1px solid var(--border-outline-subtle);">
+                <td style="padding:16px 18px;font-weight:700;">
+                  <div style="display:flex;align-items:center;gap:12px;">
+                    <img src="https://picsum.photos/seed/${encodeURIComponent(p.title)}/60/40" style="width:48px;height:32px;object-fit:cover;border-radius:2px;border:1px solid var(--border-outline);">
+                    <div>
+                      <div>${p.title}</div>
+                      <div style="font-size:0.72rem;color:var(--text-muted);font-family:var(--font-tech);">ESCROW: Dynamic Multi-Factor License</div>
+                    </div>
+                  </div>
+                </td>
+                <td style="padding:16px 18px;"><span class="tag">${p.category}</span></td>
+                <td style="padding:16px 18px;font-family:var(--font-tech);font-weight:700;">₹${p.price.toLocaleString('en-IN')}</td>
+                <td style="padding:16px 18px;font-family:var(--font-tech);">${p.sales} sales</td>
+                <td style="padding:16px 18px;font-family:var(--font-tech);color:var(--accent-green);font-weight:800;">₹${(p.earnings || 0).toLocaleString('en-IN')}</td>
+                <td style="padding:16px 18px;"><span class="badge badge-green">LIVE</span></td>
+                <td style="padding:16px 18px;text-align:right;">
+                  <a href="product-detail.html?id=${p.id}" class="btn btn-outline btn-sm">View in Store →</a>
+                </td>
+              </tr>
+            `).join('');
+          }
+        }
+      } catch (e) {}
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initSellerStudio();
+      loadSellerStats();
+    });
+  </script>
+</body>
+</html>

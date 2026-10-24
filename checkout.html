@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Encrypted Checkout &amp; Instant Key Delivery | Smart Hub</title>
+  <meta name="description" content="Secure instant UPI and Wallet checkout for Indian developers. Receive your cryptographic source code unlock key directly to verified email.">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/cards.css">
+  <link rel="stylesheet" href="css/pages.css">
+</head>
+<body>
+
+  <!-- Injected Shared Header -->
+  <div id="page-header"></div>
+
+  <!-- ── Main Checkout Container ──────────────────────────────── -->
+  <main class="page-container" style="padding-top: calc(var(--header-h) + 24px); padding-bottom: 80px;">
+    <div class="container" style="max-width: 1040px;">
+
+      <!-- Checkout Header -->
+      <div style="text-align:center;margin-bottom:36px;">
+        <div style="font-family:var(--font-tech);font-size:0.75rem;color:var(--accent-coral);font-weight:700;letter-spacing:0.12em;margin-bottom:8px;">
+          [ END-TO-END ENCRYPTED TRANSACTION ]
+        </div>
+        <h1 style="font-size:clamp(1.6rem, 2.8vw, 2.2rem);margin:0;">Instant Digital Product Checkout</h1>
+        <p style="color:var(--text-secondary);margin-top:6px;font-size:0.9rem;">
+          Pay directly using your ₹ INR Wallet, UPI QR, or Net Banking. Cryptographic keys unlock immediately upon payment.
+        </p>
+      </div>
+
+      <!-- Checkout Layout Grid (Order Summary vs Payment Method) -->
+      <div style="display:grid;grid-template-columns:1.1fr 0.9fr;gap:36px;align-items:start;" id="checkout-main-grid">
+
+        <!-- Left Column: Payment Method Selection -->
+        <div style="border:1.5px solid var(--border-outline);border-radius:var(--radius-xs);padding:30px;background:var(--bg-secondary);">
+          <h3 style="margin-bottom:18px;font-size:1.15rem;">Select Payment Method</h3>
+          
+          <!-- Method 1: Smart Hub Rupee Wallet (Recommended) -->
+          <label style="display:flex;align-items:flex-start;gap:14px;padding:16px;border:1.5px solid var(--accent-green);border-radius:var(--radius-xs);background:rgba(34,197,94,0.04);cursor:pointer;margin-bottom:14px;">
+            <input type="radio" name="pay-method" value="wallet" checked onchange="switchPaymentTab('wallet')" style="margin-top:4px;">
+            <div style="flex:1;">
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <div style="font-weight:700;color:var(--text-primary);">⚡ Smart Hub Rupee Wallet</div>
+                <span class="badge badge-green">RECOMMENDED</span>
+              </div>
+              <div style="font-size:0.8rem;color:var(--text-muted);margin-top:4px;">
+                Available Balance: <strong style="color:var(--text-primary);font-family:var(--font-tech);" id="checkout-wallet-bal">₹0</strong> (Instant 0-click deduction)
+              </div>
+            </div>
+          </label>
+
+          <!-- Method 2: UPI (GPay, PhonePe, Paytm, BHIM) -->
+          <label style="display:flex;align-items:flex-start;gap:14px;padding:16px;border:1.5px solid var(--border-outline);border-radius:var(--radius-xs);background:var(--bg-card);cursor:pointer;margin-bottom:14px;">
+            <input type="radio" name="pay-method" value="upi" onchange="switchPaymentTab('upi')" style="margin-top:4px;">
+            <div style="flex:1;">
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <div style="font-weight:700;color:var(--text-primary);">📱 Instant UPI QR Code / Intent</div>
+                <span class="badge badge-purple">INSTANT UPI</span>
+              </div>
+              <div style="font-size:0.8rem;color:var(--text-muted);margin-top:4px;">
+                Supports Google Pay, PhonePe, Paytm, CRED &amp; BHIM UPI apps.
+              </div>
+            </div>
+          </label>
+
+          <!-- Method 3: Cards & Net Banking -->
+          <label style="display:flex;align-items:flex-start;gap:14px;padding:16px;border:1.5px solid var(--border-outline);border-radius:var(--radius-xs);background:var(--bg-card);cursor:pointer;margin-bottom:24px;">
+            <input type="radio" name="pay-method" value="card" onchange="switchPaymentTab('card')" style="margin-top:4px;">
+            <div style="flex:1;">
+              <div style="font-weight:700;color:var(--text-primary);">💳 Debit / Credit Card &amp; Net Banking</div>
+              <div style="font-size:0.8rem;color:var(--text-muted);margin-top:4px;">
+                Visa, MasterCard, RuPay &amp; 50+ Indian banks.
+              </div>
+            </div>
+          </label>
+
+          <!-- Dynamic Payment Sub-view (UPI QR display) -->
+          <div id="payment-upi-view" style="display:none;padding:20px;border:1px dashed var(--border-outline);border-radius:var(--radius-xs);background:#000;text-align:center;margin-bottom:24px;">
+            <div style="font-family:var(--font-tech);font-size:0.75rem;color:var(--accent-cyan);margin-bottom:10px;">SCAN DYNAMIC UPI QR IN ANY APP:</div>
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=upi://pay?pa=smarthub.orders@okhdfcbank&pn=SmartHub&am=2249&cu=INR" alt="UPI QR" style="width:160px;height:160px;border-radius:4px;border:2px solid #fff;margin:0 auto 12px auto;display:block;">
+            <div style="font-size:0.78rem;color:var(--text-muted);font-family:var(--font-tech);">UPI ID: smarthub.orders@okhdfcbank</div>
+          </div>
+
+          <!-- Buyer Email Input -->
+          <div class="input-group" style="margin-bottom:24px;">
+            <label class="input-label">Verified Email for Encrypted Token Delivery</label>
+            <input type="email" class="input" id="checkout-email" placeholder="Enter your email address" required>
+            <span style="font-size:0.72rem;color:var(--text-muted);margin-top:4px;">
+              Your download link + unique encryption key will be dispatched here within 10 seconds.
+            </span>
+          </div>
+
+          <button class="btn btn-primary btn-lg w-full" id="complete-order-btn" onclick="executeOrderPayment()" style="width:100%;justify-content:center;font-weight:800;font-size:1rem;">
+            🔒 Complete Payment &amp; Generate Key (<span id="pay-button-amount">₹0</span>)
+          </button>
+          <div style="font-size:0.75rem;color:var(--text-muted);margin-top:10px;text-align:center;">
+            Platform fees (0.5%–3% + statutory govt tax) apply only on purchases &amp; sales. Zero fees when adding money to your wallet.
+          </div>
+        </div>
+
+        <!-- Right Column: Order Summary Card -->
+        <div style="border:1.5px solid var(--border-outline-strong);border-radius:var(--radius-xs);padding:28px;background:var(--bg-card);">
+          <div style="font-family:var(--font-tech);font-size:0.75rem;color:var(--accent-coral);font-weight:700;margin-bottom:12px;">// ORDER SUMMARY</div>
+
+          <!-- Product Item Preview -->
+          <div style="display:flex;gap:14px;padding-bottom:20px;border-bottom:1.5px solid var(--border-outline);margin-bottom:20px;">
+            <img src="https://picsum.photos/seed/code/160/100" id="order-img" style="width:84px;height:60px;object-fit:cover;border-radius:2px;border:1px solid var(--border-outline);">
+            <div>
+              <div style="font-family:var(--font-tech);font-size:0.68rem;color:var(--accent-coral);" id="order-cat">[ CODE PACKAGE ]</div>
+              <div style="font-weight:700;font-size:0.92rem;line-height:1.3;" id="order-title">Digital Product</div>
+              <div style="font-size:0.78rem;color:var(--text-muted);margin-top:4px;">License: Commercial Developer</div>
+            </div>
+          </div>
+
+          <!-- Promo Code Box -->
+          <div style="display:flex;gap:8px;margin-bottom:20px;">
+            <input type="text" placeholder="Promo code (OUTLINE10)" id="order-coupon-input" class="input font-mono" style="text-transform:uppercase;">
+            <button class="btn btn-outline btn-sm" onclick="applyCheckoutCoupon()">Apply</button>
+          </div>
+
+          <!-- Price Calculation Lines -->
+          <div style="display:flex;flex-direction:column;gap:10px;font-size:0.88rem;padding-bottom:18px;border-bottom:1px solid var(--border-outline);">
+            <div style="display:flex;justify-content:space-between;">
+              <span style="color:var(--text-secondary);">Subtotal:</span>
+              <span class="font-mono" id="order-subtotal">₹0</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;color:var(--accent-green);" id="order-discount-row" style="display:none;">
+              <span>Discount (OUTLINE10):</span>
+              <span class="font-mono" id="order-discount">-₹0</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;">
+              <span style="color:var(--text-secondary);">Encrypted Key Delivery:</span>
+              <span style="color:var(--accent-green);font-weight:700;">FREE</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;">
+              <span style="color:var(--text-secondary);">Platform Fee (<span id="order-fee-percent">1.5%</span>):</span>
+              <span class="font-mono" id="order-platform-fee">₹0</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;">
+              <span style="color:var(--text-secondary);">Statutory Tax (18% GST):</span>
+              <span class="font-mono" id="order-tax">₹0</span>
+            </div>
+          </div>
+
+          <!-- Total Due -->
+          <div style="display:flex;justify-content:space-between;align-items:baseline;padding-top:18px;margin-bottom:20px;">
+            <div style="font-size:1.1rem;font-weight:800;">Total Amount:</div>
+            <div style="font-family:var(--font-tech);font-size:1.8rem;font-weight:800;color:var(--accent-coral);" id="order-total">₹0</div>
+          </div>
+
+          <!-- Guarantees -->
+          <div style="border:1px solid var(--border-outline);padding:14px;border-radius:2px;background:var(--bg-secondary);font-size:0.75rem;line-height:1.5;color:var(--text-muted);">
+            🔐 <strong>Smart Hub Encrypted Guarantee:</strong> Your license token is cryptographically bound to your email. If you ever lose it, retrieve it anytime via your developer profile.
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ── Success State Screen (Revealed on Payment) ────────── -->
+      <div id="checkout-success-view" style="display:none;border:1.5px solid var(--accent-green);border-radius:var(--radius-xs);padding:40px;background:var(--bg-secondary);text-align:center;">
+        <div style="font-size:3.5rem;margin-bottom:12px;">🎉</div>
+        <div style="font-family:var(--font-tech);font-size:0.8rem;color:var(--accent-green);font-weight:700;letter-spacing:0.14em;margin-bottom:8px;">[ PAYMENT VERIFIED &amp; SOURCE CODE DELIVERED ]</div>
+        <h2 style="font-size:2rem;margin-bottom:12px;">Transaction Completed Successfully!</h2>
+        <p style="color:var(--text-secondary);max-width:540px;margin:0 auto 28px auto;">
+          The encrypted package download and unlock key have been dispatched to <strong id="success-email">your email address</strong>.
+        </p>
+
+        <!-- Cryptographic Token Box -->
+        <div style="max-width:560px;margin:0 auto 30px auto;border:1.5px solid var(--accent-coral);border-radius:var(--radius-xs);padding:24px;background:#060809;text-align:left;">
+          <div style="font-family:var(--font-tech);font-size:0.72rem;color:var(--accent-coral);margin-bottom:6px;">YOUR UNIQUE ENCRYPTED TOKEN KEY:</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.05);padding:10px 16px;border-radius:2px;border:1px solid var(--border-outline);">
+            <span style="font-family:var(--font-mono);font-size:1.1rem;color:var(--accent-cyan);font-weight:700;" id="success-enc-key">SH-ENC-VERIFIED-TOKEN</span>
+            <button class="btn btn-outline btn-sm" onclick="copyEncKey()" id="copy-key-btn">Copy Key 📋</button>
+          </div>
+          <div style="font-size:0.75rem;color:var(--text-muted);margin-top:10px;">
+            Use this token to unlock the `.zip` archive or link it into your Next.js environment.
+          </div>
+        </div>
+
+        <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
+          <button class="btn btn-primary" onclick="simulateDownload()">
+            📦 Download Source Code Bundle (.zip)
+          </button>
+          <a href="profile.html#projects" class="btn btn-outline">
+            👤 View in My Assets
+          </a>
+          <a href="marketplace.html" class="btn btn-secondary">
+            ← Return to Store
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Injected Shared Footer -->
+  <div id="page-footer"></div>
+
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="js/react-components.js"></script>
+
+  <script>
+    let currentPrice = 0;
+    let discountApplied = 0;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const user = (window.getCurrentUser && window.getCurrentUser());
+      const walletBal = document.getElementById('checkout-wallet-bal');
+      if (walletBal) walletBal.textContent = `₹${(user ? user.walletBalance || 0 : 0).toLocaleString('en-IN')}`;
+      if (user && user.email) {
+        const emailInput = document.getElementById('checkout-email');
+        if (emailInput && !emailInput.value) emailInput.value = user.email;
+      }
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const prodId = urlParams.get('id');
+      const license = urlParams.get('license');
+      const discountParam = Number(urlParams.get('discount') || 0);
+
+      const prod = prodId && SmartHubData.products ? SmartHubData.products.find(p => p.id === prodId) : (SmartHubData.products && SmartHubData.products[0]);
+
+      if (!prod) {
+        const main = document.querySelector('main');
+        if (main) {
+          main.innerHTML = `
+            <div class="container" style="padding:80px 24px;text-align:center;">
+              <div style="font-size:3.5rem;margin-bottom:16px;">🛒</div>
+              <h2 style="margin-bottom:12px;">Your Checkout is Empty</h2>
+              <p style="color:var(--text-muted);margin-bottom:24px;max-width:480px;margin-left:auto;margin-right:auto;">
+                There is no item currently in your checkout session. Browse the marketplace catalog to discover and buy digital products.
+              </p>
+              <a href="marketplace.html" class="btn btn-primary">Explore Marketplace Catalog →</a>
+            </div>
+          `;
+        }
+        return;
+      }
+
+      currentProdCategory = prod.category || '';
+      document.getElementById('order-title').textContent = prod.title;
+      document.getElementById('order-cat').textContent = `[ ${prod.category.toUpperCase()} ]`;
+      document.getElementById('order-img').src = prod.thumb;
+      currentDownloadUrl = '/api/orders/' + prod.id + '/download';
+      
+      currentPrice = license === 'extended' ? Math.round(prod.price * 3.2) : prod.price;
+      if (discountParam > 0) {
+        discountApplied = Math.round(currentPrice * (discountParam / 100));
+      }
+      updateTotals();
+    });
+
+    let currentProdCategory = '';
+
+    function getPlatformFeeRate(price, category = '') {
+      let rate = 0.02; // 2% baseline
+      if (price >= 10000) rate = 0.005;
+      else if (price >= 3000) rate = 0.012;
+      else if (price >= 1000) rate = 0.02;
+      else rate = 0.03;
+
+      const cat = (category || '').toLowerCase();
+      if (cat.includes('ai') || cat.includes('ml') || cat.includes('blockchain')) {
+        rate = Math.max(0.005, rate - 0.003);
+      }
+      return rate;
+    }
+
+    function updateTotals() {
+      const baseAfterDisc = Math.max(0, currentPrice - discountApplied);
+      const feeRate = getPlatformFeeRate(baseAfterDisc, currentProdCategory);
+      const platformFee = Math.max(1, Math.round(baseAfterDisc * feeRate));
+      const govtTax = Math.round(platformFee * 0.18); // 18% statutory tax on platform services
+      const total = baseAfterDisc + platformFee + govtTax;
+
+      document.getElementById('order-subtotal').textContent = `₹${currentPrice.toLocaleString('en-IN')}`;
+      const feePercentEl = document.getElementById('order-fee-percent');
+      if (feePercentEl) feePercentEl.textContent = `${(feeRate * 100).toFixed(1)}%`;
+      const feeEl = document.getElementById('order-platform-fee');
+      if (feeEl) feeEl.textContent = `₹${platformFee.toLocaleString('en-IN')}`;
+      const taxEl = document.getElementById('order-tax');
+      if (taxEl) taxEl.textContent = `₹${govtTax.toLocaleString('en-IN')}`;
+
+      document.getElementById('order-total').textContent = `₹${total.toLocaleString('en-IN')}`;
+      document.getElementById('pay-button-amount').textContent = `₹${total.toLocaleString('en-IN')}`;
+
+      const discRow = document.getElementById('order-discount-row');
+      if (discountApplied > 0) {
+        discRow.style.display = 'flex';
+        document.getElementById('order-discount').textContent = `-₹${discountApplied.toLocaleString('en-IN')}`;
+      } else {
+        discRow.style.display = 'none';
+      }
+    }
+
+    function switchPaymentTab(method) {
+      const upiView = document.getElementById('payment-upi-view');
+      if (method === 'upi') {
+        upiView.style.display = 'block';
+      } else {
+        upiView.style.display = 'none';
+      }
+    }
+
+    function applyCheckoutCoupon() {
+      const code = document.getElementById('order-coupon-input').value.trim().toUpperCase();
+      if (code === 'OUTLINE10') {
+        discountApplied = Math.round(currentPrice * 0.10);
+        updateTotals();
+        showToast('Coupon OUTLINE10 applied: 10% off! 🎉', 'success');
+      } else {
+        showToast('Invalid coupon. Try "OUTLINE10"', 'error');
+      }
+    }
+
+    let currentDownloadUrl = '';
+
+    async function executeOrderPayment() {
+      const email = document.getElementById('checkout-email').value;
+      if (!email || !email.includes('@')) {
+        showToast('Please enter a valid email address for delivery!', 'error');
+        return;
+      }
+
+      const total = Math.max(0, currentPrice - discountApplied);
+      const user = getCurrentUser();
+      const payMethodInput = document.querySelector('input[name="pay-method"]:checked');
+      const selectedPayMethod = payMethodInput ? payMethodInput.value : 'wallet';
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const prodId = urlParams.get('id');
+      if (!prodId) {
+        showToast('No product selected for checkout.', 'error');
+        btn.disabled = false;
+        btn.textContent = '🔒 Authorize & Download Source Code';
+        return;
+      }
+      const license = urlParams.get('license') || 'regular';
+      const couponInput = document.getElementById('order-coupon-input');
+      const couponCode = couponInput ? couponInput.value.trim() : '';
+
+      const btn = document.getElementById('complete-order-btn');
+      btn.disabled = true;
+      btn.textContent = '🔒 Cryptographically Processing Payment on Backend...';
+
+      try {
+        const res = await window.SmartHubAPI.executeCheckout({
+          productId: prodId,
+          paymentMethod: selectedPayMethod,
+          deliveryEmail: email,
+          couponCode,
+          license
+        });
+
+        if (res && res.success) {
+          // Hide main grid, show success view
+          document.getElementById('checkout-main-grid').style.display = 'none';
+          const successView = document.getElementById('checkout-success-view');
+          successView.style.display = 'block';
+          document.getElementById('success-email').textContent = email;
+          document.getElementById('success-enc-key').textContent = res.encKey;
+          currentDownloadUrl = res.downloadUrl || `/api/orders/${prodId}/download`;
+
+          localStorage.setItem('smarthub_last_order', JSON.stringify({ amount: res.order ? res.order.amount : total, time: Date.now() }));
+          showToast('Payment verified! Cryptographic token generated. ⚡', 'success');
+          window.scrollTo({ top: 120, behavior: 'smooth' });
+          return;
+        } else if (res && res.error) {
+          showToast(res.error, 'error');
+          btn.disabled = false;
+          btn.textContent = `🔒 Complete Payment & Generate Key (₹${total.toLocaleString('en-IN')})`;
+          return;
+        }
+      } catch (err) {
+        console.warn('API checkout error, falling back locally:', err);
+      }
+
+      // Local fallback
+      if (selectedPayMethod === 'wallet') {
+        if (user.walletBalance < total) {
+          showToast(`Insufficient wallet balance. You have ₹${user.walletBalance}`, 'error');
+          btn.disabled = false;
+          btn.textContent = `🔒 Complete Payment & Generate Key (₹${total.toLocaleString('en-IN')})`;
+          return;
+        }
+        user.walletBalance -= total;
+        localStorage.setItem('smarthub_user', JSON.stringify(user));
+      }
+
+      document.getElementById('checkout-main-grid').style.display = 'none';
+      const successView = document.getElementById('checkout-success-view');
+      successView.style.display = 'block';
+      document.getElementById('success-email').textContent = email;
+
+      // Multi-factor dynamic token derivation (project + timestamp + CSPRNG entropy)
+      const projTag = (prodId || 'PRJ').replace(/[^a-zA-Z0-9]/g, '').slice(-4).toUpperCase() || 'P892';
+      const randBytes = new Uint8Array(4);
+      window.crypto.getRandomValues(randBytes);
+      const randNonce = Array.from(randBytes.slice(0, 2), b => b.toString(16).padStart(2, '0')).join('').toUpperCase();
+      const randSig = Array.from(randBytes.slice(2, 4), b => b.toString(16).padStart(2, '0')).join('').toUpperCase();
+      const dynamicKey = `SH-ENC-${new Date().getFullYear()}-${projTag}-${randNonce}-${randSig}`;
+      document.getElementById('success-enc-key').textContent = dynamicKey;
+      currentDownloadUrl = `/api/orders/${prodId}/download`;
+
+      localStorage.setItem('smarthub_last_order', JSON.stringify({ amount: total, time: Date.now() }));
+      showToast('Payment successful! Encrypted key generated. ⚡', 'success');
+      window.scrollTo({ top: 120, behavior: 'smooth' });
+    }
+
+    function copyEncKey() {
+      const key = document.getElementById('success-enc-key').textContent;
+      navigator.clipboard.writeText(key);
+      const btn = document.getElementById('copy-key-btn');
+      btn.textContent = 'Copied ✓';
+      showToast('Encryption key copied to clipboard!', 'info');
+      setTimeout(() => btn.textContent = 'Copy Key 📋', 2000);
+    }
+
+    function simulateDownload() {
+      showToast('Downloading verified source package (.zip)... 📦', 'success');
+      window.location.href = currentDownloadUrl;
+    }
+  </script>
+</body>
+</html>

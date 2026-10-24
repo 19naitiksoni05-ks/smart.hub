@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Details &amp; Developer Studio | Smart Hub</title>
+  <meta name="description" content="Audited full-stack developer codebase with instant encrypted key delivery and interactive developer studio.">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/cards.css">
+  <link rel="stylesheet" href="css/pages.css">
+</head>
+<body>
+
+  <!-- Injected Shared Header -->
+  <div id="page-header"></div>
+
+  <!-- ── Main Content ─────────────────────────────────────────── -->
+  <main class="page-container" style="padding-top: calc(var(--header-h) + 24px); padding-bottom: 80px;">
+    <div class="container">
+
+      <!-- Breadcrumbs -->
+      <nav class="breadcrumb-trail" style="display:flex;align-items:center;gap:8px;font-size:0.8rem;font-family:var(--font-tech);margin-bottom:24px;color:var(--text-muted);">
+        <a href="index.html" style="color:var(--text-muted);text-decoration:none;">HOME</a>
+        <span>/</span>
+        <a href="marketplace.html" style="color:var(--text-muted);text-decoration:none;">MARKETPLACE</a>
+        <span>/</span>
+        <a href="marketplace.html?cat=React" id="prod-bread-cat" style="color:var(--accent-coral);text-decoration:none;">REACT &amp; NEXT.JS</a>
+        <span>/</span>
+        <span id="prod-bread-title" style="color:var(--text-primary);">PRODUCT DETAILS</span>
+      </nav>
+
+      <!-- Product Showcase Top Grid -->
+      <div style="display:grid;grid-template-columns:1.2fr 0.8fr;gap:36px;align-items:start;margin-bottom:48px;" class="prod-showcase-grid">
+        
+        <!-- Left Column: Visual Gallery & Media -->
+        <div>
+          <div style="position:relative;border:1.5px solid var(--border-outline-strong);border-radius:var(--radius-xs);overflow:hidden;background:#000;">
+            <img src="https://picsum.photos/seed/ecom/900/520" alt="Product Hero Image" id="prod-main-img" style="width:100%;height:440px;object-fit:cover;display:block;">
+            <div id="prod-badge-tag" style="position:absolute;top:16px;left:16px;background:var(--accent-coral);color:#fff;font-family:var(--font-tech);font-size:0.75rem;font-weight:700;padding:4px 12px;border-radius:2px;">[ BESTSELLER ]</div>
+            <div style="position:absolute;bottom:16px;right:16px;background:rgba(0,0,0,0.75);backdrop-filter:blur(8px);border:1px solid var(--border-outline);padding:6px 14px;border-radius:2px;font-family:var(--font-tech);font-size:0.75rem;color:#fff;">
+              🔒 100% AUDITED SOURCE CODE
+            </div>
+          </div>
+
+          <!-- Thumbnails Strip -->
+          <div style="display:flex;gap:12px;margin-top:16px;">
+            <img src="https://picsum.photos/seed/ecom/200/120" class="prod-thumb active" onclick="switchMainImg(this.src)" style="width:90px;height:60px;object-fit:cover;border:2px solid var(--accent-coral);border-radius:2px;cursor:pointer;">
+            <img src="https://picsum.photos/seed/dash/200/120" class="prod-thumb" onclick="switchMainImg(this.src)" style="width:90px;height:60px;object-fit:cover;border:1px solid var(--border-outline);border-radius:2px;cursor:pointer;">
+            <img src="https://picsum.photos/seed/ai/200/120" class="prod-thumb" onclick="switchMainImg(this.src)" style="width:90px;height:60px;object-fit:cover;border:1px solid var(--border-outline);border-radius:2px;cursor:pointer;">
+            <img src="https://picsum.photos/seed/food/200/120" class="prod-thumb" onclick="switchMainImg(this.src)" style="width:90px;height:60px;object-fit:cover;border:1px solid var(--border-outline);border-radius:2px;cursor:pointer;">
+          </div>
+        </div>
+
+        <!-- Right Column: Product Core Info & Sticky Buy Card -->
+        <div style="border:1.5px solid var(--border-outline);border-radius:var(--radius-xs);padding:32px;background:var(--bg-secondary);">
+          <div style="font-family:var(--font-tech);font-size:0.75rem;color:var(--accent-coral);font-weight:700;letter-spacing:0.12em;margin-bottom:8px;" id="prod-category-tag">[ REACT &amp; NEXT.JS ]</div>
+          <h1 style="font-size:clamp(1.5rem, 2.4vw, 2.1rem);line-height:1.25;margin-bottom:12px;" id="prod-title">Digital Product Details</h1>
+          
+          <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;flex-wrap:wrap;">
+            <div style="display:flex;align-items:center;gap:6px;font-family:var(--font-tech);font-size:0.85rem;color:#fbbf24;">
+              <span>★★★★★</span>
+              <span style="font-weight:700;color:var(--text-primary);">5.0</span>
+              <span style="color:var(--text-muted);">(0 verified reviews)</span>
+            </div>
+            <div style="color:var(--text-muted);font-size:0.8rem;">•</div>
+            <div style="font-family:var(--font-tech);font-size:0.8rem;color:var(--text-muted);">0 Sales</div>
+          </div>
+
+          <!-- Price Box -->
+          <div style="padding:18px 20px;border:1.5px solid var(--border-outline-strong);border-radius:var(--radius-xs);background:var(--bg-card);margin-bottom:24px;">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;">
+              <div style="font-family:var(--font-tech);font-size:2.2rem;font-weight:800;color:var(--text-primary);" id="prod-price-display">₹0</div>
+            </div>
+            <div style="font-size:0.78rem;color:var(--accent-green);font-weight:700;margin-top:6px;">
+              ⚡ Includes Free Lifetime Updates &amp; Direct Seller Support
+            </div>
+            <div style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;">
+              + Transparent 0.5%–3% platform fee + statutory tax at checkout. Zero fee on wallet deposits.
+            </div>
+          </div>
+
+          <!-- Author Mini Card -->
+          <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border:1px solid var(--border-outline);border-radius:var(--radius-xs);background:rgba(255,255,255,0.02);margin-bottom:24px;">
+            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=dev1&backgroundColor=6366f1" id="prod-author-avatar" alt="Author" style="width:38px;height:38px;border-radius:2px;border:1px solid var(--border-outline);">
+            <div>
+              <div style="font-size:0.75rem;color:var(--text-muted);">CREATED BY</div>
+              <div style="font-weight:700;font-size:0.92rem;" id="prod-author-name">Verified Author <span style="color:var(--accent-cyan);">✓ Verified Seller</span></div>
+            </div>
+            <a href="chat.html" id="prod-chat-author-btn" class="btn btn-outline btn-sm" style="margin-left:auto;">Chat ✉️</a>
+          </div>
+
+          <!-- Action Buttons -->
+          <div style="display:flex;flex-direction:column;gap:12px;">
+            <a href="checkout.html" id="prod-buy-now-btn" class="btn btn-primary btn-lg" style="justify-content:center;font-weight:800;">
+              ⚡ Buy Now with ₹ INR Wallet / UPI →
+            </a>
+            <button class="btn btn-outline btn-lg" id="prod-add-cart-btn" onclick="triggerAddToCart()" style="justify-content:center;">
+              🛒 Add to Interactive Cart
+            </button>
+          </div>
+
+          <!-- Security Badges -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px;font-size:0.75rem;color:var(--text-muted);font-family:var(--font-tech);">
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span>🔐</span> Encrypted Token Delivery
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span>🛡️</span> 100% Virus &amp; Malware Audited
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span>⚡</span> Instant Download Link
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span>🇮🇳</span> Authentic Indian Rupee Pricing
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ── Interactive React Product Studio (Live Code Runner & Configurator) ── -->
+      <div id="react-product-studio"></div>
+
+      <!-- Tabbed Specifications & Documentation -->
+      <div style="margin-top:40px;">
+        <div style="display:flex;gap:12px;border-bottom:1.5px solid var(--border-outline);margin-bottom:28px;">
+          <button class="tab-btn active" onclick="switchSpecTab('overview', this)" style="padding:12px 20px;font-family:var(--font-tech);font-weight:700;font-size:0.85rem;border:none;background:transparent;color:var(--text-primary);border-bottom:2px solid var(--accent-coral);cursor:pointer;">Overview &amp; Features</button>
+          <button class="tab-btn" onclick="switchSpecTab('tech', this)" style="padding:12px 20px;font-family:var(--font-tech);font-weight:700;font-size:0.85rem;border:none;background:transparent;color:var(--text-muted);cursor:pointer;">Tech Stack &amp; Dependencies</button>
+          <button class="tab-btn" onclick="switchSpecTab('files', this)" style="padding:12px 20px;font-family:var(--font-tech);font-weight:700;font-size:0.85rem;border:none;background:transparent;color:var(--text-muted);cursor:pointer;">Files Included</button>
+          <button class="tab-btn" onclick="switchSpecTab('changelog', this)" style="padding:12px 20px;font-family:var(--font-tech);font-weight:700;font-size:0.85rem;border:none;background:transparent;color:var(--text-muted);cursor:pointer;">Changelog (v3.2)</button>
+        </div>
+
+        <!-- Spec Tab 1: Overview -->
+        <div id="spec-tab-overview" class="spec-content">
+          <div style="display:grid;grid-template-columns:2fr 1fr;gap:36px;" class="spec-grid">
+            <div>
+              <h3 style="margin-bottom:16px;">Production-Ready Software Engine Built for Scale</h3>
+              <p style="line-height:1.7;color:var(--text-secondary);margin-bottom:20px;">
+                This verified package delivers a comprehensive, battle-tested modern store architecture built on Next.js 15, React 19, and Tailwind-free modular Vanilla CSS. It comes pre-wired with Indian payment gateways (Razorpay, PhonePe, UPI Intent, and Cash on Delivery), complete inventory management, dynamic coupon engine, and real-time order tracking.
+              </p>
+              
+              <h4 style="margin:24px 0 12px 0;">Key Capabilities:</h4>
+              <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:10px;">
+                <li style="display:flex;gap:10px;align-items:flex-start;">
+                  <span style="color:var(--accent-coral);font-weight:bold;">✦</span>
+                  <span><strong>Lightning Fast SSR &amp; Hydration:</strong> 99+ Google Lighthouse score with instant page transitions.</span>
+                </li>
+                <li style="display:flex;gap:10px;align-items:flex-start;">
+                  <span style="color:var(--accent-coral);font-weight:bold;">✦</span>
+                  <span><strong>Native UPI &amp; ₹ INR Support:</strong> Dynamic QR generation, webhook listeners, and zero-fee wallet deposit compatibility.</span>
+                </li>
+                <li style="display:flex;gap:10px;align-items:flex-start;">
+                  <span style="color:var(--accent-coral);font-weight:bold;">✦</span>
+                  <span><strong>Admin Dashboard &amp; Analytics:</strong> Live revenue graphs, product publisher, order status manager, and customer directory.</span>
+                </li>
+                <li style="display:flex;gap:10px;align-items:flex-start;">
+                  <span style="color:var(--accent-coral);font-weight:bold;">✦</span>
+                  <span><strong>Full TypeScript &amp; ESLint:</strong> Clean, strict, and modular codebase with 100% test coverage.</span>
+                </li>
+              </ul>
+            </div>
+
+            <div style="border:1.5px solid var(--border-outline);padding:24px;border-radius:var(--radius-xs);background:var(--bg-secondary);height:fit-content;">
+              <h4 style="margin-bottom:16px;font-size:1rem;">Package Specifications</h4>
+              <div style="display:flex;flex-direction:column;gap:12px;font-size:0.85rem;">
+                <div style="display:flex;justify-content:space-between;padding-bottom:8px;border-bottom:1px solid var(--border-outline-subtle);">
+                  <span style="color:var(--text-muted);">Current Version:</span>
+                  <span style="font-family:var(--font-tech);font-weight:700;">v3.2.0</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;padding-bottom:8px;border-bottom:1px solid var(--border-outline-subtle);">
+                  <span style="color:var(--text-muted);">Released:</span>
+                  <span>October 2026</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;padding-bottom:8px;border-bottom:1px solid var(--border-outline-subtle);">
+                  <span style="color:var(--text-muted);">Code Quality:</span>
+                  <span style="color:var(--accent-green);font-weight:700;">A+ (Audited)</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;padding-bottom:8px;border-bottom:1px solid var(--border-outline-subtle);">
+                  <span style="color:var(--text-muted);">License:</span>
+                  <span>Commercial &amp; Single</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;">
+                  <span style="color:var(--text-muted);">File Size:</span>
+                  <span style="font-family:var(--font-tech);">28.4 MB (.zip)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Spec Tab 2: Tech Stack -->
+        <div id="spec-tab-tech" class="spec-content" style="display:none;">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:16px;">
+            <div style="border:1px solid var(--border-outline);padding:20px;border-radius:var(--radius-xs);background:var(--bg-secondary);">
+              <div style="font-size:1.8rem;margin-bottom:8px;">⚛️</div>
+              <div style="font-weight:700;">React 19 &amp; Next.js 15</div>
+              <div style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;">App Router, Server Actions &amp; React Server Components.</div>
+            </div>
+            <div style="border:1px solid var(--border-outline);padding:20px;border-radius:var(--radius-xs);background:var(--bg-secondary);">
+              <div style="font-size:1.8rem;margin-bottom:8px;">🟢</div>
+              <div style="font-weight:700;">Node.js &amp; Express</div>
+              <div style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;">Secure REST APIs with JWT authentication &amp; role permissions.</div>
+            </div>
+            <div style="border:1px solid var(--border-outline);padding:20px;border-radius:var(--radius-xs);background:var(--bg-secondary);">
+              <div style="font-size:1.8rem;margin-bottom:8px;">🍃</div>
+              <div style="font-weight:700;">MongoDB &amp; Prisma ORM</div>
+              <div style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;">Scalable NoSQL schema with automatic indexation &amp; migrations.</div>
+            </div>
+            <div style="border:1px solid var(--border-outline);padding:20px;border-radius:var(--radius-xs);background:var(--bg-secondary);">
+              <div style="font-size:1.8rem;margin-bottom:8px;">💳</div>
+              <div style="font-weight:700;">UPI &amp; Razorpay Gateway</div>
+              <div style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;">Native Indian Rupee payments with webhook encryption.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Spec Tab 3: Files Included -->
+        <div id="spec-tab-files" class="spec-content" style="display:none;">
+          <div style="border:1.5px solid var(--border-outline);padding:24px;border-radius:var(--radius-xs);background:#08090a;font-family:var(--font-mono);font-size:0.85rem;line-height:1.7;">
+            <div style="color:var(--accent-coral);">📦 reactcommerce-pro-v3.2/</div>
+            <div style="padding-left:20px;">├── 📁 src/</div>
+            <div style="padding-left:40px;">├── 📁 app/ (Next.js 15 App Router pages &amp; layouts)</div>
+            <div style="padding-left:40px;">├── 📁 components/ (45+ reusable UI components)</div>
+            <div style="padding-left:40px;">├── 📁 server/ (Microservices, Webhooks, UPI Engine)</div>
+            <div style="padding-left:40px;">└── 📁 styles/ (Design system &amp; theme tokens)</div>
+            <div style="padding-left:20px;">├── 📄 prisma/schema.prisma (Database blueprints)</div>
+            <div style="padding-left:20px;">├── 📄 README.md (Comprehensive setup &amp; deploy guide)</div>
+            <div style="padding-left:20px;">├── 📄 package.json &amp; package-lock.json</div>
+            <div style="padding-left:20px;">└── 📄 LICENSE.md (Single &amp; Commercial terms)</div>
+          </div>
+        </div>
+
+        <!-- Spec Tab 4: Changelog -->
+        <div id="spec-tab-changelog" class="spec-content" style="display:none;">
+          <div style="border:1px solid var(--border-outline);padding:24px;border-radius:var(--radius-xs);background:var(--bg-secondary);">
+            <div style="font-family:var(--font-tech);font-weight:700;color:var(--accent-coral);margin-bottom:8px;">v3.2.0 (Latest Release - Oct 2026)</div>
+            <ul style="padding-left:20px;font-size:0.88rem;color:var(--text-secondary);line-height:1.6;">
+              <li>Upgraded core framework to React 19 and Next.js 15.</li>
+              <li>Added instant Smart Hub UPI Wallet settlement engine with transparent low platform fees.</li>
+              <li>Improved Lighthouse performance score to 100 on desktop viewports.</li>
+              <li>Enhanced encryption token verification algorithm.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Interactive React Verified Reviews & Rating Component ── -->
+      <div id="react-rating-widget"></div>
+
+    </div>
+  </main>
+
+  <!-- Injected Shared Footer -->
+  <div id="page-footer"></div>
+
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="js/react-components.js"></script>
+
+  <script>
+    // Load Product Data dynamically based on ?id= query param
+    document.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const prodId = urlParams.get('id');
+      const prod = prodId && SmartHubData.products ? SmartHubData.products.find(p => p.id === prodId) : (SmartHubData.products && SmartHubData.products[0]);
+
+      if (!prod) {
+        const main = document.querySelector('main');
+        if (main) {
+          main.innerHTML = `
+            <div class="container" style="padding:80px 24px;text-align:center;">
+              <div style="font-size:3.5rem;margin-bottom:16px;">📦</div>
+              <h2 style="margin-bottom:12px;">Product Not Found</h2>
+              <p style="color:var(--text-muted);margin-bottom:24px;max-width:480px;margin-left:auto;margin-right:auto;">
+                The requested digital asset is not available in the catalog or may have been unlisted.
+              </p>
+              <a href="marketplace.html" class="btn btn-primary">Browse Marketplace Catalog →</a>
+            </div>
+          `;
+        }
+        return;
+      }
+
+      document.getElementById('prod-title').textContent = prod.title;
+      document.getElementById('prod-bread-title').textContent = prod.title.toUpperCase();
+      document.getElementById('prod-category-tag').textContent = `[ ${prod.category.toUpperCase()} ]`;
+      document.getElementById('prod-bread-cat').textContent = prod.category.toUpperCase();
+      document.getElementById('prod-bread-cat').href = `marketplace.html?cat=${encodeURIComponent(prod.category)}`;
+      document.getElementById('prod-price-display').textContent = `₹${prod.price.toLocaleString('en-IN')}`;
+      document.getElementById('prod-main-img').src = prod.thumb;
+      document.getElementById('prod-author-name').innerHTML = `${prod.author.name} <span style="color:var(--accent-cyan);">✓ Verified Seller</span>`;
+      document.getElementById('prod-author-avatar').src = prod.author.avatar;
+      document.getElementById('prod-buy-now-btn').href = `checkout.html?id=${prod.id}`;
+      const chatBtn = document.getElementById('prod-chat-author-btn');
+      if (chatBtn) chatBtn.href = `chat.html?seller=${encodeURIComponent(prod.author.name)}&product=${prod.id}`;
+      if (prod.badge) {
+        document.getElementById('prod-badge-tag').textContent = `[ ${prod.badge.toUpperCase()} ]`;
+      } else {
+        document.getElementById('prod-badge-tag').style.display = 'none';
+      }
+
+      // Fetch from live backend API if available
+      if (window.SmartHubAPI && prodId) {
+        window.SmartHubAPI.getProduct(prodId).then(res => {
+          if (res && res.product) {
+            const liveProd = res.product;
+            document.getElementById('prod-title').textContent = liveProd.title;
+            document.getElementById('prod-price-display').textContent = `₹${liveProd.price.toLocaleString('en-IN')}`;
+          }
+        }).catch(() => {});
+      }
+    });
+
+    function switchMainImg(src) {
+      document.getElementById('prod-main-img').src = src;
+      document.querySelectorAll('.prod-thumb').forEach(t => t.style.borderColor = 'var(--border-outline)');
+      event.target.style.borderColor = 'var(--accent-coral)';
+    }
+
+    function switchSpecTab(tabName, btn) {
+      document.querySelectorAll('.spec-content').forEach(c => c.style.display = 'none');
+      document.querySelectorAll('.tab-btn').forEach(b => {
+        b.style.color = 'var(--text-muted)';
+        b.style.borderBottom = 'none';
+      });
+      const activeContent = document.getElementById(`spec-tab-${tabName}`);
+      if (activeContent) activeContent.style.display = 'block';
+      btn.style.color = 'var(--text-primary)';
+      btn.style.borderBottom = '2px solid var(--accent-coral)';
+    }
+
+    function triggerAddToCart() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const prodId = urlParams.get('id');
+      if (prodId) window.addToCart(prodId);
+    }
+  </script>
+</body>
+</html>

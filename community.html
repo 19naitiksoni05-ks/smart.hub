@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Community — Smart Hub | Channels, Forums & Groups</title>
+  <meta name="description" content="Join Smart Hub's vibrant developer community — channels, forums, groups and real-time discussions. Like Discord meets Reddit for Indian developers.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💬</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/cards.css">
+  <link rel="stylesheet" href="css/pages.css">
+  <style>
+    .community-page { min-height: calc(100vh - var(--header-h) - var(--topbar-h)); }
+    .community-wrapper { display: grid; grid-template-columns: 72px 240px 1fr 280px; grid-template-rows: 100%; height: calc(100vh - var(--header-h) - var(--topbar-h)); min-height: 0; overflow: hidden; }
+    .server-bar { background: rgba(8,12,24,0.9); border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding: 12px 0; gap: 8px; overflow-y: auto; min-height: 0; }
+    .channel-panel { background: var(--bg-secondary); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; min-height: 0; height: 100%; }
+    .channel-panel-header { padding: 16px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+    .channel-panel-header h4 { font-size: 1rem; margin-bottom: 4px; }
+    .channel-section-title { padding: 12px 16px 4px; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); flex-shrink: 0; }
+    .channel-list { overflow-y: auto; flex: 1 1 0%; min-height: 0; padding: 0 8px; overscroll-behavior: contain; }
+    .main-chat { display: flex; flex-direction: column; overflow: hidden; min-height: 0; height: 100%; }
+    .main-chat-header { padding: 12px 20px; border-bottom: 1px solid var(--border); background: rgba(8,12,24,0.8); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+    .messages-area { flex: 1 1 0%; min-height: 0; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 16px; overscroll-behavior: contain; scroll-behavior: smooth; }
+    .msg-group { display: flex; gap: 12px; }
+    .msg-group-content { flex: 1; }
+    .msg-author { font-weight: 700; font-size: 0.92rem; }
+    .msg-timestamp { font-size: 0.72rem; color: var(--text-muted); margin-left: 8px; }
+    .msg-text { font-size: 0.92rem; color: var(--text-secondary); margin-top: 4px; line-height: 1.5; }
+    .msg-reactions { display: flex; gap: 6px; margin-top: 6px; }
+    .reaction { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius-full); font-size: 0.78rem; cursor: pointer; transition: var(--transition-fast); }
+    .reaction:hover { background: rgba(139,92,246,0.2); border-color: var(--accent-purple); }
+    .reaction.active { background: rgba(139,92,246,0.2); border-color: var(--accent-purple); color: var(--accent-purple); }
+    .chat-input-section { padding: 12px 20px; border-top: 1px solid var(--border); }
+    .community-right { border-left: 1px solid var(--border); background: var(--bg-secondary); overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 16px; }
+    .members-section h5 { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 12px; }
+    .member-item { display: flex; align-items: center; gap: 10px; padding: 6px 0; cursor: pointer; transition: var(--transition-fast); }
+    .member-item:hover { opacity: 0.8; }
+    .member-name { font-size: 0.88rem; font-weight: 500; }
+    .member-status { font-size: 0.75rem; color: var(--text-muted); }
+    .online-indicator { position: relative; flex-shrink: 0; }
+    .online-indicator .online-dot { position: absolute; bottom: 0; right: 0; }
+    @media(max-width:1200px) { .community-wrapper { grid-template-columns: 72px 220px 1fr; } .community-right { display:none; } }
+    @media(max-width:768px) { .community-wrapper { grid-template-columns: 1fr; } .server-bar,.channel-panel { display:none; } }
+  </style>
+</head>
+<body>
+<div id="page-header"></div>
+
+<div class="community-page">
+  <div class="community-wrapper">
+
+    <!-- ── Server Bar (Discord-like left icons) ─────────────── -->
+    <div class="server-bar">
+      <div style="width:44px;height:44px;background:var(--grad-primary);border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;color:#fff;cursor:pointer;margin-bottom:4px;" title="Smart Hub HQ">S</div>
+      <div style="width:1px;height:32px;background:var(--border);"></div>
+
+      <!-- Community servers -->
+      <div class="server-icon active" title="General Dev">⚙️</div>
+      <div class="server-icon" title="React Community">⚛️</div>
+      <div class="server-icon" title="Mobile Devs">📱</div>
+      <div class="server-icon" title="AI/ML Hub">🤖</div>
+      <div class="server-icon" title="Blockchain">🔗</div>
+      <div class="server-icon" title="Design Guild">🎨</div>
+      <div class="server-icon" title="Open Source">🌐</div>
+
+      <div style="width:1px;height:32px;background:var(--border);"></div>
+      <div class="server-icon" title="Add Community" style="border-style:dashed;border-color:rgba(255,255,255,0.2);">+</div>
+    </div>
+
+    <!-- ── Channel Panel ────────────────────────────────────── -->
+    <div class="channel-panel">
+      <div class="channel-panel-header">
+        <h4>⚙️ General Dev</h4>
+        <p style="font-size:0.78rem;color:var(--text-muted);">Developer Community</p>
+        <div style="margin-top:8px;">
+          <input class="input" style="font-size:0.82rem;padding:6px 12px;" type="text" placeholder="Search channels…">
+        </div>
+      </div>
+
+      <div class="channel-list">
+        <!-- Text Channels -->
+        <div class="channel-section-title">📢 Information</div>
+        <div class="channel-item active" onclick="switchChannel('general', this)">
+          <span>#</span> general
+        </div>
+        <div class="channel-item" onclick="switchChannel('announcements', this)">
+          <span>📢</span> announcements
+        </div>
+        <div class="channel-item" onclick="switchChannel('rules', this)">
+          <span>📜</span> rules
+        </div>
+
+        <div class="channel-section-title">💬 Discussion</div>
+        <div class="channel-item" onclick="switchChannel('showcase', this)">
+          <span>🎨</span> showcase
+        </div>
+        <div class="channel-item" onclick="switchChannel('help-desk', this)">
+          <span>🆘</span> help-desk
+        </div>
+        <div class="channel-item" onclick="switchChannel('off-topic', this)">
+          <span>😄</span> off-topic
+        </div>
+
+        <div class="channel-section-title">⚙️ Tech Rooms</div>
+        <div class="channel-item" onclick="switchChannel('react-js', this)">
+          <span>⚛️</span> react-js
+        </div>
+        <div class="channel-item" onclick="switchChannel('node-backend', this)">
+          <span>⚙️</span> node-backend
+        </div>
+        <div class="channel-item" onclick="switchChannel('flutter-mobile', this)">
+          <span>📱</span> flutter-mobile
+        </div>
+        <div class="channel-item" onclick="switchChannel('ai-ml', this)">
+          <span>🤖</span> ai-ml
+        </div>
+        <div class="channel-item" onclick="switchChannel('blockchain', this)">
+          <span>🔗</span> blockchain
+        </div>
+
+        <div class="channel-section-title">🏆 Challenges</div>
+        <div class="channel-item" onclick="switchChannel('challenge-discuss', this)">
+          <span>🏆</span> challenge-discuss
+        </div>
+        <div class="channel-item" onclick="switchChannel('submissions', this)">
+          <span>📦</span> submissions
+        </div>
+
+        <!-- Forum sections -->
+        <div class="channel-section-title">📋 Forums</div>
+        <div class="channel-item" onclick="switchChannel('q-and-a', this)">
+          <span>❓</span> q-and-a
+        </div>
+        <div class="channel-item" onclick="switchChannel('tutorials', this)">
+          <span>📚</span> tutorials
+        </div>
+        <div class="channel-item" onclick="switchChannel('career', this)">
+          <span>💼</span> career-advice
+        </div>
+      </div>
+
+      <!-- User Area -->
+      <div style="padding:12px;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px;background:rgba(0,0,0,0.2);">
+        <div class="online-indicator">
+          <img id="comm-user-avatar" src="https://api.dicebear.com/7.x/avataaars/svg?seed=user&backgroundColor=6366f1" class="avatar avatar-sm" style="border-radius:50%;">
+          <div class="online-dot"></div>
+        </div>
+        <div style="flex:1;">
+          <div style="font-weight:700;font-size:0.85rem;" id="comm-user-name">Developer</div>
+          <div style="font-size:0.72rem;color:var(--accent-green);">● Online</div>
+        </div>
+        <a href="settings.html" style="color:var(--text-muted);cursor:pointer;text-decoration:none;" title="Settings">⚙️</a>
+      </div>
+    </div>
+
+    <!-- ── Main Chat Area ────────────────────────────────────── -->
+    <div class="main-chat">
+      <!-- Header -->
+      <div class="main-chat-header">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <span style="font-size:1.2rem;">#</span>
+          <div>
+            <div style="font-weight:700;" id="current-channel-name">general</div>
+            <div style="font-size:0.78rem;color:var(--text-muted);">General developer discussion for all topics</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-size:0.82rem;color:var(--text-muted);">👥 Verified Hub Channel</span>
+          <button class="icon-btn">🔍</button>
+          <button class="icon-btn">📌</button>
+          <button class="icon-btn" title="Members">👤</button>
+        </div>
+      </div>
+
+      <!-- Messages -->
+      <div class="messages-area" id="messages-area"></div>
+
+      <!-- Input -->
+      <div class="chat-input-section">
+        <div style="display:flex;align-items:flex-end;gap:10px;">
+          <div class="chat-input-wrap" style="flex:1;">
+            <span style="cursor:pointer;font-size:18px;">📎</span>
+            <textarea id="comm-input" rows="1" placeholder="Message #general…" onkeydown="handleCommInput(event)"></textarea>
+            <span style="cursor:pointer;font-size:18px;">😊</span>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="sendCommunityMessage()">Send</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Right Panel (Members) ─────────────────────────────── -->
+    <div class="community-right">
+      <!-- Channel Info -->
+      <div class="glass-card" style="padding:16px;">
+        <h5 style="font-size:0.85rem;margin-bottom:12px;">📌 Pinned</h5>
+        <div style="font-size:0.82rem;color:var(--text-secondary);padding:10px;background:rgba(255,255,255,0.04);border-radius:var(--radius-sm);">
+          Welcome to #general! Read <span style="color:var(--accent-cyan);">#rules</span> before posting. Be respectful and helpful 🙏
+        </div>
+      </div>
+
+      <!-- Online Members -->
+      <div class="members-section">
+        <h5>Online Members</h5>
+        <div id="online-members"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/api.js"></script>
+<script src="js/main.js"></script>
+<script src="js/layout.js"></script>
+<script>
+
+const communityMessages = [
+  { user: 'SmartHub HQ', avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=smarthub&backgroundColor=6366f1', role: 'admin', text: 'Welcome to Smart Hub Developer Channels! Discuss tech stacks, share code launches, and connect with developers across India.', time: 'HQ', reactions: [] }
+];
+
+const onlineUsers = [];
+
+function renderMessages(msgs) {
+  const area = document.getElementById('messages-area');
+  if (!area) return;
+  area.innerHTML = msgs.map(msg => {
+    if (msg.isSystem) return `
+      <div style="text-align:center;padding:8px 0;">
+        <span style="font-size:0.78rem;color:var(--text-muted);background:rgba(255,255,255,0.05);padding:6px 16px;border-radius:var(--radius-full);">${msg.text}</span>
+      </div>`;
+
+    const roleColors = { admin: 'var(--accent-pink)', moderator: 'var(--accent-blue)', member: 'var(--text-primary)' };
+    const roleLabels = { admin: '🛡️ Admin', moderator: '⚔️ Mod', member: '' };
+    return `
+      <div class="msg-group">
+        <div class="online-indicator">
+          <img src="${msg.avatar}" class="avatar avatar-md" style="border-radius:50%;" alt="${msg.user}">
+          <div class="online-dot"></div>
+        </div>
+        <div class="msg-group-content">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span class="msg-author" style="color:${roleColors[msg.role]||'var(--text-primary)'};">${msg.user}</span>
+            ${roleLabels[msg.role] ? `<span style="font-size:0.7rem;color:${roleColors[msg.role]};background:rgba(255,255,255,0.06);padding:1px 6px;border-radius:4px;">${roleLabels[msg.role]}</span>` : ''}
+            <span class="msg-timestamp">${msg.time}</span>
+          </div>
+          <div class="msg-text">${msg.text.replace(/@(\w+)/g, '<span style="color:var(--accent-purple);background:rgba(139,92,246,0.1);padding:0 3px;border-radius:3px;">@$1</span>')}</div>
+          ${msg.reactions.length ? `<div class="msg-reactions">${msg.reactions.map(r => `<span class="reaction" onclick="toggleReaction(this)">${r.emoji} ${r.count}</span>`).join('')}</div>` : ''}
+        </div>
+      </div>`;
+  }).join('');
+  area.scrollTop = area.scrollHeight;
+}
+
+function renderOnlineMembers() {
+  const el = document.getElementById('online-members');
+  if (!el) return;
+  if (onlineUsers.length === 0) {
+    el.innerHTML = `<div style="font-size:0.78rem;color:var(--text-muted);padding:8px 0;">Community members active online will appear here.</div>`;
+    return;
+  }
+  el.innerHTML = onlineUsers.map(u => `
+    <div class="member-item">
+      <div class="online-indicator">
+        <img src="${u.avatar}" class="avatar avatar-sm" style="border-radius:50%;">
+        <div class="online-dot"></div>
+      </div>
+      <div>
+        <div class="member-name" style="color:${u.roleColor};">${u.name}</div>
+        <div class="member-status">${u.status}</div>
+      </div>
+    </div>`).join('');
+}
+
+function switchChannel(name, el) {
+  document.querySelectorAll('.channel-item').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('current-channel-name').textContent = name;
+}
+
+function toggleReaction(el) {
+  el.classList.toggle('active');
+  const parts = el.textContent.trim().split(' ');
+  const emoji = parts[0];
+  const count = parseInt(parts[1]) + (el.classList.contains('active') ? 1 : -1);
+  el.textContent = `${emoji} ${count}`;
+}
+
+function handleCommInput(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendCommunityMessage();
+  }
+}
+
+function sendCommunityMessage() {
+  const input = document.getElementById('comm-input');
+  const text = input.value.trim();
+  if (!text) return;
+
+  const user = (window.getCurrentUser && window.getCurrentUser()) || { name: 'Developer', username: '@developer' };
+  const newMsg = {
+    user: user.name || user.username,
+    avatar: user.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(user.name || 'user')}&backgroundColor=6366f1`,
+    role: 'member',
+    text: text,
+    time: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
+    reactions: []
+  };
+  communityMessages.push(newMsg);
+  renderMessages(communityMessages);
+  input.value = '';
+
+  if (window.SmartHubAPI) {
+    try {
+      window.SmartHubAPI.sendChannelMessage('c001', text);
+    } catch (e) {}
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const user = (window.getCurrentUser && window.getCurrentUser());
+  if (user) {
+    const av = document.getElementById('comm-user-avatar');
+    const nm = document.getElementById('comm-user-name');
+    if (av && user.avatar) av.src = user.avatar;
+    if (nm && user.name) nm.textContent = user.username || user.name;
+  }
+  renderMessages(communityMessages);
+  renderOnlineMembers();
+});
+</script>
+</body>
+</html>

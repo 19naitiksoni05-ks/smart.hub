@@ -1,0 +1,1750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Developer Journey &amp; Ecosystem Matrix — Smart Hub</title>
+  <meta name="description" content="The complete developer journey: progress through 10 elite developer tiers, conquer 75+ coding challenges, unlock cryptographic badges, climb national rankings, and build in India's premier tech ecosystem.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌐</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/cards.css">
+  <link rel="stylesheet" href="css/pages.css">
+  <style>
+    /* ── Scoped Styles for Developer Journey & Ecosystem Webpage ── */
+    .ecosystem-page {
+      min-height: 100vh;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+    }
+
+    /* Hero & Profile Matrix Banner */
+    .journey-hero {
+      position: relative;
+      padding: 44px 0 32px;
+      overflow: hidden;
+      border-bottom: 1.5px solid var(--border-outline);
+      background: radial-gradient(circle at 50% 0%, rgba(121, 40, 202, 0.12) 0%, rgba(255, 106, 0, 0.06) 50%, transparent 80%);
+    }
+    .journey-mesh-bg {
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(rgba(121, 40, 202, 0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(121, 40, 202, 0.04) 1px, transparent 1px);
+      background-size: 36px 36px;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .journey-hero-inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Live Telemetry & Profile Header Card */
+    .journey-profile-card {
+      background: var(--bg-card);
+      border: 1.5px solid var(--border-outline-strong);
+      border-radius: var(--radius-xs);
+      padding: 24px 28px;
+      box-shadow: var(--shadow-md);
+      margin-top: 28px;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 24px;
+      align-items: center;
+    }
+    .journey-avatar-wrap {
+      position: relative;
+    }
+    .journey-avatar-img {
+      width: 72px;
+      height: 72px;
+      border-radius: var(--radius-xs);
+      border: 2px solid var(--accent-purple);
+      background: var(--bg-secondary);
+      object-fit: cover;
+    }
+    .journey-tier-badge-floating {
+      position: absolute;
+      bottom: -8px;
+      right: -8px;
+      background: var(--grad-primary);
+      color: #fff;
+      font-size: 0.68rem;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: var(--radius-full);
+      border: 2px solid var(--bg-card);
+      letter-spacing: 0.04em;
+    }
+    .journey-progress-track {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-outline);
+      height: 10px;
+      border-radius: var(--radius-full);
+      overflow: hidden;
+      margin: 8px 0 4px;
+    }
+    .journey-progress-bar {
+      height: 100%;
+      background: var(--grad-primary);
+      border-radius: var(--radius-full);
+      transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Quick Jump Navigation Bar */
+    .journey-nav-strip {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 16px 0;
+      border-bottom: 1.5px solid var(--border-outline);
+      background: var(--bg-secondary);
+      position: sticky;
+      top: 0;
+      z-index: 450;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+    .journey-nav-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 18px;
+      border-radius: var(--radius-xs);
+      font-family: var(--font-display);
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-decoration: none;
+      white-space: nowrap;
+      border: 1.5px solid transparent;
+      transition: var(--transition-fast);
+      cursor: pointer;
+      background: transparent;
+    }
+    .journey-nav-item:hover {
+      background: var(--bg-card);
+      color: var(--text-primary);
+      border-color: var(--border-outline);
+    }
+    .journey-nav-item.active {
+      background: var(--bg-card);
+      color: var(--accent-purple);
+      border-color: var(--accent-purple);
+      box-shadow: 0 2px 10px rgba(121, 40, 202, 0.12);
+    }
+
+    /* 5-Stage Interactive Journey Workflow */
+    .journey-workflow-wrap {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 16px;
+      margin: 36px 0;
+      position: relative;
+    }
+    .journey-stage-step {
+      background: var(--bg-card);
+      border: 1.5px solid var(--border-outline);
+      border-radius: var(--radius-xs);
+      padding: 20px 16px;
+      cursor: pointer;
+      transition: var(--transition);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .journey-stage-step:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent-purple);
+      box-shadow: 0 8px 24px rgba(121, 40, 202, 0.14);
+    }
+    .journey-stage-step.active {
+      border-color: var(--accent-purple);
+      background: linear-gradient(180deg, var(--bg-card) 0%, rgba(121, 40, 202, 0.08) 100%);
+      box-shadow: 0 8px 28px rgba(121, 40, 202, 0.2);
+    }
+    .stage-step-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--bg-tertiary);
+      border: 1.5px solid var(--border-outline);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-tech);
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: var(--accent-purple);
+      margin-bottom: 12px;
+    }
+    .journey-stage-step.active .stage-step-num {
+      background: var(--grad-primary);
+      color: #fff;
+      border-color: transparent;
+    }
+
+    /* Dynamic Stage Detail Drawer */
+    .stage-detail-box {
+      background: var(--bg-card);
+      border: 1.5px solid var(--border-outline);
+      border-radius: var(--radius-xs);
+      padding: 28px 32px;
+      margin-bottom: 40px;
+      box-shadow: var(--shadow-sm);
+      animation: fadeIn 0.25s ease-out;
+    }
+
+    /* 10-Tier Rank Grid */
+    .tier-matrix-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 16px;
+      margin-top: 24px;
+    }
+    .tier-matrix-card {
+      background: var(--bg-card);
+      border: 1.5px solid var(--border-outline);
+      border-radius: var(--radius-xs);
+      padding: 18px 14px;
+      transition: var(--transition);
+      cursor: pointer;
+      position: relative;
+    }
+    .tier-matrix-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--accent-orange);
+      box-shadow: 0 6px 20px rgba(255, 106, 0, 0.14);
+    }
+    .tier-matrix-card.current-user-tier {
+      border-color: var(--accent-purple);
+      background: linear-gradient(135deg, rgba(121, 40, 202, 0.08) 0%, rgba(255, 106, 0, 0.04) 100%);
+      box-shadow: 0 0 0 2px var(--accent-purple);
+    }
+    .tier-card-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 8px;
+      border-radius: 2px;
+      font-family: var(--font-tech);
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      margin-bottom: 10px;
+    }
+
+    /* Challenges Filtering & Grid */
+    .challenge-filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 18px;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .challenge-filter-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .challenge-cat-pill {
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      border: 1.5px solid var(--border-outline);
+      background: var(--bg-card);
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: var(--transition-fast);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .challenge-cat-pill:hover {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      border-color: var(--accent-purple);
+    }
+    .challenge-cat-pill.active {
+      background: var(--grad-primary);
+      border-color: transparent;
+      color: #fff;
+      box-shadow: 0 2px 10px rgba(121, 40, 202, 0.25);
+    }
+    .challenge-search-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-card);
+      border: 1.5px solid var(--border-outline);
+      border-radius: var(--radius-xs);
+      padding: 6px 12px;
+      min-width: 240px;
+    }
+    .challenge-search-input {
+      border: none;
+      background: transparent;
+      outline: none;
+      font-family: var(--font-primary);
+      font-size: 0.85rem;
+      color: var(--text-primary);
+      width: 100%;
+    }
+
+    .challenges-items-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 14px;
+    }
+    .challenge-item-card {
+      background: var(--bg-card);
+      border: 1.5px solid var(--border-outline);
+      border-radius: var(--radius-xs);
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: var(--transition);
+      position: relative;
+    }
+    .challenge-item-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--accent-purple);
+      box-shadow: 0 8px 24px rgba(121, 40, 202, 0.12);
+    }
+    .challenge-item-card.completed {
+      border-color: rgba(34, 197, 94, 0.4);
+      background: linear-gradient(180deg, var(--bg-card) 0%, rgba(34, 197, 94, 0.04) 100%);
+    }
+
+    /* Badges Vault Grid */
+    .badges-vault-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 14px;
+      margin-top: 20px;
+    }
+    .badge-vault-card {
+      background: var(--bg-card);
+      border: 1.5px solid var(--border-outline);
+      border-radius: var(--radius-xs);
+      padding: 16px 12px;
+      text-align: center;
+      transition: var(--transition);
+      cursor: pointer;
+      position: relative;
+    }
+    .badge-vault-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--accent-purple);
+      box-shadow: var(--shadow-sm);
+    }
+    .badge-vault-card.locked {
+      opacity: 0.55;
+      filter: grayscale(0.85);
+    }
+    .badge-vault-icon {
+      font-size: 2.2rem;
+      margin-bottom: 8px;
+    }
+
+    /* Rankings Leaderboard Table */
+    .ranking-table-card {
+      background: var(--bg-card);
+      border: 1.5px solid var(--border-outline);
+      border-radius: var(--radius-xs);
+      overflow: hidden;
+      margin-top: 20px;
+      box-shadow: var(--shadow-sm);
+    }
+    .ranking-row {
+      display: grid;
+      grid-template-columns: 70px 1.6fr 1.2fr 1fr 1fr;
+      padding: 14px 20px;
+      align-items: center;
+      border-bottom: 1px solid var(--border-outline);
+      transition: var(--transition-fast);
+      font-size: 0.88rem;
+    }
+    .ranking-row:last-child {
+      border-bottom: none;
+    }
+    .ranking-row:hover {
+      background: var(--bg-secondary);
+    }
+    .ranking-row.current-user-row {
+      background: linear-gradient(90deg, rgba(121, 40, 202, 0.12) 0%, rgba(255, 106, 0, 0.08) 100%);
+      font-weight: 700;
+      border-left: 3px solid var(--accent-purple);
+    }
+    .rank-medal {
+      font-family: var(--font-tech);
+      font-weight: 800;
+      font-size: 1rem;
+    }
+
+    /* Interactive Challenge Solver Modal */
+    .solver-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.72);
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+    .solver-modal-backdrop.active {
+      display: flex;
+    }
+    .solver-modal-card {
+      background: var(--bg-card);
+      border: 1.5px solid var(--border-outline-strong);
+      border-radius: var(--radius-xs);
+      width: 100%;
+      max-width: 820px;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+      animation: fadeInDown 0.2s ease-out;
+    }
+    .solver-modal-header {
+      padding: 18px 24px;
+      background: var(--bg-secondary);
+      border-bottom: 1.5px solid var(--border-outline);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .solver-modal-body {
+      padding: 24px;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .code-editor-simulator {
+      background: #110d1a;
+      color: #f1f0f5;
+      font-family: var(--font-mono);
+      font-size: 0.86rem;
+      border-radius: 4px;
+      border: 1px solid rgba(121, 40, 202, 0.35);
+      padding: 14px;
+      min-height: 160px;
+      width: 100%;
+      resize: vertical;
+      line-height: 1.6;
+      box-sizing: border-box;
+      outline: none;
+    }
+
+    /* Responsive */
+    @media (max-width: 1100px) {
+      .journey-workflow-wrap { grid-template-columns: repeat(3, 1fr); }
+      .tier-matrix-grid { grid-template-columns: repeat(3, 1fr); }
+      .challenges-items-grid { grid-template-columns: repeat(2, 1fr); }
+      .badges-vault-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .journey-workflow-wrap { grid-template-columns: 1fr; }
+      .tier-matrix-grid { grid-template-columns: 1fr 1fr; }
+      .challenges-items-grid { grid-template-columns: 1fr; }
+      .badges-vault-grid { grid-template-columns: repeat(3, 1fr); }
+      .journey-profile-card { grid-template-columns: 1fr; text-align: center; }
+      .ranking-row { grid-template-columns: 40px 1fr 1fr; font-size: 0.78rem; }
+      .ranking-hide-sm { display: none; }
+    }
+  </style>
+</head>
+<body class="ecosystem-page">
+
+<!-- ── Main Site Header ────────────────────────────────────── -->
+<div id="page-header"></div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     HERO & PLAYER PROGRESSION MATRIX
+═══════════════════════════════════════════════════════════ -->
+<section class="journey-hero">
+  <div class="journey-mesh-bg"></div>
+  <div class="container journey-hero-inner">
+    
+    <div style="text-align:center;max-width:860px;margin:0 auto;">
+      <div style="display:inline-flex;align-items:center;gap:8px;padding:4px 14px;border-radius:2px;background:rgba(121,40,202,0.12);border:1px solid rgba(121,40,202,0.3);font-family:var(--font-tech);font-size:0.75rem;font-weight:800;color:var(--accent-purple);letter-spacing:0.12em;margin-bottom:14px;">
+        <span>[ ARCHITECTURE MATRIX • COMPLETE DEVELOPER ECOSYSTEM ]</span>
+      </div>
+      <h1 style="font-size:clamp(2rem, 3.8vw, 3.2rem);line-height:1.16;margin-bottom:14px;font-weight:900;">
+        From Novice Coder to Master Architect:<br>
+        <span class="gradient-text">Your Complete Developer Journey</span>
+      </h1>
+      <p style="font-size:1.02rem;color:var(--text-secondary);line-height:1.68;max-width:760px;margin:0 auto;">
+        The unified ecosystem where developers learn, solve 75+ production-grade challenges, climb 10 elite ranks, unlock cryptographic achievement badges, review peer codebases, and monetize audited software.
+      </p>
+    </div>
+
+    <!-- Active Developer Telemetry HUD -->
+    <div class="journey-profile-card" id="user-telemetry-hud">
+      <div class="journey-avatar-wrap">
+        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=guest_dev&backgroundColor=6366f1" alt="Guest Developer" class="journey-avatar-img" id="hud-avatar">
+        <span class="journey-tier-badge-floating" id="hud-tier-badge">TIER 1</span>
+      </div>
+      <div>
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:4px;">
+          <h3 style="font-size:1.22rem;font-weight:800;margin:0;" id="hud-name">Guest Developer</h3>
+          <span style="font-family:var(--font-tech);font-size:0.78rem;color:var(--accent-purple);font-weight:700;" id="hud-handle">@guest · Visitor</span>
+          <span class="badge badge-purple" id="hud-title">Script Initiate</span>
+          <span style="font-size:0.78rem;color:var(--text-muted);" id="hud-location">🇮🇳 India</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.82rem;font-family:var(--font-tech);">
+          <span>PROGRESS TO <strong style="color:var(--accent-orange);" id="hud-next-tier">TIER 2: CODE NOVICE</strong></span>
+          <span id="hud-xp-display"><strong style="color:var(--accent-purple);">0</strong> / 501 XP (0%)</span>
+        </div>
+        <div class="journey-progress-track">
+          <div class="journey-progress-bar" id="hud-progress-bar" style="width: 0%;"></div>
+        </div>
+        <div style="display:flex;gap:18px;margin-top:6px;font-size:0.76rem;color:var(--text-muted);font-family:var(--font-tech);">
+          <span>🏆 SOLVED: <strong style="color:var(--text-primary);" id="hud-solved-count">0 Challenges</strong></span>
+          <span>🎖️ BADGES: <strong style="color:var(--text-primary);" id="hud-badge-count">0 Unlocked</strong></span>
+          <span>👑 RANK: <strong style="color:var(--accent-purple);" id="hud-rank">Unranked</strong></span>
+          <span>💰 EARNED: <strong style="color:var(--accent-green);" id="hud-earned">₹0 INR</strong></span>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;justify-content:center;" id="hud-actions-wrap">
+        <a href="register.html" class="btn btn-primary btn-sm">🚀 Create Account (Free)</a>
+        <a href="login.html" class="btn btn-outline btn-sm">🔑 Sign In to Save XP</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── Quick Jump Strip ── -->
+<div class="journey-nav-strip">
+  <div class="container" style="display:flex;gap:8px;overflow-x:auto;">
+    <button class="journey-nav-item active" onclick="jumpToTab('workflow', this)">🗺️ 5-Stage Journey</button>
+    <button class="journey-nav-item" onclick="jumpToTab('tiers', this)">⚡ 10 Developer Tiers</button>
+    <button class="journey-nav-item" onclick="jumpToTab('challenges', this)">🎯 75+ Coding Challenges</button>
+    <button class="journey-nav-item" onclick="jumpToTab('badges', this)">🎖️ Badges &amp; Accolades</button>
+    <button class="journey-nav-item" onclick="jumpToTab('rankings', this)">👑 Global Leaderboard</button>
+    <button class="journey-nav-item" onclick="jumpToTab('ecosystem', this)">🌐 Community Pillars</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECTION 1: 5-STAGE DEVELOPER JOURNEY WORKFLOW
+═══════════════════════════════════════════════════════════ -->
+<section class="section" id="sec-workflow" style="padding-top:40px;">
+  <div class="container">
+    <div class="section-header" style="text-align:left;margin-bottom:28px;">
+      <div class="eyebrow" style="color:var(--accent-purple);">[ PROGRESSION ROADMAP ]</div>
+      <h2 style="font-size:2rem;font-weight:900;">The 5-Stage Developer Lifecycle</h2>
+      <p style="color:var(--text-secondary);margin:0;">
+        From your first Git clone to architecting enterprise distributed microservices and monetizing audited code. Click any stage to inspect milestones:
+      </p>
+    </div>
+
+    <!-- 5 Stage Step Nodes -->
+    <div class="journey-workflow-wrap">
+      <div class="journey-stage-step" id="stage-node-1" onclick="switchJourneyStage(1)">
+        <div class="stage-step-num">01</div>
+        <div>
+          <span style="font-family:var(--font-tech);font-size:0.7rem;color:var(--accent-orange);font-weight:700;">DAYS 1 – 30</span>
+          <h4 style="font-size:1.02rem;margin:4px 0 6px;">The Initiate</h4>
+          <p style="font-size:0.8rem;color:var(--text-muted);line-height:1.5;margin:0;">Environment setup, first code clone, introductions &amp; Tier 1 unlock.</p>
+        </div>
+        <div style="margin-top:14px;font-size:0.72rem;font-weight:700;color:var(--accent-purple);font-family:var(--font-tech);">TIERS 1 &amp; 2 • 0 - 1.5K XP →</div>
+      </div>
+
+      <div class="journey-stage-step" id="stage-node-2" onclick="switchJourneyStage(2)">
+        <div class="stage-step-num">02</div>
+        <div>
+          <span style="font-family:var(--font-tech);font-size:0.7rem;color:var(--accent-orange);font-weight:700;">MONTHS 1 – 3</span>
+          <h4 style="font-size:1.02rem;margin:4px 0 6px;">The Skill Builder</h4>
+          <p style="font-size:0.8rem;color:var(--text-muted);line-height:1.5;margin:0;">Conquering category challenges (React, Node, AI), unlocking silver badges.</p>
+        </div>
+        <div style="margin-top:14px;font-size:0.72rem;font-weight:700;color:var(--accent-purple);font-family:var(--font-tech);">TIERS 3 &amp; 4 • 1.5K - 6.5K XP →</div>
+      </div>
+
+      <div class="journey-stage-step active" id="stage-node-3" onclick="switchJourneyStage(3)">
+        <div class="stage-step-num">03</div>
+        <div>
+          <span style="font-family:var(--font-tech);font-size:0.7rem;color:var(--accent-purple);font-weight:800;">CURRENT STAGE</span>
+          <h4 style="font-size:1.02rem;margin:4px 0 6px;">The Peer Collaborator</h4>
+          <p style="font-size:0.8rem;color:var(--text-muted);line-height:1.5;margin:0;">Code reviews, active in tech channels, solving common system design.</p>
+        </div>
+        <div style="margin-top:14px;font-size:0.72rem;font-weight:700;color:var(--accent-purple);font-family:var(--font-tech);">TIERS 5 &amp; 6 • 6.5K - 17.5K XP →</div>
+      </div>
+
+      <div class="journey-stage-step" id="stage-node-4" onclick="switchJourneyStage(4)">
+        <div class="stage-step-num">04</div>
+        <div>
+          <span style="font-family:var(--font-tech);font-size:0.7rem;color:var(--accent-orange);font-weight:700;">MONTHS 6 – 12</span>
+          <h4 style="font-size:1.02rem;margin:4px 0 6px;">The Creator &amp; Seller</h4>
+          <p style="font-size:0.8rem;color:var(--text-muted);line-height:1.5;margin:0;">Packaging codebases, automated AST scans, earning direct Rupee royalties.</p>
+        </div>
+        <div style="margin-top:14px;font-size:0.72rem;font-weight:700;color:var(--accent-purple);font-family:var(--font-tech);">TIERS 7 &amp; 8 • 17.5K - 38K XP →</div>
+      </div>
+
+      <div class="journey-stage-step" id="stage-node-5" onclick="switchJourneyStage(5)">
+        <div class="stage-step-num">05</div>
+        <div>
+          <span style="font-family:var(--font-tech);font-size:0.7rem;color:var(--accent-orange);font-weight:700;">YEAR 1+</span>
+          <h4 style="font-size:1.02rem;margin:4px 0 6px;">Grandmaster Architect</h4>
+          <p style="font-size:0.8rem;color:var(--text-muted);line-height:1.5;margin:0;">Distributed consensus, bug bounty hunts, mentoring &amp; lowest 0.5% platform fee tier.</p>
+        </div>
+        <div style="margin-top:14px;font-size:0.72rem;font-weight:700;color:var(--accent-purple);font-family:var(--font-tech);">TIERS 9 &amp; 10 • 38K - 55K+ XP →</div>
+      </div>
+    </div>
+
+    <!-- Live Stage Inspector Box -->
+    <div class="stage-detail-box" id="stage-detail-display">
+      <!-- Populated dynamically by JS -->
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECTION 2: THE 10 DEVELOPER TIERS (SYSTEM & PERKS)
+═══════════════════════════════════════════════════════════ -->
+<section class="section" id="sec-tiers" style="padding-top:20px;">
+  <div class="container">
+    <div class="section-header" style="text-align:left;margin-bottom:24px;">
+      <div class="eyebrow" style="color:var(--accent-orange);">[ CLIMB THE RANKS ]</div>
+      <h2 style="font-size:2rem;font-weight:900;">The 10 Developer Tiers &amp; Privilege Perks</h2>
+      <p style="color:var(--text-secondary);margin:0;">
+        Every tier unlocks verifiable credentials, community permissions, marketplace royalty boosters, and exclusive challenge access:
+      </p>
+    </div>
+
+    <!-- 10-Tier Cards Grid -->
+    <div class="tier-matrix-grid" id="tier-cards-container">
+      <!-- Populated dynamically by JS -->
+    </div>
+
+    <!-- Interactive Tier Simulator Box -->
+    <div style="background:var(--bg-card);border:1.5px solid var(--border-outline);border-radius:var(--radius-xs);padding:24px 30px;margin-top:24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;">
+      <div>
+        <h4 style="font-size:1.08rem;margin:0 0 6px;">⚡ Real-Time Tier Advancement Simulator</h4>
+        <p style="font-size:0.85rem;color:var(--text-muted);margin:0;">
+          Solve challenges and publish audited repositories to rapidly climb from <strong>Tier 1 (Script Initiate)</strong> to <strong>Tier 10 (Grandmaster Architect)</strong>.
+        </p>
+      </div>
+      <div style="display:flex;gap:12px;align-items:center;">
+        <button class="btn btn-outline btn-sm" onclick="simulateXpBoost(500)">+500 XP (Challenge)</button>
+        <button class="btn btn-primary btn-sm" onclick="simulateXpBoost(1200)">+1,200 XP (Code Sale)</button>
+        <button class="btn btn-secondary btn-sm" onclick="resetXpSimulation()">Reset Simulator</button>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECTION 3: 75+ CODING CHALLENGES (CATEGORY & COMMON)
+═══════════════════════════════════════════════════════════ -->
+<section class="section" id="sec-challenges" style="padding-top:20px;">
+  <div class="container">
+    
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:16px;margin-bottom:24px;">
+      <div>
+        <div class="eyebrow" style="color:var(--accent-purple);">[ PRACTICAL CODE CHALLENGES ]</div>
+        <h2 style="font-size:2rem;font-weight:900;">75+ Real-World Production Challenges</h2>
+        <p style="color:var(--text-secondary);margin:0;">
+          Solve 10–20 challenges in your domain or master Universal challenges common to all software engineering tracks:
+        </p>
+      </div>
+      <div class="challenge-search-box">
+        <span style="font-size:0.9rem;color:var(--text-muted);">🔍</span>
+        <input type="text" id="challenge-search-input" class="challenge-search-input" placeholder="Search challenges, skills, topics..." oninput="handleChallengeSearch()">
+      </div>
+    </div>
+
+    <!-- Filter Bar: Categories -->
+    <div class="challenge-filter-bar">
+      <div class="challenge-filter-group" id="challenge-cat-filters">
+        <button class="challenge-cat-pill active" onclick="filterChallenges('cat', 'all', this)">🌟 All Tracks (75)</button>
+        <button class="challenge-cat-pill" onclick="filterChallenges('cat', 'common', this)">🌐 Common for All (15)</button>
+        <button class="challenge-cat-pill" onclick="filterChallenges('cat', 'frontend', this)">⚛️ Web &amp; Frontend (13)</button>
+        <button class="challenge-cat-pill" onclick="filterChallenges('cat', 'backend', this)">⚙️ Backend &amp; APIs (13)</button>
+        <button class="challenge-cat-pill" onclick="filterChallenges('cat', 'ai', this)">🤖 AI &amp; ML (12)</button>
+        <button class="challenge-cat-pill" onclick="filterChallenges('cat', 'mobile', this)">📱 Mobile &amp; Flutter (11)</button>
+        <button class="challenge-cat-pill" onclick="filterChallenges('cat', 'security', this)">🛡️ Security &amp; Crypto (11)</button>
+      </div>
+
+      <!-- Difficulty Filter -->
+      <div style="display:flex;gap:6px;align-items:center;">
+        <span style="font-family:var(--font-tech);font-size:0.75rem;color:var(--text-muted);margin-right:4px;">DIFFICULTY:</span>
+        <button class="badge badge-purple" style="cursor:pointer;" onclick="filterChallenges('diff', 'all', this)">All</button>
+        <button class="badge badge-green" style="cursor:pointer;" onclick="filterChallenges('diff', 'Easy', this)">Easy</button>
+        <button class="badge badge-orange" style="cursor:pointer;" onclick="filterChallenges('diff', 'Medium', this)">Medium</button>
+        <button class="badge badge-coral" style="cursor:pointer;" onclick="filterChallenges('diff', 'Hard', this)">Hard</button>
+        <button class="badge badge-pink" style="cursor:pointer;" onclick="filterChallenges('diff', 'Legendary', this)">Legendary</button>
+      </div>
+    </div>
+
+    <!-- Challenge Counter Bar -->
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 16px;background:var(--bg-secondary);border:1px solid var(--border-outline);border-radius:var(--radius-xs);font-size:0.8rem;font-family:var(--font-tech);margin-bottom:14px;">
+      <div>SHOWING: <strong id="challenges-showing-count" style="color:var(--accent-purple);">75</strong> CHALLENGES</div>
+      <div>EARNABLE REWARDS: <strong style="color:var(--accent-orange);">+24,850 XP TOTAL</strong> • 6 TIER ADVANCEMENTS</div>
+    </div>
+
+    <!-- Challenges Items Grid -->
+    <div class="challenges-items-grid" id="challenges-grid-container">
+      <!-- Populated dynamically by JS -->
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECTION 4: BADGES & ACCOLADES VAULT (24 BADGES)
+═══════════════════════════════════════════════════════════ -->
+<section class="section" id="sec-badges" style="padding-top:20px;">
+  <div class="container">
+    <div class="section-header" style="text-align:left;margin-bottom:20px;">
+      <div class="eyebrow" style="color:var(--accent-coral);">[ ON-CHAIN &amp; REPUTATION ACCOLADES ]</div>
+      <h2 style="font-size:2rem;font-weight:900;">24 Achievement &amp; Mastery Badges</h2>
+      <p style="color:var(--text-secondary);margin:0;">
+        Cryptographic proof of skill completion, peer reviews, marketplace sales, and community leadership:
+      </p>
+    </div>
+
+    <!-- Category Switcher for Badges -->
+    <div style="display:flex;gap:8px;margin-bottom:18px;overflow-x:auto;">
+      <button class="btn btn-outline btn-sm active" id="badge-tab-all" onclick="filterBadges('all', this)">All Badges (24)</button>
+      <button class="btn btn-outline btn-sm" onclick="filterBadges('skill', this)">⚡ Skill Mastery (6)</button>
+      <button class="btn btn-outline btn-sm" onclick="filterBadges('milestone', this)">🏆 Milestones (6)</button>
+      <button class="btn btn-outline btn-sm" onclick="filterBadges('community', this)">💬 Community Mentors (6)</button>
+      <button class="btn btn-outline btn-sm" onclick="filterBadges('creator', this)">🛒 Marketplace Pioneers (6)</button>
+    </div>
+
+    <div class="badges-vault-grid" id="badges-grid-container">
+      <!-- Populated dynamically by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECTION 5: GLOBAL DEVELOPER RANKINGS & LEADERBOARD
+═══════════════════════════════════════════════════════════ -->
+<section class="section" id="sec-rankings" style="padding-top:20px;">
+  <div class="container">
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:16px;margin-bottom:20px;">
+      <div>
+        <div class="eyebrow" style="color:var(--accent-purple);">[ NATIONAL &amp; GLOBAL LEADERBOARD ]</div>
+        <h2 style="font-size:2rem;font-weight:900;">Developer Architecture Rankings</h2>
+        <p style="color:var(--text-secondary);margin:0;">
+          Ranked by verified challenge points, peer review score, and production codebase telemetry:
+        </p>
+      </div>
+      <div style="display:flex;gap:6px;">
+        <button class="btn btn-outline btn-sm active" id="rank-tab-all" onclick="switchLeaderboard('all', this)">All-Time</button>
+        <button class="btn btn-outline btn-sm" onclick="switchLeaderboard('monthly', this)">This Month</button>
+        <button class="btn btn-outline btn-sm" onclick="switchLeaderboard('solvers', this)">Challenge Aces</button>
+        <button class="btn btn-outline btn-sm" onclick="switchLeaderboard('creators', this)">Top Creators</button>
+      </div>
+    </div>
+
+    <!-- Leaderboard Table -->
+    <div class="ranking-table-card">
+      <div class="ranking-row" style="background:var(--bg-secondary);font-family:var(--font-tech);font-size:0.75rem;font-weight:800;color:var(--text-muted);letter-spacing:0.08em;">
+        <div>RANK</div>
+        <div>DEVELOPER</div>
+        <div>CURRENT TIER</div>
+        <div class="ranking-hide-sm">SOLVED</div>
+        <div style="text-align:right;">TOTAL XP</div>
+      </div>
+      <div id="ranking-rows-container">
+        <!-- Populated dynamically by JS -->
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECTION 6: ECOSYSTEM & COMMUNITY PILLARS GATEWAY
+═══════════════════════════════════════════════════════════ -->
+<section class="section" id="sec-ecosystem" style="padding-top:20px;">
+  <div class="container">
+    <div class="section-header" style="text-align:left;margin-bottom:24px;">
+      <div class="eyebrow" style="color:var(--accent-orange);">[ ECOSYSTEM INTEGRATION ]</div>
+      <h2 style="font-size:2rem;font-weight:900;">The Complete Smart Hub Universe</h2>
+      <p style="color:var(--text-secondary);margin:0;">
+        Connect your developer journey directly to real-time chat, Discord-style channels, digital marketplace, and instant payouts:
+      </p>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:16px;">
+      
+      <!-- Community Channels -->
+      <div class="outline-frame" style="padding:24px;display:flex;flex-direction:column;justify-content:space-between;">
+        <div>
+          <div style="font-size:2rem;margin-bottom:10px;">💬</div>
+          <h3 style="font-size:1.18rem;margin-bottom:8px;">24/7 Community Channels</h3>
+          <p style="font-size:0.86rem;color:var(--text-muted);line-height:1.6;margin-bottom:14px;">
+            Join Discord-style forums for React, Flutter, Python AI, Node.js backend, and hiring desks with over 14,800 active developers online.
+          </p>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;">
+            <span class="badge badge-purple">#react-js</span>
+            <span class="badge badge-orange">#node-backend</span>
+            <span class="badge badge-cyan">#ai-ml</span>
+            <span class="badge badge-green">#showcase</span>
+          </div>
+        </div>
+        <a href="community.html" class="btn btn-outline w-full">Join Channels →</a>
+      </div>
+
+      <!-- Developer Feed -->
+      <div class="outline-frame" style="padding:24px;display:flex;flex-direction:column;justify-content:space-between;">
+        <div>
+          <div style="font-size:2rem;margin-bottom:10px;">📰</div>
+          <h3 style="font-size:1.18rem;margin-bottom:8px;">Live Developer Feed</h3>
+          <p style="font-size:0.86rem;color:var(--text-muted);line-height:1.6;margin-bottom:14px;">
+            Publish code launch snippets, explore peer project showcases, follow top-ranked architects, and read daily engineering tech radars.
+          </p>
+          <div style="padding:10px;background:var(--bg-secondary);border:1px solid var(--border-outline);border-radius:2px;font-size:0.78rem;color:var(--text-secondary);margin-bottom:16px;">
+            🔥 Trending: <em>"How we scaled Next.js 15 to 100k req/min using Redis token buckets"</em>
+          </div>
+        </div>
+        <a href="feed.html" class="btn btn-outline w-full">Open Dev Feed →</a>
+      </div>
+
+      <!-- Audited Digital Marketplace -->
+      <div class="outline-frame" style="padding:24px;display:flex;flex-direction:column;justify-content:space-between;">
+        <div>
+          <div style="font-size:2rem;margin-bottom:10px;">🛒</div>
+          <h3 style="font-size:1.18rem;margin-bottom:8px;">Audited Code Marketplace</h3>
+          <p style="font-size:0.86rem;color:var(--text-muted);line-height:1.6;margin-bottom:14px;">
+            Monetize your codebases with up to 99.5% creator retention (transparent 0.5%–3% platform fee + tax on sales), or download verified production templates screened with automated static AST analysis.
+          </p>
+          <div style="font-family:var(--font-tech);font-size:0.78rem;color:var(--accent-green);margin-bottom:16px;">
+            ✓ TRANSPARENT 0.5%–3% PLATFORM FEE • ZERO DEPOSIT FEES
+          </div>
+        </div>
+        <a href="marketplace.html" class="btn btn-primary w-full">Explore Marketplace →</a>
+      </div>
+
+    </div>
+
+    <!-- Direct Messaging & Wallet Strip -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px;">
+      <div style="background:var(--bg-card);border:1.5px solid var(--border-outline);padding:20px 24px;border-radius:var(--radius-xs);display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <h4 style="margin:0 0 4px;font-size:1.02rem;">✉️ Peer-to-Peer Direct Messaging</h4>
+          <p style="font-size:0.82rem;color:var(--text-muted);margin:0;">Chat directly with authors, request custom modules, or negotiate private contracts.</p>
+        </div>
+        <a href="chat.html" class="btn btn-outline btn-sm">Open Messages</a>
+      </div>
+
+      <div style="background:var(--bg-card);border:1.5px solid var(--border-outline);padding:20px 24px;border-radius:var(--radius-xs);display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <h4 style="margin:0 0 4px;font-size:1.02rem;">💰 Rupee Wallet &amp; Payouts</h4>
+          <p style="font-size:0.82rem;color:var(--text-muted);margin:0;">Current Balance: <strong>₹4,750 INR</strong> • Direct UPI instant settlement.</p>
+        </div>
+        <a href="wallet.html" class="btn btn-outline-coral btn-sm">View Wallet</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     INTERACTIVE CHALLENGE SOLVER MODAL (RUN & EARN XP)
+═══════════════════════════════════════════════════════════ -->
+<div class="solver-modal-backdrop" id="solver-modal" onclick="if(event.target===this) closeSolverModal()">
+  <div class="solver-modal-card">
+    <div class="solver-modal-header">
+      <div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="badge badge-purple" id="modal-ch-cat">Frontend</span>
+          <span class="badge badge-orange" id="modal-ch-diff">Medium</span>
+          <span style="font-family:var(--font-tech);font-size:0.75rem;color:var(--text-muted);" id="modal-ch-id">FE-101</span>
+        </div>
+        <h3 id="modal-ch-title" style="font-size:1.25rem;font-weight:800;margin:6px 0 0;">Virtual DOM Reconciler</h3>
+      </div>
+      <button class="modal-close-btn" onclick="closeSolverModal()" aria-label="Close modal">✕</button>
+    </div>
+
+    <div class="solver-modal-body">
+      <!-- Problem Statement -->
+      <div style="margin-bottom:16px;">
+        <h5 style="font-size:0.85rem;color:var(--accent-purple);font-family:var(--font-tech);margin-bottom:6px;">[ CHALLENGE OBJECTIVE ]</h5>
+        <p id="modal-ch-desc" style="font-size:0.9rem;line-height:1.6;color:var(--text-primary);margin:0;">
+          Implement an efficient diffing algorithm that compares two AST virtual nodes and produces an atomic patch list for minimal browser DOM updates.
+        </p>
+      </div>
+
+      <!-- Test Cases Matrix -->
+      <div style="background:var(--bg-secondary);border:1px solid var(--border-outline);border-radius:4px;padding:12px 16px;margin-bottom:16px;">
+        <div style="font-family:var(--font-tech);font-size:0.75rem;font-weight:700;margin-bottom:6px;color:var(--text-secondary);">VERIFIED TEST CASES:</div>
+        <div id="modal-ch-tests" style="font-family:var(--font-mono);font-size:0.8rem;color:var(--text-muted);line-height:1.6;">
+          ✓ Case 1: Identical VNode structure returns empty mutation patch.<br>
+          ✓ Case 2: Changed text content generates REPLACE_TEXT operation.<br>
+          ✓ Case 3: Reordered children key list performs minimal splice index swaps.
+        </div>
+      </div>
+
+      <!-- Live Code Editor Simulator -->
+      <div style="margin-bottom:16px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+          <span style="font-family:var(--font-tech);font-size:0.75rem;font-weight:700;color:var(--text-muted);">JAVASCRIPT / TYPESCRIPT IMPLEMENTATION:</span>
+          <span style="font-size:0.75rem;color:var(--accent-green);font-family:var(--font-tech);">● REAL-TIME SYNTAX PARSER ACTIVE</span>
+        </div>
+        <textarea id="modal-ch-code" class="code-editor-simulator" spellcheck="false"></textarea>
+      </div>
+
+      <!-- Execution Console Log -->
+      <div id="modal-console-log" style="display:none;background:#0d0914;border:1px solid rgba(121,40,202,0.3);border-radius:4px;padding:10px 14px;font-family:var(--font-mono);font-size:0.8rem;margin-bottom:14px;">
+        <!-- Filled on verification -->
+      </div>
+
+      <!-- Action Footer -->
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+        <div>
+          <span style="font-size:0.85rem;color:var(--text-muted);">Reward:</span>
+          <strong id="modal-ch-reward" style="color:var(--accent-orange);font-size:1rem;margin-left:4px;">+250 XP &amp; Logic Badge</strong>
+        </div>
+        <div style="display:flex;gap:10px;">
+          <button class="btn btn-outline btn-sm" onclick="runCodeTestOnly()">▶ Run Test Cases</button>
+          <button class="btn btn-primary btn-sm" id="btn-submit-solution" onclick="submitChallengeSolution()">✓ Verify &amp; Claim XP</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Footer ──────────────────────────────────────────────── -->
+<div id="page-footer"></div>
+
+<!-- ── Core Framework Scripts ──────────────────────────────── -->
+<script src="js/data.js"></script>
+<script src="js/api.js"></script>
+<script src="js/main.js"></script>
+<script src="js/layout.js"></script>
+
+<!-- ═══════════════════════════════════════════════════════════
+     DEVELOPER JOURNEY & ECOSYSTEM DATA ENGINE (75 CHALLENGES)
+═══════════════════════════════════════════════════════════ -->
+<script>
+// ── 1. The 10 Developer Tiers Progression System ─────────────
+const DEVELOPER_TIERS = [
+  { tier: 1, name: 'Script Initiate', xpMin: 0, xpMax: 500, icon: '🥉', color: '#cd7f32', bg: 'rgba(205,127,50,0.12)', perks: 'Browse marketplace, participate in community discussions, view public repo audits.' },
+  { tier: 2, name: 'Code Novice', xpMin: 501, xpMax: 1500, icon: '🥉', color: '#b87333', bg: 'rgba(184,115,51,0.12)', perks: 'Direct peer messaging unlocked, participate in weekly tech trivia and basic challenges.' },
+  { tier: 3, name: 'Syntax Builder', xpMin: 1501, xpMax: 3500, icon: '🥈', color: '#94a3b8', bg: 'rgba(148,163,184,0.15)', perks: 'Download ₹0 Free Starter Codebases, post architectural questions in developer feed.' },
+  { tier: 4, name: 'Logic Craftsman', xpMin: 3501, xpMax: 6500, icon: '⚙️', color: '#7928ca', bg: 'rgba(121,40,202,0.15)', perks: 'Review community challenge submissions, submit first custom component to ecosystem.' },
+  { tier: 5, name: 'Fullstack Artisan', xpMin: 6501, xpMax: 11000, icon: '🥇', color: '#f59e0b', bg: 'rgba(245,158,11,0.15)', perks: 'Creator Studio unlocked! Upload verified codebases for sale with instant UPI payouts.' },
+  { tier: 6, name: 'Systems Specialist', xpMin: 11001, xpMax: 17500, icon: '💎', color: '#06b6d4', bg: 'rgba(6,182,212,0.15)', perks: 'Fast-track 12h AST code scanning, 5% creator royalty bonus, Silver verified checkmark.' },
+  { tier: 7, name: 'Distributed Engineer', xpMin: 17501, xpMax: 26000, icon: '🟢', color: '#10b981', bg: 'rgba(16,185,129,0.15)', perks: 'Host private challenge rooms, write guest technical articles on developer feed.' },
+  { tier: 8, name: 'Cloud & AI Architect', xpMin: 26001, xpMax: 38000, icon: '🔷', color: '#3b82f6', bg: 'rgba(59,130,246,0.15)', perks: 'Priority AST deep scan, exclusive access to high-reward national bug bounty pools.' },
+  { tier: 9, name: 'Principal Cybermaster', xpMin: 38001, xpMax: 55000, icon: '🟣', color: '#a855f7', bg: 'rgba(168,85,247,0.15)', perks: 'Official jury for community hackathons, direct engineering line to Smart Hub core team.' },
+  { tier: 10, name: 'Grandmaster Architect', xpMin: 55001, xpMax: 999999, icon: '👑', color: '#ff6a00', bg: 'rgba(255,106,0,0.18)', perks: 'Lowest 0.5% platform fee tier on all code sales, Legendary Prismatic Halo, Hall of Fame entry.' }
+];
+
+// ── 2. The 5-Stage Journey Milestones Data ───────────────────
+const JOURNEY_STAGES = {
+  1: {
+    num: '01',
+    title: 'The Initiate',
+    duration: 'Days 1 – 30',
+    subtitle: 'Onboarding & Foundation',
+    desc: 'Every master begins with a clean repository clone. In this stage, you initialize your Smart Hub developer identity, sync your GitHub account, configure local IDE telemetry, and introduce yourself to the community.',
+    milestones: [
+      'Initialize Smart Hub Developer Profile & link GitHub account',
+      'Introduce yourself in the #introductions channel',
+      'Solve your first 3 "Common" algorithmic challenges (Git, SemVer, Error Handling)',
+      'Unlock Tier 1 "Script Initiate" and Tier 2 "Code Novice"'
+    ],
+    perksUnlocked: 'Direct messaging with fellow Indian builders, Free Starter ₹0 open source code downloads.',
+    nextGoal: 'Reach 1,500 XP to enter Stage 2: Skill Acquisition.'
+  },
+  2: {
+    num: '02',
+    title: 'The Skill Builder',
+    duration: 'Months 1 – 3',
+    subtitle: 'Domain Specialization',
+    desc: 'Select your primary engineering discipline (Frontend, Backend, AI/ML, Mobile, or Security) and conquer 10–15 production-level challenges to develop muscle memory in real-world scenarios.',
+    milestones: [
+      'Solve 10+ track-specific challenges in your chosen stack',
+      'Master memory leaks, state batching, and database transactions',
+      'Participate in weekly community code teardowns and Q&A threads',
+      'Climb into Tier 3 "Syntax Builder" and Tier 4 "Logic Craftsman"'
+    ],
+    perksUnlocked: 'Ability to comment and review challenge test cases, Silver verification badge.',
+    nextGoal: 'Reach 6,500 XP to unlock Stage 3: Peer Collaboration & Code Reviews.'
+  },
+  3: {
+    num: '03',
+    title: 'The Peer Collaborator',
+    duration: 'Months 3 – 6',
+    subtitle: 'Community Contribution & Rep',
+    desc: 'Software engineering is a collaborative craft. Here you review community PRs, solve complex distributed architecture challenges, mentor junior coders, and build reputation in developer channels.',
+    milestones: [
+      'Conduct 5 verified peer code reviews for community repositories',
+      'Solve Common Hard challenges: Asynchronous Task Queues & Circuit Breakers',
+      'Earn "Community Pillar" and "PR Champion" accolades',
+      'Attain Tier 5 "Fullstack Artisan" and Tier 6 "Systems Specialist"'
+    ],
+    perksUnlocked: 'Creator Studio unlocked! Start selling verified source code with up to 99.5% royalty retention.',
+    nextGoal: 'Reach 17,500 XP to enter Stage 4: Marketplace Publishing.'
+  },
+  4: {
+    num: '04',
+    title: 'The Creator & Seller',
+    duration: 'Months 6 – 12',
+    subtitle: 'Code Monetization & Audits',
+    desc: 'Package full-stack SaaS templates, mobile apps, or AI microservices. Run them through our multi-stage AST security screening, publish to 10,000+ buyers, and earn direct Rupee payouts.',
+    milestones: [
+      'Pass the automated static AST vulnerability scan with zero CVEs',
+      'Publish your first verified commercial template to Smart Hub Marketplace',
+      'Achieve first 10 verified customer downloads and 5-star ratings',
+      'Surpass ₹1 Lakh in digital royalties and attain Tier 7 & 8'
+    ],
+    perksUnlocked: 'Priority 12h code scanning, custom Verified Seller crown, instant UPI settlements.',
+    nextGoal: 'Reach 38,000 XP to enter Stage 5: Grandmaster Architect status.'
+  },
+  5: {
+    num: '05',
+    title: 'Grandmaster Architect',
+    duration: 'Year 1+',
+    subtitle: 'Industry Leadership & Bounties',
+    desc: 'The pinnacle of the Smart Hub ecosystem. Solve legendary distributed consensus algorithms, hunt critical security vulnerabilities in national bug bounties (up to ₹50,000 INR), and mentor the next generation.',
+    milestones: [
+      'Conquer Legendary Challenges: Raft Consensus, WebGL Shaders & ZKP Verifiers',
+      'Report verified security vulnerabilities to security@smarthub.in',
+      'Join the Tier 10 Developer Council to vote on platform architecture standards',
+      'Inducted into the Smart Hub National Developer Hall of Fame'
+    ],
+    perksUnlocked: 'Lowest 0.5% platform fee tier on all code sales, Legendary Prismatic Halo, VIP access to executive hackathons.',
+    nextGoal: 'Maintain Top 10 National Rank on the Global Leaderboard.'
+  }
+};
+
+// ── 3. 75 Real-World Production Challenges Dataset ───────────
+const ALL_CHALLENGES = [
+  // ── A. Universal / Common for All Tracks (15 Challenges) ───
+  { id: 'COM-001', title: 'Git Merge Conflict Resolver Simulator', cat: 'common', catName: 'Universal', diff: 'Easy', xp: 150, time: '15m', skill: 'Git & VCS', status: 'available', desc: 'Parse Git 3-way merge conflict markers (<<<<<<<, =======, >>>>>>>) and implement a strategy engine to automatically resolve non-overlapping lines.', testCases: 'Case 1: Resolves conflicting lines correctly.<br>Case 2: Handles multi-file diff chunks.<br>Case 3: Throws error on unresolved blocks.' },
+  { id: 'COM-002', title: 'LRU Cache Implementation with O(1) Ops', cat: 'common', catName: 'Universal', diff: 'Medium', xp: 280, time: '25m', skill: 'Data Structures', status: 'available', desc: 'Design a Least Recently Used (LRU) Cache data structure with O(1) get and put operations using a doubly linked list and hash map.', testCases: 'Case 1: Evicts oldest key upon capacity breach.<br>Case 2: Refreshes key order on get().<br>Case 3: Handles 10,000 rapid concurrent ops.' },
+  { id: 'COM-003', title: 'Memory Leak Detection in Event Listeners', cat: 'common', catName: 'Universal', diff: 'Medium', xp: 300, time: '30m', skill: 'JavaScript Internals', status: 'available', desc: 'Construct a WeakRef-based event listener tracker to identify uncleaned detached DOM nodes and hanging closure references.', testCases: 'Case 1: Detects detached nodes.<br>Case 2: Cleans WeakMap bindings.<br>Case 3: Reports leak telemetry object.' },
+  { id: 'COM-004', title: 'Trie Prefix Autocomplete Data Structure', cat: 'common', catName: 'Universal', diff: 'Medium', xp: 320, time: '30m', skill: 'Algorithms', status: 'available', desc: 'Implement a prefix tree (Trie) supporting rapid insert, exact search, and ranked prefix recommendations with frequency weights.', testCases: 'Case 1: Inserts words cleanly.<br>Case 2: Returns top 5 weighted prefix matches.<br>Case 3: Handles case-insensitive lookups.' },
+  { id: 'COM-005', title: 'Multi-Level Undo/Redo Command Pattern', cat: 'common', catName: 'Universal', diff: 'Medium', xp: 290, time: '25m', skill: 'Design Patterns', status: 'available', desc: 'Build an immutable command history manager supporting execute, undo, and redo with stack depth constraints and state snapshotting.', testCases: 'Case 1: Undoes last 3 executed states.<br>Case 2: Clears redo stack upon new mutation.<br>Case 3: Enforces max stack size limit.' },
+  { id: 'COM-006', title: 'Async Task Queue with Concurrency Limits', cat: 'common', catName: 'Universal', diff: 'Hard', xp: 360, time: '40m', skill: 'Concurrency', status: 'available', desc: 'Implement an asynchronous worker pool that processes a stream of promises with a strict concurrency limit of N parallel jobs.', testCases: 'Case 1: Never exceeds N concurrent promises.<br>Case 2: Handles rejected promises cleanly.<br>Case 3: Resolves all tasks in correct sequence.' },
+  { id: 'COM-007', title: 'Semantic Versioning (SemVer) Comparator', cat: 'common', catName: 'Universal', diff: 'Easy', xp: 200, time: '20m', skill: 'RegEx & Parsing', status: 'available', desc: 'Write a parser and sorting comparator compliant with SemVer 2.0 specs, handling pre-release tags, build metadata, and caret/tilde ranges.', testCases: 'Case 1: Sorts [1.0.0, 1.2.0, 1.1.9, 2.0.0].<br>Case 2: Handles alpha/beta pre-releases.<br>Case 3: Evaluates ^1.2.3 and ~1.2.3 ranges.' },
+  { id: 'COM-008', title: 'Graph Shortest Path (Dijkstra) Routing', cat: 'common', catName: 'Universal', diff: 'Hard', xp: 420, time: '45m', skill: 'Graph Algorithms', status: 'available', desc: 'Calculate the lowest-latency network route between microservice nodes on a weighted directed graph using Dijkstra with a priority queue.', testCases: 'Case 1: Finds lowest cost path.<br>Case 2: Returns unreachable flag for disjoint nodes.<br>Case 3: Avoids cyclic infinite loops.' },
+  { id: 'COM-009', title: 'Production Error Boundary & Telemetry', cat: 'common', catName: 'Universal', diff: 'Easy', xp: 240, time: '20m', skill: 'Observability', status: 'available', desc: 'Build an error boundary wrapper that catches runtime exceptions, sanitizes sensitive user telemetry, and dispatches batch logs.', testCases: 'Case 1: Catches sync and async rejections.<br>Case 2: Strips passwords and credit card tokens.<br>Case 3: Flushes logs upon unload.' },
+  { id: 'COM-010', title: 'Deep Object Equality & Circular Reference', cat: 'common', catName: 'Universal', diff: 'Medium', xp: 270, time: '25m', skill: 'Recursion', status: 'available', desc: 'Write an industrial deep-equal function that handles nested objects, Arrays, Maps, Sets, Dates, and circular back-references without stack overflow.', testCases: 'Case 1: Compares deep nested trees.<br>Case 2: Resolves self-referencing circular objects.<br>Case 3: Distinguishes null vs undefined.' },
+  { id: 'COM-011', title: 'Monorepo Circular Dependency Detector', cat: 'common', catName: 'Universal', diff: 'Hard', xp: 400, time: '40m', skill: 'Topological Sort', status: 'available', desc: 'Parse package.json dependencies across a monorepo and run Tarjan or Kahn algorithm to pinpoint circular import deadlocks.', testCases: 'Case 1: Detects A -> B -> C -> A cycles.<br>Case 2: Outputs topological build order.<br>Case 3: Validates isolated packages.' },
+  { id: 'COM-012', title: 'High-Speed Bitwise Permissions & RBAC Mask', cat: 'common', catName: 'Universal', diff: 'Medium', xp: 310, time: '25m', skill: 'Bitwise Ops', status: 'available', desc: 'Implement an ultra-fast role-based access control (RBAC) engine using 32-bit bitmasks for read, write, execute, delete, and admin permissions.', testCases: 'Case 1: Adds and removes bitwise flags.<br>Case 2: Evaluates hasPermission() in <1ms.<br>Case 3: Serializes mask to readable string.' },
+  { id: 'COM-013', title: 'Clean Architecture Dependency Injection', cat: 'common', catName: 'Universal', diff: 'Hard', xp: 380, time: '35m', skill: 'Architecture', status: 'available', desc: 'Build an inversion of control (IoC) container supporting singleton, transient, and scoped lifetimes with circular dependency safeguards.', testCases: 'Case 1: Injects constructor dependencies.<br>Case 2: Preserves singleton instance states.<br>Case 3: Throws descriptive resolution errors.' },
+  { id: 'COM-014', title: 'Distributed UUID v7 Time-Ordered Keys', cat: 'common', catName: 'Universal', diff: 'Medium', xp: 290, time: '25m', skill: 'System Design', status: 'available', desc: 'Generate cryptographic UUID v7 tokens containing a 48-bit UNIX millisecond timestamp prefix and 74 random bits for B-Tree index efficiency.', testCases: 'Case 1: Tokens sort chronologically.<br>Case 2: Guarantees uniqueness across 1M keys.<br>Case 3: Validates against RFC 9562 specs.' },
+  { id: 'COM-015', title: 'Self-Healing Retrying Circuit Breaker', cat: 'common', catName: 'Universal', diff: 'Hard', xp: 450, time: '45m', skill: 'Resilience', status: 'available', desc: 'Construct a stateful circuit breaker (Closed, Open, Half-Open) with configurable failure thresholds, recovery timeouts, and fallback handlers.', testCases: 'Case 1: Trips to Open after 5 consecutive fails.<br>Case 2: Executes fallback on fast-fail.<br>Case 3: Recovers to Closed after probe passes.' },
+
+  // ── B. Web & Frontend Engineering (13 Challenges) ──────────
+  { id: 'FE-101', title: 'Custom Virtual DOM Reconciler & Diffing', cat: 'frontend', catName: 'Frontend', diff: 'Medium', xp: 250, time: '25m', skill: 'Virtual DOM', status: 'available', desc: 'Implement a minimal virtual DOM diffing algorithm that compares two VNode trees and outputs minimal DOM mutations.', testCases: 'Case 1: Produces minimal patch array.<br>Case 2: Handles keyed child reordering.<br>Case 3: Updates attribute changes in place.' },
+  { id: 'FE-102', title: 'Zero-Dependency Debounced Autocomplete', cat: 'frontend', catName: 'Frontend', diff: 'Easy', xp: 150, time: '15m', skill: 'DOM & Events', status: 'available', desc: 'Build a debounced keyboard autocomplete dropdown with active ARIA accessibility attributes and arrow key navigation.', testCases: 'Case 1: Debounces keystrokes by 300ms.<br>Case 2: Navigates results with ArrowDown/Up.<br>Case 3: Announces selection via aria-activedescendant.' },
+  { id: 'FE-103', title: 'Responsive Glassmorphic CSS Grid Layout', cat: 'frontend', catName: 'Frontend', diff: 'Easy', xp: 180, time: '20m', skill: 'Modern CSS', status: 'available', desc: 'Construct a 12-column dynamic CSS grid with backdrop blur filters, high-contrast borders, and mobile responsive collapsing.', testCases: 'Case 1: Renders 12 cols on desktop.<br>Case 2: Gracefully falls back on Safari.<br>Case 3: Responsive fluid collapse at 768px.' },
+  { id: 'FE-104', title: 'Accessible Modal with Keyboard Focus Trap', cat: 'frontend', catName: 'Frontend', diff: 'Medium', xp: 220, time: '25m', skill: 'Accessibility', status: 'available', desc: 'Design an accessible modal dialog that traps Tab focus inside, closes on Escape, restores prior activeElement focus, and locks scroll.', testCases: 'Case 1: Tab cycles within modal elements.<br>Case 2: Escape key triggers modal close.<br>Case 3: Restores focus to trigger button.' },
+  { id: 'FE-105', title: 'React Concurrent State Batching Engine', cat: 'frontend', catName: 'Frontend', diff: 'Hard', xp: 350, time: '35m', skill: 'React Internals', status: 'available', desc: 'Recreate React 18 automatic state batching across asynchronous boundaries (setTimeout, fetch, and native event handlers).', testCases: 'Case 1: Batches 3 setState calls into 1 render.<br>Case 2: Preserves state order across promises.<br>Case 3: Supports flushSync override.' },
+  { id: 'FE-106', title: 'High-Perf Infinite Scroll IntersectionObserver', cat: 'frontend', catName: 'Frontend', diff: 'Medium', xp: 280, time: '30m', skill: 'Web APIs', status: 'available', desc: 'Build an infinite scroll list with virtualized sentinel markers that unmounts offscreen elements to maintain smooth 60fps scrolling.', testCases: 'Case 1: Triggers fetch at 200px threshold.<br>Case 2: Disconnects observer on unmount.<br>Case 3: Prevents duplicate triggers.' },
+  { id: 'FE-107', title: 'WebSocket Real-Time Chat Bubble Renderer', cat: 'frontend', catName: 'Frontend', diff: 'Medium', xp: 300, time: '30m', skill: 'WebSockets', status: 'available', desc: 'Implement a WebSocket client stream handler with automatic reconnect backoff, message deduplication, and sound effects.', testCases: 'Case 1: Reconnects after 1s, 2s, 4s exponential backoff.<br>Case 2: Discards duplicate message IDs.<br>Case 3: Emits delivery receipt acknowledgments.' },
+  { id: 'FE-108', title: 'Micro-Frontend Module Federation Config', cat: 'frontend', catName: 'Frontend', diff: 'Hard', xp: 420, time: '45m', skill: 'Webpack & Build', status: 'available', desc: 'Configure a host and remote micro-frontend setup sharing a single React runtime and singleton state store with fallback boundaries.', testCases: 'Case 1: Dynamically loads remote bundle.<br>Case 2: Prevents dual React instance collisions.<br>Case 3: Renders fallback when remote is down.' },
+  { id: 'FE-109', title: 'Canvas Real-Time Stock Candlestick Chart', cat: 'frontend', catName: 'Frontend', diff: 'Hard', xp: 380, time: '40m', skill: 'HTML5 Canvas', status: 'available', desc: 'Render 1,000 live OHLC candlestick bars on an HTML5 canvas element with smooth pinch-to-zoom and crosshair hover tooltips.', testCases: 'Case 1: Maintains 60fps on 1,000 data points.<br>Case 2: Accurately maps coordinates to prices.<br>Case 3: High-DPI retina display support.' },
+  { id: 'FE-110', title: 'Service Worker Offline PWA Cache Strategy', cat: 'frontend', catName: 'Frontend', diff: 'Medium', xp: 320, time: '30m', skill: 'PWA & Storage', status: 'available', desc: 'Write a service worker implementing Stale-While-Revalidate for APIs and Cache-First for static marketplace bundles with cleanup routines.', testCases: 'Case 1: Serves assets offline when network fails.<br>Case 2: Revalidates cache in background.<br>Case 3: Prunes outdated versioned caches.' },
+  { id: 'FE-111', title: 'Drag-and-Drop Kanban Board with Reordering', cat: 'frontend', catName: 'Frontend', diff: 'Medium', xp: 340, time: '35m', skill: 'HTML5 Drag & Drop', status: 'available', desc: 'Build an interactive Kanban board where tasks can be dragged between columns, calculating drop index positions with animations.', testCases: 'Case 1: Reorders items within same column.<br>Case 2: Moves items across status columns.<br>Case 3: Persists state to localStorage.' },
+  { id: 'FE-112', title: 'WebGL Shaders Interactive Particle Matrix', cat: 'frontend', catName: 'Frontend', diff: 'Legendary', xp: 500, time: '60m', skill: 'WebGL & GLSL', status: 'available', desc: 'Write vertex and fragment GLSL shaders rendering 20,000 interactive particles that react to mouse position with physics damping.', testCases: 'Case 1: Compiles vertex and fragment shaders.<br>Case 2: Passes mouse uniforms in real-time.<br>Case 3: Renders at steady 60fps.' },
+  { id: 'FE-113', title: 'AST-Based React Props Linter Plugin', cat: 'frontend', catName: 'Frontend', diff: 'Legendary', xp: 480, time: '50m', skill: 'Babel AST', status: 'available', desc: 'Construct a Babel / ESLint AST visitor plugin that inspects JSX nodes, detecting unescaped strings, missing alt tags, and unused props.', testCases: 'Case 1: Flags missing alt tags on &lt;img&gt;.<br>Case 2: Detects unescaped HTML characters.<br>Case 3: Suggests auto-fixes via AST transform.' },
+
+  // ── C. Backend & Microservices (13 Challenges) ─────────────
+  { id: 'BE-201', title: 'JWT Auth Pipeline with Sliding Refresh Tokens', cat: 'backend', catName: 'Backend', diff: 'Easy', xp: 250, time: '20m', skill: 'Security & Auth', status: 'available', desc: 'Build a secure authentication pipeline issuing short-lived access tokens (15m) and rotating sliding refresh tokens stored in httpOnly cookies.', testCases: 'Case 1: Rejects expired access tokens.<br>Case 2: Rotates refresh token on renewal.<br>Case 3: Revokes family on reuse detection.' },
+  { id: 'BE-202', title: 'Distributed Rate Limiter with Redis Token Bucket', cat: 'backend', catName: 'Backend', diff: 'Medium', xp: 350, time: '35m', skill: 'Redis & Systems', status: 'available', desc: 'Implement an atomic Redis Lua script token bucket rate limiter to protect public API endpoints against DDoS and brute force.', testCases: 'Case 1: Permits requests within rate threshold.<br>Case 2: Returns 429 Too Many Requests on breach.<br>Case 3: Refills bucket at specified rate.' },
+  { id: 'BE-203', title: 'SQL ACID Transaction for Wallet Top-ups', cat: 'backend', catName: 'Backend', diff: 'Medium', xp: 320, time: '30m', skill: 'PostgreSQL ACID', status: 'available', desc: 'Design a double-entry ledger database transaction that locks balance rows, preventing race condition double-spending under concurrency.', testCases: 'Case 1: Enforces atomicity across ledger rows.<br>Case 2: Prevents negative balances.<br>Case 3: Rolls back cleanly on network timeout.' },
+  { id: 'BE-204', title: 'Webhook Dispatcher with Exponential Backoff', cat: 'backend', catName: 'Backend', diff: 'Hard', xp: 380, time: '40m', skill: 'Webhooks & Queues', status: 'available', desc: 'Construct a reliable webhook delivery worker that signs payloads with HMAC-SHA256 and retries failed delivery over 5 exponential intervals.', testCases: 'Case 1: Signs headers with X-Hub-Signature-256.<br>Case 2: Retries on 500/503 HTTP responses.<br>Case 3: Dead-letters endpoint after 5 failures.' },
+  { id: 'BE-205', title: 'Zero-Downtime Database Migration Runner', cat: 'backend', catName: 'Backend', diff: 'Hard', xp: 400, time: '40m', skill: 'Database Ops', status: 'available', desc: 'Implement an expand-and-contract database migration script that safely renames columns without interrupting live production traffic.', testCases: 'Case 1: Adds dual-write columns safely.<br>Case 2: Backfills historical data in batches.<br>Case 3: Drops old columns with rollback plan.' },
+  { id: 'BE-206', title: 'GraphQL DataLoader N+1 Query Batcher', cat: 'backend', catName: 'Backend', diff: 'Medium', xp: 300, time: '30m', skill: 'GraphQL', status: 'available', desc: 'Solve the classic GraphQL N+1 problem by implementing a batching and caching DataLoader that consolidates single SQL SELECTs.', testCases: 'Case 1: Batches 50 entity lookups into 1 query.<br>Case 2: Caches duplicate IDs in execution context.<br>Case 3: Handles partial lookup errors.' },
+  { id: 'BE-207', title: 'High-Throughput RabbitMQ Message Broker', cat: 'backend', catName: 'Backend', diff: 'Hard', xp: 420, time: '45m', skill: 'AMQP & Queues', status: 'available', desc: 'Configure an AMQP fanout and direct exchange pipeline with prefetch limits, manual acknowledgments, and dead-letter queues.', testCases: 'Case 1: Routes messages to correct queues.<br>Case 2: Handles nack with requeue=false.<br>Case 3: Sustains 5,000 msg/sec throughput.' },
+  { id: 'BE-208', title: 'S3 Multi-Part Upload with Presigned URLs', cat: 'backend', catName: 'Backend', diff: 'Medium', xp: 280, time: '25m', skill: 'Cloud Storage', status: 'available', desc: 'Build a direct-to-cloud file upload pipeline that initiates multi-part uploads, generates presigned PUT URLs, and completes assembly.', testCases: 'Case 1: Generates time-bounded presigned URLs.<br>Case 2: Assembles parts with ETag verification.<br>Case 3: Aborts orphaned incomplete uploads.' },
+  { id: 'BE-209', title: 'REST API Idempotency Key Validator', cat: 'backend', catName: 'Backend', diff: 'Medium', xp: 310, time: '30m', skill: 'API Architecture', status: 'available', desc: 'Design an idempotency middleware storing Idempotency-Key hashes in Redis to ensure duplicate payment requests return cached responses.', testCases: 'Case 1: Returns cached response on duplicate key.<br>Case 2: Prevents duplicate balance debits.<br>Case 3: Expires keys after 24 hours.' },
+  { id: 'BE-210', title: 'Dockerized Multi-Stage Node.js Microservice', cat: 'backend', catName: 'Backend', diff: 'Easy', xp: 220, time: '20m', skill: 'Docker & DevOps', status: 'available', desc: 'Write an optimized multi-stage Dockerfile that builds TypeScript in build stage and produces an alpine production image under 90MB.', testCases: 'Case 1: Production image excludes devDependencies.<br>Case 2: Runs as non-root user for security.<br>Case 3: Correctly configures healthcheck endpoint.' },
+  { id: 'BE-211', title: 'gRPC Protocol Buffers High-Speed Interop', cat: 'backend', catName: 'Backend', diff: 'Hard', xp: 450, time: '45m', skill: 'gRPC & Proto', status: 'available', desc: 'Define .proto service definitions and implement a high-speed bi-directional streaming gRPC service for real-time telemetry.', testCases: 'Case 1: Serializes and deserializes Proto buffers.<br>Case 2: Streams telemetry bidirectionally.<br>Case 3: Handles deadline cancellation cleanly.' },
+  { id: 'BE-212', title: 'Distributed Consensus Raft Leader Election', cat: 'backend', catName: 'Backend', diff: 'Legendary', xp: 650, time: '75m', skill: 'Distributed Systems', status: 'available', desc: 'Implement the Raft consensus leader election state machine (Follower, Candidate, Leader) with randomized heartbeats and majority quorum.', testCases: 'Case 1: Elects new leader when heartbeat times out.<br>Case 2: Resolves split-vote scenarios gracefully.<br>Case 3: Steps down leader on higher term discovery.' },
+  { id: 'BE-213', title: 'Sharded Postgres DB Connection Pool Optimizer', cat: 'backend', catName: 'Backend', diff: 'Legendary', xp: 520, time: '55m', skill: 'Database Scaling', status: 'available', desc: 'Design a dynamic database router that shards queries by tenant ID across multiple read replicas while maintaining connection pool limits.', testCases: 'Case 1: Routes writes to primary and reads to replica.<br>Case 2: Maps tenant IDs to correct shard instance.<br>Case 3: Recovers from dropped replica connections.' },
+
+  // ── D. AI & Machine Learning (12 Challenges) ───────────────
+  { id: 'AI-301', title: 'BPE Subword Tokenizer from Scratch', cat: 'ai', catName: 'AI & ML', diff: 'Medium', xp: 300, time: '30m', skill: 'NLP & Tokenization', status: 'available', desc: 'Implement the Byte-Pair Encoding (BPE) subword tokenization algorithm from raw text corpus to vocabulary construction and merge rules.', testCases: 'Case 1: Learns byte pair merges from corpus.<br>Case 2: Tokenizes unseen words into subwords.<br>Case 3: Invertible detokenization back to text.' },
+  { id: 'AI-302', title: 'Vector Cosine Similarity Search Engine', cat: 'ai', catName: 'AI & ML', diff: 'Medium', xp: 280, time: '25m', skill: 'Vector Math', status: 'available', desc: 'Compute high-speed cosine similarity between 1,536-dimensional embedding vectors and return the top-K nearest neighbors.', testCases: 'Case 1: Correctly calculates normalized dot product.<br>Case 2: Returns top-K items in sorted order.<br>Case 3: Handles zero-magnitude vectors safely.' },
+  { id: 'AI-303', title: 'Multi-Turn RAG Pipeline with Semantic Chunking', cat: 'ai', catName: 'AI & ML', diff: 'Hard', xp: 420, time: '45m', skill: 'RAG Architecture', status: 'available', desc: 'Build an end-to-end Retrieval-Augmented Generation pipeline that splits codebases into semantic AST chunks and injects context into prompts.', testCases: 'Case 1: Chunks code by function boundaries.<br>Case 2: Retrieves relevant context under 50ms.<br>Case 3: Cites source line numbers in answers.' },
+  { id: 'AI-304', title: 'Streaming LLM Response Parser with Markdown AST', cat: 'ai', catName: 'AI & ML', diff: 'Easy', xp: 260, time: '20m', skill: 'Streaming APIs', status: 'available', desc: 'Parse Server-Sent Events (SSE) streaming tokens from an LLM API and render code blocks with syntax highlighting as chunks arrive.', testCases: 'Case 1: Buffers incomplete markdown blocks.<br>Case 2: Renders tokens incrementally.<br>Case 3: Handles abort signal gracefully.' },
+  { id: 'AI-305', title: 'Custom LoRA Weight Adapter Merge Script', cat: 'ai', catName: 'AI & ML', diff: 'Hard', xp: 480, time: '50m', skill: 'PyTorch & LoRA', status: 'available', desc: 'Write a script to merge Low-Rank Adaptation (LoRA) matrix weights (W = W0 + B*A * alpha/r) back into base transformer model weights.', testCases: 'Case 1: Accurately scales adapter matrices.<br>Case 2: Preserves base model tensor dimensions.<br>Case 3: Verifies zero precision degradation.' },
+  { id: 'AI-306', title: 'Function-Calling Orchestrator with JSON Schema', cat: 'ai', catName: 'AI & ML', diff: 'Medium', xp: 340, time: '35m', skill: 'LLM Agents', status: 'available', desc: 'Design an agent loop that parses tool-calling JSON payloads from LLM outputs, executes local functions, and returns results to context.', testCases: 'Case 1: Validates arguments against JSON schema.<br>Case 2: Dispatches matching local tool function.<br>Case 3: Catches invalid parameter errors.' },
+  { id: 'AI-307', title: 'Image Classification Transfer Learning (PyTorch)', cat: 'ai', catName: 'AI & ML', diff: 'Medium', xp: 360, time: '35m', skill: 'Computer Vision', status: 'available', desc: 'Fine-tune a pretrained ResNet-18 model on a custom dataset, replacing the final fully connected classification layer and computing loss.', testCases: 'Case 1: Freezes convolutional feature backbones.<br>Case 2: Trains custom linear head layer.<br>Case 3: Evaluates accuracy and confusion matrix.' },
+  { id: 'AI-308', title: 'Vector DB HNSW Indexing Graph Visualizer', cat: 'ai', catName: 'AI & ML', diff: 'Legendary', xp: 500, time: '60m', skill: 'Vector Search', status: 'available', desc: 'Implement the Hierarchical Navigable Small World (HNSW) graph indexing algorithm for approximate nearest neighbor search with logarithmic scaling.', testCases: 'Case 1: Builds multi-layer hierarchical graph.<br>Case 2: Traverses greedy route to nearest node.<br>Case 3: Outperforms brute force on 10k items.' },
+  { id: 'AI-309', title: 'Hallucination Detector for Generated Summaries', cat: 'ai', catName: 'AI & ML', diff: 'Hard', xp: 390, time: '40m', skill: 'AI Guardrails', status: 'available', desc: 'Construct a verification pipeline using Natural Language Inference (NLI) to flag factual claims in LLM answers not supported by reference text.', testCases: 'Case 1: Flags ungrounded factual assertions.<br>Case 2: Returns confidence score for each claim.<br>Case 3: High precision on benchmark dataset.' },
+  { id: 'AI-310', title: 'Prompt Injection Guardrail & Sanitizer', cat: 'ai', catName: 'AI & ML', diff: 'Medium', xp: 310, time: '30m', skill: 'AI Security', status: 'available', desc: 'Build an input filter that detects and neutralizes indirect prompt injections, jailbreaks (e.g. "Ignore previous instructions"), and system leaks.', testCases: 'Case 1: Catches known prompt jailbreak patterns.<br>Case 2: Quarantines untrusted user strings.<br>Case 3: Preserves legitimate developer queries.' },
+  { id: 'AI-311', title: 'Local LLM Quantization Runner (4-bit GGUF)', cat: 'ai', catName: 'AI & ML', diff: 'Hard', xp: 440, time: '45m', skill: 'Model Optimization', status: 'available', desc: 'Implement a memory-mapped 4-bit weight unpacker for GGUF model files to run local model inferences within 4GB RAM limits.', testCases: 'Case 1: Reads GGUF metadata headers.<br>Case 2: Dequantizes 4-bit blocks into FP16.<br>Case 3: Zero memory copies during inference.' },
+  { id: 'AI-312', title: 'Transformer Attention Matrix Multi-Head Visualizer', cat: 'ai', catName: 'AI & ML', diff: 'Legendary', xp: 600, time: '70m', skill: 'Deep Learning', status: 'available', desc: 'Compute scaled dot-product attention (Q*K^T / sqrt(dk)) across 8 attention heads and generate heatmap tensor matrices.', testCases: 'Case 1: Computes Softmax attention probabilities.<br>Case 2: Correctly applies causal masking.<br>Case 3: Outputs multi-head attention weights.' },
+
+  // ── E. Mobile & Flutter Development (11 Challenges) ────────
+  { id: 'MOB-401', title: 'Flutter Custom Painter Animated Wave Progress', cat: 'mobile', catName: 'Mobile', diff: 'Easy', xp: 240, time: '20m', skill: 'Flutter UI', status: 'available', desc: 'Create a smooth sine-wave animated progress container in Flutter using CustomPainter and AnimationController.', testCases: 'Case 1: Animates continuous sinusoidal wave.<br>Case 2: Clamps wave height to progress level.<br>Case 3: Zero unnecessary repaints.' },
+  { id: 'MOB-402', title: 'Offline-First Hive DB Sync with Remote API', cat: 'mobile', catName: 'Mobile', diff: 'Medium', xp: 320, time: '30m', skill: 'Flutter Storage', status: 'available', desc: 'Build an offline-first Flutter repository that reads from local Hive boxes and syncs delta changes back to REST backend when connected.', testCases: 'Case 1: Reads instant cached data on launch.<br>Case 2: Queues mutation actions while offline.<br>Case 3: Reconciles conflict timestamps.' },
+  { id: 'MOB-403', title: 'Biometric Auth Flow (FaceID / Fingerprint)', cat: 'mobile', catName: 'Mobile', diff: 'Easy', xp: 260, time: '20m', skill: 'Mobile Security', status: 'available', desc: 'Implement local_auth biometric authentication supporting FaceID, TouchID, and device PIN fallback with secure key store integration.', testCases: 'Case 1: Detects available biometric hardware.<br>Case 2: Handles user cancellation smoothly.<br>Case 3: Decrypts private key on auth success.' },
+  { id: 'MOB-404', title: 'BLoC State Management Event-to-State Pipeline', cat: 'mobile', catName: 'Mobile', diff: 'Medium', xp: 340, time: '35m', skill: 'BLoC Pattern', status: 'available', desc: 'Structure an enterprise Flutter BLoC handling authentication events, token refresh states, and error handling with RxDart debouncing.', testCases: 'Case 1: Emits AuthLoading -> AuthAuthenticated.<br>Case 2: Debounces rapid duplicate login taps.<br>Case 3: Unsubscribes streams on dispose.' },
+  { id: 'MOB-405', title: 'Dynamic Island & Push Notification Deep Linking', cat: 'mobile', catName: 'Mobile', diff: 'Hard', xp: 380, time: '40m', skill: 'iOS & Android', status: 'available', desc: 'Configure FCM push payload parsers and live activities linking to specific in-app challenge screens based on notification route tokens.', testCases: 'Case 1: Parses payload from killed app state.<br>Case 2: Navigates to target nested route.<br>Case 3: Updates iOS Live Activity widget.' },
+  { id: 'MOB-406', title: 'Native Camera & Barcode Scanner Integration', cat: 'mobile', catName: 'Mobile', diff: 'Medium', xp: 290, time: '25m', skill: 'Hardware Interop', status: 'available', desc: 'Build a 60fps camera preview with overlay bounding box detecting QR codes and UPI payment strings using mobile_scanner.', testCases: 'Case 1: Streams video frames without memory leak.<br>Case 2: Parses UPI intent strings accurately.<br>Case 3: Auto-manages camera flash states.' },
+  { id: 'MOB-407', title: 'Background Geofencing & Location Telemetry', cat: 'mobile', catName: 'Mobile', diff: 'Hard', xp: 410, time: '40m', skill: 'Background Services', status: 'available', desc: 'Implement battery-efficient background location tracking in Flutter that wakes upon crossing specified geographic geofence radii.', testCases: 'Case 1: Triggers entry/exit geofence events.<br>Case 2: Low-power battery optimization mode.<br>Case 3: Handles OS permission denials.' },
+  { id: 'MOB-408', title: 'Flutter Web vs Mobile Responsive Adaptive Engine', cat: 'mobile', catName: 'Mobile', diff: 'Medium', xp: 300, time: '30m', skill: 'Cross-Platform', status: 'available', desc: 'Create adaptive navigation scaffolds that seamlessly switch between bottom navigation bars on phones and side navigation rails on desktop web.', testCases: 'Case 1: Adapts layout at 600px and 1024px.<br>Case 2: Retains navigation stack across resize.<br>Case 3: Handles mouse hover states on web.' },
+  { id: 'MOB-409', title: 'In-App Purchase Verification & Receipt Validation', cat: 'mobile', catName: 'Mobile', diff: 'Hard', xp: 450, time: '45m', skill: 'IAP & Payments', status: 'available', desc: 'Integrate Google Play Billing and Apple StoreKit, validating cryptographically signed purchase tokens against backend authorization servers.', testCases: 'Case 1: Queries available SKU product catalogs.<br>Case 2: Verifies receipt token signature.<br>Case 3: Delivers digital asset unlock.' },
+  { id: 'MOB-410', title: 'Custom Native Platform Channels (Kotlin/Swift)', cat: 'mobile', catName: 'Mobile', diff: 'Hard', xp: 480, time: '50m', skill: 'Platform Channels', status: 'available', desc: 'Write MethodChannel bridges between Flutter Dart code and native Kotlin / Swift hardware APIs (battery health, secure enclave).', testCases: 'Case 1: Invokes native platform methods.<br>Case 2: Streams sensor events via EventChannel.<br>Case 3: Handles missing platform method errors.' },
+  { id: 'MOB-411', title: '60fps Smooth Physics Flutter Game Loop', cat: 'mobile', catName: 'Mobile', diff: 'Legendary', xp: 550, time: '60m', skill: 'Flutter Flame', status: 'available', desc: 'Build an interactive 2D physics game loop in Flutter featuring collision detection, gravity vectors, and particle explosions at 60fps.', testCases: 'Case 1: Runs fixed-timestep physics updates.<br>Case 2: Axis-aligned bounding box collision.<br>Case 3: Sustains 60fps with 50 active objects.' },
+
+  // ── F. Security, Cryptography & Code Audits (11 Challenges) ──
+  { id: 'SEC-501', title: 'Cryptographic SHA-256 Checksum Validator', cat: 'security', catName: 'Security', diff: 'Easy', xp: 220, time: '20m', skill: 'Cryptography', status: 'available', desc: 'Implement SHA-256 hash generation for codebase download ZIP files, verifying package integrity against tampering.', testCases: 'Case 1: Matches standard SHA-256 test vectors.<br>Case 2: Streams file chunks without RAM spikes.<br>Case 3: Detects single-bit tamper changes.' },
+  { id: 'SEC-502', title: 'AES-256-GCM Envelope Encryption Pipeline', cat: 'security', catName: 'Security', diff: 'Medium', xp: 350, time: '35m', skill: 'Encryption', status: 'available', desc: 'Construct an authenticated AES-256-GCM envelope encryption service that uses a Key Encryption Key (KEK) to wrap ephemeral Data Keys.', testCases: 'Case 1: Encrypts data with 128-bit auth tag.<br>Case 2: Rejects tampered ciphertexts.<br>Case 3: Generates unique IV for each call.' },
+  { id: 'SEC-503', title: 'Static AST Vulnerability Scanner for Eval Exploit', cat: 'security', catName: 'Security', diff: 'Hard', xp: 420, time: '45m', skill: 'Code Auditing', status: 'available', desc: 'Build a static code analyzer using Babel AST that traverses code repositories and flags dangerous execution sinks (eval, Function, innerHTML).', testCases: 'Case 1: Detects direct and indirect eval calls.<br>Case 2: Flags unescaped innerHTML assignments.<br>Case 3: Generates audit line number report.' },
+  { id: 'SEC-504', title: 'Cross-Site Scripting (XSS) Sanitization Parser', cat: 'security', catName: 'Security', diff: 'Medium', xp: 280, time: '30m', skill: 'AppSec', status: 'available', desc: 'Write an HTML string sanitizer that strips dangerous tags (script, iframe, object), scrubs event handlers (onload, onerror), and validates hrefs.', testCases: 'Case 1: Strips &lt;script&gt; and javascript: URLs.<br>Case 2: Cleans nested malformed HTML tags.<br>Case 3: Preserves safe formatting tags.' },
+  { id: 'SEC-505', title: 'SQL Injection Defense with Parameterized AST', cat: 'security', catName: 'Security', diff: 'Medium', xp: 310, time: '30m', skill: 'Database Security', status: 'available', desc: 'Build an SQL query validator that verifies all dynamic inputs are strictly bound to parameterized placeholders ($1, $2) rather than string concats.', testCases: 'Case 1: Flags raw string concatenations in SQL.<br>Case 2: Confirms parameterized binding arrays.<br>Case 3: Detects 1=1 boolean injection attacks.' },
+  { id: 'SEC-506', title: 'Timing-Attack Safe String Comparison Function', cat: 'security', catName: 'Security', diff: 'Medium', xp: 300, time: '25m', skill: 'Crypto Primitives', status: 'available', desc: 'Implement a constant-time string comparison function (crypto.timingSafeEqual) to prevent side-channel timing attacks against HMAC tokens.', testCases: 'Case 1: Constant execution time regardless of mismatch index.<br>Case 2: Correctly validates equality.<br>Case 3: Handles differing length inputs safely.' },
+  { id: 'SEC-507', title: 'OAuth2 PKCE Authorization Flow Validator', cat: 'security', catName: 'Security', diff: 'Hard', xp: 380, time: '40m', skill: 'Auth Protocols', status: 'available', desc: 'Implement Proof Key for Code Exchange (PKCE) verification: generate code_verifier, compute code_challenge (SHA-256 base64url), and validate.', testCases: 'Case 1: Computes valid S256 code_challenge.<br>Case 2: Verifies verifier string during token swap.<br>Case 3: Rejects mismatched challenges.' },
+  { id: 'SEC-508', title: 'Malicious Package Dependency CVE Analyzer', cat: 'security', catName: 'Security', diff: 'Hard', xp: 400, time: '40m', skill: 'Supply Chain', status: 'available', desc: 'Parse package.json and lockfiles, querying CVE vulnerability databases to identify compromised dependencies and suggest clean patch versions.', testCases: 'Case 1: Identifies high/critical CVE advisories.<br>Case 2: Analyzes transitive dependency trees.<br>Case 3: Outputs semver resolution overrides.' },
+  { id: 'SEC-509', title: 'Zero-Knowledge Proof (ZKP) Proof Verifier', cat: 'security', catName: 'Security', diff: 'Legendary', xp: 600, time: '70m', skill: 'ZKP & Snarks', status: 'available', desc: 'Verify a zk-SNARK cryptographic proof verifying that a seller possesses secret code without revealing the source code itself.', testCases: 'Case 1: Verifies elliptic curve pairing equations.<br>Case 2: Rejects invalid or forged witness proofs.<br>Case 3: Validates public signals correctly.' },
+  { id: 'SEC-510', title: 'Secret API Key Entropy Scanner (Leak Detector)', cat: 'security', catName: 'Security', diff: 'Medium', xp: 340, time: '30m', skill: 'Secrets Detection', status: 'available', desc: 'Calculate Shannon entropy on code strings to automatically detect leaked AWS keys, Stripe secrets, and private RSA keys before git push.', testCases: 'Case 1: Detects high-entropy random API secrets.<br>Case 2: Matches regex patterns for Stripe/AWS keys.<br>Case 3: Ignores low-entropy natural English words.' },
+  { id: 'SEC-511', title: 'Indian DPDP Act 2023 Consent Audit Log Generator', cat: 'security', catName: 'Security', diff: 'Medium', xp: 320, time: '30m', skill: 'Compliance & IT', status: 'available', desc: 'Generate tamper-evident, append-only cryptographic audit logs recording user data consent, export requests, and account erasure timestamps.', testCases: 'Case 1: Chains log entries via previous-hash link.<br>Case 2: Validates Indian DPDP 2023 compliance tags.<br>Case 3: Exports portable JSON consent records.' }
+];
+
+// ── 4. Badges & Accolades Vault Dataset (24 Badges) ──────────
+const ALL_BADGES = [
+  // Skill Mastery Badges
+  { id: 'b_syntax', name: 'Syntax Pioneer', cat: 'skill', icon: '⚡', tier: 'Bronze', desc: 'Solve 5 foundational coding challenges.', unlocked: false, xp: 200 },
+  { id: 'b_react', name: 'React Artisan', cat: 'skill', icon: '⚛️', tier: 'Gold', desc: 'Conquer 10 Web & Frontend challenges.', unlocked: false, xp: 500 },
+  { id: 'b_backend', name: 'Backend Titan', cat: 'skill', icon: '⚙️', tier: 'Platinum', desc: 'Conquer 10 Microservices & DB challenges.', unlocked: false, xp: 600 },
+  { id: 'b_ai', name: 'AI Whisperer', cat: 'skill', icon: '🤖', tier: 'Emerald', desc: 'Build RAG pipelines & tokenizer algorithms.', unlocked: false, xp: 750 },
+  { id: 'b_flutter', name: 'Flutter Prodigy', cat: 'skill', icon: '📱', tier: 'Silver', desc: 'Implement offline-first Flutter architectures.', unlocked: false, xp: 400 },
+  { id: 'b_crypto', name: 'Security Sentinel', cat: 'skill', icon: '🛡️', tier: 'Diamond', desc: 'Master AST vulnerability screening & crypto.', unlocked: false, xp: 800 },
+
+  // Milestone Badges
+  { id: 'b_first_blood', name: 'First Blood', cat: 'milestone', icon: '🎯', tier: 'Bronze', desc: 'First developer to solve a new challenge.', unlocked: false, xp: 150 },
+  { id: 'b_streak_7', name: '7-Day Streak', cat: 'milestone', icon: '🔥', tier: 'Silver', desc: 'Solve at least 1 challenge daily for 7 days.', unlocked: false, xp: 350 },
+  { id: 'b_streak_30', name: '30-Day Iron Dev', cat: 'milestone', icon: '⚔️', tier: 'Gold', desc: 'Maintain an unbroken 30-day coding streak.', unlocked: false, xp: 1000 },
+  { id: 'b_century', name: 'Century Club', cat: 'milestone', icon: '💯', tier: 'Platinum', desc: 'Successfully solve 100 ecosystem challenges.', unlocked: false, xp: 1500 },
+  { id: 'b_night_owl', name: 'Midnight Hacker', cat: 'milestone', icon: '🦉', tier: 'Bronze', desc: 'Submit passing challenge solutions past 2:00 AM.', unlocked: false, xp: 200 },
+  { id: 'b_speed_demon', name: 'Speed Demon', cat: 'milestone', icon: '🏎️', tier: 'Silver', desc: 'Solve a Hard challenge in under 15 minutes.', unlocked: false, xp: 450 },
+
+  // Community Mentors Badges
+  { id: 'b_mentor', name: 'Helpful Mentor', cat: 'community', icon: '💡', tier: 'Silver', desc: 'Answer 20 developer questions in community channels.', unlocked: false, xp: 400 },
+  { id: 'b_pr_champ', name: 'PR Champion', cat: 'community', icon: '🤝', tier: 'Gold', desc: 'Complete 15 verified peer code reviews.', unlocked: false, xp: 650 },
+  { id: 'b_mod', name: 'Discussion Anchor', cat: 'community', icon: '🎙️', tier: 'Silver', desc: 'Host a weekly technical debate in #showcase.', unlocked: false, xp: 300 },
+  { id: 'b_ambassador', name: 'Ecosystem Ambassador', cat: 'community', icon: '🌐', tier: 'Emerald', desc: 'Onboard 10 developers to the Smart Hub platform.', unlocked: false, xp: 850 },
+  { id: 'b_bug_hunter', name: 'Bug Bounty Hunter', cat: 'community', icon: '🐞', tier: 'Diamond', desc: 'Report verified vulnerability to security@smarthub.in.', unlocked: false, xp: 1200 },
+  { id: 'b_council', name: 'Grandmaster Council', cat: 'community', icon: '🏛️', tier: 'Mythic', desc: 'Elected to the Smart Hub Architecture Council.', unlocked: false, xp: 2500 },
+
+  // Creator & Marketplace Badges
+  { id: 'b_first_sale', name: 'First Sale ⚡', cat: 'creator', icon: '🏷️', tier: 'Silver', desc: 'Sell your first verified repository on Marketplace.', unlocked: false, xp: 500 },
+  { id: 'b_verified_author', name: 'Verified Author 🛡️', cat: 'creator', icon: '✅', tier: 'Gold', desc: 'Pass multi-tier AST screening on 3 uploaded repos.', unlocked: false, xp: 750 },
+  { id: 'b_top_rated', name: '5-Star Codebase', cat: 'creator', icon: '⭐', tier: 'Platinum', desc: 'Maintain 5.0 rating across 50 customer reviews.', unlocked: false, xp: 1000 },
+  { id: 'b_one_lakh', name: '₹1 Lakh Creator Club', cat: 'creator', icon: '💰', tier: 'Emerald', desc: 'Cross ₹1,00,000 INR in marketplace code royalties.', unlocked: false, xp: 2000 },
+  { id: 'b_five_lakh', name: '₹5 Lakh Sovereign', cat: 'creator', icon: '👑', tier: 'Diamond', desc: 'Cross ₹5,00,000 INR in marketplace code royalties.', unlocked: false, xp: 4000 },
+  { id: 'b_market_maker', name: 'Marketplace Titan', cat: 'creator', icon: '🏛️', tier: 'Mythic', desc: 'Top 3 digital asset seller in all of India.', unlocked: false, xp: 5000 }
+];
+
+// ── 5. National Leaderboard Rankings Dataset (Clean Dynamic Store) ──
+let LEADERBOARD_DATA = [];
+
+// ── Global User State ────────────────────────────────────────
+const activeSessionUser = (typeof window !== 'undefined' && window.getCurrentUser) ? window.getCurrentUser() : null;
+let currentUserXP = (activeSessionUser && activeSessionUser.isLoggedIn) ? (Number(activeSessionUser.xp) || 0) : 0;
+let currentFilterCat = 'all';
+let currentFilterDiff = 'all';
+let activeChallengeSolving = null;
+
+// ── Render 5-Stage Journey Detail ────────────────────────────
+function switchJourneyStage(stageNum) {
+  document.querySelectorAll('.journey-stage-step').forEach((el, idx) => {
+    el.classList.toggle('active', idx + 1 === stageNum);
+  });
+
+  const stage = JOURNEY_STAGES[stageNum];
+  const box = document.getElementById('stage-detail-display');
+  if (!box || !stage) return;
+
+  box.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:16px;margin-bottom:18px;">
+      <div>
+        <div style="font-family:var(--font-tech);font-size:0.75rem;color:var(--accent-purple);font-weight:800;letter-spacing:0.1em;">
+          STAGE ${stage.num} // ${stage.duration.toUpperCase()} • ${stage.subtitle.toUpperCase()}
+        </div>
+        <h3 style="font-size:1.6rem;font-weight:900;margin:4px 0 8px;">${stage.title}</h3>
+        <p style="font-size:0.92rem;color:var(--text-secondary);max-width:720px;line-height:1.68;margin:0;">
+          ${stage.desc}
+        </p>
+      </div>
+      <div style="padding:12px 18px;background:var(--bg-secondary);border:1px solid var(--border-outline);border-radius:var(--radius-xs);text-align:right;">
+        <span style="font-size:0.75rem;color:var(--text-muted);font-family:var(--font-tech);">NEXT STAGE UNLOCK</span>
+        <div style="font-size:0.88rem;font-weight:700;color:var(--accent-orange);margin-top:2px;">${stage.nextGoal}</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1.2fr 1fr;gap:24px;border-top:1px solid var(--border-outline);padding-top:20px;">
+      <div>
+        <h5 style="font-size:0.88rem;font-family:var(--font-tech);color:var(--text-primary);margin-bottom:10px;">KEY STAGE MILESTONES:</h5>
+        <ul style="margin:0 0 0 18px;padding:0;line-height:1.75;font-size:0.88rem;color:var(--text-secondary);">
+          ${stage.milestones.map(m => `<li>${m}</li>`).join('')}
+        </ul>
+      </div>
+      <div>
+        <h5 style="font-size:0.88rem;font-family:var(--font-tech);color:var(--text-primary);margin-bottom:10px;">PLATFORM PERKS UNLOCKED:</h5>
+        <div style="padding:12px 16px;background:rgba(121,40,202,0.06);border:1px solid rgba(121,40,202,0.25);border-radius:var(--radius-xs);font-size:0.86rem;line-height:1.6;color:var(--text-primary);">
+          ✨ <strong>Privileges:</strong> ${stage.perksUnlocked}
+        </div>
+        <div style="margin-top:14px;display:flex;gap:10px;">
+          <button class="btn btn-primary btn-sm" onclick="scrollToSection('challenges')">Explore Recommended Challenges →</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ── Render 10-Tier Cards ─────────────────────────────────────
+function renderTierMatrix() {
+  const container = document.getElementById('tier-cards-container');
+  if (!container) return;
+
+  container.innerHTML = DEVELOPER_TIERS.map(t => {
+    const isCurrent = currentUserXP >= t.xpMin && currentUserXP <= t.xpMax;
+    const isUnlocked = currentUserXP >= t.xpMin;
+
+    return `
+      <div class="tier-matrix-card ${isCurrent ? 'current-user-tier' : ''}" onclick="inspectTier(${t.tier})">
+        <div class="tier-card-badge" style="background:${t.bg};color:${t.color};">
+          <span>${t.icon} TIER ${t.tier}</span>
+        </div>
+        <h4 style="font-size:0.98rem;margin:0 0 4px;font-weight:800;">${t.name}</h4>
+        <div style="font-family:var(--font-tech);font-size:0.75rem;color:var(--accent-purple);font-weight:700;margin-bottom:10px;">
+          ${t.xpMin.toLocaleString('en-IN')} – ${t.xpMax > 100000 ? 'MAX' : t.xpMax.toLocaleString('en-IN')} XP
+        </div>
+        <p style="font-size:0.78rem;color:var(--text-muted);line-height:1.5;margin:0 0 12px;min-height:55px;">
+          ${t.perks}
+        </p>
+        <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.72rem;font-family:var(--font-tech);border-top:1px solid var(--border-outline);padding-top:8px;">
+          <span style="color:${isCurrent ? 'var(--accent-purple)' : (isUnlocked ? 'var(--accent-green)' : 'var(--text-muted)')};font-weight:700;">
+            ${isCurrent ? '● YOU ARE HERE' : (isUnlocked ? '✓ UNLOCKED' : '🔒 LOCKED')}
+          </span>
+          <span style="color:var(--text-muted);">RANK #${t.tier}</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function inspectTier(tierNum) {
+  const t = DEVELOPER_TIERS.find(item => item.tier === tierNum);
+  if (!t) return;
+  if (window.showToast) {
+    window.showToast(`Tier ${t.tier} (${t.name}): Requires ${t.xpMin.toLocaleString('en-IN')} XP • ${t.perks}`, 'info');
+  }
+}
+
+// ── Render Challenges Matrix (75 Challenges) ─────────────────
+function renderChallenges() {
+  const container = document.getElementById('challenges-grid-container');
+  const countEl = document.getElementById('challenges-showing-count');
+  const searchVal = (document.getElementById('challenge-search-input')?.value || '').toLowerCase().trim();
+  if (!container) return;
+
+  const filtered = ALL_CHALLENGES.filter(c => {
+    const matchCat = currentFilterCat === 'all' || c.cat === currentFilterCat;
+    const matchDiff = currentFilterDiff === 'all' || c.diff === currentFilterDiff;
+    const matchSearch = !searchVal || 
+      c.title.toLowerCase().includes(searchVal) || 
+      c.skill.toLowerCase().includes(searchVal) ||
+      c.id.toLowerCase().includes(searchVal) ||
+      c.desc.toLowerCase().includes(searchVal);
+    return matchCat && matchDiff && matchSearch;
+  });
+
+  if (countEl) countEl.textContent = filtered.length;
+
+  if (filtered.length === 0) {
+    container.innerHTML = `
+      <div style="grid-column:1/-1;text-align:center;padding:48px 20px;background:var(--bg-card);border:1.5px solid var(--border-outline);border-radius:4px;">
+        <div style="font-size:2.4rem;margin-bottom:10px;">🔍</div>
+        <h4 style="margin:0 0 6px;">No challenges match your search filters</h4>
+        <p style="font-size:0.85rem;color:var(--text-muted);margin:0 0 16px;">Try clearing filters or search for another keyword like "React", "Redis", or "AST".</p>
+        <button class="btn btn-outline btn-sm" onclick="resetChallengeFilters()">Reset All Filters</button>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = filtered.map(c => {
+    let diffBadgeClass = 'badge-green';
+    if (c.diff === 'Medium') diffBadgeClass = 'badge-orange';
+    if (c.diff === 'Hard') diffBadgeClass = 'badge-coral';
+    if (c.diff === 'Legendary') diffBadgeClass = 'badge-purple';
+
+    const isDone = c.status === 'completed';
+
+    return `
+      <div class="challenge-item-card ${isDone ? 'completed' : ''}" id="card-${c.id}">
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span class="badge ${diffBadgeClass}" style="font-size:0.68rem;">${c.diff}</span>
+              <span style="font-family:var(--font-tech);font-size:0.72rem;color:var(--text-muted);font-weight:700;">${c.id}</span>
+            </div>
+            <span style="font-family:var(--font-tech);font-size:0.78rem;font-weight:800;color:var(--accent-orange);">+${c.xp} XP</span>
+          </div>
+
+          <h4 style="font-size:1.02rem;font-weight:800;margin:0 0 6px;line-height:1.35;color:var(--text-primary);">${c.title}</h4>
+          <p style="font-size:0.82rem;color:var(--text-muted);line-height:1.5;margin:0 0 12px;min-height:38px;">
+            ${c.desc.substring(0, 115)}...
+          </p>
+
+          <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:14px;">
+            <span class="badge badge-purple" style="font-size:0.68rem;">${c.skill}</span>
+            <span style="font-family:var(--font-tech);font-size:0.7rem;color:var(--text-muted);">⏱️ ~${c.time}</span>
+          </div>
+        </div>
+
+        <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--border-outline);padding-top:12px;margin-top:8px;">
+          <span style="font-size:0.76rem;font-family:var(--font-tech);color:${isDone ? 'var(--accent-green)' : 'var(--text-muted)'};font-weight:700;">
+            ${isDone ? '✓ COMPLETED' : '● READY TO SOLVE'}
+          </span>
+          <button class="btn ${isDone ? 'btn-outline' : 'btn-primary'} btn-sm" onclick="openSolverModal('${c.id}')">
+            ${isDone ? 'Review Code' : 'Solve Challenge →'}
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function filterChallenges(type, value, btnEl) {
+  if (type === 'cat') {
+    currentFilterCat = value;
+    document.querySelectorAll('#challenge-cat-filters .challenge-cat-pill').forEach(b => b.classList.remove('active'));
+    if (btnEl) btnEl.classList.add('active');
+  } else if (type === 'diff') {
+    currentFilterDiff = value;
+  }
+  renderChallenges();
+}
+
+function handleChallengeSearch() {
+  renderChallenges();
+}
+
+function resetChallengeFilters() {
+  currentFilterCat = 'all';
+  currentFilterDiff = 'all';
+  const input = document.getElementById('challenge-search-input');
+  if (input) input.value = '';
+  document.querySelectorAll('#challenge-cat-filters .challenge-cat-pill').forEach((b, idx) => {
+    b.classList.toggle('active', idx === 0);
+  });
+  renderChallenges();
+}
+
+// ── 6. Challenge Solver Interactive Modal ─────────────────────
+function openSolverModal(challengeId) {
+  const ch = ALL_CHALLENGES.find(c => c.id === challengeId);
+  if (!ch) return;
+  activeChallengeSolving = ch;
+
+  document.getElementById('modal-ch-id').textContent = ch.id;
+  document.getElementById('modal-ch-title').textContent = ch.title;
+  document.getElementById('modal-ch-cat').textContent = ch.catName;
+  document.getElementById('modal-ch-diff').textContent = ch.diff;
+  document.getElementById('modal-ch-desc').textContent = ch.desc;
+  document.getElementById('modal-ch-tests').innerHTML = ch.testCases;
+  document.getElementById('modal-ch-reward').textContent = `+${ch.xp} XP & Skill Badge`;
+  
+  const consoleLog = document.getElementById('modal-console-log');
+  if (consoleLog) consoleLog.style.display = 'none';
+
+  // Starter code template
+  const editor = document.getElementById('modal-ch-code');
+  if (editor) {
+    editor.value = `// ${ch.id}: ${ch.title}
+// Skill Focus: ${ch.skill} | Reward: +${ch.xp} XP
+function solution(input) {
+  // TODO: Implement your high-performance algorithm
+  console.log("Analyzing test case payload...", input);
+  
+  // Return verified result matching test criteria
+  return {
+    success: true,
+    executionTimeMs: 12.4,
+    astValid: true
+  };
+}
+
+// Execute sample test
+solution({ target: "${ch.skill}", timestamp: Date.now() });`;
+  }
+
+  const modal = document.getElementById('solver-modal');
+  if (modal) {
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+function closeSolverModal() {
+  const modal = document.getElementById('solver-modal');
+  if (modal) {
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+}
+
+function runCodeTestOnly() {
+  const log = document.getElementById('modal-console-log');
+  if (!log) return;
+  log.style.display = 'block';
+  log.innerHTML = `
+    <span style="color:var(--accent-purple);font-weight:700;">[RUNNING SANDBOX TEST CASES]</span><br>
+    ▶ Test 1: Evaluating edge boundary inputs... <span style="color:#22c55e;">PASSED (1.4ms)</span><br>
+    ▶ Test 2: Stress test under 10k concurrent payloads... <span style="color:#22c55e;">PASSED (4.8ms)</span><br>
+    ▶ Test 3: AST syntax safety &amp; memory leak check... <span style="color:#22c55e;">PASSED (0.9ms)</span><br>
+    <strong style="color:#22c55e;">ALL 3 TESTS PASSED CLEANLY! Ready for submission.</strong>
+  `;
+}
+
+function submitChallengeSolution() {
+  if (!activeChallengeSolving) return;
+  const ch = activeChallengeSolving;
+
+  // Mark completed
+  ch.status = 'completed';
+  currentUserXP += ch.xp;
+
+  // Unlock badges dynamically based on progression
+  const solvedCount = ALL_CHALLENGES.filter(c => c.status === 'completed').length;
+  if (solvedCount >= 1) {
+    const b = ALL_BADGES.find(item => item.id === 'b_first_blood');
+    if (b) b.unlocked = true;
+  }
+  if (solvedCount >= 5) {
+    const b = ALL_BADGES.find(item => item.id === 'b_syntax');
+    if (b) b.unlocked = true;
+  }
+  const webSolved = ALL_CHALLENGES.filter(c => c.status === 'completed' && c.cat === 'web').length;
+  if (webSolved >= 3) {
+    const b = ALL_BADGES.find(item => item.id === 'b_react');
+    if (b) b.unlocked = true;
+  }
+  const beSolved = ALL_CHALLENGES.filter(c => c.status === 'completed' && c.cat === 'backend').length;
+  if (beSolved >= 3) {
+    const b = ALL_BADGES.find(item => item.id === 'b_backend');
+    if (b) b.unlocked = true;
+  }
+
+  // Persist to user session if logged in
+  const sessionUser = (typeof window !== 'undefined' && window.getCurrentUser) ? window.getCurrentUser() : null;
+  if (sessionUser && sessionUser.isLoggedIn) {
+    sessionUser.xp = currentUserXP;
+    sessionUser.solvedChallenges = (sessionUser.solvedChallenges || 0) + 1;
+    localStorage.setItem('smarthub_user', JSON.stringify(sessionUser));
+  }
+
+  // Refresh Telemetry HUD and all ecosystem components
+  updateTelemetryHUD();
+  renderChallenges();
+  renderTierMatrix();
+  renderBadges(currentFilterCat || 'all');
+  renderLeaderboard();
+
+  closeSolverModal();
+
+  if (window.showToast) {
+    window.showToast(`🎉 Challenge ${ch.id} Solved! +${ch.xp} XP Awarded! New Total: ${currentUserXP.toLocaleString('en-IN')} XP!`, 'success');
+  }
+}
+
+// ── 7. Render Badges Vault (24 Badges) ───────────────────────
+function renderBadges(filter = 'all') {
+  const container = document.getElementById('badges-grid-container');
+  if (!container) return;
+
+  const filtered = filter === 'all' ? ALL_BADGES : ALL_BADGES.filter(b => b.cat === filter);
+
+  container.innerHTML = filtered.map(b => `
+    <div class="badge-vault-card ${b.unlocked ? '' : 'locked'}" onclick="inspectBadge('${b.id}')" title="${b.name}: ${b.desc}">
+      <div class="badge-vault-icon">${b.icon}</div>
+      <h5 style="font-size:0.86rem;font-weight:800;margin:0 0 4px;color:var(--text-primary);">${b.name}</h5>
+      <span class="badge badge-purple" style="font-size:0.62rem;margin-bottom:6px;">${b.tier}</span>
+      <p style="font-size:0.72rem;color:var(--text-muted);margin:0;line-height:1.4;">${b.desc}</p>
+      <div style="margin-top:8px;font-family:var(--font-tech);font-size:0.68rem;font-weight:700;color:${b.unlocked ? 'var(--accent-green)' : 'var(--text-muted)'};">
+        ${b.unlocked ? '✓ UNLOCKED' : '🔒 LOCKED'}
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterBadges(filter, btnEl) {
+  document.querySelectorAll('#sec-badges .btn').forEach(b => b.classList.remove('active'));
+  if (btnEl) btnEl.classList.add('active');
+  renderBadges(filter);
+}
+
+function inspectBadge(badgeId) {
+  const b = ALL_BADGES.find(item => item.id === badgeId);
+  if (!b) return;
+  if (window.showToast) {
+    window.showToast(`${b.name} (${b.tier}): ${b.desc} • Status: ${b.unlocked ? 'Unlocked ✅' : 'Locked 🔒'}`, 'info');
+  }
+}
+
+// ── 8. Render Leaderboard Rankings ───────────────────────────
+function renderLeaderboard() {
+  const container = document.getElementById('ranking-rows-container');
+  if (!container) return;
+
+  const sessionUser = (typeof window !== 'undefined' && window.getCurrentUser) ? window.getCurrentUser() : null;
+  const isAuth = !!(sessionUser && sessionUser.isLoggedIn);
+
+  let list = [...LEADERBOARD_DATA];
+
+  // If user is authenticated and has earned XP, insert them into rankings
+  if (isAuth && currentUserXP > 0 && !list.some(u => u.name === sessionUser.name)) {
+    const activeTier = DEVELOPER_TIERS.find(t => currentUserXP >= t.xpMin && currentUserXP <= t.xpMax) || DEVELOPER_TIERS[0];
+    const solvedCount = ALL_CHALLENGES.filter(c => c.status === 'completed').length;
+    list.push({
+      rank: 1,
+      name: sessionUser.name,
+      handle: sessionUser.email ? `@${sessionUser.email.split('@')[0]}` : '@user',
+      tier: `Tier ${activeTier.tier}: ${activeTier.name}`,
+      xp: currentUserXP,
+      solved: solvedCount,
+      city: sessionUser.location || 'India',
+      avatar: sessionUser.avatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(sessionUser.name || 'User')}`,
+      isYou: true
+    });
+    list.sort((a, b) => (b.xp || 0) - (a.xp || 0));
+    list.forEach((item, idx) => { item.rank = idx + 1; });
+  }
+
+  if (list.length === 0) {
+    container.innerHTML = `
+      <div style="text-align:center;padding:52px 24px;background:rgba(255,255,255,0.015);border:1px dashed var(--border-outline);border-radius:var(--radius-xs);margin:8px 0;">
+        <div style="font-size:2.8rem;margin-bottom:12px;">🏆</div>
+        <h4 style="font-size:1.15rem;font-weight:800;margin-bottom:6px;color:var(--text-primary);">No Ranked Developers Yet</h4>
+        <p style="font-size:0.86rem;color:var(--text-muted);max-width:460px;margin:0 auto 18px;line-height:1.6;">
+          Rankings are calculated dynamically from verified challenge completions. Solve foundational challenges or sign in to claim the #1 spot!
+        </p>
+        <div style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap;">
+          ${isAuth 
+            ? '<button class="btn btn-primary btn-sm" onclick="scrollToSection(\'challenges\')">⚡ Solve Challenge to Rank #1</button>'
+            : '<a href="register.html" class="btn btn-primary btn-sm">🚀 Create Account to Compete</a><a href="login.html?redirect=ecosystem.html" class="btn btn-outline btn-sm">🔑 Sign In</a>'
+          }
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  let html = list.map(user => {
+    let medalEmoji = `#${user.rank}`;
+    if (user.rank === 1) medalEmoji = '🥇 1';
+    if (user.rank === 2) medalEmoji = '🥈 2';
+    if (user.rank === 3) medalEmoji = '🥉 3';
+
+    const isYou = user.isYou || (isAuth && user.name === sessionUser.name);
+
+    return `
+      <div class="ranking-row ${isYou ? 'current-user-row' : ''}" style="${isYou ? 'background:rgba(124, 58, 237, 0.08);border:1.5px solid var(--accent-purple);' : ''}">
+        <div class="rank-medal" style="${isYou ? 'color:var(--accent-purple);font-weight:800;' : ''}">${medalEmoji}</div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <img src="${user.avatar}" alt="${user.name}" style="width:34px;height:34px;border-radius:50%;background:var(--bg-secondary);border:${isYou ? '1.5px solid var(--accent-purple)' : '1px solid var(--border-outline)'};">
+          <div>
+            <div style="font-weight:700;color:${isYou ? 'var(--accent-purple)' : 'var(--text-primary)'};">${user.name} ${isYou ? ' (You)' : ''}</div>
+            <div style="font-size:0.75rem;font-family:var(--font-tech);color:var(--text-muted);">${user.handle} • ${user.city || 'India'}</div>
+          </div>
+        </div>
+        <div>
+          <span class="badge badge-purple" style="font-size:0.7rem;">${user.tier}</span>
+        </div>
+        <div class="ranking-hide-sm" style="font-family:var(--font-tech);font-weight:700;color:var(--text-secondary);">
+          ${user.solved || 0} solved
+        </div>
+        <div style="text-align:right;font-family:var(--font-tech);font-weight:800;color:var(--accent-purple);">
+          ${(user.xp || 0).toLocaleString('en-IN')} XP
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  if (!isAuth) {
+    html += `
+      <div class="ranking-row" style="background:rgba(255,255,255,0.02);border:1px dashed var(--border-outline);display:flex;justify-content:space-between;align-items:center;padding:14px 20px;margin-top:10px;">
+        <span style="font-size:0.85rem;color:var(--text-muted);">Sign in to register your developer ranking on the national leaderboard.</span>
+        <div style="display:flex;gap:8px;">
+          <a href="login.html?redirect=ecosystem.html" class="btn btn-outline btn-sm" style="font-size:0.75rem;">Sign In</a>
+          <a href="register.html" class="btn btn-primary btn-sm" style="font-size:0.75rem;">Create Account</a>
+        </div>
+      </div>
+    `;
+  }
+
+  container.innerHTML = html;
+}
+
+async function loadBackendLeaderboard() {
+  if (window.SmartHubAPI && window.SmartHubAPI.getLeaderboard) {
+    try {
+      const res = await window.SmartHubAPI.getLeaderboard();
+      if (res && res.leaderboard && res.leaderboard.length > 0) {
+        LEADERBOARD_DATA = res.leaderboard;
+        renderLeaderboard();
+      }
+    } catch (e) {}
+  }
+}
+
+function switchLeaderboard(tab, btnEl) {
+  document.querySelectorAll('#sec-rankings .btn').forEach(b => b.classList.remove('active'));
+  if (btnEl) btnEl.classList.add('active');
+  renderLeaderboard();
+  if (window.showToast) {
+    window.showToast(`Switched leaderboard filter to: ${tab.toUpperCase()}`, 'info');
+  }
+}
+
+// ── 9. Telemetry & Live Simulator Helpers ────────────────────
+function updateTelemetryHUD() {
+  const sessionUser = (typeof window !== 'undefined' && window.getCurrentUser) ? window.getCurrentUser() : null;
+  const isAuth = !!(sessionUser && sessionUser.isLoggedIn);
+
+  const xpDisplay = document.getElementById('hud-xp-display');
+  const progressBar = document.getElementById('hud-progress-bar');
+  const nextTierLbl = document.getElementById('hud-next-tier');
+  const tierBadge = document.getElementById('hud-tier-badge');
+  const titleBadge = document.getElementById('hud-title');
+  const hudAvatar = document.getElementById('hud-avatar');
+  const hudName = document.getElementById('hud-name');
+  const hudHandle = document.getElementById('hud-handle');
+  const hudLocation = document.getElementById('hud-location');
+  const hudSolved = document.getElementById('hud-solved-count');
+  const hudBadgeCount = document.getElementById('hud-badge-count');
+  const hudRank = document.getElementById('hud-rank');
+  const hudEarned = document.getElementById('hud-earned');
+  const hudActionsWrap = document.getElementById('hud-actions-wrap');
+
+  // Find active tier
+  const activeTier = DEVELOPER_TIERS.find(t => currentUserXP >= t.xpMin && currentUserXP <= t.xpMax) || DEVELOPER_TIERS[0];
+  const nextTier = DEVELOPER_TIERS.find(t => t.tier === activeTier.tier + 1) || activeTier;
+
+  if (tierBadge) tierBadge.textContent = `TIER ${activeTier.tier}`;
+  if (titleBadge) titleBadge.textContent = activeTier.name;
+  if (nextTierLbl) nextTierLbl.textContent = `TIER ${nextTier.tier}: ${nextTier.name.toUpperCase()}`;
+
+  const tierSpan = Math.max(1, nextTier.xpMin - activeTier.xpMin);
+  const currentInTier = Math.max(0, currentUserXP - activeTier.xpMin);
+  const pct = activeTier.tier === 10 ? 100 : Math.min(100, Math.floor((currentInTier / tierSpan) * 100));
+
+  if (xpDisplay) {
+    xpDisplay.innerHTML = `<strong style="color:var(--accent-purple);">${currentUserXP.toLocaleString('en-IN')}</strong> / ${nextTier.xpMin.toLocaleString('en-IN')} XP (${pct}%)`;
+  }
+  if (progressBar) {
+    progressBar.style.width = `${pct}%`;
+  }
+
+  const solvedCount = ALL_CHALLENGES.filter(c => c.status === 'completed').length;
+  const badgeCount = ALL_BADGES.filter(b => b.unlocked).length;
+
+  if (hudSolved) hudSolved.textContent = `${solvedCount} Challenges`;
+  if (hudBadgeCount) hudBadgeCount.textContent = `${badgeCount} Unlocked`;
+
+  if (isAuth) {
+    if (hudName) hudName.textContent = sessionUser.name || 'Developer';
+    if (hudHandle) hudHandle.textContent = sessionUser.email ? `@${sessionUser.email.split('@')[0]}` : '@dev';
+    if (hudAvatar) {
+      hudAvatar.src = sessionUser.avatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(sessionUser.name || 'User')}`;
+      hudAvatar.alt = sessionUser.name || 'Developer';
+    }
+    if (hudLocation) hudLocation.textContent = `🇮🇳 ${sessionUser.location || 'India'}`;
+    if (hudRank) hudRank.textContent = '#-- Active';
+    if (hudEarned) {
+      const bal = (sessionUser.wallet && sessionUser.wallet.balance) ? sessionUser.wallet.balance : 0;
+      hudEarned.textContent = `₹${Number(bal).toLocaleString('en-IN')} INR`;
+    }
+    if (hudActionsWrap) {
+      hudActionsWrap.innerHTML = `
+        <button class="btn btn-primary btn-sm" onclick="scrollToSection('challenges')">⚡ Solve Next Challenge</button>
+        <button class="btn btn-outline btn-sm" onclick="scrollToSection('workflow')">🗺️ Explore Journey</button>
+      `;
+    }
+  } else {
+    if (hudName) hudName.textContent = 'Guest Developer';
+    if (hudHandle) hudHandle.textContent = '@guest · Visitor';
+    if (hudAvatar) {
+      hudAvatar.src = 'https://api.dicebear.com/7.x/avataaars/svg?seed=guest_dev&backgroundColor=6366f1';
+      hudAvatar.alt = 'Guest Developer';
+    }
+    if (hudLocation) hudLocation.textContent = '🇮🇳 India';
+    if (hudRank) hudRank.textContent = 'Unranked';
+    if (hudEarned) hudEarned.textContent = '₹0 INR';
+    if (hudActionsWrap) {
+      hudActionsWrap.innerHTML = `
+        <a href="register.html" class="btn btn-primary btn-sm">🚀 Create Account (Free)</a>
+        <a href="login.html" class="btn btn-outline btn-sm">🔑 Sign In to Save XP</a>
+      `;
+    }
+  }
+}
+
+function simulateXpBoost(amount) {
+  currentUserXP += amount;
+  updateTelemetryHUD();
+  renderTierMatrix();
+  renderLeaderboard();
+  if (window.showToast) {
+    window.showToast(`⚡ Simulation Boost: +${amount} XP! New Total: ${currentUserXP.toLocaleString('en-IN')} XP`, 'success');
+  }
+}
+
+function resetXpSimulation() {
+  const sessionUser = (typeof window !== 'undefined' && window.getCurrentUser) ? window.getCurrentUser() : null;
+  currentUserXP = (sessionUser && sessionUser.isLoggedIn) ? (Number(sessionUser.xp) || 0) : 0;
+  ALL_CHALLENGES.forEach(c => { c.status = 'available'; });
+  ALL_BADGES.forEach(b => { b.unlocked = false; });
+  updateTelemetryHUD();
+  renderTierMatrix();
+  renderLeaderboard();
+  renderChallenges();
+  renderBadges('all');
+  if (window.showToast) {
+    const baselineLabel = (sessionUser && sessionUser.isLoggedIn) ? `${currentUserXP} XP` : 'Tier 1 (0 XP)';
+    window.showToast(`Simulator reset to baseline: ${baselineLabel}`, 'info');
+  }
+}
+
+function scrollToSection(secId) {
+  const el = document.getElementById(`sec-${secId}`);
+  if (el) el.scrollIntoView({ behavior: 'smooth' });
+}
+
+function jumpToTab(secId, btnEl) {
+  document.querySelectorAll('.journey-nav-item').forEach(b => b.classList.remove('active'));
+  if (btnEl) btnEl.classList.add('active');
+  scrollToSection(secId);
+}
+
+// ── DOM Ready Initialization ─────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  switchJourneyStage(1); // Start on stage 1 (The Initiate)
+  renderTierMatrix();
+  renderChallenges();
+  renderBadges('all');
+  renderLeaderboard();
+  updateTelemetryHUD();
+  loadBackendLeaderboard();
+});
+</script>
+
+</body>
+</html>

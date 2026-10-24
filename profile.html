@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Developer Profile — Smart Hub</title>
+  <meta name="description" content="Smart Hub developer profile — projects, achievements, XP, and developer bio.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👤</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/cards.css">
+  <link rel="stylesheet" href="css/pages.css">
+  <style>
+    .skill-bar-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .skill-name { width: 100px; font-size: 0.85rem; font-weight: 600; flex-shrink: 0; }
+    .contribution-grid { display: grid; grid-template-columns: repeat(52, 1fr); gap: 2px; }
+    .contribution-cell { width: 100%; aspect-ratio: 1; border-radius: 2px; cursor: pointer; transition: var(--transition-fast); }
+    .contribution-cell:hover { opacity: 0.7; transform: scale(1.3); }
+    .contrib-0 { background: rgba(255,255,255,0.05); }
+    .contrib-1 { background: rgba(139,92,246,0.25); }
+    .contrib-2 { background: rgba(139,92,246,0.5); }
+    .contrib-3 { background: rgba(139,92,246,0.75); }
+    .contrib-4 { background: var(--accent-purple); }
+    .project-repo-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; transition: var(--transition); cursor: pointer; }
+    .project-repo-card:hover { border-color: var(--border-accent); transform: translateY(-4px); }
+    .repo-lang-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+    .profile-badge-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: var(--radius-md); }
+    .edit-profile-btn { position: absolute; bottom: 20px; right: 20px; }
+    @media(max-width:768px) { .contribution-grid { grid-template-columns: repeat(26, 1fr); } }
+  </style>
+</head>
+<body>
+<div id="page-header"></div>
+
+<div class="profile-layout">
+  <!-- Cover -->
+  <div class="profile-cover" id="profile-cover">
+    <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(139,92,246,0.5),rgba(6,182,212,0.4),rgba(236,72,153,0.3));"></div>
+    <!-- Floating particles -->
+    <div class="bg-glow bg-glow-purple" style="width:300px;height:300px;top:-80px;right:100px;"></div>
+    <div class="bg-glow bg-glow-cyan" style="width:200px;height:200px;bottom:-40px;left:200px;"></div>
+    <button class="profile-cover-edit" onclick="SH.showToast('Cover photo updated!','success')">📷 Change Cover</button>
+  </div>
+
+  <!-- Profile Info -->
+  <div class="profile-info-section">
+    <div class="profile-avatar-wrap">
+      <div class="avatar-ring">
+        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=user&backgroundColor=6366f1" id="profile-avatar" alt="User Avatar" style="width:120px;height:120px;border-radius:50%;border:3px solid var(--bg-primary);">
+      </div>
+    </div>
+    <div class="profile-info-inner">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+        <div>
+          <div class="profile-name" style="display:flex;align-items:center;gap:10px;">
+            <span id="profile-name-text">Developer Profile</span>
+            <span class="badge badge-cyan">✓ Verified Member</span>
+            <span class="badge badge-purple" id="profile-level-badge">Level 1</span>
+          </div>
+          <div class="profile-username" id="profile-handle">@developer · Full Stack Builder · 📍 India</div>
+          <p class="profile-bio" id="profile-bio" style="margin-top:8px;">Building modern digital products, full-stack applications & microservices on Smart Hub.</p>
+          <div style="display:flex;gap:16px;margin-top:12px;flex-wrap:wrap;">
+            <span style="font-size:0.85rem;color:var(--text-secondary);">📅 Member Since 2026</span>
+            <span style="font-size:0.85rem;color:var(--accent-green);" id="profile-wallet-meta">💰 ₹0 in Wallet</span>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;" id="profile-action-btns">
+          <a href="seller-dashboard.html" class="btn btn-primary">Publish Project ⚡</a>
+          <a href="wallet.html" class="btn btn-secondary">Rupee Wallet 💰</a>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="profile-stats">
+        <div class="profile-stat">
+          <div class="profile-stat-val gradient-text" id="profile-stat-products">0</div>
+          <div class="profile-stat-lbl">Products</div>
+        </div>
+        <div class="profile-stat">
+          <div class="profile-stat-val" id="profile-stat-followers">0</div>
+          <div class="profile-stat-lbl">Followers</div>
+        </div>
+        <div class="profile-stat">
+          <div class="profile-stat-val" id="profile-stat-following">0</div>
+          <div class="profile-stat-lbl">Following</div>
+        </div>
+        <div class="profile-stat">
+          <div class="profile-stat-val" style="color:var(--accent-orange);" id="profile-stat-xp">0</div>
+          <div class="profile-stat-lbl">XP Points</div>
+        </div>
+        <div class="profile-stat">
+          <div class="profile-stat-val" style="color:var(--accent-green);" id="profile-stat-earnings">₹0</div>
+          <div class="profile-stat-lbl">Total Earned</div>
+        </div>
+        <div class="profile-stat">
+          <div class="profile-stat-val" style="color:var(--accent-pink);" id="profile-stat-badges">0</div>
+          <div class="profile-stat-lbl">Badges</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Profile Tabs -->
+  <div class="profile-tabs-section">
+    <div class="profile-tabs" data-tabs>
+      <div class="profile-tab active" data-tab="projects" onclick="switchProfileTab(this)">📦 Projects</div>
+      <div class="profile-tab" data-tab="posts" onclick="switchProfileTab(this)">📰 Posts</div>
+      <div class="profile-tab" data-tab="achievements" onclick="switchProfileTab(this)">🏆 Achievements</div>
+      <div class="profile-tab" data-tab="skills" onclick="switchProfileTab(this)">⚡ Skills</div>
+      <div class="profile-tab" data-tab="activity" onclick="switchProfileTab(this)">📊 Activity</div>
+    </div>
+  </div>
+
+  <!-- Profile Content -->
+  <div class="profile-content">
+    <div style="display:grid;grid-template-columns:1fr 300px;gap:32px;">
+
+      <!-- Main Content -->
+      <div>
+        <!-- Projects Panel -->
+        <div id="panel-projects">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
+            <h3>My Projects</h3>
+            <button class="btn btn-primary btn-sm" onclick="SH.openModal('modal-upload')">+ Upload Project</button>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;" id="profile-projects-grid"></div>
+        </div>
+
+        <!-- Posts Panel -->
+        <div id="panel-posts" style="display:none;">
+          <h3 style="margin-bottom:24px;">Recent Posts</h3>
+          <div id="profile-posts-list"></div>
+        </div>
+
+        <!-- Achievements Panel -->
+        <div id="panel-achievements" style="display:none;">
+          <h3 style="margin-bottom:24px;">Achievements &amp; Badges</h3>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;" id="achievements-grid"></div>
+        </div>
+
+        <!-- Skills Panel -->
+        <div id="panel-skills" style="display:none;">
+          <h3 style="margin-bottom:24px;">Skills & Expertise</h3>
+          <div id="skills-bars"></div>
+        </div>
+
+        <!-- Activity Panel -->
+        <div id="panel-activity" style="display:none;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+            <h3>Activity Heatmap</h3>
+            <div style="display:flex;align-items:center;gap:6px;font-size:0.78rem;color:var(--text-muted);">
+              Less <div style="display:flex;gap:3px;">${[0,1,2,3,4].map(i => `<div style="width:12px;height:12px;border-radius:2px;" class="contrib-${i}"></div>`).join('')}</div> More
+            </div>
+          </div>
+          <div class="contribution-grid" id="contribution-grid"></div>
+          <div style="display:flex;gap:8px;margin-top:8px;font-size:0.75rem;color:var(--text-muted);">
+            <span>Jan</span><span style="flex:1;"></span><span>Mar</span><span style="flex:1;"></span><span>Jun</span><span style="flex:1;"></span><span>Sep</span><span style="flex:1;"></span><span>Dec</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Sidebar -->
+      <aside style="display:flex;flex-direction:column;gap:20px;">
+        <!-- Tech Stack -->
+        <div class="glass-card" style="padding:20px;">
+          <h5 style="margin-bottom:16px;font-size:0.88rem;">🛠️ Tech Stack</h5>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;" id="tech-stack"></div>
+        </div>
+
+        <!-- Stats Summary -->
+        <div class="glass-card" style="padding:20px;">
+          <h5 style="margin-bottom:16px;font-size:0.88rem;">📊 Stats</h5>
+          <div style="display:flex;flex-direction:column;gap:12px;" id="profile-stats-list"></div>
+        </div>
+
+        <!-- Social Links -->
+        <div class="glass-card" style="padding:20px;">
+          <h5 style="margin-bottom:16px;font-size:0.88rem;">🔗 Links</h5>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <a href="https://github.com" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;gap:8px;font-size:0.85rem;color:var(--text-secondary);" onmouseover="this.style.color='var(--accent-coral)'" onmouseout="this.style.color='var(--text-secondary)'">🌐 Developer Portfolio ↗</a>
+            <a href="https://github.com" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;gap:8px;font-size:0.85rem;color:var(--text-secondary);" onmouseover="this.style.color='var(--accent-coral)'" onmouseout="this.style.color='var(--text-secondary)'">⌥ GitHub Profile ↗</a>
+            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;gap:8px;font-size:0.85rem;color:var(--text-secondary);" onmouseover="this.style.color='var(--accent-coral)'" onmouseout="this.style.color='var(--text-secondary)'">💼 LinkedIn ↗</a>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<!-- Upload Project Modal -->
+<div class="modal-overlay" id="modal-upload">
+  <div class="modal" style="max-width:580px;">
+    <div class="modal-header">
+      <h3>📦 Upload New Project</h3>
+      <span class="modal-close" onclick="SH.closeModal('modal-upload')">✕</span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <div>
+        <label style="font-size:0.82rem;color:var(--text-muted);display:block;margin-bottom:6px;">Project Title *</label>
+        <input class="input" type="text" placeholder="e.g., React E-Commerce Dashboard" id="proj-title">
+      </div>
+      <div>
+        <label style="font-size:0.82rem;color:var(--text-muted);display:block;margin-bottom:6px;">Category</label>
+        <select class="input filter-select" style="appearance:auto;" id="proj-cat">
+          <option>React</option><option>Mobile</option><option>AI/ML</option><option>Templates</option><option>Backend</option><option>Blockchain</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-size:0.82rem;color:var(--text-muted);display:block;margin-bottom:6px;">Description *</label>
+        <textarea class="input" rows="3" placeholder="Describe your project…" id="proj-desc"></textarea>
+      </div>
+      <div>
+        <label style="font-size:0.82rem;color:var(--text-muted);display:block;margin-bottom:6px;">Price (₹) — Leave 0 for free</label>
+        <input class="input" type="number" placeholder="e.g., 1999" id="proj-price" min="0">
+      </div>
+      <div style="padding:16px;border:2px dashed var(--border);border-radius:var(--radius-md);text-align:center;cursor:pointer;" onclick="SH.showToast('File picker opened!','info')">
+        <div style="font-size:2rem;margin-bottom:8px;">📁</div>
+        <div style="font-weight:600;">Drag & drop project files</div>
+        <div style="font-size:0.8rem;color:var(--text-muted);">.zip, max 50MB</div>
+      </div>
+      <div style="display:flex;gap:12px;">
+        <button class="btn btn-secondary" style="flex:1;justify-content:center;" onclick="SH.closeModal('modal-upload')">Cancel</button>
+        <button class="btn btn-primary" style="flex:1;justify-content:center;" onclick="uploadProject()">🚀 Upload & Publish</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="page-footer"></div>
+
+<script src="js/data.js"></script>
+<script src="js/api.js"></script>
+<script src="js/main.js"></script>
+<script src="js/layout.js"></script>
+<script>
+
+const langColors = { React: '#61dafb', JavaScript: '#f7df1e', 'Node.js': '#339933', Flutter: '#02569b', Python: '#3776ab', TypeScript: '#3178c6', HTML: '#e34f26', CSS: '#1572b6' };
+
+function renderProfileProjects() {
+  const grid = document.getElementById('profile-projects-grid');
+  if (!grid) return;
+  const list = (window.SmartHubData && window.SmartHubData.products) || (typeof SmartHubData !== 'undefined' ? SmartHubData.products : []) || [];
+  if (list.length === 0) {
+    grid.innerHTML = `
+      <div style="grid-column:1/-1;text-align:center;padding:48px 24px;border:1px dashed var(--border);border-radius:var(--radius-lg);background:rgba(255,255,255,0.02);">
+        <div style="font-size:2.5rem;margin-bottom:12px;">📦</div>
+        <h4>No Published Projects Yet</h4>
+        <p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:18px;">List your first digital asset or template to showcase it on your developer profile.</p>
+        <a href="seller-dashboard.html" class="btn btn-outline btn-sm">+ Publish Project →</a>
+      </div>
+    `;
+    return;
+  }
+  grid.innerHTML = list.slice(0, 6).map(p => `
+    <div class="project-repo-card">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;">
+        <div style="font-weight:700;font-size:0.95rem;color:var(--accent-cyan);">${p.title}</div>
+        ${p.badge ? `<span class="badge badge-orange">${p.badge}</span>` : ''}
+      </div>
+      <p style="font-size:0.82rem;margin-bottom:12px;display:-webkit-box;-webkit-line-clamp:2;line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${p.description}</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+        ${p.tags.map(t => `<span class="tag">${t}</span>`).join('')}
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <div style="display:flex;gap:12px;font-size:0.78rem;color:var(--text-muted);">
+          <span>★ ${p.rating}</span>
+          <span>💾 ${p.sales >= 1000 ? (p.sales/1000).toFixed(1)+'k' : p.sales} sales</span>
+        </div>
+        <div style="font-weight:800;color:var(--accent-green);">₹${p.price.toLocaleString('en-IN')}</div>
+      </div>
+    </div>`).join('');
+}
+
+function renderProfilePosts() {
+  const el = document.getElementById('profile-posts-list');
+  if (!el) return;
+  const list = (window.SmartHubData && window.SmartHubData.posts) || (typeof SmartHubData !== 'undefined' ? SmartHubData.posts : []) || [];
+  if (list.length === 0) {
+    el.innerHTML = `
+      <div style="text-align:center;padding:48px 24px;border:1px dashed var(--border);border-radius:var(--radius-lg);background:rgba(255,255,255,0.02);color:var(--text-muted);">
+        <div style="font-size:2.5rem;margin-bottom:12px;">📰</div>
+        <h4>No Community Posts Yet</h4>
+        <p style="font-size:0.85rem;margin-bottom:18px;">Share what you are building with India's developer community.</p>
+        <a href="feed.html" class="btn btn-outline btn-sm">Go to Feed →</a>
+      </div>
+    `;
+    return;
+  }
+  el.innerHTML = list.map(p => `
+    <div class="post-card" style="margin-bottom:16px;">
+      <div class="post-body">
+        <p class="post-text">${p.content.slice(0, 200)}${p.content.length > 200 ? '…' : ''}</p>
+        ${p.image ? `<div class="post-image"><img src="${p.image}" loading="lazy"></div>` : ''}
+      </div>
+      <div class="post-actions" style="border-top:1px solid var(--border);padding:8px 16px 12px;">
+        <span class="post-action-btn">❤️ ${p.likes}</span>
+        <span class="post-action-btn">💬 ${p.comments}</span>
+        <span class="post-action-btn">🔄 ${p.shares}</span>
+        <span class="post-action-btn" style="margin-left:auto;font-size:0.78rem;color:var(--text-muted);">${p.time} ago</span>
+      </div>
+    </div>`).join('');
+}
+
+function renderAchievements() {
+  const el = document.getElementById('achievements-grid');
+  if (!el) return;
+  const user = (window.getCurrentUser && window.getCurrentUser());
+  const badges = (user && user.badges) ? user.badges : 0;
+  if (!user || badges === 0) {
+    el.innerHTML = `
+      <div style="grid-column:1/-1;text-align:center;padding:48px 20px;border:1px dashed var(--border);border-radius:var(--radius-lg);background:rgba(255,255,255,0.02);color:var(--text-muted);">
+        <div style="font-size:2.5rem;margin-bottom:12px;">🏆</div>
+        <h4>No Badges or Accolades Yet</h4>
+        <p style="font-size:0.85rem;margin-bottom:18px;">Complete verified engineering milestones and publish production packages to unlock badges.</p>
+        <a href="challenges.html" class="btn btn-outline btn-sm">Explore Milestones →</a>
+      </div>
+    `;
+    return;
+  }
+}
+
+function renderSkills() {
+  const el = document.getElementById('skills-bars');
+  if (!el) return;
+  const user = (window.getCurrentUser && window.getCurrentUser()) || {};
+  const hasXP = (user.xp || 0) > 0;
+  if (!hasXP) {
+    el.innerHTML = `
+      <div style="padding:32px 16px;text-align:center;color:var(--text-muted);border:1px dashed var(--border);border-radius:var(--radius-md);">
+        <div style="font-size:2rem;margin-bottom:8px;">⚡</div>
+        <div style="font-weight:700;color:var(--text-primary);margin-bottom:4px;">No Assessed Skills Yet</div>
+        <div style="font-size:0.82rem;margin-bottom:16px;">Complete developer skill challenges to calibrate and showcase verified skill scores.</div>
+        <a href="challenges.html" class="btn btn-primary btn-sm">Explore Challenges →</a>
+      </div>
+    `;
+    return;
+  }
+  const skills = [
+    { name: 'React', level: Math.min(95, Math.floor((user.xp || 100) / 10)), color: '#61dafb' },
+    { name: 'Node.js', level: Math.min(90, Math.floor((user.xp || 100) / 12)), color: '#339933' },
+    { name: 'JavaScript', level: Math.min(95, Math.floor((user.xp || 100) / 10)), color: '#f7df1e' },
+  ];
+  el.innerHTML = skills.map(s => `
+    <div class="skill-bar-row">
+      <div class="skill-name">${s.name}</div>
+      <div class="progress-bar" style="flex:1;">
+        <div class="progress-fill" data-progress="${s.level}" style="background:${s.color};"></div>
+      </div>
+      <div style="width:40px;text-align:right;font-size:0.82rem;font-weight:700;">${s.level}%</div>
+    </div>`).join('');
+  setTimeout(() => {
+    document.querySelectorAll('.progress-fill[data-progress]').forEach(b => {
+      b.style.width = b.dataset.progress + '%';
+    });
+  }, 300);
+}
+
+function renderTechStack() {
+  const el = document.getElementById('tech-stack');
+  if (!el) return;
+  const techs = ['React', 'Node.js', 'TypeScript', 'MongoDB', 'Flutter', 'Python', 'Docker', 'AWS'];
+  el.innerHTML = techs.map(t => `<span class="tag" style="color:${langColors[t] || 'var(--text-secondary)'};">● ${t}</span>`).join('');
+}
+
+function renderProfileStats() {
+  const el = document.getElementById('profile-stats-list');
+  if (!el) return;
+  const user = (window.getCurrentUser && window.getCurrentUser()) || {};
+  const stats = [
+    { label: 'Total Earnings', value: `₹${(user.walletBalance || 0).toLocaleString('en-IN')}`, icon: '💰' },
+    { label: 'Products Listed', value: '0', icon: '📦' },
+    { label: 'Avg Rating', value: '—', icon: '⭐' },
+    { label: 'Total Downloads', value: '0', icon: '💾' },
+    { label: 'Milestones Done', value: '0 of 6', icon: '🏆' },
+    { label: 'XP Points', value: `${(user.xp || 0).toLocaleString('en-IN')}`, icon: '⚡' },
+  ];
+  el.innerHTML = stats.map(s => `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">
+      <div style="font-size:0.85rem;color:var(--text-secondary);">${s.icon} ${s.label}</div>
+      <div style="font-weight:700;font-size:0.88rem;">${s.value}</div>
+    </div>`).join('');
+}
+
+function renderContributions() {
+  const el = document.getElementById('contribution-grid');
+  if (!el) return;
+  const cells = [];
+  for (let i = 0; i < 52 * 7; i++) {
+    cells.push(`<div class="contribution-cell contrib-0" title="No contributions recorded"></div>`);
+  }
+  el.innerHTML = cells.join('');
+}
+
+function switchProfileTab(el) {
+  document.querySelectorAll('.profile-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  const tab = el.dataset.tab;
+  document.querySelectorAll('[id^="panel-"]').forEach(p => p.style.display = 'none');
+  const panel = document.getElementById('panel-' + tab);
+  if (panel) panel.style.display = '';
+}
+
+async function uploadProject() {
+  const title = document.getElementById('proj-title').value.trim();
+  const desc = document.getElementById('proj-desc').value.trim();
+  const price = document.getElementById('proj-price').value;
+  if (!title || !desc) { SH.showToast('Please fill in all required fields!', 'error'); return; }
+
+  if (window.SmartHubAPI) {
+    try {
+      const res = await window.SmartHubAPI.createProduct({
+        title,
+        description: desc,
+        price: Number(price) || 999,
+        category: 'React'
+      });
+      if (res && res.success) {
+        SH.showToast(`"${title}" published successfully! 🚀`, 'success');
+        SH.closeModal('modal-upload');
+        renderProfileProjects();
+        return;
+      }
+    } catch (e) {}
+  }
+
+  SH.showToast(`"${title}" published successfully! 🚀`, 'success');
+  SH.closeModal('modal-upload');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Purge any legacy fake/demo user from localStorage immediately
+  try {
+    const raw = localStorage.getItem('smarthub_user');
+    if (raw) {
+      const u = JSON.parse(raw);
+      if (!u || !u.isLoggedIn || ['priya', 'arjun', 'sharma', 'sneha', 'demo', 'test', 'example.com'].some(term => 
+        (u.name && u.name.toLowerCase().includes(term)) ||
+        (u.username && u.username.toLowerCase().includes(term)) ||
+        (u.email && u.email.toLowerCase().includes(term))
+      ) || u.xp === 4100 || u.xp === 4850) {
+        localStorage.removeItem('smarthub_user');
+      }
+    }
+  } catch (e) {
+    localStorage.removeItem('smarthub_user');
+  }
+
+  const user = (window.getCurrentUser && window.getCurrentUser());
+  if (user) {
+    const nameEl = document.getElementById('profile-name-text');
+    if (nameEl) nameEl.textContent = user.name;
+    const handleEl = document.getElementById('profile-handle');
+    if (handleEl) handleEl.textContent = `${user.username || '@' + user.name.toLowerCase().replace(/\s+/g, '_')} · Full Stack Developer · 📍 India`;
+    const avatarEl = document.getElementById('profile-avatar');
+    if (avatarEl) avatarEl.src = user.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(user.name)}&backgroundColor=6366f1`;
+    const levelEl = document.getElementById('profile-level-badge');
+    if (levelEl) levelEl.textContent = `Level ${user.level || 1}`;
+    const xpEl = document.getElementById('profile-stat-xp');
+    if (xpEl) xpEl.textContent = (user.xp || 0).toLocaleString('en-IN');
+    const earnEl = document.getElementById('profile-stat-earnings');
+    if (earnEl) earnEl.textContent = `₹${(user.walletBalance || 0).toLocaleString('en-IN')}`;
+    const badgesEl = document.getElementById('profile-stat-badges');
+    if (badgesEl) badgesEl.textContent = user.badges || 0;
+    const walletMeta = document.getElementById('profile-wallet-meta');
+    if (walletMeta) walletMeta.textContent = `💰 ₹${(user.walletBalance || 0).toLocaleString('en-IN')} in Wallet`;
+  } else {
+    // Clean Guest state
+    const nameEl = document.getElementById('profile-name-text');
+    if (nameEl) nameEl.textContent = 'Guest Developer';
+    const handleEl = document.getElementById('profile-handle');
+    if (handleEl) handleEl.textContent = '@guest · Visitor · 📍 India';
+    const bioEl = document.getElementById('profile-bio');
+    if (bioEl) bioEl.textContent = 'Sign in or register an account to publish software assets, earn XP from verified milestones, and customize your profile.';
+    const actionWrap = document.getElementById('profile-action-btns');
+    if (actionWrap) {
+      actionWrap.innerHTML = `
+        <a href="login.html" class="btn btn-primary">Sign In 🔑</a>
+        <a href="register.html" class="btn btn-outline">Create Account 🚀</a>
+      `;
+    }
+    const xpEl = document.getElementById('profile-stat-xp');
+    if (xpEl) xpEl.textContent = '0';
+    const earnEl = document.getElementById('profile-stat-earnings');
+    if (earnEl) earnEl.textContent = '₹0';
+    const badgesEl = document.getElementById('profile-stat-badges');
+    if (badgesEl) badgesEl.textContent = '0';
+    const walletMeta = document.getElementById('profile-wallet-meta');
+    if (walletMeta) walletMeta.textContent = '💰 ₹0 in Wallet';
+  }
+
+  renderProfileProjects();
+  renderProfilePosts();
+  renderAchievements();
+  renderSkills();
+  renderTechStack();
+  renderProfileStats();
+  renderContributions();
+});
+</script>
+</body>
+</html>

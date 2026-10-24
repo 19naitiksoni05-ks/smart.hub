@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Legal &amp; Platform Policies — Smart Hub</title>
+  <meta name="description" content="Official Smart Hub legal terms: Privacy Policy, Terms of Service, 100% Refund Policy, and Developer Security Guidelines. Compliant with Indian DPDP Act 2023.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💡</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/cards.css">
+  <link rel="stylesheet" href="css/pages.css">
+  <style>
+    .policies-hero {
+      padding: 56px 0 32px;
+      border-bottom: 1.5px solid var(--border-outline);
+      background: var(--bg-secondary);
+    }
+    .policies-container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+    .policies-layout {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 36px;
+      align-items: start;
+    }
+    .policies-nav-sidebar {
+      position: sticky;
+      top: 130px;
+      background: var(--bg-card);
+      border: 1.5px solid var(--border-outline);
+      border-radius: var(--radius-xs);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .policies-nav-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: var(--radius-xs);
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text-secondary);
+      font-family: var(--font-display);
+      font-size: 0.9rem;
+      font-weight: 700;
+      text-align: left;
+      cursor: pointer;
+      transition: var(--transition-fast);
+      width: 100%;
+    }
+    .policies-nav-btn:hover {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+    }
+    .policies-nav-btn.active {
+      background: linear-gradient(135deg, rgba(121, 40, 202, 0.14), rgba(255, 106, 0, 0.12));
+      color: var(--accent-purple);
+      border-color: rgba(121, 40, 202, 0.35);
+      box-shadow: 0 2px 8px rgba(121, 40, 202, 0.08);
+    }
+    .policies-content-card {
+      background: var(--bg-card);
+      border: 1.5px solid var(--border-outline);
+      border-radius: var(--radius-xs);
+      padding: 36px 40px;
+      box-shadow: var(--shadow-sm);
+    }
+    .policy-doc-pane {
+      display: none;
+    }
+    .policy-doc-pane.active {
+      display: block;
+      animation: fadeInDown 0.25s ease-out;
+    }
+    .policy-doc-title {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+    .policy-doc-meta {
+      font-size: 0.8rem;
+      font-family: var(--font-tech);
+      color: var(--text-muted);
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border-outline);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .policy-doc-h2 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin: 28px 0 10px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border-outline-subtle);
+    }
+    .policy-doc-p {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      line-height: 1.75;
+      margin-bottom: 16px;
+    }
+    .policy-doc-list {
+      margin: 0 0 18px 20px;
+      color: var(--text-secondary);
+      line-height: 1.75;
+    }
+    .policy-doc-list li {
+      margin-bottom: 8px;
+    }
+    .policy-callout {
+      background: var(--bg-secondary);
+      border-left: 4px solid var(--accent-coral);
+      padding: 16px 20px;
+      border-radius: var(--radius-xs);
+      margin: 20px 0;
+      font-size: 0.92rem;
+    }
+    .policy-callout.green { border-left-color: #16a34a; }
+    .policy-callout.cyan { border-left-color: #0891b2; }
+    @media (max-width: 840px) {
+      .policies-layout {
+        grid-template-columns: 1fr;
+      }
+      .policies-nav-sidebar {
+        position: static;
+        flex-direction: row;
+        overflow-x: auto;
+      }
+      .policies-content-card {
+        padding: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<div id="page-header"></div>
+
+<!-- Policies Hero -->
+<section class="policies-hero">
+  <div class="header-fluid-container" style="max-width:1100px;margin:0 auto;">
+    <div style="font-family:var(--font-tech);font-size:0.75rem;color:var(--accent-coral);font-weight:700;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.12em;">
+      // LEGAL &amp; REGULATORY COMPLIANCE
+    </div>
+    <h1 style="font-size:2.2rem;font-weight:800;letter-spacing:-0.02em;">Smart Hub Platform Policies</h1>
+    <p style="color:var(--text-secondary);margin-top:8px;max-width:680px;font-size:0.95rem;">
+      Clear, developer-first guarantees covering your data rights, commercial licensing, 100% money-back refunds, and automated source code security audits.
+    </p>
+  </div>
+</section>
+
+<!-- Policies Content Container -->
+<div class="policies-container">
+  <div class="policies-layout">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="policies-nav-sidebar">
+      <button class="policies-nav-btn active" data-tab="privacy" onclick="switchDocTab('privacy')">
+        <span>🔒</span> Privacy Policy
+      </button>
+      <button class="policies-nav-btn" data-tab="terms" onclick="switchDocTab('terms')">
+        <span>📜</span> Terms of Service
+      </button>
+      <button class="policies-nav-btn" data-tab="refund" onclick="switchDocTab('refund')">
+        <span>💳</span> Refund Policy
+      </button>
+      <button class="policies-nav-btn" data-tab="security" onclick="switchDocTab('security')">
+        <span>🛡️</span> Security Guidelines
+      </button>
+      <div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--border-outline);">
+        <button class="btn btn-outline btn-sm w-full" onclick="window.print()" style="font-size:0.78rem;">🖨️ Print Policies</button>
+      </div>
+    </aside>
+
+    <!-- Main Policy Content Pane -->
+    <main class="policies-content-card">
+
+      <!-- 1. Privacy Policy -->
+      <section class="policy-doc-pane active" id="pane-privacy">
+        <h2 class="policy-doc-title">🔒 Privacy &amp; Data Protection Policy</h2>
+        <div class="policy-doc-meta">
+          <span>EFFECTIVE DATE: OCTOBER 2026 · VERSION 2.4</span>
+          <span>COMPLIANT WITH INDIAN DPDP ACT 2023</span>
+        </div>
+
+        <p class="policy-doc-p">
+          Smart Hub Technologies Pvt. Ltd. ("Smart Hub", "we", "us") values your developer privacy. We believe developer tools must handle personal data with minimal collection, strict zero-third-party sharing, and transparent storage standards.
+        </p>
+
+        <div class="policy-callout cyan">
+          <strong>Key Guarantee:</strong> We never sell, rent, or broker developer data, code repositories, purchase keys, or browsing telemetry to advertisers or external data brokers.
+        </div>
+
+        <h3 class="policy-doc-h2">1. Information We Collect</h3>
+        <p class="policy-doc-p">We only collect information essential for authenticating your account, delivering encrypted source codes, and processing Rupee earnings:</p>
+        <ul class="policy-doc-list">
+          <li><strong>Identity Data:</strong> Full name, developer username, email address, and optional avatar image.</li>
+          <li><strong>Financial &amp; Payout Data:</strong> UPI ID, bank account IFSC (for creator earnings), and transaction identifiers generated via RBI-authorized payment aggregators (e.g., Razorpay). We do not store raw card CVVs or net banking passwords.</li>
+          <li><strong>Product &amp; License Keys:</strong> Cryptographic token hashes and SHA-256 signatures generated when you buy or list code assets.</li>
+          <li><strong>Technical Data:</strong> IP address, device operating system, and secure session cookies required for authentication and rate-limiting.</li>
+        </ul>
+
+        <h3 class="policy-doc-h2">2. How We Use Your Data</h3>
+        <p class="policy-doc-p">Your data is utilized strictly for the following operational objectives:</p>
+        <ul class="policy-doc-list">
+          <li>Delivering instant encrypted product download links and activation tokens to your registered email.</li>
+          <li>Routing creator royalties (net of 0.5%–3% platform fee and statutory taxes) with automated UPI settlements directly to your bank account.</li>
+          <li>Facilitating developer chat and creator support inquiries.</li>
+          <li>Verifying challenge submissions and publishing leaderboard rankings.</li>
+        </ul>
+
+        <h3 class="policy-doc-h2">3. Data Retention &amp; Deletion Rights</h3>
+        <p class="policy-doc-p">
+          Under the Digital Personal Data Protection (DPDP) Act 2023, you hold the legal right to request a complete export of your account data or complete permanent deletion of your profile and uploaded packages by contacting <code>privacy@smarthub.in</code> or navigating to <strong>Settings &gt; Security &gt; Delete Account</strong>.
+        </p>
+      </section>
+
+      <!-- 2. Terms of Service -->
+      <section class="policy-doc-pane" id="pane-terms">
+        <h2 class="policy-doc-title">📜 Terms of Service &amp; Licensing</h2>
+        <div class="policy-doc-meta">
+          <span>EFFECTIVE DATE: OCTOBER 2026 · VERSION 2.4</span>
+          <span>GOVERNING LAW: REPUBLIC OF INDIA</span>
+        </div>
+
+        <p class="policy-doc-p">
+          By accessing or utilizing Smart Hub (website, APIs, real-time WebSocket gateways, and marketplace downloads), you enter into a binding legal contract with Smart Hub Technologies Pvt. Ltd.
+        </p>
+
+        <h3 class="policy-doc-h2">1. Marketplace Asset Licenses</h3>
+        <p class="policy-doc-p">All digital items purchased on Smart Hub include one of the following transparent licenses:</p>
+        <ul class="policy-doc-list">
+          <li><strong>Standard Commercial License:</strong> Grants you the right to integrate, modify, compile, and deploy the source code in unlimited commercial client projects, SaaS products, and mobile apps. You may not resell or redistribute the raw source code package on competing marketplaces.</li>
+          <li><strong>Extended / Enterprise License:</strong> Includes full transfer of uncompiled source assets, CI/CD deployment scripts, and direct 1-on-1 author technical support for corporate teams.</li>
+          <li><strong>₹0 Free Starter License:</strong> Permitted for personal, open-source, and educational learning with author attribution preserved in comments.</li>
+        </ul>
+
+        <div class="policy-callout">
+          <strong>Platform Fee &amp; Royalty Structure:</strong> Sellers retain full intellectual ownership. Smart Hub charges a dynamic 0.5% – 3% platform fee (dependent on asset category, price tier, and jurisdiction/country tax laws) along with statutory government taxes (e.g. GST). Platform fees and applicable government taxes apply exclusively during buying and selling transactions. There are zero fees when adding money or depositing into your wallet.
+        </div>
+
+        <h3 class="policy-doc-h2">2. Prohibited Conduct &amp; Malicious Code</h3>
+        <p class="policy-doc-p">Authors and users are strictly prohibited from:</p>
+        <ul class="policy-doc-list">
+          <li>Uploading obfuscated malware, unauthorized cryptocurrency miners, reverse shells, or backdoor telemetry.</li>
+          <li>Submitting stolen, pirated, or GPL-violating repositories without explicit distribution rights.</li>
+          <li>Abusing chat or community channels for harassment, spam, or financial fraud.</li>
+        </ul>
+      </section>
+
+      <!-- 3. Refund Policy -->
+      <section class="policy-doc-pane" id="pane-refund">
+        <h2 class="policy-doc-title">💳 100% Money-Back &amp; Refund Policy</h2>
+        <div class="policy-doc-meta">
+          <span>EFFECTIVE DATE: OCTOBER 2026 · VERSION 2.4</span>
+          <span>ZERO-RISK DEVELOPER GUARANTEE</span>
+        </div>
+
+        <p class="policy-doc-p">
+          We want every developer to buy with total confidence. When you purchase source code, web apps, or Flutter templates on Smart Hub, your investment is safeguarded by our <strong>14-Day Code Integrity Guarantee</strong>.
+        </p>
+
+        <div class="policy-callout green">
+          <strong>14-Day Buyer Protection:</strong> If a purchased package has unresolvable build errors, broken core functionality, or deviates fundamentally from its store listing, you are entitled to a full 100% refund.
+        </div>
+
+        <h3 class="policy-doc-h2">1. Refund Eligibility Criteria</h3>
+        <p class="policy-doc-p">You are eligible for a complete reimbursement under any of the following verified conditions:</p>
+        <ul class="policy-doc-list">
+          <li><strong>Fatal Compilation / Build Errors:</strong> The repository fails to compile or install dependencies under standard documentation specifications, and the author does not provide a working patch within 48 hours.</li>
+          <li><strong>Missing Core Assets:</strong> Critical backend endpoints, UI screens, or advertised features are absent from the provided ZIP archive.</li>
+          <li><strong>Security Red Flags:</strong> Static analysis detects unannounced telemetry, tracking scripts, or security vulnerabilities.</li>
+        </ul>
+
+        <h3 class="policy-doc-h2">2. Refund Turnaround Time</h3>
+        <p class="policy-doc-p">
+          Once your dispute ticket is approved, funds are reversed within <strong>24 business hours</strong> directly to your Smart Hub Rupee Wallet or your original UPI ID / bank account.
+        </p>
+      </section>
+
+      <!-- 4. Security Guidelines -->
+      <section class="policy-doc-pane" id="pane-security">
+        <h2 class="policy-doc-title">🛡️ Security &amp; Code Audit Guidelines</h2>
+        <div class="policy-doc-meta">
+          <span>EFFECTIVE DATE: OCTOBER 2026 · VERSION 2.4</span>
+          <span>STRICT AUTOMATED MALWARE VERIFICATION</span>
+        </div>
+
+        <p class="policy-doc-p">
+          Security is the core pillar of Smart Hub. We implement multi-stage static analysis, AST vulnerability parsers, and cryptographic key dispatch to ensure every downloaded codebase is safe and clean.
+        </p>
+
+        <h3 class="policy-doc-h2">1. Automated Multi-Tier Code Audits</h3>
+        <p class="policy-doc-p">Every repository uploaded by sellers must pass three levels of automated inspection before appearing in the marketplace:</p>
+        <ul class="policy-doc-list">
+          <li><strong>Static AST Vulnerability Scans:</strong> Code is inspected for dangerous execution functions (e.g. <code>eval()</code>, unescaped SQL injections, hardcoded secret API keys, insecure deserialization).</li>
+          <li><strong>Dependency Supply Chain Verification:</strong> All <code>package.json</code>, <code>pubspec.yaml</code>, and <code>requirements.txt</code> dependencies are checked against national CVE vulnerability databases.</li>
+          <li><strong>Cryptographic SHA-256 Hash Matching:</strong> Every generated download ZIP produces a SHA-256 checksum displayed on the product page and included in your delivery email. You can verify package integrity via terminal command: <code>certutil -hashfile package.zip SHA256</code>.</li>
+        </ul>
+
+        <div class="policy-callout cyan">
+          <strong>Encrypted Key Delivery:</strong> Purchase keys and download links are encrypted via AES-256 before email transmission, ensuring zero interception during transit.
+        </div>
+
+        <h3 class="policy-doc-h2">2. Vulnerability Disclosure &amp; Bug Bounty</h3>
+        <p class="policy-doc-p">
+          Security researchers who discover vulnerabilities within Smart Hub infrastructure or verified marketplace packages are encouraged to report findings to <code>security@smarthub.in</code>. Eligible submissions qualify for bounties up to <strong>₹50,000 INR</strong>.
+        </p>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<!-- Footer -->
+<div id="page-footer"></div>
+
+<!-- Scripts -->
+<script src="js/data.js"></script>
+<script src="js/api.js"></script>
+<script src="js/main.js"></script>
+<script src="js/layout.js"></script>
+<script>
+function switchDocTab(tab) {
+  document.querySelectorAll('.policies-nav-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.tab === tab);
+  });
+  document.querySelectorAll('.policy-doc-pane').forEach(pane => {
+    pane.classList.toggle('active', pane.id === `pane-${tab}`);
+  });
+  // Update URL hash without scroll jump
+  history.replaceState(null, null, `?tab=${tab}`);
+}
+
+// Auto-switch tab based on URL query param
+document.addEventListener('DOMContentLoaded', () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const tab = urlParams.get('tab') || 'privacy';
+  switchDocTab(tab);
+});
+</script>
+</body>
+</html>

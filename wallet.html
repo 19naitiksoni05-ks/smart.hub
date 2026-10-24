@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wallet — Smart Hub | Add Money, Buy & Earn in ₹ INR</title>
+  <meta name="description" content="Smart Hub Wallet — Add money in Indian Rupees with 0% deposit fees. Transparent 0.5%–3% platform fee + tax applies only on buying and selling.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💰</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/cards.css">
+  <link rel="stylesheet" href="css/pages.css">
+  <style>
+    .wallet-page { padding-top: calc(var(--header-h) + 32px); min-height: 100vh; }
+    .topup-amount-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .topup-amount { padding: 12px; border-radius: var(--radius-md); background: rgba(255,255,255,0.04); border: 1px solid var(--border); text-align: center; font-weight: 700; cursor: pointer; transition: var(--transition-fast); font-size: 0.92rem; }
+    .topup-amount:hover, .topup-amount.active { background: rgba(139,92,246,0.15); border-color: var(--accent-purple); color: var(--accent-purple); }
+    .payment-method { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border: 1px solid var(--border); border-radius: var(--radius-md); cursor: pointer; transition: var(--transition-fast); }
+    .payment-method:hover, .payment-method.active { border-color: var(--accent-purple); background: rgba(139,92,246,0.05); }
+    .payment-method-icon { width: 40px; height: 28px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 16px; background: rgba(255,255,255,0.06); }
+    .payment-method input[type=radio] { accent-color: var(--accent-purple); }
+    .mini-stat { padding: 20px; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); text-align: center; }
+    .mini-stat-val { font-size: 1.6rem; font-weight: 900; }
+    .mini-stat-lbl { font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; }
+    .chart-bar { display: flex; align-items: flex-end; gap: 4px; height: 80px; }
+    .c-bar { flex: 1; border-radius: 4px 4px 0 0; transition: height 0.8s ease; cursor: pointer; position: relative; }
+    .c-bar:hover::after { content: attr(title); position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); white-space: nowrap; font-size: 0.7rem; background: var(--bg-tertiary); padding: 3px 6px; border-radius: 4px; color: white; }
+    .month-labels { display: flex; gap: 4px; }
+    .month-label { flex: 1; text-align: center; font-size: 0.65rem; color: var(--text-muted); margin-top: 4px; }
+    .enc-key-display { font-family: var(--font-mono); background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 16px; font-size: 0.88rem; color: var(--accent-cyan); letter-spacing: 0.08em; }
+    .security-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+    .security-item:last-child { border-bottom: none; }
+  </style>
+</head>
+<body>
+<div id="page-header"></div>
+
+<div class="wallet-page">
+  <div class="container">
+
+    <!-- ── Wallet Hero ─────────────────────────────────────────── -->
+    <div class="wallet-hero">
+      <div>
+        <div class="hero-eyebrow" style="display:inline-flex;margin-bottom:16px;">💰 Smart Hub Wallet</div>
+        <div class="wallet-balance-label">Available Balance</div>
+        <div class="wallet-balance-amount" id="wallet-main-balance">₹0</div>
+        <div style="font-size:0.88rem;color:var(--text-secondary);margin-top:8px;">
+          🟢 Active · Linked with Instant UPI
+        </div>
+        <div class="wallet-actions">
+          <button class="btn btn-primary btn-lg" data-open-modal="modal-topup">
+            ➕ Add Money
+          </button>
+          <button class="btn btn-secondary" onclick="SH.showToast('Transfer initiated!','info')">
+            ↗️ Transfer
+          </button>
+          <button class="btn btn-secondary" onclick="SH.showToast('Withdrawal to bank account initiated!','success')">
+            🏦 Withdraw to Bank
+          </button>
+        </div>
+      </div>
+
+      <!-- Mini Stats -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div class="mini-stat">
+          <div class="mini-stat-val" style="color:var(--accent-green);" id="wallet-total-earned">₹0</div>
+          <div class="mini-stat-lbl">Total Earned</div>
+        </div>
+        <div class="mini-stat">
+          <div class="mini-stat-val" style="color:#f87171;" id="wallet-total-spent">₹0</div>
+          <div class="mini-stat-lbl">Total Spent</div>
+        </div>
+        <div class="mini-stat">
+          <div class="mini-stat-val" style="color:var(--accent-cyan);" id="wallet-total-withdrawn">₹0</div>
+          <div class="mini-stat-lbl">Withdrawn</div>
+        </div>
+        <div class="mini-stat">
+          <div class="mini-stat-val" style="color:var(--accent-orange);">0.5%–3%</div>
+          <div class="mini-stat-lbl">Platform Fee (0% on Deposits)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Main Grid ───────────────────────────────────────────── -->
+    <div class="wallet-grid">
+
+      <!-- Left: Transactions + Chart -->
+      <div>
+        <!-- Earnings Chart -->
+        <div class="glass-card" style="padding:24px;margin-bottom:24px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+            <h4>📈 Earnings Overview</h4>
+            <select class="filter-select">
+              <option>Last 6 Months</option>
+              <option>Last 12 Months</option>
+              <option>This Year</option>
+            </select>
+          </div>
+          <div class="chart-bar" id="earnings-chart"></div>
+          <div class="month-labels" id="month-labels"></div>
+        </div>
+
+        <!-- Transactions -->
+        <div class="glass-card" style="padding:24px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+            <h4>📋 Transaction History</h4>
+            <div style="display:flex;gap:8px;">
+              <select class="filter-select">
+                <option>All</option>
+                <option>Credits</option>
+                <option>Debits</option>
+              </select>
+              <button class="btn btn-secondary btn-sm" onclick="SH.showToast('Statement exported!','success')">⬇️ Export</button>
+            </div>
+          </div>
+          <div id="transactions-list"></div>
+        </div>
+      </div>
+
+      <!-- Right: Actions + Security -->
+      <div style="display:flex;flex-direction:column;gap:20px;">
+
+        <!-- Quick Add -->
+        <div class="glass-card" style="padding:20px;">
+          <h4 style="margin-bottom:16px;">⚡ Quick Top-up</h4>
+          <div class="topup-amount-grid" style="margin-bottom:16px;" id="quick-amounts"></div>
+          <div style="display:flex;gap:8px;margin-bottom:16px;">
+            <div class="input-group" style="flex:1;">
+              <input class="input" type="number" placeholder="Custom amount (₹)" id="custom-amount" min="10" max="100000">
+            </div>
+          </div>
+          <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="initiateTopup()">
+            💰 Add Money to Wallet
+          </button>
+        </div>
+
+        <!-- Pending Earnings -->
+        <div class="glass-card" style="padding:20px;background:rgba(16,185,129,0.05);border-color:rgba(16,185,129,0.2);">
+          <h4 style="margin-bottom:12px;color:var(--accent-green);">💸 Pending Earnings</h4>
+          <div style="font-size:2rem;font-weight:900;color:var(--accent-green);" id="wallet-pending-amount">₹0</div>
+          <p style="font-size:0.82rem;color:var(--text-muted);margin:8px 0;">Payouts clear in 24 hours directly via UPI</p>
+          <div id="wallet-pending-list" style="font-size:0.8rem;color:var(--text-muted);padding:8px 0;">
+            No pending clearances currently.
+          </div>
+        </div>
+
+        <!-- Encryption Key Info -->
+        <div class="glass-card" style="padding:20px;">
+          <h4 style="margin-bottom:12px;">🔐 Purchase Delivery</h4>
+          <p style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:14px;">Keys are generated exclusively on the backend upon payment verification with multi-factor entropy.</p>
+          <div style="margin-bottom:12px;">
+            <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:6px;">Dynamic multi-factor format:</div>
+            <div class="enc-key-display">SH-ENC-2026-[PROJ]-[NONCE]-[SIG]</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div style="display:flex;gap:8px;font-size:0.82rem;color:var(--text-secondary);">
+              <span style="color:var(--accent-green);">✅</span>
+              Never pre-baked or exposed in client frontend
+            </div>
+            <div style="display:flex;gap:8px;font-size:0.82rem;color:var(--text-secondary);">
+              <span style="color:var(--accent-green);">✅</span>
+              AES-256-GCM / HMAC-SHA256 signature verification
+            </div>
+            <div style="display:flex;gap:8px;font-size:0.82rem;color:var(--text-secondary);">
+              <span style="color:var(--accent-green);">✅</span>
+              Unique to every buyer, project &amp; transaction
+            </div>
+          </div>
+        </div>
+
+        <!-- Security -->
+        <div class="glass-card" style="padding:20px;">
+          <h4 style="margin-bottom:12px;">🛡️ Security</h4>
+          <div>
+            <div class="security-item">
+              <span>🔒</span>
+              <div style="flex:1;">
+                <div style="font-weight:600;font-size:0.88rem;">2-Factor Authentication</div>
+                <div style="font-size:0.75rem;color:var(--text-muted);">SMS / App verification</div>
+              </div>
+              <span class="badge badge-purple">Ready to Setup</span>
+            </div>
+            <div class="security-item">
+              <span>🏦</span>
+              <div style="flex:1;">
+                <div style="font-weight:600;font-size:0.88rem;">Bank Account Linked</div>
+                <div style="font-size:0.75rem;color:var(--text-muted);">Add bank details for instant payouts</div>
+              </div>
+              <span class="badge" style="background:rgba(255,255,255,0.06);color:var(--text-muted);">Not Linked</span>
+            </div>
+            <div class="security-item">
+              <span>📱</span>
+              <div style="flex:1;">
+                <div style="font-weight:600;font-size:0.88rem;">UPI ID</div>
+                <div style="font-size:0.75rem;color:var(--text-muted);" id="wallet-upi-id">Not Configured</div>
+              </div>
+              <span class="badge" style="background:rgba(255,255,255,0.06);color:var(--text-muted);">Unlinked</span>
+            </div>
+            <div class="security-item">
+              <span>📋</span>
+              <div style="flex:1;">
+                <div style="font-weight:600;font-size:0.88rem;">KYC Verification</div>
+                <div style="font-size:0.75rem;color:var(--text-muted);">Submit government ID for seller clearance</div>
+              </div>
+              <span class="badge" style="background:rgba(255,255,255,0.06);color:var(--text-muted);">Pending</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Money Modal -->
+<div class="modal-overlay" id="modal-topup">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-header">
+      <h3>➕ Add Money to Wallet</h3>
+      <span class="modal-close" onclick="SH.closeModal('modal-topup')">✕</span>
+    </div>
+
+    <div style="margin-bottom:20px;">
+      <label style="font-size:0.82rem;color:var(--text-muted);display:block;margin-bottom:10px;">Choose Amount (₹)</label>
+      <div class="topup-amount-grid">
+        <div class="topup-amount" onclick="setAmount(500, this)">₹500</div>
+        <div class="topup-amount active" onclick="setAmount(1000, this)">₹1,000</div>
+        <div class="topup-amount" onclick="setAmount(2000, this)">₹2,000</div>
+        <div class="topup-amount" onclick="setAmount(5000, this)">₹5,000</div>
+        <div class="topup-amount" onclick="setAmount(10000, this)">₹10,000</div>
+        <div class="topup-amount" onclick="setAmount(25000, this)">₹25,000</div>
+      </div>
+    </div>
+
+    <div style="margin-bottom:20px;">
+      <label style="font-size:0.82rem;color:var(--text-muted);display:block;margin-bottom:8px;">Or enter custom amount</label>
+      <input class="input" type="number" placeholder="₹ Enter amount" id="modal-custom-amount" min="10">
+    </div>
+
+    <div style="margin-bottom:20px;">
+      <label style="font-size:0.82rem;color:var(--text-muted);display:block;margin-bottom:10px;">Payment Method</label>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <label class="payment-method">
+          <input type="radio" name="payment-method" value="upi" checked>
+          <div class="payment-method-icon">📱</div>
+          <div style="flex:1;">
+            <div style="font-weight:600;font-size:0.88rem;">UPI</div>
+            <div style="font-size:0.75rem;color:var(--text-muted);">Google Pay, PhonePe, Paytm, BHIM</div>
+          </div>
+        </label>
+        <label class="payment-method">
+          <input type="radio" name="payment-method" value="netbanking">
+          <div class="payment-method-icon">🏦</div>
+          <div style="flex:1;">
+            <div style="font-weight:600;font-size:0.88rem;">Net Banking</div>
+            <div style="font-size:0.75rem;color:var(--text-muted);">All Indian banks supported</div>
+          </div>
+        </label>
+        <label class="payment-method">
+          <input type="radio" name="payment-method" value="card">
+          <div class="payment-method-icon">💳</div>
+          <div style="flex:1;">
+            <div style="font-weight:600;font-size:0.88rem;">Debit / Credit Card</div>
+            <div style="font-size:0.75rem;color:var(--text-muted);">Visa, Mastercard, RuPay</div>
+          </div>
+        </label>
+      </div>
+    </div>
+
+    <div style="padding:12px 16px;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);border-radius:var(--radius-md);margin-bottom:20px;font-size:0.82rem;">
+      🎉 <strong>Zero fee to add money</strong>. Platform fee (0.5%–3% + statutory tax) applies only when buying or selling digital assets.
+    </div>
+
+    <button class="btn btn-primary" style="width:100%;justify-content:center;font-size:1rem;padding:14px;" onclick="processTopup()">
+      🚀 Add ₹<span id="topup-amount-display">1,000</span> to Wallet
+    </button>
+    <p style="text-align:center;font-size:0.75rem;color:var(--text-muted);margin-top:10px;">Secured by Razorpay · 256-bit SSL encryption</p>
+  </div>
+</div>
+
+<div id="page-footer"></div>
+
+<script src="js/data.js"></script>
+<script src="js/api.js"></script>
+<script src="js/main.js"></script>
+<script src="js/layout.js"></script>
+<script>
+let walletBalance = ((window.getCurrentUser && window.getCurrentUser()) || {}).walletBalance || 0;
+let selectedTopupAmount = 1000;
+
+const earningsData = [];
+
+function renderEarningsChart() {
+  const chartEl = document.getElementById('earnings-chart');
+  const labelsEl = document.getElementById('month-labels');
+  if (!chartEl) return;
+
+  if (earningsData.length === 0) {
+    chartEl.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;color:var(--text-muted);font-size:0.8rem;">No earnings activity recorded yet</div>';
+    if (labelsEl) labelsEl.innerHTML = '';
+    return;
+  }
+
+  const maxVal = Math.max(...earningsData.map(d => d.amount));
+  chartEl.innerHTML = earningsData.map(d => {
+    const h = Math.round((d.amount / maxVal) * 100);
+    return `<div class="c-bar" style="height:${h}%;background:var(--grad-primary);opacity:${d.month==='Oct'?'1':'0.6'};" title="${d.month}: ₹${d.amount.toLocaleString('en-IN')}"></div>`;
+  }).join('');
+
+  if (labelsEl) labelsEl.innerHTML = earningsData.map(d => `<div class="month-label">${d.month}</div>`).join('');
+}
+
+function renderTransactions() {
+  const el = document.getElementById('transactions-list');
+  if (!el) return;
+  const list = SmartHubData.transactions || [];
+  if (list.length === 0) {
+    el.innerHTML = `
+      <div style="text-align:center;padding:36px;color:var(--text-muted);font-size:0.85rem;">
+        <div style="font-size:2rem;margin-bottom:8px;">📋</div>
+        No transactions recorded yet.
+      </div>
+    `;
+    return;
+  }
+  el.innerHTML = list.map(t => `
+    <div class="transaction-item">
+      <div class="transaction-icon ${t.type}">${t.icon}</div>
+      <div class="transaction-info">
+        <div class="transaction-title">${t.title}</div>
+        <div class="transaction-date">${new Date(t.date).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}</div>
+        ${t.buyer ? `<div style="font-size:0.72rem;color:var(--text-muted);">📧 To: ${t.buyer}</div>` : ''}
+        ${t.method ? `<div style="font-size:0.72rem;color:var(--text-muted);">via ${t.method}</div>` : ''}
+      </div>
+      <div class="transaction-amount ${t.type}">
+        ${t.type === 'credit' ? '+' : '-'}₹${t.amount.toLocaleString('en-IN')}
+      </div>
+    </div>`).join('');
+}
+
+function renderQuickAmounts() {
+  const el = document.getElementById('quick-amounts');
+  if (!el) return;
+  const amounts = [100, 250, 500, 1000, 2000, 5000];
+  el.innerHTML = amounts.map(a => `
+    <div class="topup-amount" onclick="setQuickAmount(${a}, this)">₹${a.toLocaleString('en-IN')}</div>`).join('');
+}
+
+function setAmount(amount, el) {
+  selectedTopupAmount = amount;
+  document.querySelectorAll('#modal-topup .topup-amount').forEach(e => e.classList.remove('active'));
+  el.classList.add('active');
+  const display = document.getElementById('topup-amount-display');
+  if (display) display.textContent = amount.toLocaleString('en-IN');
+}
+
+function setQuickAmount(amount, el) {
+  document.querySelectorAll('#quick-amounts .topup-amount').forEach(e => e.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('custom-amount').value = amount;
+}
+
+function initiateTopup() {
+  const custom = document.getElementById('custom-amount').value;
+  const amount = custom ? parseInt(custom) : 1000;
+  if (!amount || amount < 10) { SH.showToast('Minimum add amount is ₹10', 'error'); return; }
+  selectedTopupAmount = amount;
+  document.getElementById('topup-amount-display').textContent = amount.toLocaleString('en-IN');
+  SH.openModal('modal-topup');
+}
+
+async function processTopup() {
+  const customInput = document.getElementById('modal-custom-amount').value;
+  const amount = customInput ? parseInt(customInput) : selectedTopupAmount;
+  if (!amount || amount < 10) { SH.showToast('Please enter a valid amount (min ₹10)', 'error'); return; }
+
+  // Call Backend API
+  try {
+    const res = await window.SmartHubAPI.topupWallet(amount, 'UPI');
+    if (res && res.success) {
+      walletBalance = res.newBalance;
+      document.getElementById('wallet-main-balance').textContent = '₹' + walletBalance.toLocaleString('en-IN');
+      document.querySelectorAll('.wallet-display').forEach(el => {
+        el.textContent = '₹' + walletBalance.toLocaleString('en-IN');
+      });
+      if (res.transaction) {
+        SmartHubData.transactions.unshift(res.transaction);
+        renderTransactions();
+      }
+      SH.closeModal('modal-topup');
+      SH.showToast(`₹${amount.toLocaleString('en-IN')} added to wallet! 🎉`, 'success');
+      document.getElementById('modal-custom-amount').value = '';
+      return;
+    }
+  } catch (err) {
+    console.warn('API topup fallback:', err);
+  }
+
+  // Local fallback
+  walletBalance += amount;
+  document.getElementById('wallet-main-balance').textContent = '₹' + walletBalance.toLocaleString('en-IN');
+  document.querySelectorAll('.wallet-display').forEach(el => {
+    el.textContent = '₹' + walletBalance.toLocaleString('en-IN');
+  });
+
+  SmartHubData.transactions.unshift({
+    id: 't_new',
+    type: 'credit',
+    title: 'Wallet Top-up (UPI)',
+    amount: amount,
+    date: new Date().toISOString().split('T')[0],
+    icon: '➕',
+    method: 'UPI'
+  });
+  renderTransactions();
+
+  SH.closeModal('modal-topup');
+  SH.showToast(`₹${amount.toLocaleString('en-IN')} added to wallet! 🎉`, 'success');
+  document.getElementById('modal-custom-amount').value = '';
+}
+
+async function loadBackendWallet() {
+  try {
+    if (window.SmartHubAPI) {
+      const data = await window.SmartHubAPI.getWallet();
+      if (data && data.wallet) {
+        walletBalance = data.wallet.balance;
+        document.getElementById('wallet-main-balance').textContent = '₹' + walletBalance.toLocaleString('en-IN');
+        document.querySelectorAll('.wallet-display').forEach(el => {
+          el.textContent = '₹' + walletBalance.toLocaleString('en-IN');
+        });
+        renderTransactions();
+      }
+    }
+  } catch (e) {}
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderEarningsChart();
+  renderTransactions();
+  renderQuickAmounts();
+  loadBackendWallet();
+});
+</script>
+</body>
+</html>
