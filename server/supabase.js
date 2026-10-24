@@ -33,11 +33,12 @@ async function testConnection() {
   }
 
   try {
-    const { data, error } = await supabase.from('categories').select('count', { count: 'exact', head: true });
+    const { data, error } = await supabase.from('categories').select('*').limit(1);
     if (error) {
       return {
         connected: false,
         error: error.message,
+        hint: error.hint,
         details: error
       };
     }
