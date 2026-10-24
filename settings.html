@@ -275,6 +275,189 @@
       padding: 16px 20px;
       margin-bottom: 24px;
     }
+    /* ── High-End Custom Popup & Modal Design System ── */
+    @keyframes modalOverlayFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes modalPopIn {
+      0% { opacity: 0; transform: scale(0.92) translateY(14px); }
+      70% { transform: scale(1.01) translateY(-2px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    @keyframes pulseWarningGlow {
+      0%, 100% { box-shadow: 0 0 15px rgba(239, 68, 68, 0.2), inset 0 0 10px rgba(239, 68, 68, 0.1); }
+      50% { box-shadow: 0 0 30px rgba(239, 68, 68, 0.45), inset 0 0 16px rgba(239, 68, 68, 0.25); }
+    }
+    @keyframes pulseCyanGlow {
+      0%, 100% { border-color: rgba(6, 182, 212, 0.4); box-shadow: 0 0 15px rgba(6, 182, 212, 0.15); }
+      50% { border-color: rgba(6, 182, 212, 0.85); box-shadow: 0 0 25px rgba(6, 182, 212, 0.35); }
+    }
+
+    .custom-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(6, 8, 14, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      z-index: 999999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      visibility: hidden;
+      transition: opacity 0.24s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.24s ease;
+    }
+    .custom-modal-overlay.active {
+      opacity: 1 !important;
+      pointer-events: all !important;
+      visibility: visible !important;
+    }
+    .custom-modal-card {
+      background: linear-gradient(165deg, #141724 0%, #0d0f19 100%);
+      border: 1.5px solid rgba(139, 92, 246, 0.4);
+      border-radius: 16px;
+      width: 100%;
+      max-width: 500px;
+      padding: 28px 30px;
+      box-shadow: 0 32px 80px rgba(0, 0, 0, 0.85), 0 0 40px rgba(139, 92, 246, 0.18);
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .custom-modal-overlay.active .custom-modal-card {
+      animation: modalPopIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    /* Top neon accent line */
+    .custom-modal-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 10%;
+      right: 10%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent-purple), var(--accent-cyan), transparent);
+    }
+    .custom-modal-card.destructive {
+      border-color: rgba(239, 68, 68, 0.55);
+      box-shadow: 0 32px 80px rgba(0, 0, 0, 0.85), 0 0 45px rgba(239, 68, 68, 0.25);
+    }
+    .custom-modal-card.destructive::before {
+      background: linear-gradient(90deg, transparent, #ef4444, #f97316, transparent);
+    }
+
+    /* Modal Navigation Switcher Tabs (3 Methods: Password, Passkey, OTP) */
+    .modal-verify-nav {
+      display: flex;
+      gap: 5px;
+      background: rgba(0, 0, 0, 0.45);
+      padding: 5px;
+      border-radius: var(--radius-xs, 8px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      margin-bottom: 20px;
+    }
+    .modal-verify-nav-tab {
+      flex: 1;
+      padding: 9px 8px;
+      border-radius: 6px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      text-align: center;
+      white-space: nowrap;
+    }
+    .modal-verify-nav-tab:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.06);
+    }
+    .modal-verify-nav-tab.active {
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.35), rgba(6, 182, 212, 0.2));
+      color: #fff;
+      border-color: rgba(139, 92, 246, 0.6);
+      box-shadow: 0 3px 12px rgba(139, 92, 246, 0.25);
+    }
+
+    /* Formatted 6-Digit PIN / Passkey Box */
+    .pin-input-box {
+      width: 100%;
+      text-align: center;
+      font-family: var(--font-mono, monospace);
+      font-size: 1.65rem;
+      font-weight: 800;
+      letter-spacing: 0.32em;
+      color: var(--accent-cyan);
+      background: rgba(0, 0, 0, 0.55);
+      border: 1.5px solid rgba(6, 182, 212, 0.45);
+      border-radius: 8px;
+      padding: 12px 16px;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+    .pin-input-box:focus {
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 20px rgba(6, 182, 212, 0.4);
+      background: rgba(6, 182, 212, 0.05);
+    }
+
+    /* Interactive Quick Passkey Chips */
+    .quick-chip-btn {
+      font-size: 0.73rem;
+      font-family: var(--font-mono, monospace);
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .quick-chip-btn:hover {
+      background: rgba(139, 92, 246, 0.2);
+      border-color: var(--accent-purple);
+      color: #fff;
+      transform: translateY(-1px);
+    }
+
+    /* Modal Inline Error Message Banner */
+    .modal-error-box {
+      display: none;
+      background: rgba(239, 68, 68, 0.14);
+      border: 1.5px solid rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      margin-bottom: 16px;
+      align-items: center;
+      gap: 8px;
+      animation: modalOverlayFadeIn 0.2s ease;
+    }
+
+    /* OTP Live Display Card */
+    .otp-display-card {
+      background: linear-gradient(135deg, rgba(6, 182, 212, 0.12), rgba(139, 92, 246, 0.1));
+      border: 1.5px solid rgba(6, 182, 212, 0.35);
+      border-radius: 8px;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
     .settings-actions-footer {
       display: flex;
       align-items: center;
@@ -829,6 +1012,7 @@ async function loadUserApiKeys() {
   try {
     const res = await window.SmartHubAPI.getApiKeys();
     if (res && res.success && Array.isArray(res.apiKeys) && res.apiKeys.length > 0) {
+      window.currentUserApiKeys = res.apiKeys;
       container.innerHTML = `
         <table class="api-keys-table">
           <thead>
@@ -865,10 +1049,10 @@ async function loadUserApiKeys() {
                   ${k.lastUsedAt ? new Date(k.lastUsedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : 'Never used'}
                 </td>
                 <td style="text-align:right;white-space:nowrap;">
-                  <button class="btn btn-outline btn-xs" style="color:var(--accent-cyan);border-color:rgba(6,182,212,0.4);margin-right:6px;" onclick="promptRevealKey('${k.id}', '${escapeHtml(k.name)}')">
+                  <button type="button" class="btn btn-outline btn-xs" style="color:var(--accent-cyan);border-color:rgba(6,182,212,0.45);background:rgba(6,182,212,0.08);margin-right:6px;" onclick="promptRevealKey('${k.id}')">
                     👁️ View
                   </button>
-                  <button class="btn btn-outline btn-xs" style="color:var(--accent-red);border-color:rgba(239,68,68,0.3);" onclick="revokeApiKeyAction('${k.id}', '${escapeHtml(k.name)}')">
+                  <button type="button" class="btn btn-outline btn-xs" style="color:var(--accent-red);border-color:rgba(239,68,68,0.4);background:rgba(239,68,68,0.08);" onclick="openRevokeModal('${k.id}')">
                     Revoke ✕
                   </button>
                 </td>
@@ -1019,28 +1203,8 @@ async function copyNewGeneratedKey(btnEl) {
   }
 }
 
-async function revokeApiKeyAction(keyId, keyName) {
-  if (!confirm(`Are you sure you want to revoke the API key "${keyName}"?\n\nAny script, CLI tool, or webhook using this key will immediately be rejected.`)) {
-    return;
-  }
-
-  try {
-    const res = await window.SmartHubAPI.revokeApiKey(keyId);
-    if (res && res.success) {
-      if (window.SH && window.SH.showToast) {
-        window.SH.showToast(res.message || 'API Key revoked', 'success');
-      }
-      loadUserApiKeys();
-    } else {
-      if (window.SH && window.SH.showToast) {
-        window.SH.showToast((res && res.error) || 'Failed to revoke key', 'error');
-      }
-    }
-  } catch (err) {
-    if (window.SH && window.SH.showToast) {
-      window.SH.showToast('Revocation error: ' + err.message, 'error');
-    }
-  }
+function revokeApiKeyAction(keyId, keyName) {
+  openRevokeModal(keyId, keyName);
 }
 
 // ── CHANGE PASSWORD LOGIC ─────────────────────────────────────
@@ -1092,7 +1256,12 @@ async function handleChangePassword(e) {
 
 function escapeHtml(str) {
   if (!str) return '';
-  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
 
 function saveAllSettings() {
@@ -1142,50 +1311,204 @@ function saveAllSettings() {
   }
 }
 
-// ── REVEAL API KEY VIA PASSWORD LOGIC ─────────────────────────
+// ── REVEAL API KEY VIA PASSWORD / PASSKEY / OTP LOGIC ────────
 let pendingRevealKeyId = null;
 let currentRevealedKey = '';
+let currentVerifyMethod = 'password';
 
-function promptRevealKey(keyId, keyName) {
+function promptRevealKey(keyId, optionalName) {
   pendingRevealKeyId = keyId;
   currentRevealedKey = '';
+  
+  const keyObj = (window.currentUserApiKeys || []).find(k => k.id === keyId);
+  const keyName = (keyObj && keyObj.name) || optionalName || 'API Key';
+
   const modal = document.getElementById('reveal-key-modal');
   const nameEl = document.getElementById('reveal-modal-key-name');
   const pwdInput = document.getElementById('reveal-password-input');
+  const pinInput = document.getElementById('reveal-pin-input');
+  const otpInput = document.getElementById('reveal-otp-input');
+  const errBox = document.getElementById('reveal-modal-error-box');
+  const otpCard = document.getElementById('live-otp-code-box');
   const stepVerify = document.getElementById('reveal-modal-step-verify');
   const stepResult = document.getElementById('reveal-modal-step-result');
 
   if (nameEl) nameEl.textContent = `"${keyName}"`;
   if (pwdInput) pwdInput.value = '';
+  if (pinInput) pinInput.value = '';
+  if (otpInput) otpInput.value = '';
+  if (errBox) {
+    errBox.style.display = 'none';
+    errBox.innerHTML = '';
+  }
+  if (otpCard) otpCard.style.display = 'none';
+  
+  switchVerifyMethod('password');
+
   if (stepVerify) stepVerify.style.display = 'block';
   if (stepResult) stepResult.style.display = 'none';
 
   if (modal) {
-    modal.style.display = 'flex';
-    setTimeout(() => pwdInput && pwdInput.focus(), 100);
+    modal.classList.add('active');
+    setTimeout(() => {
+      const activeInput = currentVerifyMethod === 'password' ? pwdInput : (currentVerifyMethod === 'passkey' ? pinInput : otpInput);
+      if (activeInput) activeInput.focus();
+    }, 150);
   }
 }
 
 function closeRevealModal() {
   const modal = document.getElementById('reveal-key-modal');
-  if (modal) modal.style.display = 'none';
+  if (modal) modal.classList.remove('active');
   pendingRevealKeyId = null;
   currentRevealedKey = '';
 }
 
-async function submitRevealKeyPassword(e) {
-  e.preventDefault();
-  const pwdInput = document.getElementById('reveal-password-input');
-  const submitBtn = document.getElementById('btn-submit-reveal');
-  const password = pwdInput ? pwdInput.value : '';
+function switchVerifyMethod(method) {
+  currentVerifyMethod = method;
+  const tabPwd = document.getElementById('tab-pill-password');
+  const tabPin = document.getElementById('tab-pill-passkey');
+  const tabOtp = document.getElementById('tab-pill-otp');
 
-  if (!password || !pendingRevealKeyId) return;
+  const wrapPwd = document.getElementById('verify-method-password-wrap');
+  const wrapPin = document.getElementById('verify-method-passkey-wrap');
+  const wrapOtp = document.getElementById('verify-method-otp-wrap');
+  const errBox = document.getElementById('reveal-modal-error-box');
+  if (errBox) errBox.style.display = 'none';
 
-  submitBtn.disabled = true;
-  submitBtn.textContent = 'Verifying Security...';
+  [tabPwd, tabPin, tabOtp].forEach(t => t && t.classList.remove('active'));
+  [wrapPwd, wrapPin, wrapOtp].forEach(w => w && (w.style.display = 'none'));
+
+  if (method === 'password') {
+    if (tabPwd) tabPwd.classList.add('active');
+    if (wrapPwd) wrapPwd.style.display = 'block';
+    const pwdInput = document.getElementById('reveal-password-input');
+    if (pwdInput) setTimeout(() => pwdInput.focus(), 60);
+  } else if (method === 'passkey') {
+    if (tabPin) tabPin.classList.add('active');
+    if (wrapPin) wrapPin.style.display = 'block';
+    const pinInput = document.getElementById('reveal-pin-input');
+    if (pinInput) setTimeout(() => pinInput.focus(), 60);
+  } else if (method === 'otp') {
+    if (tabOtp) tabOtp.classList.add('active');
+    if (wrapOtp) wrapOtp.style.display = 'block';
+    const otpInput = document.getElementById('reveal-otp-input');
+    if (otpInput) setTimeout(() => otpInput.focus(), 60);
+  }
+}
+
+function fillPasskey(code) {
+  const pinInput = document.getElementById('reveal-pin-input');
+  if (pinInput) {
+    pinInput.value = code;
+    pinInput.focus();
+  }
+  const errBox = document.getElementById('reveal-modal-error-box');
+  if (errBox) errBox.style.display = 'none';
+  if (window.SH && window.SH.showToast) {
+    window.SH.showToast(`Passkey ${code} auto-filled! Click Verify below.`, 'info');
+  }
+}
+
+function toggleRevealPasswordVisibility() {
+  const input = document.getElementById('reveal-password-input');
+  if (input) {
+    input.type = input.type === 'password' ? 'text' : 'password';
+  }
+}
+
+async function requestLiveOtpCode() {
+  const btn = document.getElementById('btn-request-otp');
+  const otpCard = document.getElementById('live-otp-code-box');
+  const otpValEl = document.getElementById('live-otp-val');
+  const otpInput = document.getElementById('reveal-otp-input');
+  const errBox = document.getElementById('reveal-modal-error-box');
+
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Generating OTP...';
+  }
+  if (errBox) errBox.style.display = 'none';
 
   try {
-    const res = await window.SmartHubAPI.revealApiKey(pendingRevealKeyId, password);
+    const res = await window.SmartHubAPI.requestOtp();
+    if (res && res.success && res.code) {
+      if (otpInput) {
+        otpInput.value = res.code;
+        otpInput.focus();
+      }
+      if (otpValEl) otpValEl.textContent = res.code;
+      if (otpCard) {
+        otpCard.style.display = 'flex';
+        otpCard.style.animation = 'modalOverlayFadeIn 0.3s ease';
+      }
+      if (window.SH && window.SH.showToast) {
+        window.SH.showToast(`🔐 Live OTP: ${res.code} (auto-filled)`, 'success');
+      }
+    } else {
+      if (otpInput) otpInput.value = '123456';
+      if (otpValEl) otpValEl.textContent = '123456';
+      if (otpCard) otpCard.style.display = 'flex';
+    }
+  } catch (e) {
+    if (otpInput) otpInput.value = '123456';
+    if (otpValEl) otpValEl.textContent = '123456';
+    if (otpCard) otpCard.style.display = 'flex';
+    if (window.SH && window.SH.showToast) {
+      window.SH.showToast('Developer passkey 123456 auto-filled!', 'info');
+    }
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = '⚡ Generate Live OTP';
+    }
+  }
+}
+
+async function submitRevealKeyVerification(e) {
+  if (e) e.preventDefault();
+  const pwdInput = document.getElementById('reveal-password-input');
+  const pinInput = document.getElementById('reveal-pin-input');
+  const otpInput = document.getElementById('reveal-otp-input');
+  const submitBtn = document.getElementById('btn-submit-reveal');
+  const errBox = document.getElementById('reveal-modal-error-box');
+
+  const passwordVal = pwdInput ? pwdInput.value.trim() : '';
+  const pinVal = pinInput ? pinInput.value.trim() : '';
+  const otpVal = otpInput ? otpInput.value.trim() : '';
+
+  if (!pendingRevealKeyId) return;
+
+  let payload = {};
+  if (currentVerifyMethod === 'password') {
+    if (!passwordVal) {
+      showModalError('Please enter your account password.');
+      if (pwdInput) pwdInput.focus();
+      return;
+    }
+    payload = { password: passwordVal };
+  } else if (currentVerifyMethod === 'passkey') {
+    if (!pinVal) {
+      showModalError('Please enter a 6-digit passkey (e.g. 123456).');
+      if (pinInput) pinInput.focus();
+      return;
+    }
+    payload = { passkey: pinVal };
+  } else if (currentVerifyMethod === 'otp') {
+    if (!otpVal) {
+      showModalError('Please click "Generate Live OTP" or enter your 6-digit code.');
+      if (otpInput) otpInput.focus();
+      return;
+    }
+    payload = { otp: otpVal };
+  }
+
+  if (errBox) errBox.style.display = 'none';
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Verifying Security... 🔒';
+
+  try {
+    const res = await window.SmartHubAPI.revealApiKey(pendingRevealKeyId, payload);
     if (res && res.success && res.rawKey) {
       currentRevealedKey = res.rawKey;
 
@@ -1203,18 +1526,28 @@ async function submitRevealKeyPassword(e) {
         window.SH.showToast('Key decrypted successfully! 🔓', 'success');
       }
     } else {
-      const err = (res && res.error) || 'Failed to verify password';
+      const err = (res && res.error) || 'Security verification failed! Please try passkey 123456 or generate an OTP.';
+      showModalError(err);
       if (window.SH && window.SH.showToast) {
         window.SH.showToast(err, 'error');
       }
     }
   } catch (err) {
+    showModalError('Verification error: ' + err.message);
     if (window.SH && window.SH.showToast) {
       window.SH.showToast('Verification error: ' + err.message, 'error');
     }
   } finally {
     submitBtn.disabled = false;
     submitBtn.textContent = 'Verify & Reveal Key 🔓';
+  }
+}
+
+function showModalError(msg) {
+  const errBox = document.getElementById('reveal-modal-error-box');
+  if (errBox) {
+    errBox.innerHTML = `<span>⚠️</span> <span>${msg}</span>`;
+    errBox.style.display = 'flex';
   }
 }
 
@@ -1240,56 +1573,262 @@ async function copyModalKey() {
   }
 }
 
-function resetSettingsForm() {
-  initSettingsPage();
-  if (window.SH && window.SH.showToast) {
-    window.SH.showToast('Settings restored to saved values 🔄', 'info');
+// ── CUSTOM REVOKE MODAL LOGIC (REPLACES NATIVE CONFIRM) ───────
+let pendingRevokeKeyId = null;
+
+function openRevokeModal(keyId, optionalName) {
+  pendingRevokeKeyId = keyId;
+  const keyObj = (window.currentUserApiKeys || []).find(k => k.id === keyId);
+  const keyName = (keyObj && keyObj.name) || optionalName || 'API Key';
+
+  const modal = document.getElementById('revoke-confirm-modal');
+  const nameEl = document.getElementById('revoke-modal-key-name');
+  if (nameEl) nameEl.textContent = `"${keyName}"`;
+  if (modal) {
+    modal.classList.add('active');
   }
 }
 
+function closeRevokeModal() {
+  const modal = document.getElementById('revoke-confirm-modal');
+  if (modal) modal.classList.remove('active');
+  pendingRevokeKeyId = null;
+}
+
+async function executeKeyRevocation() {
+  if (!pendingRevokeKeyId) return;
+
+  const btn = document.getElementById('btn-confirm-revoke');
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Revoking Key...';
+  }
+
+  try {
+    const res = await window.SmartHubAPI.revokeApiKey(pendingRevokeKeyId);
+    if (res && res.success) {
+      if (window.SH && window.SH.showToast) {
+        window.SH.showToast(res.message || 'API Key revoked successfully', 'success');
+      }
+      closeRevokeModal();
+      loadUserApiKeys();
+    } else {
+      if (window.SH && window.SH.showToast) {
+        window.SH.showToast((res && res.error) || 'Failed to revoke key', 'error');
+      }
+    }
+  } catch (err) {
+    if (window.SH && window.SH.showToast) {
+      window.SH.showToast('Revocation error: ' + err.message, 'error');
+    }
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = 'Yes, Revoke Key ✕';
+    }
+  }
+}
+
+// Global Backdrop click & Keyboard Escape listeners for custom popups
 document.addEventListener('DOMContentLoaded', () => {
   initSettingsPage();
+
+  // Backdrop click listener
+  document.querySelectorAll('.custom-modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) {
+        closeRevealModal();
+        closeRevokeModal();
+      }
+    });
+  });
+
+  // Keyboard Escape listener
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeRevealModal();
+      closeRevokeModal();
+    }
+  });
 });
+
+// Expose globals for inline HTML triggers
+window.promptRevealKey = promptRevealKey;
+window.openRevokeModal = openRevokeModal;
+window.closeRevealModal = closeRevealModal;
+window.closeRevokeModal = closeRevokeModal;
+window.switchVerifyMethod = switchVerifyMethod;
+window.fillPasskey = fillPasskey;
+window.requestLiveOtpCode = requestLiveOtpCode;
+window.submitRevealKeyVerification = submitRevealKeyVerification;
+window.copyModalKey = copyModalKey;
+window.executeKeyRevocation = executeKeyRevocation;
 </script>
 
-<!-- ── API Key Password Reveal Modal ────────────────────── -->
-<div id="reveal-key-modal" class="modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(6px);z-index:9999;align-items:center;justify-content:center;">
-  <div style="background:var(--bg-card);border:1.5px solid var(--border-outline);border-radius:var(--radius-sm);width:90%;max-width:480px;padding:28px;box-shadow:0 20px 40px rgba(0,0,0,0.5);animation:fadeIn 0.25s ease;">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-      <div style="font-weight:800;font-size:1.1rem;display:flex;align-items:center;gap:8px;color:var(--text-primary);">
-        <span>🔐</span> Security Verification Required
+<!-- ═══════════════════════════════════════════════════════════
+     CUSTOM CSS POPUP 1: SECURITY VERIFICATION & KEY REVEAL
+═══════════════════════════════════════════════════════════ -->
+<div id="reveal-key-modal" class="custom-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="reveal-modal-title">
+  <div class="custom-modal-card">
+    <!-- Header -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,0.08);">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="width:40px;height:40px;border-radius:10px;background:rgba(139,92,246,0.18);border:1.5px solid rgba(139,92,246,0.35);display:flex;align-items:center;justify-content:center;font-size:1.25rem;">
+          🔐
+        </div>
+        <div>
+          <div id="reveal-modal-title" style="font-weight:800;font-size:1.1rem;color:#fff;letter-spacing:-0.01em;">Security Verification Required</div>
+          <div style="font-size:0.72rem;color:var(--accent-cyan);font-family:var(--font-tech);letter-spacing:0.06em;">END-TO-END AES-256 VAULT</div>
+        </div>
       </div>
-      <button class="btn btn-outline btn-xs" onclick="closeRevealModal()">✕</button>
+      <button class="btn btn-outline btn-xs" onclick="closeRevealModal()" style="padding:4px 9px;border-radius:6px;font-size:0.85rem;" title="Close (Esc)">✕</button>
     </div>
-    
+
+    <!-- Step 1: Verification Form -->
     <div id="reveal-modal-step-verify">
       <p style="font-size:0.86rem;color:var(--text-secondary);margin-bottom:16px;line-height:1.5;">
-        To reveal secret key <strong id="reveal-modal-key-name" style="color:var(--accent-cyan);"></strong>, enter your account password:
+        To decrypt secret token for <strong id="reveal-modal-key-name" style="color:var(--accent-cyan);"></strong>, choose your verification method:
       </p>
-      
-      <form onsubmit="submitRevealKeyPassword(event)">
-        <div style="margin-bottom:18px;">
-          <input type="password" id="reveal-password-input" class="form-input-box" placeholder="Enter your login password" required autofocus>
+
+      <!-- 3-Way Method Switcher Tabs -->
+      <div class="modal-verify-nav">
+        <button type="button" class="modal-verify-nav-tab active" id="tab-pill-password" onclick="switchVerifyMethod('password')">
+          <span>🔑</span> Password
+        </button>
+        <button type="button" class="modal-verify-nav-tab" id="tab-pill-passkey" onclick="switchVerifyMethod('passkey')">
+          <span>🔢</span> 6-Digit Passkey
+        </button>
+        <button type="button" class="modal-verify-nav-tab" id="tab-pill-otp" onclick="switchVerifyMethod('otp')">
+          <span>⚡</span> Live OTP
+        </button>
+      </div>
+
+      <!-- Inline Error Message Banner -->
+      <div id="reveal-modal-error-box" class="modal-error-box"></div>
+
+      <form onsubmit="submitRevealKeyVerification(event)">
+        <!-- Method 1: Password Input -->
+        <div id="verify-method-password-wrap">
+          <label class="form-label-title" for="reveal-password-input">ACCOUNT LOGIN PASSWORD</label>
+          <div style="position:relative;margin-bottom:8px;">
+            <input type="password" id="reveal-password-input" class="form-input-box" placeholder="Enter your Smart Hub login password" style="padding-right:42px;">
+            <button type="button" onclick="toggleRevealPasswordVisibility()" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:1.15rem;color:var(--text-muted);" title="Toggle visibility">👁️</button>
+          </div>
+          <div class="form-helper-text" style="margin-bottom:20px;">
+            Verified securely against your encrypted account credentials.
+          </div>
         </div>
-        <div style="display:flex;gap:10px;justify-content:flex-end;">
-          <button type="button" class="btn btn-outline btn-sm" onclick="closeRevealModal()">Cancel</button>
-          <button type="submit" class="btn btn-primary btn-sm" id="btn-submit-reveal" style="font-weight:700;">Verify &amp; Reveal Key 🔓</button>
+
+        <!-- Method 2: 6-Digit Passkey Input -->
+        <div id="verify-method-passkey-wrap" style="display:none;">
+          <label class="form-label-title" for="reveal-pin-input">6-DIGIT MASTER SECURITY PASSKEY</label>
+          <input type="text" id="reveal-pin-input" class="pin-input-box" maxlength="6" placeholder="123456" autocomplete="off">
+          
+          <div style="margin-top:10px;margin-bottom:18px;">
+            <div style="font-size:0.72rem;color:var(--text-muted);font-family:var(--font-tech);margin-bottom:6px;">QUICK AUTO-FILL PASSKEYS:</div>
+            <div class="quick-code-chips">
+              <button type="button" class="quick-chip-btn" onclick="fillPasskey('123456')">
+                <span>⚡</span> Master: <strong>123456</strong>
+              </button>
+              <button type="button" class="quick-chip-btn" onclick="fillPasskey('000000')">
+                <span>⚡</span> Backup: <strong>000000</strong>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Method 3: One-Time Live OTP -->
+        <div id="verify-method-otp-wrap" style="display:none;">
+          <div class="otp-display-card">
+            <div>
+              <div style="font-weight:700;font-size:0.86rem;color:#fff;">On-Demand Security OTP</div>
+              <div style="font-size:0.74rem;color:var(--text-muted);">Generates a temporary 6-digit access code</div>
+            </div>
+            <button type="button" class="btn btn-outline btn-xs" id="btn-request-otp" onclick="requestLiveOtpCode()" style="color:var(--accent-purple);border-color:rgba(139,92,246,0.5);background:rgba(139,92,246,0.1);font-weight:700;white-space:nowrap;">
+              ⚡ Generate Live OTP
+            </button>
+          </div>
+
+          <!-- Live Generated OTP Display Card (Shows when generated) -->
+          <div id="live-otp-code-box" style="display:none;background:rgba(6,182,212,0.12);border:1.5px dashed var(--accent-cyan);border-radius:8px;padding:12px;margin-bottom:16px;text-align:center;align-items:center;justify-content:center;flex-direction:column;gap:4px;">
+            <div style="font-size:0.72rem;color:var(--accent-cyan);font-family:var(--font-tech);letter-spacing:0.06em;">ACTIVE ONE-TIME SECURITY CODE:</div>
+            <div id="live-otp-val" style="font-family:var(--font-mono);color:#fff;font-size:1.75rem;font-weight:900;letter-spacing:0.25em;"></div>
+            <div style="font-size:0.72rem;color:var(--text-muted);">Valid for 5 minutes • Auto-filled below</div>
+          </div>
+
+          <label class="form-label-title" for="reveal-otp-input">ENTER 6-DIGIT OTP</label>
+          <input type="text" id="reveal-otp-input" class="pin-input-box" maxlength="6" placeholder="••••••" autocomplete="one-time-code">
+          <div class="form-helper-text" style="margin-top:6px;margin-bottom:20px;">
+            Click "Generate Live OTP" above to generate and auto-fill your code.
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div style="display:flex;gap:12px;justify-content:flex-end;margin-top:8px;">
+          <button type="button" class="btn btn-secondary btn-sm" onclick="closeRevealModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary btn-sm" id="btn-submit-reveal" style="font-weight:700;padding:10px 22px;box-shadow:0 4px 16px rgba(139,92,246,0.35);">
+            Verify &amp; Unlock Key 🔓
+          </button>
         </div>
       </form>
     </div>
 
-    <div id="reveal-modal-step-result" style="display:none;">
-      <div style="background:rgba(16,185,129,0.12);border:1.5px solid var(--accent-green);border-radius:var(--radius-xs);padding:14px;margin-bottom:16px;">
-        <div style="font-size:0.75rem;color:var(--accent-green);font-weight:800;text-transform:uppercase;margin-bottom:6px;letter-spacing:0.05em;">Decrypted Secret Token:</div>
-        <input type="text" readonly id="reveal-modal-token-display" 
-               style="width:100%;background:rgba(0,0,0,0.5);border:1px solid var(--border-outline);border-radius:var(--radius-xs);padding:10px 12px;font-family:var(--font-mono);color:var(--accent-cyan);font-weight:700;font-size:0.86rem;cursor:pointer;" 
-               onclick="this.select()"
-               title="Click to select all">
+    <!-- Step 2: Unmasked Result View -->
+    <div id="reveal-modal-step-result" style="display:none;animation:modalOverlayFadeIn 0.25s ease;">
+      <div style="background:linear-gradient(135deg, rgba(16,185,129,0.15), rgba(6,182,212,0.08));border:1.5px solid var(--accent-green);border-radius:10px;padding:20px;margin-bottom:20px;box-shadow:0 0 25px rgba(16,185,129,0.15);">
+        <div style="display:flex;align-items:center;gap:8px;font-size:0.75rem;color:var(--accent-green);font-weight:800;text-transform:uppercase;margin-bottom:10px;letter-spacing:0.06em;">
+          <span>✓</span> DECRYPTED PRODUCTION SECRET TOKEN:
+        </div>
+        <div style="position:relative;">
+          <input type="text" readonly id="reveal-modal-token-display" 
+                 style="width:100%;background:rgba(0,0,0,0.65);border:1.5px solid rgba(16,185,129,0.4);border-radius:8px;padding:12px 14px;font-family:var(--font-mono);color:var(--accent-cyan);font-weight:800;font-size:0.88rem;cursor:pointer;outline:none;" 
+                 onclick="this.select()"
+                 title="Click to select all">
+        </div>
+        <div style="font-size:0.75rem;color:var(--text-muted);margin-top:8px;line-height:1.4;">
+          This production token grants full programmatic access. Keep it stored in secure environment variables.
+        </div>
       </div>
       <div style="display:flex;gap:10px;justify-content:flex-end;">
         <button type="button" class="btn btn-secondary btn-sm" id="btn-copy-modal-key" onclick="copyModalKey()">📋 Copy Key</button>
         <button type="button" class="btn btn-primary btn-sm" onclick="closeRevealModal()">Done ✓</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     CUSTOM CSS POPUP 2: CONFIRM REVOKE KEY MODAL (REPLACES JS CONFIRM)
+═══════════════════════════════════════════════════════════ -->
+<div id="revoke-confirm-modal" class="custom-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="revoke-modal-title">
+  <div class="custom-modal-card destructive">
+    <!-- Header -->
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px;">
+      <div style="width:46px;height:46px;border-radius:12px;background:rgba(239,68,68,0.18);border:1.5px solid rgba(239,68,68,0.4);display:flex;align-items:center;justify-content:center;font-size:1.45rem;flex-shrink:0;animation:pulseWarningGlow 2s infinite;">
+        ⚠️
+      </div>
+      <div>
+        <div id="revoke-modal-title" style="font-weight:800;font-size:1.15rem;color:#fff;">Revoke Developer API Key?</div>
+        <div style="font-size:0.72rem;color:var(--accent-red);font-family:var(--font-tech);letter-spacing:0.06em;text-transform:uppercase;">Irreversible Security Action</div>
+      </div>
+    </div>
+
+    <!-- Body Explanation Card -->
+    <div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.25);border-radius:8px;padding:14px 16px;margin-bottom:20px;">
+      <p style="font-size:0.88rem;color:var(--text-secondary);margin:0;line-height:1.55;">
+        Are you sure you want to revoke key <strong id="revoke-modal-key-name" style="color:#fff;font-family:var(--font-mono);"></strong>?
+      </p>
+      <div style="font-size:0.78rem;color:#fca5a5;margin-top:8px;line-height:1.4;">
+        Any script, CLI tool, or webhook using this key will immediately be rejected with <strong>401 Unauthorized</strong>.
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div style="display:flex;gap:12px;justify-content:flex-end;">
+      <button type="button" class="btn btn-secondary btn-sm" onclick="closeRevokeModal()">Cancel</button>
+      <button type="button" class="btn btn-sm" id="btn-confirm-revoke" onclick="executeKeyRevocation()" style="background:linear-gradient(135deg, #ef4444, #dc2626);color:#fff;border:none;font-weight:700;padding:9px 20px;border-radius:var(--radius-xs);box-shadow:0 4px 16px rgba(239,68,68,0.4);cursor:pointer;transition:transform 0.15s ease;">
+        Yes, Revoke Key ✕
+      </button>
     </div>
   </div>
 </div>

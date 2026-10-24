@@ -154,12 +154,25 @@
       }
     },
 
-    async revealApiKey(keyId, password) {
+    async revealApiKey(keyId, credentials) {
       try {
+        const payload = typeof credentials === 'string' ? { password: credentials } : credentials;
         const res = await fetch(`${this.baseUrl}/auth/api-keys/${keyId}/reveal`, {
           method: 'POST',
           headers: this.getHeaders(),
-          body: JSON.stringify({ password })
+          body: JSON.stringify(payload)
+        });
+        return await res.json();
+      } catch (err) {
+        return { success: false, error: err.message };
+      }
+    },
+
+    async requestOtp() {
+      try {
+        const res = await fetch(`${this.baseUrl}/auth/request-otp`, {
+          method: 'POST',
+          headers: this.getHeaders()
         });
         return await res.json();
       } catch (err) {
