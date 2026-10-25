@@ -116,236 +116,125 @@
   ],
   "products": [
     {
-      "id": "p_1792918130524",
-      "title": "Enterprise Fintech Dashboard Next.js",
-      "category": "React",
-      "price": 2499,
-      "oldPrice": null,
-      "rating": 5,
-      "reviews": 1,
-      "sales": 3,
-      "author": {
-        "id": "dev_guest",
-        "name": "Verified Developer",
-        "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=dev&backgroundColor=6366f1"
-      },
-      "tags": [
-        "Code"
-      ],
-      "badge": "New",
-      "thumb": "https://picsum.photos/seed/Enterprise%20Fintech%20Dashboard%20Next.js/400/250",
-      "videoUrl": null,
-      "downloadUrl": null,
-      "bundleInfo": null,
-      "description": "Production-ready financial dashboard with UPI QR, analytics, and crypto key licensing.",
-      "type": "Source Code",
-      "createdAt": "2026-10-25T08:48:50.524Z",
-      "updatedAt": "2026-10-25T09:25:08.614Z"
-    },
-    {
-      "id": "p_1792918130479",
-      "title": "Free Open Source AI UI Kit",
-      "category": "React",
-      "price": 0,
-      "oldPrice": null,
-      "rating": 5,
-      "reviews": 1,
-      "sales": 1,
-      "author": {
-        "id": "dev_guest",
-        "name": "Verified Developer",
-        "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=dev&backgroundColor=6366f1"
-      },
-      "tags": [
-        "Code"
-      ],
-      "badge": "New",
-      "thumb": "https://picsum.photos/seed/Free%20Open%20Source%20AI%20UI%20Kit/400/250",
-      "videoUrl": null,
-      "downloadUrl": null,
-      "bundleInfo": null,
-      "description": "Zero cost community UI components for AI apps.",
-      "type": "Source Code",
-      "createdAt": "2026-10-25T08:48:50.479Z",
-      "updatedAt": "2026-10-25T08:48:50.555Z"
-    },
-    {
       "id": "p_1792913427884",
-      "title": "dsvb",
-      "category": "React",
+      "title": "Python Array & Algorithm Utility Suite",
+      "category": "Python",
       "price": 1999,
-      "oldPrice": null,
+      "oldPrice": 2999,
       "rating": 5,
       "reviews": 1,
       "sales": 0,
       "author": {
         "id": "a9b9e238-6ec8-4622-8f22-9b6eb6939ac2",
         "name": "Naitik Soni",
-        "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=naitik&backgroundColor=ff5b36"
+        "username": "@naitik",
+        "avatar": "/uploads/images/profilpic_-_Copy_1792920691972_ac19a138.png"
       },
       "tags": [
-        "React",
-        "FullStack",
+        "Python",
+        "Algorithms",
+        "DataStructures",
         "Audited"
       ],
-      "badge": "New",
+      "badge": "Verified",
       "thumb": "/uploads/images/Screenshot_2026-10-25_115438_1792913394059_1d933efd.png",
       "videoUrl": null,
-      "downloadUrl": null,
-      "bundleInfo": null,
-      "description": "advgv",
-      "type": "Source Code",
-      "createdAt": "2026-10-25T07:30:27.884Z"
-    },
-    {
-      "id": "p_1792913361892",
-      "title": "asf",
-      "category": "Mobile",
-      "price": 2500,
-      "oldPrice": null,
-      "rating": 5,
-      "reviews": 1,
-      "sales": 0,
-      "author": {
-        "id": "a9b9e238-6ec8-4622-8f22-9b6eb6939ac2",
-        "name": "Naitik Soni",
-        "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=naitik&backgroundColor=ff5b36"
-      },
-      "tags": [
-        "react"
-      ],
-      "badge": "New",
-      "thumb": "/uploads/images/ChatGPT_Image_Aug_20__2026__02_32_39_AM_1792913255492_00751619.png",
-      "videoUrl": null,
-      "downloadUrl": null,
+      "downloadUrl": "/uploads/archives/project_code_1792913414196.zip",
       "bundleInfo": {
         "type": "folder",
+        "folderId": "folder_1792913414182_92b1a2",
         "folderName": "python",
         "fileCount": 3,
-        "totalSize": 853
+        "totalSize": 853,
+        "zipUrl": "/uploads/archives/project_code_1792913414196.zip"
       },
-      "description": "dvbsfh",
-      "type": "Web App",
-      "createdAt": "2026-10-25T07:29:21.892Z"
-    },
-    {
-      "id": "p_1792913095955",
-      "title": "FullStack Cloud Dashboard Asset",
-      "category": "React",
-      "price": 2499,
-      "oldPrice": null,
-      "rating": 5,
-      "reviews": 1,
-      "sales": 0,
-      "author": {
-        "id": "b9f83b04-538c-4aab-9d88-f35a2ecb1cbe",
-        "name": "Naitik Soni",
-        "avatar": "/uploads/images/avatar_test_1792913095876_c066afcd.png"
-      },
-      "tags": [
-        "React",
-        "NextJS",
-        "Verified"
-      ],
-      "badge": "New",
-      "thumb": "/uploads/images/avatar_test_1792913095876_c066afcd.png",
-      "videoUrl": "/uploads/demo-sample.mp4",
-      "downloadUrl": "/uploads/package-sample.zip",
-      "bundleInfo": {
-        "type": "folder",
-        "fileCount": 38,
-        "totalSize": "18.4 MB"
-      },
-      "description": "Production-ready full stack dashboard with uploaded video walkthrough and zipped source code bundle.",
+      "description": "Genuine Python algorithm and array manipulation suite featuring traversal, scope demonstration, summation, reverse array, odd/even counting, and second-largest element sorting.",
       "type": "Source Code",
-      "createdAt": "2026-10-25T07:24:55.955Z"
-    },
-    {
-      "id": "p_1792913021086",
-      "title": "FullStack Cloud Dashboard Asset",
-      "category": "React",
-      "price": 2499,
-      "oldPrice": null,
-      "rating": 5,
-      "reviews": 1,
-      "sales": 0,
-      "author": {
-        "id": "b9f83b04-538c-4aab-9d88-f35a2ecb1cbe",
-        "name": "Naitik Soni",
-        "avatar": "/uploads/images/avatar_test_1792913021057_d8b26b33.png"
-      },
-      "tags": [
-        "React",
-        "NextJS",
-        "Verified"
-      ],
-      "badge": "New",
-      "thumb": "/uploads/images/avatar_test_1792913021057_d8b26b33.png",
-      "videoUrl": "/uploads/demo-sample.mp4",
-      "downloadUrl": "/uploads/package-sample.zip",
-      "bundleInfo": {
-        "type": "folder",
-        "fileCount": 38,
-        "totalSize": "18.4 MB"
-      },
-      "description": "Production-ready full stack dashboard with uploaded video walkthrough and zipped source code bundle.",
-      "type": "Source Code",
-      "createdAt": "2026-10-25T07:23:41.086Z"
+      "createdAt": "2026-10-25T07:30:27.884Z",
+      "stars": 42
     }
   ],
   "categories": [
     {
-      "name": "React",
-      "icon": "⚛️",
-      "count": 5,
-      "color": "#61dafb",
-      "bg": "rgba(97,218,251,0.1)"
-    },
-    {
-      "name": "Mobile",
-      "icon": "📱",
+      "name": "Python",
+      "icon": "🐍",
       "count": 1,
-      "color": "#f59e0b",
-      "bg": "rgba(245,158,11,0.1)"
+      "color": "#3572A5",
+      "bg": "rgba(53,114,165,0.1)"
     },
     {
-      "name": "AI/ML",
+      "name": "AI & Machine Learning",
       "icon": "🤖",
       "count": 0,
       "color": "#8b5cf6",
       "bg": "rgba(139,92,246,0.1)"
     },
     {
-      "name": "Templates",
-      "icon": "🎨",
+      "name": "React & Next.js",
+      "icon": "⚛️",
       "count": 0,
-      "color": "#ec4899",
-      "bg": "rgba(236,72,153,0.1)"
+      "color": "#61dafb",
+      "bg": "rgba(97,218,251,0.1)"
     },
     {
-      "name": "Backend",
+      "name": "Mobile & Flutter",
+      "icon": "📱",
+      "count": 0,
+      "color": "#f59e0b",
+      "bg": "rgba(245,158,11,0.1)"
+    },
+    {
+      "name": "Backend & APIs",
       "icon": "⚙️",
       "count": 0,
       "color": "#06b6d4",
       "bg": "rgba(6,182,212,0.1)"
     },
     {
-      "name": "Blockchain",
-      "icon": "🔗",
-      "count": 0,
-      "color": "#f59e0b",
-      "bg": "rgba(245,158,11,0.1)"
-    },
-    {
-      "name": "Data Science",
-      "icon": "📊",
+      "name": "Full Stack SaaS",
+      "icon": "🚀",
       "count": 0,
       "color": "#10b981",
       "bg": "rgba(16,185,129,0.1)"
     },
     {
-      "name": "UI Kit",
-      "icon": "🎭",
+      "name": "Data Science",
+      "icon": "📊",
+      "count": 0,
+      "color": "#3b82f6",
+      "bg": "rgba(59,130,246,0.1)"
+    },
+    {
+      "name": "Automation & Scraping",
+      "icon": "🕷️",
+      "count": 0,
+      "color": "#eab308",
+      "bg": "rgba(234,179,8,0.1)"
+    },
+    {
+      "name": "Cybersecurity & Tools",
+      "icon": "🛡️",
+      "count": 0,
+      "color": "#ef4444",
+      "bg": "rgba(239,68,68,0.1)"
+    },
+    {
+      "name": "DevOps & Cloud",
+      "icon": "☁️",
+      "count": 0,
+      "color": "#0ea5e9",
+      "bg": "rgba(14,165,233,0.1)"
+    },
+    {
+      "name": "Blockchain & Web3",
+      "icon": "🔗",
+      "count": 0,
+      "color": "#f97316",
+      "bg": "rgba(249,115,22,0.1)"
+    },
+    {
+      "name": "Templates & UI Kits",
+      "icon": "🎨",
       "count": 0,
       "color": "#ec4899",
       "bg": "rgba(236,72,153,0.1)"

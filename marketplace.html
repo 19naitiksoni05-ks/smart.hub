@@ -58,14 +58,18 @@
 <div class="container" style="padding-top:32px;">
   <div class="category-pills" id="cat-pills">
     <div class="category-pill active" data-cat="all" onclick="filterByCategory('all', this)">🌐 All</div>
-    <div class="category-pill" data-cat="React" onclick="filterByCategory('React', this)">⚛️ React</div>
-    <div class="category-pill" data-cat="Mobile" onclick="filterByCategory('Mobile', this)">📱 Mobile</div>
-    <div class="category-pill" data-cat="AI/ML" onclick="filterByCategory('AI/ML', this)">🤖 AI/ML</div>
-    <div class="category-pill" data-cat="Templates" onclick="filterByCategory('Templates', this)">🎨 Templates</div>
-    <div class="category-pill" data-cat="Backend" onclick="filterByCategory('Backend', this)">⚙️ Backend</div>
-    <div class="category-pill" data-cat="Blockchain" onclick="filterByCategory('Blockchain', this)">🔗 Blockchain</div>
+    <div class="category-pill" data-cat="Python" onclick="filterByCategory('Python', this)">🐍 Python</div>
+    <div class="category-pill" data-cat="AI & Machine Learning" onclick="filterByCategory('AI & Machine Learning', this)">🤖 AI &amp; ML</div>
+    <div class="category-pill" data-cat="React & Next.js" onclick="filterByCategory('React & Next.js', this)">⚛️ React &amp; Next.js</div>
+    <div class="category-pill" data-cat="Mobile & Flutter" onclick="filterByCategory('Mobile & Flutter', this)">📱 Mobile &amp; Flutter</div>
+    <div class="category-pill" data-cat="Backend & APIs" onclick="filterByCategory('Backend & APIs', this)">⚙️ Backend &amp; APIs</div>
+    <div class="category-pill" data-cat="Full Stack SaaS" onclick="filterByCategory('Full Stack SaaS', this)">🚀 Full Stack SaaS</div>
     <div class="category-pill" data-cat="Data Science" onclick="filterByCategory('Data Science', this)">📊 Data Science</div>
-    <div class="category-pill" data-cat="UI Kit" onclick="filterByCategory('UI Kit', this)">🎭 UI Kits</div>
+    <div class="category-pill" data-cat="Automation & Scraping" onclick="filterByCategory('Automation & Scraping', this)">🕷️ Automation</div>
+    <div class="category-pill" data-cat="Cybersecurity & Tools" onclick="filterByCategory('Cybersecurity & Tools', this)">🛡️ Cybersecurity</div>
+    <div class="category-pill" data-cat="DevOps & Cloud" onclick="filterByCategory('DevOps & Cloud', this)">☁️ DevOps &amp; Cloud</div>
+    <div class="category-pill" data-cat="Blockchain & Web3" onclick="filterByCategory('Blockchain & Web3', this)">🔗 Blockchain</div>
+    <div class="category-pill" data-cat="Templates & UI Kits" onclick="filterByCategory('Templates & UI Kits', this)">🎨 Templates &amp; UI Kits</div>
   </div>
 </div>
 
@@ -95,12 +99,18 @@
         <div class="sidebar-title">📦 Category</div>
         <div class="sidebar-options" id="cat-sidebar">
           <div class="sidebar-option active" onclick="filterByCategory('all', this, true)">All Categories</div>
-          <div class="sidebar-option" onclick="filterByCategory('React', this, true)">⚛️ React</div>
-          <div class="sidebar-option" onclick="filterByCategory('Mobile', this, true)">📱 Mobile</div>
-          <div class="sidebar-option" onclick="filterByCategory('AI/ML', this, true)">🤖 AI/ML</div>
-          <div class="sidebar-option" onclick="filterByCategory('Templates', this, true)">🎨 Templates</div>
-          <div class="sidebar-option" onclick="filterByCategory('Backend', this, true)">⚙️ Backend</div>
-          <div class="sidebar-option" onclick="filterByCategory('Blockchain', this, true)">🔗 Blockchain</div>
+          <div class="sidebar-option" onclick="filterByCategory('Python', this, true)">🐍 Python</div>
+          <div class="sidebar-option" onclick="filterByCategory('AI & Machine Learning', this, true)">🤖 AI &amp; ML</div>
+          <div class="sidebar-option" onclick="filterByCategory('React & Next.js', this, true)">⚛️ React &amp; Next.js</div>
+          <div class="sidebar-option" onclick="filterByCategory('Mobile & Flutter', this, true)">📱 Mobile &amp; Flutter</div>
+          <div class="sidebar-option" onclick="filterByCategory('Backend & APIs', this, true)">⚙️ Backend &amp; APIs</div>
+          <div class="sidebar-option" onclick="filterByCategory('Full Stack SaaS', this, true)">🚀 Full Stack SaaS</div>
+          <div class="sidebar-option" onclick="filterByCategory('Data Science', this, true)">📊 Data Science</div>
+          <div class="sidebar-option" onclick="filterByCategory('Automation & Scraping', this, true)">🕷️ Automation</div>
+          <div class="sidebar-option" onclick="filterByCategory('Cybersecurity & Tools', this, true)">🛡️ Cybersecurity</div>
+          <div class="sidebar-option" onclick="filterByCategory('DevOps & Cloud', this, true)">☁️ DevOps &amp; Cloud</div>
+          <div class="sidebar-option" onclick="filterByCategory('Blockchain & Web3', this, true)">🔗 Blockchain</div>
+          <div class="sidebar-option" onclick="filterByCategory('Templates & UI Kits', this, true)">🎨 Templates &amp; UI Kits</div>
         </div>
       </div>
 
@@ -298,7 +308,7 @@ function renderProducts(products) {
           ${p.oldPrice ? `<div style="display:flex;gap:8px;align-items:center;margin-top:2px;"><span class="price-old">₹${p.oldPrice.toLocaleString('en-IN')}</span><span class="price-discount">-${discount}%</span></div>` : ''}
         </div>
         <div style="display:flex;gap:6px;align-items:center;">
-          <a href="repo.html?id=${p.id}" class="btn btn-outline btn-sm" onclick="event.stopPropagation()" title="View Codebase (GitHub View)" style="padding:4px 8px;font-size:0.75rem;border-color:var(--accent-cyan);color:var(--accent-cyan);">⌥ Repo</a>
+          <a href="repo.html?id=${p.id}" class="btn btn-outline btn-sm" onclick="event.stopPropagation()" title="View Project & Code Studio" style="padding:4px 8px;font-size:0.75rem;border-color:var(--accent-coral);color:var(--accent-coral);">⚡ Studio</a>
           <button class="btn btn-outline btn-sm" onclick="event.stopPropagation();window.addToCart('${p.id}')" title="Add to Cart">🛒</button>
           <a href="checkout.html?id=${p.id}" class="btn btn-primary btn-sm" onclick="event.stopPropagation()">Buy ₹${p.price.toLocaleString('en-IN')}</a>
         </div>

@@ -9,14 +9,18 @@ const SmartHubData = {
 
   // ── Categories ────────────────────────────────────────────
   categories: [
-    { name: 'React', icon: '⚛️', count: 0, color: '#61dafb', bg: 'rgba(97,218,251,0.1)' },
-    { name: 'Mobile', icon: '📱', count: 0, color: '#f59e0b', bg: 'rgba(245,158,11,0.1)' },
-    { name: 'AI/ML', icon: '🤖', count: 0, color: '#8b5cf6', bg: 'rgba(139,92,246,0.1)' },
-    { name: 'Templates', icon: '🎨', count: 0, color: '#ec4899', bg: 'rgba(236,72,153,0.1)' },
-    { name: 'Backend', icon: '⚙️', count: 0, color: '#06b6d4', bg: 'rgba(6,182,212,0.1)' },
-    { name: 'Blockchain', icon: '🔗', count: 0, color: '#f59e0b', bg: 'rgba(245,158,11,0.1)' },
-    { name: 'Data Science', icon: '📊', count: 0, color: '#10b981', bg: 'rgba(16,185,129,0.1)' },
-    { name: 'UI Kit', icon: '🎭', count: 0, color: '#ec4899', bg: 'rgba(236,72,153,0.1)' },
+    { name: 'Python', icon: '🐍', count: 1, color: '#3572A5', bg: 'rgba(53,114,165,0.1)' },
+    { name: 'AI & Machine Learning', icon: '🤖', count: 0, color: '#8b5cf6', bg: 'rgba(139,92,246,0.1)' },
+    { name: 'React & Next.js', icon: '⚛️', count: 0, color: '#61dafb', bg: 'rgba(97,218,251,0.1)' },
+    { name: 'Mobile & Flutter', icon: '📱', count: 0, color: '#f59e0b', bg: 'rgba(245,158,11,0.1)' },
+    { name: 'Backend & APIs', icon: '⚙️', count: 0, color: '#06b6d4', bg: 'rgba(6,182,212,0.1)' },
+    { name: 'Full Stack SaaS', icon: '🚀', count: 0, color: '#10b981', bg: 'rgba(16,185,129,0.1)' },
+    { name: 'Data Science', icon: '📊', count: 0, color: '#3b82f6', bg: 'rgba(59,130,246,0.1)' },
+    { name: 'Automation & Scraping', icon: '🕷️', count: 0, color: '#eab308', bg: 'rgba(234,179,8,0.1)' },
+    { name: 'Cybersecurity & Tools', icon: '🛡️', count: 0, color: '#ef4444', bg: 'rgba(239,68,68,0.1)' },
+    { name: 'DevOps & Cloud', icon: '☁️', count: 0, color: '#0ea5e9', bg: 'rgba(14,165,233,0.1)' },
+    { name: 'Blockchain & Web3', icon: '🔗', count: 0, color: '#f97316', bg: 'rgba(249,115,22,0.1)' },
+    { name: 'Templates & UI Kits', icon: '🎨', count: 0, color: '#ec4899', bg: 'rgba(236,72,153,0.1)' },
   ],
 
   // ── Reviews ───────────────────────────────────────────────

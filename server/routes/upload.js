@@ -8,6 +8,7 @@ const archiver = require('archiver');
 const db = require('../db');
 const { authOptional } = require('../middleware/auth');
 const { supabase, isSupabaseConfigured } = require('../supabase');
+const { validatePythonCode, isPythonFile } = require('../utils/pythonValidator');
 
 // Base directory for uploads
 const UPLOADS_ROOT = path.join(__dirname, '../../uploads');
@@ -88,6 +89,32 @@ router.post('/single', authOptional, anySingleFile, (req, res) => {
 
     const category = categorizeFile(req.file.originalname, req.file.mimetype);
     const relativeUrl = `/uploads/${category}/${req.file.filename}`;
+
+    // Python Genuine Source Validation Check
+    const ext = path.extname(req.file.originalname).toLowerCase();
+    const isPyCategory = req.body && req.body.category && req.body.category.toLowerCase().includes('python');
+    if (ext === '.py' || isPyCategory) {
+      if (ext !== '.py') {
+        if (req.file.path && fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
+        return res.status(400).json({
+          success: false,
+          error: `Validation Failed: You selected the Python category, but '${req.file.originalname}' is not a .py script.`
+        });
+      }
+      try {
+        const fileContent = fs.readFileSync(req.file.path);
+        const pyCheck = validatePythonCode(fileContent, req.file.originalname);
+        if (!pyCheck.valid) {
+          if (req.file.path && fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
+          return res.status(400).json({
+            success: false,
+            error: pyCheck.error
+          });
+        }
+      } catch (e) {
+        console.warn('[Python Check Warning]', e);
+      }
+    }
 
     const record = {
       id: 'up_' + Date.now() + '_' + crypto.randomBytes(3).toString('hex'),
@@ -245,6 +272,27 @@ router.post('/folder', authOptional, folderUpload.any(), async (req, res) => {
     const files = req.files;
     if (!files || files.length === 0) {
       return res.status(400).json({ success: false, error: 'No folder files provided' });
+    }
+
+    // Python Genuine Source Validation Check for Folder Uploads
+    const isPyCategory = req.body && req.body.category && req.body.category.toLowerCase().includes('python');
+    const pyFiles = files.filter(f => isPythonFile(f.originalname));
+
+    if (isPyCategory && pyFiles.length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'Validation Failed: Python category selected, but the uploaded folder does not contain any genuine .py Python source files.'
+      });
+    }
+
+    for (const pyFile of pyFiles) {
+      const pyCheck = validatePythonCode(pyFile.buffer, pyFile.originalname);
+      if (!pyCheck.valid) {
+        return res.status(400).json({
+          success: false,
+          error: pyCheck.error
+        });
+      }
     }
 
     const folderTitle = (req.body.folderName || 'project_package').replace(/[^a-zA-Z0-9_-]/g, '_');

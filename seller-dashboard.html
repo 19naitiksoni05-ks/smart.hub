@@ -223,13 +223,18 @@
             <div>
               <label class="input-label">Category *</label>
               <select id="pub-category" class="input" required>
-                <option value="React">⚛️ React & Next.js</option>
-                <option value="Mobile">📱 Mobile & Flutter</option>
-                <option value="AI/ML">🤖 AI & Machine Learning</option>
-                <option value="Templates">🎨 Templates & UI Kits</option>
-                <option value="Backend">⚙️ Backend & Microservices</option>
-                <option value="Blockchain">🔗 Blockchain & Web3</option>
+                <option value="Python">🐍 Python</option>
+                <option value="AI & Machine Learning">🤖 AI & Machine Learning</option>
+                <option value="React & Next.js">⚛️ React & Next.js</option>
+                <option value="Mobile & Flutter">📱 Mobile & Flutter</option>
+                <option value="Backend & APIs">⚙️ Backend & APIs</option>
+                <option value="Full Stack SaaS">🚀 Full Stack SaaS</option>
                 <option value="Data Science">📊 Data Science</option>
+                <option value="Automation & Scraping">🕷️ Automation & Scraping</option>
+                <option value="Cybersecurity & Tools">🛡️ Cybersecurity & Tools</option>
+                <option value="DevOps & Cloud">☁️ DevOps & Cloud</option>
+                <option value="Blockchain & Web3">🔗 Blockchain & Web3</option>
+                <option value="Templates & UI Kits">🎨 Templates & UI Kits</option>
               </select>
             </div>
 
@@ -471,6 +476,15 @@
       }
     }
 
+    function readFileAsText(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result || '');
+        reader.onerror = reject;
+        reader.readAsText(file.slice(0, 50000));
+      });
+    }
+
     async function handleBundleFileUpload(input) {
       if (!input.files || !input.files[0]) return;
       const file = input.files[0];
@@ -480,9 +494,40 @@
       const badge = document.getElementById('bundle-status-badge');
       const wrap = document.getElementById('bundle-preview-wrap');
 
+      const category = document.getElementById('pub-category') ? document.getElementById('pub-category').value : '';
+      const isPythonSelected = category.toLowerCase().includes('python');
+      const isPyFile = file.name.toLowerCase().endsWith('.py');
+
+      if (isPythonSelected && !isPyFile && !file.name.toLowerCase().endsWith('.zip')) {
+        showToast('Validation Error: For Python projects, please upload a .py script or zipped Python folder!', 'error');
+        badge.textContent = 'REJECTED';
+        badge.style.color = '#ef4444';
+        return;
+      }
+
+      if (isPyFile) {
+        try {
+          const text = await readFileAsText(file);
+          if (text.includes('\0')) {
+            showToast('Security Alert: File contains binary null bytes and is not genuine Python code!', 'error');
+            badge.textContent = 'NOT PYTHON';
+            badge.style.color = '#ef4444';
+            return;
+          }
+          if (/<html|<body|<\?php/i.test(text)) {
+            showToast('Validation Error: Uploaded file contains HTML/PHP markup, not Python!', 'error');
+            badge.textContent = 'NOT PYTHON';
+            badge.style.color = '#ef4444';
+            return;
+          }
+        } catch (e) {
+          console.warn('File read warning:', e);
+        }
+      }
+
       prog.style.display = 'block';
       bar.style.width = '45%';
-      progText.textContent = 'Uploading ZIP package...';
+      progText.textContent = 'Verifying and uploading bundle...';
       badge.textContent = 'UPLOADING...';
       badge.style.color = 'var(--accent-green)';
 
@@ -491,8 +536,8 @@
         bar.style.width = '100%';
         if (res && res.success) {
           pubDownloadUrl = res.url;
-          pubBundleInfo = { type: 'zip', originalName: file.name, size: file.size };
-          badge.textContent = '✓ ZIP SECURED';
+          pubBundleInfo = { type: 'zip', originalName: file.name, size: file.size, url: res.url };
+          badge.textContent = '✓ VERIFIED & SECURED';
           badge.style.color = 'var(--accent-green)';
           progText.textContent = 'Encrypted download link generated.';
           wrap.innerHTML = `
@@ -500,7 +545,7 @@
             <div style="font-size:0.75rem;font-weight:700;color:var(--text-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${file.name}</div>
             <div style="font-size:0.68rem;color:var(--accent-green);font-family:var(--font-tech);">Archive Ready (${(file.size / (1024*1024)).toFixed(2)} MB)</div>
           `;
-          showToast('Source package uploaded and locked! 📦', 'success');
+          showToast('Source package verified and locked! 📦', 'success');
         } else {
           badge.textContent = 'FAILED';
           badge.style.color = '#ef4444';
@@ -525,9 +570,40 @@
       const badge = document.getElementById('bundle-status-badge');
       const wrap = document.getElementById('bundle-preview-wrap');
 
+      const category = document.getElementById('pub-category') ? document.getElementById('pub-category').value : '';
+      const isPythonSelected = category.toLowerCase().includes('python');
+
+      // Genuine Python check
+      const pyFiles = files.filter(f => f.name.toLowerCase().endsWith('.py'));
+      if (isPythonSelected && pyFiles.length === 0) {
+        showToast('Validation Error: Python category requires at least one genuine .py file in the folder!', 'error');
+        badge.textContent = 'NO PYTHON';
+        badge.style.color = '#ef4444';
+        return;
+      }
+
+      // Check all .py files for authenticity
+      for (const pyFile of pyFiles) {
+        try {
+          const text = await readFileAsText(pyFile);
+          if (text.includes('\0')) {
+            showToast(`Security Alert: "${pyFile.name}" contains binary data and is not genuine Python code!`, 'error');
+            badge.textContent = 'REJECTED';
+            badge.style.color = '#ef4444';
+            return;
+          }
+          if (/<html|<body|<\?php/i.test(text)) {
+            showToast(`Validation Error: "${pyFile.name}" contains HTML/PHP markup, not genuine Python!`, 'error');
+            badge.textContent = 'NOT PYTHON';
+            badge.style.color = '#ef4444';
+            return;
+          }
+        } catch (e) {}
+      }
+
       prog.style.display = 'block';
       bar.style.width = '30%';
-      progText.textContent = `Uploading ${files.length} files from /${folderName}...`;
+      progText.textContent = `Scanning & packing ${files.length} verified files from /${folderName}...`;
       badge.textContent = 'PACKING...';
       badge.style.color = 'var(--accent-cyan)';
 
@@ -536,16 +612,24 @@
         bar.style.width = '100%';
         if (res && res.success) {
           pubDownloadUrl = res.zipUrl || res.folderPath;
-          pubBundleInfo = { type: 'folder', folderName, fileCount: res.fileCount, totalSize: res.totalSize, zipUrl: res.zipUrl };
-          badge.textContent = `✓ ${res.fileCount} FILES PACKED`;
+          const assignedFolderId = (res.folder && res.folder.id) || res.folderId || null;
+          pubBundleInfo = { 
+            type: 'folder', 
+            folderId: assignedFolderId,
+            folderName, 
+            fileCount: res.fileCount, 
+            totalSize: res.totalSize, 
+            zipUrl: res.zipUrl || res.url 
+          };
+          badge.textContent = `✓ ${res.fileCount} FILES VERIFIED`;
           badge.style.color = 'var(--accent-green)';
-          progText.textContent = `Packed to ${res.zipFilename} (${(res.totalSize / (1024*1024)).toFixed(2)} MB)`;
+          progText.textContent = `Packed to ${res.zipFilename || 'archive.zip'} (${(res.totalSize / (1024*1024)).toFixed(2)} MB)`;
           wrap.innerHTML = `
             <div style="font-size:1.8rem;margin-bottom:4px;">📁</div>
             <div style="font-size:0.75rem;font-weight:700;color:var(--text-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">/${folderName}</div>
-            <div style="font-size:0.68rem;color:var(--accent-green);font-family:var(--font-tech);">${res.fileCount} files · Auto-Zipped for Delivery</div>
+            <div style="font-size:0.68rem;color:var(--accent-green);font-family:var(--font-tech);">${res.fileCount} files · Verified & Ready</div>
           `;
-          showToast(`Folder /${folderName} (${res.fileCount} files) zipped and ready! 🎉`, 'success');
+          showToast(`Folder /${folderName} (${res.fileCount} files) verified & packaged! 🎉`, 'success');
         } else {
           badge.textContent = 'FAILED';
           badge.style.color = '#ef4444';
@@ -601,7 +685,8 @@
       try {
         const res = await window.SmartHubAPI.createProduct(payload);
         if (res && res.success) {
-          showToast(`Asset "${title}" listed successfully on Smart Hub! 🎉`, 'success');
+          const prodId = (res.product && res.product.id) || (res.data && res.data.id) || '';
+          showToast(`Asset "${title}" listed successfully on Smart Hub! 🎉 Redirecting to Studio...`, 'success');
           document.getElementById('seller-publish-form').reset();
           pubCoverUrl = null;
           pubVideoUrl = null;
@@ -612,6 +697,11 @@
 
           // Refresh live catalog table
           loadSellerStats();
+          if (prodId) {
+            setTimeout(() => {
+              window.location.href = `repo.html?id=${prodId}`;
+            }, 1200);
+          }
           return;
         } else if (res && res.error) {
           showToast(res.error, 'error');
@@ -676,7 +766,7 @@
                 <td style="padding:16px 18px;font-family:var(--font-tech);color:var(--accent-green);font-weight:800;">₹${(p.earnings || 0).toLocaleString('en-IN')}</td>
                 <td style="padding:16px 18px;"><span class="badge badge-green">LIVE</span></td>
                 <td style="padding:16px 18px;text-align:right;white-space:nowrap;">
-                  <a href="repo.html?id=${p.id}" class="btn btn-outline btn-sm" style="margin-right:6px;border-color:var(--accent-cyan);color:var(--accent-cyan);">⌥ View Repo</a>
+                  <a href="repo.html?id=${p.id}" class="btn btn-outline btn-sm" style="margin-right:6px;border-color:var(--accent-coral);color:var(--accent-coral);">⚡ View Studio</a>
                   <a href="product-detail.html?id=${p.id}" class="btn btn-secondary btn-sm">Store →</a>
                 </td>
               </tr>
