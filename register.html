@@ -114,11 +114,11 @@
         </label>
       </div>
 
-      <!-- Welcome Bonus Tag -->
-      <div style="margin-bottom:18px;padding:10px 14px;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);border-radius:2px;display:flex;align-items:center;gap:10px;font-size:0.82rem;color:var(--text-primary);">
-        <span style="font-size:1.2rem;">🎁</span>
+      <!-- Wallet Notice Tag -->
+      <div style="margin-bottom:18px;padding:10px 14px;background:rgba(255,91,54,0.08);border:1px solid rgba(255,91,54,0.3);border-radius:2px;display:flex;align-items:center;gap:10px;font-size:0.82rem;color:var(--text-primary);">
+        <span style="font-size:1.2rem;">💰</span>
         <div>
-          <strong>₹500 Welcome Credit</strong> will be credited directly to your Smart Hub Rupee Wallet upon registration!
+          <strong>Smart Hub Rupee Wallet:</strong> Purchases are conducted exclusively through your wallet. Add money easily with 0% deposit fees.
         </div>
       </div>
 
@@ -249,7 +249,7 @@ async function handleFormRegister(e) {
   try {
     const res = await window.SmartHubAPI.register(name, username, email, pass, selectedAccountType);
     if (res && res.success) {
-      SH.showToast(res.message || 'Account created! ₹500 credited to wallet 🎁', 'success');
+      SH.showToast(res.message || 'Account created successfully! 🚀', 'success');
       setTimeout(() => {
         window.location.href = 'index.html';
       }, 800);
@@ -272,13 +272,13 @@ async function handleFormRegister(e) {
       name: name,
       username: handle,
       avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(handle)}&backgroundColor=ff5b36`,
-      walletBalance: 500, // ₹500 welcome bonus!
+      walletBalance: 0, // No welcome bonus - purchase can only be done through wallet system
       isLoggedIn: true,
       role: selectedAccountType,
     };
 
     localStorage.setItem('smarthub_user', JSON.stringify(sessionUser));
-    SH.showToast(`Account created! ₹500 credited to your wallet 🎁`, 'success');
+    SH.showToast(`Account created successfully! 🚀`, 'success');
 
     setTimeout(() => {
       window.location.href = 'index.html';
@@ -295,14 +295,14 @@ function handleSocialRegister(provider) {
       name: `${provider} Developer`,
       username: `@${provider.toLowerCase()}_dev`,
       avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${provider.toLowerCase()}&backgroundColor=ff5b36`,
-      walletBalance: 500,
+      walletBalance: 0,
       xp: 0,
       level: 1,
       isLoggedIn: true,
       role: 'buyer',
     };
     localStorage.setItem('smarthub_user', JSON.stringify(sessionUser));
-    SH.showToast(`Welcome to Smart Hub! ₹500 bonus added 🎁`, 'success');
+    SH.showToast(`Welcome to Smart Hub, ${sessionUser.name}! 🚀`, 'success');
     setTimeout(() => {
       window.location.href = 'index.html';
     }, 700);

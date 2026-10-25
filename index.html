@@ -880,7 +880,7 @@ async function handleSignup() {
     try {
       const res = await window.SmartHubAPI.register(name, '@' + name.toLowerCase().replace(/\s+/g, '_'), email, pass);
       if (res && res.success) {
-        SH.showToast(`Welcome to Smart Hub, ${name}! ₹500 credited 🚀`, 'success');
+        SH.showToast(`Welcome to Smart Hub, ${name}! 🚀`, 'success');
         SH.closeModal('modal-login');
         setTimeout(() => window.location.reload(), 600);
         return;
@@ -896,11 +896,11 @@ async function handleSignup() {
     name: name,
     username: '@' + name.toLowerCase().replace(/\s+/g, '_'),
     avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(name)}&backgroundColor=ff5b36`,
-    walletBalance: 500,
+    walletBalance: 0,
     isLoggedIn: true,
   };
   localStorage.setItem('smarthub_user', JSON.stringify(user));
-  SH.showToast(`Welcome to Smart Hub, ${name}! ₹500 credited 🚀`, 'success');
+  SH.showToast(`Welcome to Smart Hub, ${name}! 🚀`, 'success');
   SH.closeModal('modal-login');
   setTimeout(() => window.location.reload(), 600);
 }

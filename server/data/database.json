@@ -1,6 +1,22 @@
 {
   "users": [
     {
+      "id": "5d314a82-99a3-4bd0-ae4a-e54893070a0d",
+      "name": "Wallet Test User",
+      "username": "@wallet_test_1792934986869",
+      "email": "buyer_1792934986869@smarthub.io",
+      "passwordHash": "$2b$10$BPPmiYNmOFKRGGucqTh0BOGN8baDWU9sxdOjpm/NhiUGXFWFjMeVW",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=wallet_test_1792934986869&backgroundColor=ff5b36",
+      "walletBalance": 8001,
+      "role": "buyer",
+      "xp": 0,
+      "badges": 0,
+      "location": "India",
+      "headline": "Smart Hub Developer",
+      "createdAt": "2026-10-25T13:29:50.405Z",
+      "updatedAt": "2026-10-25T13:29:50.648Z"
+    },
+    {
       "id": "u_admin_naitik",
       "name": "Naitik Soni",
       "username": "@naitik19",
@@ -86,7 +102,7 @@
       "email": "naitiksoni700@gmail.com",
       "passwordHash": "$2b$10$mMSjpm6oQLhgWCqrqdJfa.rd9c6yuXiXacNLJPqvof7QG9.t/INPq",
       "avatar": "/uploads/images/profilpic_-_Copy_1792920691972_ac19a138.png",
-      "walletBalance": 10260,
+      "walletBalance": 12212,
       "role": "buyer",
       "xp": 0,
       "badges": 0,
@@ -94,7 +110,7 @@
       "headline": "Smart Hub Developer",
       "createdAt": "2026-10-25T06:31:25.671Z",
       "cover": "/uploads/images/Screenshot__1__1792920634969_373d9b62.png",
-      "updatedAt": "2026-10-25T12:07:31.438Z"
+      "updatedAt": "2026-10-25T13:29:50.653Z"
     },
     {
       "id": "b9f83b04-538c-4aab-9d88-f35a2ecb1cbe",
@@ -103,7 +119,7 @@
       "email": "naitik19ansh@gmail.com",
       "passwordHash": "$2b$10$XWSvk2mpUrEwIqg8ZieCpOGRTETUN8nIonW5/KQa550HvPp1XuwfK",
       "avatar": "/uploads/images/avatar_test_1792913095876_c066afcd.png",
-      "walletBalance": 500,
+      "walletBalance": 0,
       "role": "admin",
       "xp": 5000,
       "badges": 5,
@@ -123,7 +139,7 @@
       "oldPrice": 2999,
       "rating": 5,
       "reviews": 1,
-      "sales": 5,
+      "sales": 6,
       "author": {
         "id": "a9b9e238-6ec8-4622-8f22-9b6eb6939ac2",
         "name": "Naitik Soni",
@@ -152,7 +168,7 @@
       "type": "Source Code",
       "createdAt": "2026-10-25T07:30:27.884Z",
       "stars": 42,
-      "updatedAt": "2026-10-25T12:07:31.451Z"
+      "updatedAt": "2026-10-25T13:29:50.663Z"
     }
   ],
   "categories": [
@@ -242,6 +258,33 @@
     }
   ],
   "orders": [
+    {
+      "id": "ord_1792934990661_0",
+      "orderNumber": "SH-ORD-2026-9059",
+      "buyerId": "5d314a82-99a3-4bd0-ae4a-e54893070a0d",
+      "buyerEmail": "buyer_1792934986869@smarthub.io",
+      "productId": "p_1792913427884",
+      "productTitle": "Python Array & Algorithm Utility Suite",
+      "category": "Python",
+      "amount": 1999,
+      "platformFee": 40,
+      "statutoryTax": 7,
+      "sellerNetEarnings": 1952,
+      "platformFeePercent": "2.0%",
+      "discount": 0,
+      "license": "regular",
+      "paymentMethod": "wallet",
+      "encKey": "SH-KEY-2026-13E1-01B7-543A",
+      "keyActivated": false,
+      "status": "completed",
+      "emailSent": true,
+      "emailSentTo": "buyer_1792934986869@smarthub.io",
+      "emailSentAt": "2026-10-25T13:29:50.661Z",
+      "downloadUrl": null,
+      "downloadDisabled": true,
+      "deliveryMethod": "email_only",
+      "createdAt": "2026-10-25T13:29:50.661Z"
+    },
     {
       "id": "ord_1792930051448_0",
       "orderNumber": "SH-ORD-2026-1682",
@@ -465,6 +508,41 @@
   ],
   "transactions": [
     {
+      "id": "t_s_1792934990655_0",
+      "userId": "a9b9e238-6ec8-4622-8f22-9b6eb6939ac2",
+      "type": "credit",
+      "title": "Sale: Python Array & Algorithm Utility Suite (Net after 2.0% fee & tax)",
+      "amount": 1952,
+      "date": "2026-10-25",
+      "icon": "💸",
+      "buyer": "buyer_1792934986869@smarthub.io",
+      "method": "SmartHub Store",
+      "createdAt": "2026-10-25T13:29:50.655Z"
+    },
+    {
+      "id": "t_1792934990651",
+      "userId": "5d314a82-99a3-4bd0-ae4a-e54893070a0d",
+      "type": "debit",
+      "title": "Purchase: Python Array & Algorithm Utility Suite",
+      "amount": 1999,
+      "date": "2026-10-25",
+      "icon": "🛒",
+      "seller": "Naitik Soni",
+      "method": "Smart Hub Rupee Wallet",
+      "createdAt": "2026-10-25T13:29:50.651Z"
+    },
+    {
+      "id": "t_1792934990632",
+      "userId": "5d314a82-99a3-4bd0-ae4a-e54893070a0d",
+      "type": "credit",
+      "title": "Wallet Top-up (UPI)",
+      "amount": 10000,
+      "date": "2026-10-25",
+      "icon": "➕",
+      "method": "UPI",
+      "createdAt": "2026-10-25T13:29:50.632Z"
+    },
+    {
       "id": "t_s_1792930051442_0",
       "userId": "a9b9e238-6ec8-4622-8f22-9b6eb6939ac2",
       "type": "credit",
@@ -570,17 +648,6 @@
       "createdAt": "2026-10-25T09:25:08.558Z"
     },
     {
-      "id": "t_1792920308524",
-      "userId": "u_1792920308521",
-      "type": "credit",
-      "title": "🎁 Welcome Bonus Credited",
-      "amount": 500,
-      "date": "2026-10-25",
-      "icon": "🎁",
-      "method": "SmartHub Grant",
-      "createdAt": "2026-10-25T09:25:08.524Z"
-    },
-    {
       "id": "t_1792920308036",
       "userId": "u_1792920307927",
       "type": "credit",
@@ -590,17 +657,6 @@
       "icon": "➕",
       "method": "UPI",
       "createdAt": "2026-10-25T09:25:08.036Z"
-    },
-    {
-      "id": "t_1792920307929",
-      "userId": "u_1792920307927",
-      "type": "credit",
-      "title": "🎁 Welcome Bonus Credited",
-      "amount": 500,
-      "date": "2026-10-25",
-      "icon": "🎁",
-      "method": "SmartHub Grant",
-      "createdAt": "2026-10-25T09:25:07.929Z"
     },
     {
       "id": "t_w_1792920240895",
@@ -636,17 +692,6 @@
       "createdAt": "2026-10-25T09:24:00.886Z"
     },
     {
-      "id": "t_1792920240852",
-      "userId": "91d452a8-5f4e-413d-981f-c9c5ac899879",
-      "type": "credit",
-      "title": "🎁 Welcome Bonus Credited",
-      "amount": 500,
-      "date": "2026-10-25",
-      "icon": "🎁",
-      "method": "SmartHub Grant",
-      "createdAt": "2026-10-25T09:24:00.852Z"
-    },
-    {
       "id": "t_1792920238746",
       "userId": "e9244a9f-2968-4bb1-a186-b99acfe4ac21",
       "type": "credit",
@@ -656,50 +701,6 @@
       "icon": "➕",
       "method": "UPI",
       "createdAt": "2026-10-25T09:23:58.746Z"
-    },
-    {
-      "id": "t_1792920238652",
-      "userId": "e9244a9f-2968-4bb1-a186-b99acfe4ac21",
-      "type": "credit",
-      "title": "🎁 Welcome Bonus Credited",
-      "amount": 500,
-      "date": "2026-10-25",
-      "icon": "🎁",
-      "method": "SmartHub Grant",
-      "createdAt": "2026-10-25T09:23:58.652Z"
-    },
-    {
-      "id": "t_1792909885675",
-      "userId": "a9b9e238-6ec8-4622-8f22-9b6eb6939ac2",
-      "type": "credit",
-      "title": "🎁 Welcome Bonus Credited",
-      "amount": 500,
-      "date": "2026-10-25",
-      "icon": "🎁",
-      "method": "SmartHub Grant",
-      "createdAt": "2026-10-25T06:31:25.675Z"
-    },
-    {
-      "id": "t_1792869356574",
-      "userId": "b9f83b04-538c-4aab-9d88-f35a2ecb1cbe",
-      "type": "credit",
-      "title": "🎁 Welcome Bonus Credited",
-      "amount": 500,
-      "date": "2026-10-24",
-      "icon": "🎁",
-      "method": "SmartHub Grant",
-      "createdAt": "2026-10-24T19:15:56.574Z"
-    },
-    {
-      "id": "t_1792868634515",
-      "userId": "u_1792868634513",
-      "type": "credit",
-      "title": "🎁 Welcome Bonus Credited",
-      "amount": 500,
-      "date": "2026-10-24",
-      "icon": "🎁",
-      "method": "SmartHub Grant",
-      "createdAt": "2026-10-24T19:03:54.515Z"
     }
   ],
   "posts": [
@@ -1004,6 +1005,19 @@
   "leaderboard": [],
   "reviews": [],
   "apiKeys": [
+    {
+      "id": "key_1792934990412",
+      "userId": "5d314a82-99a3-4bd0-ae4a-e54893070a0d",
+      "name": "Default Production Key",
+      "keyHash": "f6cefd7642444a52262d10906ced18aa91688f129ae8982c8bd131af3009a0ff",
+      "encryptedKey": "b29dd94bbc8458f56ec34eb341727d04:b618d989696e308323a36be58d0fd66de7b66153d528b2c5a601f9badc71fc9b86d52479b080c2d4bb6059bd26eb15bf290de7df4d60c8123690991b293a77b9",
+      "keyPrefix": "sh_live_4686",
+      "lastFour": "d99a",
+      "scope": "full_access",
+      "status": "active",
+      "lastUsedAt": null,
+      "createdAt": "2026-10-25T13:29:50.514Z"
+    },
     {
       "id": "key_1792920308525",
       "userId": "u_1792920308521",
@@ -1353,6 +1367,26 @@
     }
   ],
   "emails": [
+    {
+      "id": "email_1792934990666_0",
+      "to": "buyer_1792934986869@smarthub.io",
+      "subject": "🔒 Smart Hub Source Code Package & Encryption Key: Python Array & Algorithm Utility Suite",
+      "orderNumber": "SH-ORD-2026-9059",
+      "productId": "p_1792913427884",
+      "productTitle": "Python Array & Algorithm Utility Suite",
+      "encKey": "SH-KEY-2026-13E1-01B7-543A",
+      "activationUrl": "/repo.html?id=p_1792913427884&activateKey=SH-KEY-2026-13E1-01B7-543A",
+      "sentAt": "2026-10-25T13:29:50.666Z",
+      "status": "delivered",
+      "deliveryMethod": "Email Only (Direct Website Download Disabled)",
+      "attachedPackage": {
+        "filename": "python.zip",
+        "fileType": "application/zip",
+        "encryption": "AES-256 Multi-Factor Cryptographic Token"
+      },
+      "body": "Dear Developer,\n\nThank you for purchasing \"Python Array & Algorithm Utility Suite\" on Smart Hub India.\n\nYour source code package is cryptographically protected with AES-256 DRM. Direct website downloads, unauthorized copying, screenshots, and screen recordings are strictly restricted to protect developer intellectual property.\n\nYOUR ENCRYPTED SOURCE PACKAGE & ENCRYPTION KEY:\n======================================================\nPROJECT: Python Array & Algorithm Utility Suite\nATTACHED PACKAGE FILE: python.zip\nDELIVERY METHOD: Sent directly to your email inbox\nENCRYPTION KEY:\nSH-KEY-2026-13E1-01B7-543A\n======================================================\n\nIMPORTANT SECURITY NOTICE:\nDirect browser downloads from the website are completely disabled. Your complete source code archive is dispatched ONLY via this verified email alongside your unique encryption key.\n\nTO DECRYPT & INSPECT SOURCE CODE IN SMART HUB STUDIO:\n1. Open the project in Smart Hub:\n   http://localhost:5000/repo.html?id=p_1792913427884\n2. Enter your Encryption Key in the verification box, or simply click this instant activation link:\n   http://localhost:5000/repo.html?id=p_1792913427884&activateKey=SH-KEY-2026-13E1-01B7-543A\n3. Once verified in the browser, the source code will decrypt and unlock for viewing and copying.\n\nOrder Number: SH-ORD-2026-9059\nLicensee: buyer_1792934986869@smarthub.io\nDelivery Timestamp: 2026-10-25T13:29:50.666Z\n\nHappy Building!\nThe Smart Hub Engineering Team",
+      "createdAt": "2026-10-25T13:29:50.666Z"
+    },
     {
       "id": "email_1792930051455_0",
       "to": "drm_buyer_1792930051390@smarthub.io",

@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS users (
   email TEXT UNIQUE NOT NULL,
   password_hash TEXT NOT NULL,
   avatar TEXT,
-  wallet_balance NUMERIC(12, 2) DEFAULT 500.00,
+  wallet_balance NUMERIC(12, 2) DEFAULT 0.00,
   role TEXT DEFAULT 'buyer',
   xp INTEGER DEFAULT 0,
   badges INTEGER DEFAULT 0,

@@ -92,7 +92,7 @@ router.post('/register', async (req, res) => {
       email: cleanEmail,
       passwordHash,
       avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(cleanUsername)}&backgroundColor=ff5b36`,
-      walletBalance: 500, // ₹500 welcome bonus!
+      walletBalance: 0, // Purchases can only be made with added funds; no ₹500 welcome bonus
       role: role || 'buyer',
       xp: 0,
       badges: 0,
@@ -102,18 +102,6 @@ router.post('/register', async (req, res) => {
     };
 
     db.insert('users', newUser);
-
-    // Record welcome bonus transaction
-    db.insert('transactions', {
-      id: 't_' + Date.now(),
-      userId: newUser.id,
-      type: 'credit',
-      title: '🎁 Welcome Bonus Credited',
-      amount: 500,
-      date: new Date().toISOString().split('T')[0],
-      icon: '🎁',
-      method: 'SmartHub Grant'
-    });
 
     // Auto-generate starter Developer API Key
     const rawApiKey = 'sh_live_' + crypto.randomBytes(20).toString('hex');
@@ -151,7 +139,7 @@ router.post('/register', async (req, res) => {
 
     res.status(201).json({
       success: true,
-      message: 'Account created successfully! ₹500 credited to your rupee wallet.',
+      message: 'Account created successfully! Add money to your wallet to start purchasing.',
       token,
       apiKey: {
         id: starterApiKey.id,

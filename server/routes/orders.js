@@ -110,55 +110,45 @@ router.post('/checkout', authOptional, (req, res) => {
     const finalAmount = Math.max(0, totalBase - discount);
     const buyer = req.user || null;
 
-    // Wallet payment verification & deduction
-    if (paymentMethod === 'wallet') {
-      if (!buyer) {
-        return res.status(401).json({
-          success: false,
-          error: 'Please sign in to pay with your Rupee Wallet, or use Direct UPI / Card checkout.'
-        });
-      }
-
-      if ((buyer.walletBalance || 0) < finalAmount) {
-        return res.status(400).json({
-          success: false,
-          error: `Insufficient wallet balance. You have ₹${(buyer.walletBalance || 0).toLocaleString('en-IN')}, required ₹${finalAmount.toLocaleString('en-IN')}. Please top up your wallet.`
-        });
-      }
-
-      // Deduct buyer wallet
-      const newBuyerBal = (buyer.walletBalance || 0) - finalAmount;
-      db.update('users', buyer.id, { walletBalance: newBuyerBal });
-
-      // Record buyer debit transaction
-      const titles = computedItems.map(i => i.product.title).join(', ');
-      db.insert('transactions', {
-        id: 't_' + Date.now(),
-        userId: buyer.id,
-        type: 'debit',
-        title: `Purchase: ${titles.length > 50 ? titles.substring(0, 47) + '...' : titles}`,
-        amount: finalAmount,
-        date: new Date().toISOString().split('T')[0],
-        icon: '🛒',
-        seller: computedItems[0].product.author ? computedItems[0].product.author.name : 'Smart Hub Creator',
-        method: 'Rupee Wallet'
+    // Purchases can only be done through the wallet system
+    if (paymentMethod !== 'wallet') {
+      return res.status(400).json({
+        success: false,
+        error: 'Purchases can only be made using the Smart Hub Rupee Wallet. Please add money to your wallet to continue.'
       });
-    } else {
-      if (buyer) {
-        const titles = computedItems.map(i => i.product.title).join(', ');
-        db.insert('transactions', {
-          id: 't_' + Date.now(),
-          userId: buyer.id,
-          type: 'debit',
-          title: `Purchase: ${titles.length > 50 ? titles.substring(0, 47) + '...' : titles}`,
-          amount: finalAmount,
-          date: new Date().toISOString().split('T')[0],
-          icon: '📱',
-          seller: computedItems[0].product.author ? computedItems[0].product.author.name : 'Smart Hub Creator',
-          method: paymentMethod.toUpperCase()
-        });
-      }
     }
+
+    if (!buyer) {
+      return res.status(401).json({
+        success: false,
+        error: 'Please sign in to your Smart Hub account to complete this purchase using your Rupee Wallet.'
+      });
+    }
+
+    if ((buyer.walletBalance || 0) < finalAmount) {
+      return res.status(400).json({
+        success: false,
+        error: `Insufficient wallet balance. You have ₹${(buyer.walletBalance || 0).toLocaleString('en-IN')}, required ₹${finalAmount.toLocaleString('en-IN')}. Please add money to your wallet.`
+      });
+    }
+
+    // Deduct buyer wallet
+    const newBuyerBal = (buyer.walletBalance || 0) - finalAmount;
+    db.update('users', buyer.id, { walletBalance: newBuyerBal });
+
+    // Record buyer debit transaction
+    const titles = computedItems.map(i => i.product.title).join(', ');
+    db.insert('transactions', {
+      id: 't_' + Date.now(),
+      userId: buyer.id,
+      type: 'debit',
+      title: `Purchase: ${titles.length > 50 ? titles.substring(0, 47) + '...' : titles}`,
+      amount: finalAmount,
+      date: new Date().toISOString().split('T')[0],
+      icon: '🛒',
+      seller: computedItems[0].product.author ? computedItems[0].product.author.name : 'Smart Hub Creator',
+      method: 'Smart Hub Rupee Wallet'
+    });
 
     // Process each item: create order, dynamic license key, update seller earnings & sales count
     const createdOrders = [];

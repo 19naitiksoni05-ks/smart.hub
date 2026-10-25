@@ -26,7 +26,7 @@
         </div>
         <h1 style="font-size:clamp(1.6rem, 2.8vw, 2.2rem);margin:0;">Instant Digital Product Checkout</h1>
         <p style="color:var(--text-secondary);margin-top:6px;font-size:0.9rem;">
-          Pay directly using your ₹ INR Wallet, UPI QR, or Net Banking. Cryptographic keys unlock immediately upon payment.
+          Purchases are processed exclusively through your Smart Hub Rupee Wallet. Add money to your wallet to complete purchase and receive your encryption key.
         </p>
       </div>
 
@@ -35,53 +35,43 @@
 
         <!-- Left Column: Payment Method Selection -->
         <div style="border:1.5px solid var(--border-outline);border-radius:var(--radius-xs);padding:30px;background:var(--bg-secondary);">
-          <h3 style="margin-bottom:18px;font-size:1.15rem;">Select Payment Method</h3>
-          
-          <!-- Method 1: Smart Hub Rupee Wallet (Recommended) -->
-          <label style="display:flex;align-items:flex-start;gap:14px;padding:16px;border:1.5px solid var(--accent-green);border-radius:var(--radius-xs);background:rgba(34,197,94,0.04);cursor:pointer;margin-bottom:14px;">
-            <input type="radio" name="pay-method" value="wallet" checked onchange="switchPaymentTab('wallet')" style="margin-top:4px;">
-            <div style="flex:1;">
-              <div style="display:flex;justify-content:space-between;align-items:center;">
-                <div style="font-weight:700;color:var(--text-primary);">⚡ Smart Hub Rupee Wallet</div>
-                <span class="badge badge-green">RECOMMENDED</span>
-              </div>
-              <div style="font-size:0.8rem;color:var(--text-muted);margin-top:4px;">
-                Available Balance: <strong style="color:var(--text-primary);font-family:var(--font-tech);" id="checkout-wallet-bal">₹0</strong> (Instant 0-click deduction)
-              </div>
-            </div>
-          </label>
-
-          <!-- Method 2: UPI (GPay, PhonePe, Paytm, BHIM) -->
-          <label style="display:flex;align-items:flex-start;gap:14px;padding:16px;border:1.5px solid var(--border-outline);border-radius:var(--radius-xs);background:var(--bg-card);cursor:pointer;margin-bottom:14px;">
-            <input type="radio" name="pay-method" value="upi" onchange="switchPaymentTab('upi')" style="margin-top:4px;">
-            <div style="flex:1;">
-              <div style="display:flex;justify-content:space-between;align-items:center;">
-                <div style="font-weight:700;color:var(--text-primary);">📱 Instant UPI QR Code / Intent</div>
-                <span class="badge badge-purple">INSTANT UPI</span>
-              </div>
-              <div style="font-size:0.8rem;color:var(--text-muted);margin-top:4px;">
-                Supports Google Pay, PhonePe, Paytm, CRED &amp; BHIM UPI apps.
-              </div>
-            </div>
-          </label>
-
-          <!-- Method 3: Cards & Net Banking -->
-          <label style="display:flex;align-items:flex-start;gap:14px;padding:16px;border:1.5px solid var(--border-outline);border-radius:var(--radius-xs);background:var(--bg-card);cursor:pointer;margin-bottom:24px;">
-            <input type="radio" name="pay-method" value="card" onchange="switchPaymentTab('card')" style="margin-top:4px;">
-            <div style="flex:1;">
-              <div style="font-weight:700;color:var(--text-primary);">💳 Debit / Credit Card &amp; Net Banking</div>
-              <div style="font-size:0.8rem;color:var(--text-muted);margin-top:4px;">
-                Visa, MasterCard, RuPay &amp; 50+ Indian banks.
-              </div>
-            </div>
-          </label>
-
-          <!-- Dynamic Payment Sub-view (UPI QR display) -->
-          <div id="payment-upi-view" style="display:none;padding:20px;border:1px dashed var(--border-outline);border-radius:var(--radius-xs);background:#000;text-align:center;margin-bottom:24px;">
-            <div style="font-family:var(--font-tech);font-size:0.75rem;color:var(--accent-cyan);margin-bottom:10px;">SCAN DYNAMIC UPI QR IN ANY APP:</div>
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=upi://pay?pa=smarthub.orders@okhdfcbank&pn=SmartHub&am=2249&cu=INR" alt="UPI QR" style="width:160px;height:160px;border-radius:4px;border:2px solid #fff;margin:0 auto 12px auto;display:block;">
-            <div style="font-size:0.78rem;color:var(--text-muted);font-family:var(--font-tech);">UPI ID: smarthub.orders@okhdfcbank</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+            <h3 style="margin:0;font-size:1.15rem;">Payment Method</h3>
+            <span class="badge badge-purple" style="font-family:var(--font-tech);letter-spacing:0.04em;">WALLET PAYMENT ONLY</span>
           </div>
+          
+          <!-- Exclusive Method: Smart Hub Rupee Wallet -->
+          <div style="border:1.5px solid var(--accent-green);border-radius:var(--radius-xs);background:rgba(34,197,94,0.04);padding:18px;margin-bottom:18px;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <span style="font-size:1.6rem;">⚡</span>
+                <div>
+                  <div style="font-weight:800;color:var(--text-primary);font-size:1.02rem;">Smart Hub Rupee Wallet</div>
+                  <div style="font-size:0.75rem;color:var(--text-muted);" id="checkout-user-id-label">Exclusive payment method for all digital licenses</div>
+                </div>
+              </div>
+              <span class="badge badge-green">DEFAULT</span>
+            </div>
+
+            <!-- Balance Card -->
+            <div style="background:rgba(0,0,0,0.35);border:1px solid var(--border-outline);border-radius:var(--radius-xs);padding:14px 18px;display:flex;justify-content:space-between;align-items:center;">
+              <div>
+                <div style="font-size:0.72rem;color:var(--text-muted);font-family:var(--font-tech);letter-spacing:0.05em;">YOUR AVAILABLE BALANCE</div>
+                <div style="font-family:var(--font-tech);font-size:1.5rem;font-weight:800;color:var(--accent-green);margin-top:2px;" id="checkout-wallet-bal">₹0</div>
+              </div>
+              <div style="display:flex;gap:8px;">
+                <button type="button" class="btn btn-outline btn-xs" onclick="syncWalletState(true)" title="Refresh wallet balance">
+                  🔄 Refresh
+                </button>
+                <a href="wallet.html" target="_blank" class="btn btn-primary btn-xs" style="font-weight:700;">
+                  ➕ Add Money ↗
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dynamic Balance Validation Notice (Sufficient / Insufficient / Not Logged In) -->
+          <div id="checkout-wallet-status-banner" style="margin-bottom:20px;"></div>
 
           <!-- Buyer Email Input -->
           <div class="input-group" style="margin-bottom:24px;">
@@ -93,10 +83,11 @@
           </div>
 
           <button class="btn btn-primary btn-lg w-full" id="complete-order-btn" onclick="executeOrderPayment()" style="width:100%;justify-content:center;font-weight:800;font-size:1rem;">
-            🔒 Complete Payment &amp; Generate Key (<span id="pay-button-amount">₹0</span>)
+            ⚡ Pay with Rupee Wallet &amp; Generate Key (<span id="pay-button-amount">₹0</span>)
           </button>
-          <div style="font-size:0.75rem;color:var(--text-muted);margin-top:10px;text-align:center;">
-            Platform fees (0.5%–3% + statutory govt tax) apply only on purchases &amp; sales. Zero fees when adding money to your wallet.
+
+          <div style="margin-top:14px;padding:12px 14px;background:rgba(255,255,255,0.03);border:1px solid var(--border-outline);border-radius:2px;font-size:0.75rem;color:var(--text-muted);line-height:1.5;">
+            🔒 <strong>Wallet-Only Policy:</strong> Purchases can only be made using your Smart Hub Rupee Wallet account. Zero fees when adding money to your wallet. You can top up anytime via UPI, Net Banking, or Cards in the <a href="wallet.html" target="_blank" style="color:var(--accent-coral);text-decoration:underline;font-weight:700;">Wallet Center</a>.
           </div>
         </div>
 
@@ -232,6 +223,9 @@
         const emailInput = document.getElementById('checkout-email');
         if (emailInput && !emailInput.value) emailInput.value = user.email;
       }
+
+      // Sync wallet balance asynchronously from server
+      syncWalletState(false);
 
       const urlParams = new URLSearchParams(window.location.search);
       const prodId = urlParams.get('id');
@@ -412,6 +406,124 @@
       return rate;
     }
 
+    let currentOrderTotal = 0;
+
+    function updateWalletValidation(total) {
+      currentOrderTotal = total;
+      const user = (window.getCurrentUser && window.getCurrentUser());
+      const banner = document.getElementById('checkout-wallet-status-banner');
+      const btn = document.getElementById('complete-order-btn');
+      const userLabel = document.getElementById('checkout-user-id-label');
+      const walletBalEl = document.getElementById('checkout-wallet-bal');
+
+      const currentBal = Number((user && user.walletBalance) || 0);
+
+      if (walletBalEl) {
+        walletBalEl.textContent = `₹${currentBal.toLocaleString('en-IN')}`;
+      }
+
+      if (!user || (!user.isLoggedIn && !user.id)) {
+        if (userLabel) userLabel.textContent = 'Account: Guest (Please sign in to access your wallet)';
+        if (banner) {
+          banner.innerHTML = `
+            <div style="border:1.5px solid var(--accent-orange);border-radius:var(--radius-xs);padding:14px 16px;background:rgba(245,158,11,0.08);">
+              <div style="font-weight:700;color:var(--accent-orange);display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+                <span>⚠️</span> Sign In Required for Wallet Purchase
+              </div>
+              <div style="font-size:0.8rem;color:var(--text-secondary);line-height:1.5;margin-bottom:10px;">
+                Purchases on Smart Hub can only be completed using your developer Rupee Wallet. Please sign in to access your wallet balance.
+              </div>
+              <a href="login.html?redirect=checkout.html" class="btn btn-outline btn-sm" style="font-weight:700;">
+                🔑 Sign In / Create Account →
+              </a>
+            </div>
+          `;
+        }
+        if (btn) {
+          btn.disabled = true;
+          btn.textContent = '🔒 Please Sign In to Use Rupee Wallet';
+          btn.style.opacity = '0.6';
+          btn.style.cursor = 'not-allowed';
+        }
+        return;
+      }
+
+      if (userLabel) {
+        userLabel.textContent = `Account: ${user.name || user.username || user.email}`;
+      }
+
+      if (currentBal < total) {
+        const shortfall = total - currentBal;
+        if (banner) {
+          banner.innerHTML = `
+            <div style="border:1.5px solid var(--accent-coral);border-radius:var(--radius-xs);padding:14px 16px;background:rgba(255,91,54,0.08);">
+              <div style="font-weight:800;color:var(--accent-coral);display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+                <span>⚠️</span> Insufficient Wallet Balance
+              </div>
+              <div style="font-size:0.82rem;color:var(--text-secondary);line-height:1.5;">
+                Order Total: <strong style="color:var(--text-primary);">₹${total.toLocaleString('en-IN')}</strong> &nbsp;|&nbsp;
+                Your Wallet: <strong style="color:var(--text-primary);">₹${currentBal.toLocaleString('en-IN')}</strong><br>
+                Required to add: <strong style="color:var(--accent-coral);font-family:var(--font-tech);font-size:0.95rem;">₹${shortfall.toLocaleString('en-IN')}</strong>
+              </div>
+              <div style="font-size:0.75rem;color:var(--text-muted);margin:8px 0 10px 0;">
+                Purchases can only be made through your wallet. Add money to your wallet to continue.
+              </div>
+              <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+                <a href="wallet.html" target="_blank" class="btn btn-primary btn-sm" style="font-weight:700;display:inline-flex;align-items:center;gap:6px;">
+                  ➕ Add Money to Wallet (Wallet Center) ↗
+                </a>
+                <button type="button" class="btn btn-outline btn-sm" onclick="syncWalletState(true)">
+                  🔄 Check Balance Again
+                </button>
+              </div>
+            </div>
+          `;
+        }
+        if (btn) {
+          btn.disabled = true;
+          btn.textContent = `🔒 Insufficient Balance — Add ₹${shortfall.toLocaleString('en-IN')} to Wallet`;
+          btn.style.opacity = '0.6';
+          btn.style.cursor = 'not-allowed';
+        }
+      } else {
+        if (banner) {
+          banner.innerHTML = `
+            <div style="border:1.5px solid var(--accent-green);border-radius:var(--radius-xs);padding:14px 16px;background:rgba(34,197,94,0.06);">
+              <div style="font-weight:800;color:var(--accent-green);display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+                <span>✅</span> Wallet Balance Sufficient
+              </div>
+              <div style="font-size:0.82rem;color:var(--text-secondary);line-height:1.4;">
+                ₹${total.toLocaleString('en-IN')} will be deducted from your Rupee Wallet. Remaining balance after order: <strong style="color:var(--accent-green);font-family:var(--font-tech);">₹${(currentBal - total).toLocaleString('en-IN')}</strong>.
+              </div>
+            </div>
+          `;
+        }
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = `⚡ Pay ₹${total.toLocaleString('en-IN')} via Rupee Wallet &amp; Unlock Key`;
+          btn.style.opacity = '1';
+          btn.style.cursor = 'pointer';
+        }
+      }
+    }
+
+    async function syncWalletState(showNotice = false) {
+      if (window.SmartHubAPI) {
+        try {
+          const res = await window.SmartHubAPI.getWallet();
+          if (res && res.success && res.wallet) {
+            const user = (window.getCurrentUser && window.getCurrentUser()) || {};
+            user.walletBalance = res.wallet.balance;
+            localStorage.setItem('smarthub_user', JSON.stringify(user));
+            if (showNotice) showToast(`Wallet synced! Balance: ₹${res.wallet.balance.toLocaleString('en-IN')}`, 'success');
+          }
+        } catch (e) {
+          if (showNotice) showToast('Could not sync wallet from server', 'error');
+        }
+      }
+      updateTotals();
+    }
+
     function updateTotals() {
       const baseAfterDisc = Math.max(0, currentPrice - discountApplied);
       const feeRate = getPlatformFeeRate(baseAfterDisc, currentProdCategory);
@@ -428,7 +540,8 @@
       if (taxEl) taxEl.textContent = `₹${govtTax.toLocaleString('en-IN')}`;
 
       document.getElementById('order-total').textContent = `₹${total.toLocaleString('en-IN')}`;
-      document.getElementById('pay-button-amount').textContent = `₹${total.toLocaleString('en-IN')}`;
+      const payAmtEl = document.getElementById('pay-button-amount');
+      if (payAmtEl) payAmtEl.textContent = `₹${total.toLocaleString('en-IN')}`;
 
       const discRow = document.getElementById('order-discount-row');
       if (discountApplied > 0) {
@@ -437,15 +550,8 @@
       } else {
         discRow.style.display = 'none';
       }
-    }
 
-    function switchPaymentTab(method) {
-      const upiView = document.getElementById('payment-upi-view');
-      if (method === 'upi') {
-        upiView.style.display = 'block';
-      } else {
-        upiView.style.display = 'none';
-      }
+      updateWalletValidation(total);
     }
 
     function applyCheckoutCoupon() {
@@ -460,25 +566,34 @@
     }
 
     async function executeOrderPayment() {
+      const user = (window.getCurrentUser && window.getCurrentUser());
+      if (!user || (!user.isLoggedIn && !user.id)) {
+        showToast('Please sign in to complete purchase using your Rupee Wallet!', 'error');
+        window.location.href = 'login.html?redirect=checkout.html';
+        return;
+      }
+
       const email = document.getElementById('checkout-email').value;
       if (!email || !email.includes('@')) {
         showToast('Please enter a valid email address for delivery!', 'error');
         return;
       }
 
-      const total = Math.max(0, currentPrice - discountApplied);
-      const user = (window.getCurrentUser && window.getCurrentUser()) || {};
-      const payMethodInput = document.querySelector('input[name="pay-method"]:checked');
-      const selectedPayMethod = payMethodInput ? payMethodInput.value : 'wallet';
+      const total = currentOrderTotal;
+      if ((user.walletBalance || 0) < total) {
+        showToast(`Insufficient wallet balance. You have ₹${(user.walletBalance || 0).toLocaleString('en-IN')}, required ₹${total.toLocaleString('en-IN')}. Please add money to your wallet!`, 'error');
+        return;
+      }
+
       const couponInput = document.getElementById('order-coupon-input');
       const couponCode = couponInput ? couponInput.value.trim() : '';
 
       const btn = document.getElementById('complete-order-btn');
       btn.disabled = true;
-      btn.textContent = '🔒 Cryptographically Processing Payment on Backend...';
+      btn.textContent = '🔒 Processing Wallet Deduction & Generating Key...';
 
       let payload = {
-        paymentMethod: selectedPayMethod,
+        paymentMethod: 'wallet',
         deliveryEmail: email,
         couponCode
       };
@@ -489,7 +604,7 @@
         if (!currentProduct || !currentProduct.id) {
           showToast('No product selected for checkout.', 'error');
           btn.disabled = false;
-          btn.textContent = '🔒 Authorize & Download Source Code';
+          btn.textContent = '⚡ Pay with Rupee Wallet';
           return;
         }
         payload.productId = currentProduct.id;
@@ -572,7 +687,15 @@
             }
           }
 
-          currentDownloadUrl = res.downloadUrl || (res.orders && res.orders[0] && res.orders[0].downloadUrl) || `/api/orders/${(currentProduct ? currentProduct.id : 'PRJ')}/download`;
+          if (res.updatedWalletBalance !== undefined) {
+            user.walletBalance = res.updatedWalletBalance;
+            localStorage.setItem('smarthub_user', JSON.stringify(user));
+            document.querySelectorAll('.wallet-display').forEach(el => {
+              el.textContent = '₹' + res.updatedWalletBalance.toLocaleString('en-IN');
+            });
+            const wBal = document.getElementById('checkout-wallet-bal');
+            if (wBal) wBal.textContent = '₹' + res.updatedWalletBalance.toLocaleString('en-IN');
+          }
 
           localStorage.setItem('smarthub_last_order', JSON.stringify({ amount: res.order ? res.order.amount : total, time: Date.now() }));
           showToast('Payment verified! Cryptographic tokens generated. ⚡', 'success');
@@ -581,24 +704,24 @@
         } else if (res && res.error) {
           showToast(res.error, 'error');
           btn.disabled = false;
-          btn.textContent = `🔒 Complete Payment & Generate Key (₹${total.toLocaleString('en-IN')})`;
+          btn.textContent = `⚡ Pay with Rupee Wallet & Generate Key (₹${total.toLocaleString('en-IN')})`;
+          updateWalletValidation(total);
           return;
         }
       } catch (err) {
         console.warn('API checkout error, falling back locally:', err);
       }
 
-      // Local Fallback simulation
-      if (selectedPayMethod === 'wallet') {
-        if ((user.walletBalance || 0) < total) {
-          showToast(`Insufficient wallet balance. You have ₹${user.walletBalance || 0}`, 'error');
-          btn.disabled = false;
-          btn.textContent = `🔒 Complete Payment & Generate Key (₹${total.toLocaleString('en-IN')})`;
-          return;
-        }
-        user.walletBalance = (user.walletBalance || 0) - total;
-        localStorage.setItem('smarthub_user', JSON.stringify(user));
+      // Local Fallback simulation (wallet-only)
+      if ((user.walletBalance || 0) < total) {
+        showToast(`Insufficient wallet balance. You have ₹${user.walletBalance || 0}, required ₹${total}`, 'error');
+        btn.disabled = false;
+        btn.textContent = `⚡ Pay with Rupee Wallet & Generate Key (₹${total.toLocaleString('en-IN')})`;
+        updateWalletValidation(total);
+        return;
       }
+      user.walletBalance = (user.walletBalance || 0) - total;
+      localStorage.setItem('smarthub_user', JSON.stringify(user));
 
       if (checkoutMode === 'cart') {
         localStorage.removeItem('smarthub_cart');
