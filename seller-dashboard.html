@@ -192,6 +192,11 @@
     }
 
     // ── Render Interactive Seller Studio Publisher ──────────────
+    let pubCoverUrl = null;
+    let pubVideoUrl = null;
+    let pubDownloadUrl = null;
+    let pubBundleInfo = null;
+
     function initSellerStudio() {
       const container = document.getElementById('react-seller-studio');
       if (!container) return;
@@ -257,6 +262,93 @@
               </select>
             </div>
 
+            <!-- ── Multi-Asset Upload Section ── -->
+            <div style="grid-column:1/-1;border:1.5px solid rgba(139,92,246,0.3);border-radius:var(--radius-xs);background:rgba(18,15,28,0.7);padding:24px;margin:8px 0;">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px;">
+                <div>
+                  <div style="font-family:var(--font-tech);font-size:0.75rem;color:var(--accent-purple);font-weight:700;">// MEDIA & ASSET BUNDLE ENGINE</div>
+                  <h3 style="margin:4px 0 0 0;font-size:1.15rem;">Upload Visuals & Code Packages</h3>
+                </div>
+                <a href="vault.html" target="_blank" style="font-size:0.78rem;color:var(--accent-cyan);text-decoration:none;font-weight:700;display:flex;align-items:center;gap:4px;">
+                  Open Full Cloud Vault ☁️ →
+                </a>
+              </div>
+
+              <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));gap:16px;">
+                <!-- 1. Cover Image Upload Card -->
+                <div style="border:1px solid var(--border-outline);border-radius:var(--radius-xs);padding:16px;background:var(--bg-card);">
+                  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                    <label style="font-size:0.82rem;font-weight:700;color:var(--text-primary);">🖼️ Cover Artwork</label>
+                    <span id="cover-status-badge" style="font-size:0.7rem;font-family:var(--font-tech);color:var(--text-muted);">RECOMMENDED 1200x800</span>
+                  </div>
+                  <input type="file" id="pub-cover-file" accept="image/png,image/jpeg,image/webp,image/svg+xml,image/gif" style="display:none;" onchange="handleCoverUpload(this)">
+                  <div id="cover-drop-box" onclick="document.getElementById('pub-cover-file').click()" style="border:1.5px dashed rgba(255,255,255,0.15);border-radius:var(--radius-xs);padding:18px;text-align:center;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--accent-purple)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.15)'">
+                    <div id="cover-preview-wrap">
+                      <div style="font-size:1.8rem;margin-bottom:4px;">🖼️</div>
+                      <div style="font-size:0.8rem;font-weight:700;">Choose Cover Image</div>
+                      <div style="font-size:0.72rem;color:var(--text-muted);margin-top:2px;">PNG, JPG, WEBP up to 10MB</div>
+                    </div>
+                  </div>
+                  <div id="cover-progress" style="display:none;margin-top:8px;">
+                    <div style="height:4px;background:rgba(255,255,255,0.1);border-radius:2px;overflow:hidden;">
+                      <div id="cover-progress-bar" style="height:100%;width:0%;background:var(--accent-purple);transition:width 0.2s;"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 2. Demo Video Upload Card -->
+                <div style="border:1px solid var(--border-outline);border-radius:var(--radius-xs);padding:16px;background:var(--bg-card);">
+                  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                    <label style="font-size:0.82rem;font-weight:700;color:var(--text-primary);">🎬 Demo Video Walkthrough</label>
+                    <span id="video-status-badge" style="font-size:0.7rem;font-family:var(--font-tech);color:var(--text-muted);">OPTIONAL</span>
+                  </div>
+                  <input type="file" id="pub-video-file" accept="video/mp4,video/webm,video/quicktime" style="display:none;" onchange="handleVideoUpload(this)">
+                  <div id="video-drop-box" onclick="document.getElementById('pub-video-file').click()" style="border:1.5px dashed rgba(255,255,255,0.15);border-radius:var(--radius-xs);padding:18px;text-align:center;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--accent-cyan)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.15)'">
+                    <div id="video-preview-wrap">
+                      <div style="font-size:1.8rem;margin-bottom:4px;">📹</div>
+                      <div style="font-size:0.8rem;font-weight:700;">Choose Video Walkthrough</div>
+                      <div style="font-size:0.72rem;color:var(--text-muted);margin-top:2px;">MP4, WEBM up to 250MB</div>
+                    </div>
+                  </div>
+                  <div id="video-progress" style="display:none;margin-top:8px;">
+                    <div style="height:4px;background:rgba(255,255,255,0.1);border-radius:2px;overflow:hidden;">
+                      <div id="video-progress-bar" style="height:100%;width:0%;background:var(--accent-cyan);transition:width 0.2s;"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 3. Source Code Bundle or Folder Upload Card -->
+                <div style="border:1px solid var(--border-outline);border-radius:var(--radius-xs);padding:16px;background:var(--bg-card);">
+                  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                    <label style="font-size:0.82rem;font-weight:700;color:var(--text-primary);">📁 Source Code / Folder</label>
+                    <span id="bundle-status-badge" style="font-size:0.7rem;font-family:var(--font-tech);color:var(--text-muted);">ZIP OR FOLDER</span>
+                  </div>
+                  
+                  <div style="display:flex;gap:6px;margin-bottom:10px;">
+                    <button type="button" class="btn btn-outline btn-sm" id="btn-mode-zip" onclick="setBundleMode('zip')" style="flex:1;font-size:0.75rem;padding:4px 8px;">📦 ZIP File</button>
+                    <button type="button" class="btn btn-outline btn-sm" id="btn-mode-folder" onclick="setBundleMode('folder')" style="flex:1;font-size:0.75rem;padding:4px 8px;">📁 Entire Folder</button>
+                  </div>
+
+                  <input type="file" id="pub-bundle-file" accept=".zip,.tar,.gz,.rar,.json,.js,.py,.ts" style="display:none;" onchange="handleBundleFileUpload(this)">
+                  <input type="file" id="pub-bundle-folder" webkitdirectory directory multiple style="display:none;" onchange="handleBundleFolderUpload(this)">
+
+                  <div id="bundle-drop-box" onclick="triggerBundleSelect()" style="border:1.5px dashed rgba(255,255,255,0.15);border-radius:var(--radius-xs);padding:14px;text-align:center;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--accent-green)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.15)'">
+                    <div id="bundle-preview-wrap">
+                      <div style="font-size:1.8rem;margin-bottom:4px;">📦</div>
+                      <div style="font-size:0.8rem;font-weight:700;" id="bundle-box-title">Upload Project Bundle</div>
+                      <div style="font-size:0.72rem;color:var(--text-muted);margin-top:2px;" id="bundle-box-desc">Select ZIP or entire repo folder</div>
+                    </div>
+                  </div>
+                  <div id="bundle-progress" style="display:none;margin-top:8px;">
+                    <div style="height:4px;background:rgba(255,255,255,0.1);border-radius:2px;overflow:hidden;">
+                      <div id="bundle-progress-bar" style="height:100%;width:0%;background:var(--accent-green);transition:width 0.2s;"></div>
+                    </div>
+                    <div id="bundle-progress-text" style="font-size:0.7rem;color:var(--text-muted);margin-top:4px;font-family:var(--font-tech);">Packaging ZIP...</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <!-- Earnings preview bar -->
             <div style="grid-column:1/-1;border:1px dashed var(--border-outline);border-radius:var(--radius-xs);padding:16px;background:var(--bg-card);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
               <div>
@@ -273,6 +365,197 @@
           </form>
         </div>
       `;
+    }
+
+    let bundleMode = 'zip';
+    function setBundleMode(mode) {
+      bundleMode = mode;
+      const bZip = document.getElementById('btn-mode-zip');
+      const bFolder = document.getElementById('btn-mode-folder');
+      const boxTitle = document.getElementById('bundle-box-title');
+      const boxDesc = document.getElementById('bundle-box-desc');
+      if (mode === 'zip') {
+        if (bZip) { bZip.classList.add('btn-primary'); bZip.classList.remove('btn-outline'); }
+        if (bFolder) { bFolder.classList.remove('btn-primary'); bFolder.classList.add('btn-outline'); }
+        if (boxTitle) boxTitle.textContent = 'Choose Project ZIP Archive';
+        if (boxDesc) boxDesc.textContent = '.zip, .tar.gz (audited source code)';
+      } else {
+        if (bFolder) { bFolder.classList.add('btn-primary'); bFolder.classList.remove('btn-outline'); }
+        if (bZip) { bZip.classList.remove('btn-primary'); bZip.classList.add('btn-outline'); }
+        if (boxTitle) boxTitle.textContent = 'Select Entire Project Folder';
+        if (boxDesc) boxDesc.textContent = 'Preserves relative paths & auto-zips';
+      }
+    }
+
+    function triggerBundleSelect() {
+      if (bundleMode === 'folder') {
+        document.getElementById('pub-bundle-folder').click();
+      } else {
+        document.getElementById('pub-bundle-file').click();
+      }
+    }
+
+    async function handleCoverUpload(input) {
+      if (!input.files || !input.files[0]) return;
+      const file = input.files[0];
+      const prog = document.getElementById('cover-progress');
+      const bar = document.getElementById('cover-progress-bar');
+      const badge = document.getElementById('cover-status-badge');
+      const wrap = document.getElementById('cover-preview-wrap');
+
+      prog.style.display = 'block';
+      bar.style.width = '40%';
+      badge.textContent = 'UPLOADING...';
+      badge.style.color = 'var(--accent-coral)';
+
+      try {
+        const res = await window.SmartHubAPI.uploadImage(file);
+        bar.style.width = '100%';
+        if (res && res.success) {
+          pubCoverUrl = res.url;
+          badge.textContent = '✓ UPLOADED';
+          badge.style.color = 'var(--accent-green)';
+          wrap.innerHTML = `
+            <img src="${res.url}" style="width:100%;height:100px;object-fit:cover;border-radius:4px;margin-bottom:6px;">
+            <div style="font-size:0.75rem;font-weight:700;color:var(--text-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${file.name}</div>
+            <div style="font-size:0.68rem;color:var(--accent-green);font-family:var(--font-tech);">Ready for catalog (${(file.size / (1024*1024)).toFixed(2)} MB)</div>
+          `;
+          showToast('Cover image uploaded successfully! 🖼️', 'success');
+        } else {
+          badge.textContent = 'FAILED';
+          badge.style.color = '#ef4444';
+          showToast((res && res.error) || 'Failed to upload image', 'error');
+        }
+      } catch (err) {
+        badge.textContent = 'ERROR';
+        badge.style.color = '#ef4444';
+        showToast('Image upload failed: ' + err.message, 'error');
+      }
+    }
+
+    async function handleVideoUpload(input) {
+      if (!input.files || !input.files[0]) return;
+      const file = input.files[0];
+      const prog = document.getElementById('video-progress');
+      const bar = document.getElementById('video-progress-bar');
+      const badge = document.getElementById('video-status-badge');
+      const wrap = document.getElementById('video-preview-wrap');
+
+      prog.style.display = 'block';
+      bar.style.width = '35%';
+      badge.textContent = 'UPLOADING...';
+      badge.style.color = 'var(--accent-cyan)';
+
+      try {
+        const res = await window.SmartHubAPI.uploadVideo(file);
+        bar.style.width = '100%';
+        if (res && res.success) {
+          pubVideoUrl = res.url;
+          badge.textContent = '✓ VIDEO ATTACHED';
+          badge.style.color = 'var(--accent-green)';
+          wrap.innerHTML = `
+            <div style="font-size:1.8rem;margin-bottom:4px;">🎬</div>
+            <div style="font-size:0.75rem;font-weight:700;color:var(--text-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${file.name}</div>
+            <div style="font-size:0.68rem;color:var(--accent-cyan);font-family:var(--font-tech);">Video Attached (${(file.size / (1024*1024)).toFixed(2)} MB)</div>
+          `;
+          showToast('Walkthrough video uploaded successfully! 🎬', 'success');
+        } else {
+          badge.textContent = 'FAILED';
+          badge.style.color = '#ef4444';
+          showToast((res && res.error) || 'Video upload failed', 'error');
+        }
+      } catch (err) {
+        badge.textContent = 'ERROR';
+        badge.style.color = '#ef4444';
+        showToast('Video upload failed: ' + err.message, 'error');
+      }
+    }
+
+    async function handleBundleFileUpload(input) {
+      if (!input.files || !input.files[0]) return;
+      const file = input.files[0];
+      const prog = document.getElementById('bundle-progress');
+      const bar = document.getElementById('bundle-progress-bar');
+      const progText = document.getElementById('bundle-progress-text');
+      const badge = document.getElementById('bundle-status-badge');
+      const wrap = document.getElementById('bundle-preview-wrap');
+
+      prog.style.display = 'block';
+      bar.style.width = '45%';
+      progText.textContent = 'Uploading ZIP package...';
+      badge.textContent = 'UPLOADING...';
+      badge.style.color = 'var(--accent-green)';
+
+      try {
+        const res = await window.SmartHubAPI.uploadSingle(file);
+        bar.style.width = '100%';
+        if (res && res.success) {
+          pubDownloadUrl = res.url;
+          pubBundleInfo = { type: 'zip', originalName: file.name, size: file.size };
+          badge.textContent = '✓ ZIP SECURED';
+          badge.style.color = 'var(--accent-green)';
+          progText.textContent = 'Encrypted download link generated.';
+          wrap.innerHTML = `
+            <div style="font-size:1.8rem;margin-bottom:4px;">📦</div>
+            <div style="font-size:0.75rem;font-weight:700;color:var(--text-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${file.name}</div>
+            <div style="font-size:0.68rem;color:var(--accent-green);font-family:var(--font-tech);">Archive Ready (${(file.size / (1024*1024)).toFixed(2)} MB)</div>
+          `;
+          showToast('Source package uploaded and locked! 📦', 'success');
+        } else {
+          badge.textContent = 'FAILED';
+          badge.style.color = '#ef4444';
+          showToast((res && res.error) || 'Upload failed', 'error');
+        }
+      } catch (err) {
+        badge.textContent = 'ERROR';
+        badge.style.color = '#ef4444';
+        showToast('Upload error: ' + err.message, 'error');
+      }
+    }
+
+    async function handleBundleFolderUpload(input) {
+      if (!input.files || input.files.length === 0) return;
+      const files = Array.from(input.files);
+      const paths = files.map(f => f.webkitRelativePath || f.name);
+      const folderName = paths[0] ? paths[0].split('/')[0] : 'ProjectFolder';
+
+      const prog = document.getElementById('bundle-progress');
+      const bar = document.getElementById('bundle-progress-bar');
+      const progText = document.getElementById('bundle-progress-text');
+      const badge = document.getElementById('bundle-status-badge');
+      const wrap = document.getElementById('bundle-preview-wrap');
+
+      prog.style.display = 'block';
+      bar.style.width = '30%';
+      progText.textContent = `Uploading ${files.length} files from /${folderName}...`;
+      badge.textContent = 'PACKING...';
+      badge.style.color = 'var(--accent-cyan)';
+
+      try {
+        const res = await window.SmartHubAPI.uploadFolder(files, paths, folderName);
+        bar.style.width = '100%';
+        if (res && res.success) {
+          pubDownloadUrl = res.zipUrl || res.folderPath;
+          pubBundleInfo = { type: 'folder', folderName, fileCount: res.fileCount, totalSize: res.totalSize, zipUrl: res.zipUrl };
+          badge.textContent = `✓ ${res.fileCount} FILES PACKED`;
+          badge.style.color = 'var(--accent-green)';
+          progText.textContent = `Packed to ${res.zipFilename} (${(res.totalSize / (1024*1024)).toFixed(2)} MB)`;
+          wrap.innerHTML = `
+            <div style="font-size:1.8rem;margin-bottom:4px;">📁</div>
+            <div style="font-size:0.75rem;font-weight:700;color:var(--text-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">/${folderName}</div>
+            <div style="font-size:0.68rem;color:var(--accent-green);font-family:var(--font-tech);">${res.fileCount} files · Auto-Zipped for Delivery</div>
+          `;
+          showToast(`Folder /${folderName} (${res.fileCount} files) zipped and ready! 🎉`, 'success');
+        } else {
+          badge.textContent = 'FAILED';
+          badge.style.color = '#ef4444';
+          showToast((res && res.error) || 'Folder upload failed', 'error');
+        }
+      } catch (err) {
+        badge.textContent = 'ERROR';
+        badge.style.color = '#ef4444';
+        showToast('Folder upload error: ' + err.message, 'error');
+      }
     }
 
     function calcEarningsPreview(val) {
@@ -308,7 +591,11 @@
         oldPrice,
         description: desc,
         tags: tagsStr ? tagsStr.split(',').map(t => t.trim()) : [category],
-        type
+        type,
+        thumb: pubCoverUrl || `https://picsum.photos/seed/${encodeURIComponent(title)}/400/250`,
+        videoUrl: pubVideoUrl || null,
+        downloadUrl: pubDownloadUrl || null,
+        bundleInfo: pubBundleInfo || null
       };
 
       try {
@@ -316,6 +603,10 @@
         if (res && res.success) {
           showToast(`Asset "${title}" listed successfully on Smart Hub! 🎉`, 'success');
           document.getElementById('seller-publish-form').reset();
+          pubCoverUrl = null;
+          pubVideoUrl = null;
+          pubDownloadUrl = null;
+          pubBundleInfo = null;
           submitBtn.disabled = false;
           submitBtn.textContent = '🚀 Publish Asset to Store Now →';
 

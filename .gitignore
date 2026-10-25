@@ -23,3 +23,8 @@ Thumbs.db
 # Temporary & build files
 tmp/
 temp/
+
+# Uploaded User Media and Code Archives
+uploads/*
+!uploads/**/.gitkeep
+!uploads/.gitkeep

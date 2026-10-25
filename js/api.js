@@ -60,6 +60,130 @@
       return headers;
     },
 
+    getMultipartHeaders() {
+      const headers = {};
+      const token = localStorage.getItem('smarthub_token');
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+      const user = localStorage.getItem('smarthub_user');
+      if (user) {
+        try {
+          const u = JSON.parse(user);
+          if (u.id) headers['x-user-id'] = u.id;
+        } catch (e) {}
+      }
+      return headers;
+    },
+
+    // ── Media & File Upload Features ──────────────────────────
+    async uploadSingle(file) {
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+        const res = await fetch(`${this.baseUrl}/upload/single`, {
+          method: 'POST',
+          headers: this.getMultipartHeaders(),
+          body: formData
+        });
+        return await res.json();
+      } catch (err) {
+        return { success: false, error: err.message };
+      }
+    },
+
+    async uploadImage(imageFile) {
+      try {
+        const formData = new FormData();
+        formData.append('image', imageFile);
+        const res = await fetch(`${this.baseUrl}/upload/image`, {
+          method: 'POST',
+          headers: this.getMultipartHeaders(),
+          body: formData
+        });
+        return await res.json();
+      } catch (err) {
+        return { success: false, error: err.message };
+      }
+    },
+
+    async uploadVideo(videoFile) {
+      try {
+        const formData = new FormData();
+        formData.append('video', videoFile);
+        const res = await fetch(`${this.baseUrl}/upload/video`, {
+          method: 'POST',
+          headers: this.getMultipartHeaders(),
+          body: formData
+        });
+        return await res.json();
+      } catch (err) {
+        return { success: false, error: err.message };
+      }
+    },
+
+    async uploadFiles(fileList) {
+      try {
+        const formData = new FormData();
+        Array.from(fileList).forEach(file => formData.append('files', file));
+        const res = await fetch(`${this.baseUrl}/upload/multiple`, {
+          method: 'POST',
+          headers: this.getMultipartHeaders(),
+          body: formData
+        });
+        return await res.json();
+      } catch (err) {
+        return { success: false, error: err.message };
+      }
+    },
+
+    async uploadFolder(fileList, folderName = 'project_folder', relativePaths = []) {
+      try {
+        const formData = new FormData();
+        formData.append('folderName', folderName);
+        Array.from(fileList).forEach((file, idx) => {
+          formData.append('folderFiles', file);
+          if (!relativePaths[idx] && file.webkitRelativePath) {
+            relativePaths[idx] = file.webkitRelativePath;
+          }
+        });
+        if (relativePaths && relativePaths.length > 0) {
+          formData.append('paths', JSON.stringify(relativePaths));
+        }
+
+        const res = await fetch(`${this.baseUrl}/upload/folder`, {
+          method: 'POST',
+          headers: this.getMultipartHeaders(),
+          body: formData
+        });
+        return await res.json();
+      } catch (err) {
+        return { success: false, error: err.message };
+      }
+    },
+
+    async getUploadLibrary(type = '', category = '') {
+      try {
+        const q = type ? `type=${encodeURIComponent(type)}` : (category ? `category=${encodeURIComponent(category)}` : '');
+        const res = await fetch(`${this.baseUrl}/upload/library${q ? '?' + q : ''}`, {
+          headers: this.getHeaders()
+        });
+        return await res.json();
+      } catch (err) {
+        return { success: false, error: err.message, library: [] };
+      }
+    },
+
+    async deleteUpload(id) {
+      try {
+        const res = await fetch(`${this.baseUrl}/upload/${id}`, {
+          method: 'DELETE',
+          headers: this.getHeaders()
+        });
+        return await res.json();
+      } catch (err) {
+        return { success: false, error: err.message };
+      }
+    },
+
     // ── Authentication ────────────────────────────────────────
     async register(name, username, email, password, role = 'buyer') {
       try {

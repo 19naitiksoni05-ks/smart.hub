@@ -121,6 +121,7 @@ function renderHeader(activePage = '') {
                 <a href="profile.html#projects" class="dropdown-item">📦 My Purchased Assets</a>
                 <a href="wallet.html" class="dropdown-item">💰 Wallet &amp; Payouts (₹${(user.walletBalance || 0).toLocaleString('en-IN')})</a>
                 <a href="seller-dashboard.html" class="dropdown-item">🚀 Creator Studio</a>
+                <a href="vault.html" class="dropdown-item">☁️ Cloud Media Vault</a>
                 <a href="chat.html" class="dropdown-item">✉️ Messages</a>
                 <div class="dropdown-divider"></div>
                 <a href="login.html" class="dropdown-item">🔄 Switch Account</a>
@@ -330,6 +331,16 @@ function renderHeader(activePage = '') {
                   </div>
                   <span class="submenu-badge hot">UP TO 99.5%</span>
                 </a>
+                <a href="vault.html" class="submenu-link">
+                  <div class="submenu-link-left">
+                    <span class="submenu-icon">☁️</span>
+                    <div>
+                      <span class="submenu-text-title">Cloud Media &amp; Code Vault</span>
+                      <span class="submenu-text-desc">Upload images, videos, zip bundles &amp; folders</span>
+                    </div>
+                  </div>
+                  <span class="submenu-badge new">STORAGE</span>
+                </a>
               </div>
             </div>
 
@@ -400,6 +411,9 @@ function renderHeader(activePage = '') {
               🛡️ Admin [All Data]
             </a>
             ` : ''}
+            <a href="vault.html" class="ticker-pill ticker-pill-interactive" style="border-color:rgba(139,92,246,0.3);color:var(--accent-cyan);" title="Cloud Media & Code Vault">
+              ☁️ Cloud Vault
+            </a>
             <a href="index.html#about" class="ticker-pill ticker-pill-interactive about-pill" title="Learn About Smart Hub Platform">
               <span class="pulse-dot"></span> About Us
             </a>
@@ -434,6 +448,7 @@ function renderHeader(activePage = '') {
     <div class="mobile-nav-section">
       <div class="mobile-nav-title">Ecosystem &amp; Community</div>
       <a href="ecosystem.html" class="nav-link">🌐 Ecosystem Command Hub</a>
+      <a href="vault.html" class="nav-link" style="color:var(--accent-cyan);font-weight:600;">☁️ Cloud Media &amp; Code Vault</a>
       <a href="feed.html" class="nav-link">📰 Developer Feed</a>
       <a href="community.html" class="nav-link">💬 Community Channels</a>
       <a href="challenges.html" class="nav-link">🏆 Skill Challenges &amp; XP</a>
@@ -454,6 +469,7 @@ function renderHeader(activePage = '') {
       <a href="settings.html" class="nav-link">⚙️ Account Settings &amp; Preferences</a>
       <a href="wallet.html" class="nav-link">💰 Rupee Wallet (₹${(user.walletBalance || 0).toLocaleString('en-IN')})</a>
       <a href="seller-dashboard.html" class="nav-link">🚀 Creator &amp; Seller Studio</a>
+      <a href="vault.html" class="nav-link">☁️ Cloud Media Vault</a>
       ` : `
       <a href="login.html" class="nav-link">🔑 Log In to Smart Hub</a>
       <a href="register.html" class="nav-link">🚀 Create New Account</a>

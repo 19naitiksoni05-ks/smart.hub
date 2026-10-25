@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cloud Media &amp; Code Vault — Smart Hub | Multi-Asset Upload Engine</title>
+  <meta name="description" content="Upload and manage production images, demo videos, codebase zip packages, and full folder structures with instant encrypted URL generation on Smart Hub.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>☁️</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/cards.css">
+  <link rel="stylesheet" href="css/pages.css">
+  <style>
+    .vault-hero {
+      background: linear-gradient(135deg, rgba(139,92,246,0.12), rgba(6,182,212,0.08), rgba(245,158,11,0.05));
+      border: 1.5px solid var(--border-outline-strong);
+      border-radius: var(--radius-xs);
+      padding: 32px 36px;
+      margin-bottom: 32px;
+      position: relative;
+      overflow: hidden;
+    }
+    .vault-hero::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 15%; right: 15%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent-purple), var(--accent-cyan), transparent);
+    }
+    .upload-dropzone {
+      border: 2px dashed rgba(139,92,246,0.45);
+      border-radius: var(--radius-xs);
+      background: rgba(22, 19, 32, 0.7);
+      backdrop-filter: blur(8px);
+      padding: 44px 28px;
+      text-align: center;
+      transition: all 0.25s ease;
+      cursor: pointer;
+      position: relative;
+    }
+    .upload-dropzone:hover, .upload-dropzone.dragover {
+      border-color: var(--accent-cyan);
+      background: rgba(6, 182, 212, 0.08);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    }
+    .vault-type-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    .vault-type-card {
+      background: var(--bg-card);
+      border: 1.5px solid var(--border-outline);
+      border-radius: var(--radius-xs);
+      padding: 20px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .vault-type-card:hover, .vault-type-card.active {
+      border-color: var(--accent-purple);
+      background: rgba(139,92,246,0.08);
+      transform: translateY(-2px);
+    }
+    .upload-progress-card {
+      background: var(--bg-card);
+      border: 1.5px solid var(--border-outline);
+      border-radius: var(--radius-xs);
+      padding: 16px 20px;
+      margin-top: 20px;
+      display: none;
+    }
+    .progress-bar-track {
+      height: 8px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan));
+      width: 0%;
+      transition: width 0.2s ease;
+    }
+    .media-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+      margin-top: 24px;
+    }
+    .media-card {
+      background: var(--bg-card);
+      border: 1.5px solid var(--border-outline);
+      border-radius: var(--radius-xs);
+      overflow: hidden;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+    }
+    .media-card:hover {
+      border-color: var(--accent-cyan);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.5);
+    }
+    .media-preview-box {
+      height: 170px;
+      background: #0f0d17;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .media-preview-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .media-preview-box video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .file-badge-icon {
+      font-size: 3rem;
+    }
+    .media-card-body {
+      padding: 16px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .file-tree-viewer {
+      background: #0d0b13;
+      border: 1px solid var(--border-outline);
+      border-radius: var(--radius-xs);
+      padding: 14px 18px;
+      max-height: 240px;
+      overflow-y: auto;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: #94a3b8;
+      margin-top: 12px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Injected Shared Header -->
+  <div id="page-header"></div>
+
+  <main class="page-container" style="padding-top: calc(var(--header-h, 110px) + var(--topbar-h, 36px) + 24px); padding-bottom: 80px;">
+    <div class="container">
+
+      <!-- Vault Hero Header -->
+      <div class="vault-hero animate-fadeInUp">
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:20px;">
+          <div>
+            <div style="font-family:var(--font-tech);font-size:0.75rem;color:var(--accent-cyan);font-weight:700;letter-spacing:0.12em;margin-bottom:6px;">
+              [ HIGH-SPEED CLOUD STORAGE &amp; DELIVERY ]
+            </div>
+            <h1 style="font-size:clamp(1.7rem, 3.2vw, 2.5rem);margin:0;font-weight:800;">
+              Cloud Media &amp; Code Vault ☁️
+            </h1>
+            <p style="color:var(--text-secondary);margin-top:8px;font-size:0.92rem;max-width:650px;">
+              Upload production screenshots, MP4 demo walkthroughs, code packages, and entire directory structures. Files are encrypted, organized, and instantly accessible via high-speed CDN endpoints.
+            </p>
+          </div>
+
+          <!-- Quick Stats Counter -->
+          <div style="display:flex;gap:12px;flex-wrap:wrap;">
+            <div style="background:var(--bg-card);border:1px solid var(--border-outline);padding:10px 18px;border-radius:var(--radius-xs);text-align:center;">
+              <div style="font-size:0.7rem;color:var(--text-muted);font-family:var(--font-tech);">TOTAL ASSETS</div>
+              <div style="font-size:1.3rem;font-weight:800;color:var(--accent-purple);" id="stat-total-assets">0</div>
+            </div>
+            <div style="background:var(--bg-card);border:1px solid var(--border-outline);padding:10px 18px;border-radius:var(--radius-xs);text-align:center;">
+              <div style="font-size:0.7rem;color:var(--text-muted);font-family:var(--font-tech);">STORAGE USED</div>
+              <div style="font-size:1.3rem;font-weight:800;color:var(--accent-cyan);" id="stat-storage-used">0 Bytes</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── 4 Dedicated Upload Triggers ── -->
+      <div class="vault-type-cards">
+        <div class="vault-type-card" onclick="triggerFileSelect('image')">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+            <span style="font-size:1.8rem;">🖼️</span>
+            <div>
+              <div style="font-weight:700;font-size:0.95rem;">Images &amp; Screenshots</div>
+              <div style="font-size:0.75rem;color:var(--text-muted);">PNG, JPG, WebP, SVG, GIF (Up to 25MB)</div>
+            </div>
+          </div>
+          <button class="btn btn-outline btn-xs" style="width:100%;justify-content:center;">Select Images ➔</button>
+        </div>
+
+        <div class="vault-type-card" onclick="triggerFileSelect('video')">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+            <span style="font-size:1.8rem;">🎥</span>
+            <div>
+              <div style="font-weight:700;font-size:0.95rem;">Demo Videos &amp; Clips</div>
+              <div style="font-size:0.75rem;color:var(--text-muted);">MP4, WebM, MOV, MKV (Up to 250MB)</div>
+            </div>
+          </div>
+          <button class="btn btn-outline btn-xs" style="width:100%;justify-content:center;">Select Video ➔</button>
+        </div>
+
+        <div class="vault-type-card" onclick="triggerFolderSelect()">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+            <span style="font-size:1.8rem;">📁</span>
+            <div>
+              <div style="font-weight:700;font-size:0.95rem;">Folder Structure</div>
+              <div style="font-size:0.75rem;color:var(--text-muted);">Upload folder with tree &amp; auto-ZIP</div>
+            </div>
+          </div>
+          <button class="btn btn-outline btn-xs" style="width:100%;justify-content:center;">Upload Folder ➔</button>
+        </div>
+
+        <div class="vault-type-card" onclick="triggerFileSelect('file')">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+            <span style="font-size:1.8rem;">📦</span>
+            <div>
+              <div style="font-weight:700;font-size:0.95rem;">Files &amp; Code Packages</div>
+              <div style="font-size:0.75rem;color:var(--text-muted);">ZIP, TAR, PDF, JS, PY, JSON (Up to 100MB)</div>
+            </div>
+          </div>
+          <button class="btn btn-outline btn-xs" style="width:100%;justify-content:center;">Select Files ➔</button>
+        </div>
+      </div>
+
+      <!-- ── Drag & Drop Mega Zone ── -->
+      <div class="upload-dropzone" id="mega-dropzone" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleFileDrop(event)" onclick="triggerDefaultSelect()">
+        <div style="font-size:3rem;margin-bottom:12px;">☁️ ⬆️</div>
+        <h3 style="margin:0 0 8px 0;font-size:1.3rem;">Drag &amp; Drop Images, Videos, Files or Folders Here</h3>
+        <p style="color:var(--text-muted);font-size:0.86rem;max-width:540px;margin:0 auto 18px auto;">
+          Files are automatically categorized, stored locally with instant web URLs, and synced to Smart Hub's high-speed media delivery network.
+        </p>
+        <div style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap;">
+          <button type="button" class="btn btn-primary btn-sm" onclick="event.stopPropagation(); triggerFileSelect('all');">
+            📁 Browse Local Files
+          </button>
+          <button type="button" class="btn btn-secondary btn-sm" onclick="event.stopPropagation(); triggerFolderSelect();">
+            📂 Choose Folder Directory
+          </button>
+        </div>
+      </div>
+
+      <!-- Hidden Input Handlers -->
+      <input type="file" id="input-file-any" style="display:none;" multiple onchange="handleNativeFileSelect(event)">
+      <input type="file" id="input-file-image" style="display:none;" accept="image/*" multiple onchange="handleNativeFileSelect(event)">
+      <input type="file" id="input-file-video" style="display:none;" accept="video/*" onchange="handleNativeFileSelect(event)">
+      <input type="file" id="input-file-folder" style="display:none;" webkitdirectory directory multiple onchange="handleNativeFolderSelect(event)">
+
+      <!-- Active Upload Progress Card -->
+      <div class="upload-progress-card" id="upload-progress-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div class="spinner" style="width:18px;height:18px;border-width:2px;"></div>
+            <span style="font-weight:700;font-size:0.9rem;" id="progress-status-text">Uploading files to vault...</span>
+          </div>
+          <span style="font-family:var(--font-tech);font-size:0.85rem;color:var(--accent-cyan);" id="progress-percent-text">0%</span>
+        </div>
+        <div class="progress-bar-track">
+          <div class="progress-bar-fill" id="progress-bar-fill"></div>
+        </div>
+        <div style="font-size:0.75rem;color:var(--text-muted);margin-top:6px;" id="progress-file-name">Processing asset stream...</div>
+      </div>
+
+      <!-- ── Media Library Browser ── -->
+      <div style="margin-top:54px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;margin-bottom:20px;">
+          <div>
+            <h2 style="margin:0;font-size:1.45rem;">Vault Asset Explorer</h2>
+            <p style="color:var(--text-muted);font-size:0.82rem;margin-top:4px;">Browse, preview, copy URLs, and download uploaded media and code packages.</p>
+          </div>
+
+          <!-- Filter Pills -->
+          <div style="display:flex;gap:6px;background:var(--bg-card);border:1px solid var(--border-outline);padding:4px;border-radius:var(--radius-xs);flex-wrap:wrap;">
+            <button class="btn btn-xs btn-primary" id="btn-filter-all" onclick="filterVault('all')">All (<span id="count-all">0</span>)</button>
+            <button class="btn btn-xs btn-outline" id="btn-filter-images" onclick="filterVault('image')">🖼️ Images (<span id="count-images">0</span>)</button>
+            <button class="btn btn-xs btn-outline" id="btn-filter-videos" onclick="filterVault('video')">🎥 Videos (<span id="count-videos">0</span>)</button>
+            <button class="btn btn-xs btn-outline" id="btn-filter-folders" onclick="filterVault('folder')">📁 Folders (<span id="count-folders">0</span>)</button>
+            <button class="btn btn-xs btn-outline" id="btn-filter-files" onclick="filterVault('file')">📄 Code &amp; Files (<span id="count-files">0</span>)</button>
+          </div>
+        </div>
+
+        <!-- Media Grid -->
+        <div class="media-grid" id="vault-media-grid">
+          <div style="grid-column:1/-1;text-align:center;padding:60px 20px;border:1px dashed var(--border-outline);border-radius:var(--radius-xs);color:var(--text-muted);">
+            <div style="font-size:2.4rem;margin-bottom:10px;">📦</div>
+            <div style="font-weight:700;color:var(--text-primary);margin-bottom:4px;">No files uploaded yet</div>
+            <div style="font-size:0.82rem;">Use the dropzone above to upload your first image, video, code bundle, or folder!</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- HTML5 Video Player Modal -->
+  <div class="modal-overlay" id="modal-video-player" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(10px);z-index:9999;align-items:center;justify-content:center;">
+    <div style="width:100%;max-width:760px;background:#0d0b13;border:1.5px solid var(--accent-purple);border-radius:var(--radius-xs);padding:20px;position:relative;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <h4 style="margin:0;font-size:1rem;" id="video-modal-title">Video Preview</h4>
+        <button onclick="closeVideoModal()" style="background:transparent;border:none;color:var(--text-muted);font-size:1.2rem;cursor:pointer;">✕</button>
+      </div>
+      <div style="background:#000;border-radius:var(--radius-xs);overflow:hidden;aspect-ratio:16/9;">
+        <video id="player-video-element" controls style="width:100%;height:100%;display:block;"></video>
+      </div>
+    </div>
+  </div>
+
+  <!-- Folder Directory Tree Inspection Modal -->
+  <div class="modal-overlay" id="modal-folder-tree" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(10px);z-index:9999;align-items:center;justify-content:center;">
+    <div style="width:100%;max-width:680px;background:var(--bg-card);border:1.5px solid var(--accent-cyan);border-radius:var(--radius-xs);padding:24px;position:relative;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <div>
+          <h4 style="margin:0;font-size:1.1rem;" id="tree-modal-title">Folder Structure</h4>
+          <span style="font-size:0.75rem;color:var(--accent-green);" id="tree-modal-sub">0 files packed</span>
+        </div>
+        <button onclick="closeFolderModal()" style="background:transparent;border:none;color:var(--text-muted);font-size:1.2rem;cursor:pointer;">✕</button>
+      </div>
+      <div class="file-tree-viewer" id="tree-modal-content"></div>
+      <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:16px;">
+        <a href="#" id="tree-modal-download-btn" class="btn btn-primary btn-sm" download>
+          📦 Download Complete ZIP Package
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Injected Shared Footer -->
+  <div id="page-footer"></div>
+
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/layout.js"></script>
+
+  <script>
+    let vaultItems = [];
+    let currentFilter = 'all';
+
+    // ── Input Triggers ──────────────────────────────────────────
+    function triggerDefaultSelect() {
+      triggerFileSelect('all');
+    }
+
+    function triggerFileSelect(type) {
+      if (type === 'image') {
+        document.getElementById('input-file-image').click();
+      } else if (type === 'video') {
+        document.getElementById('input-file-video').click();
+      } else {
+        document.getElementById('input-file-any').click();
+      }
+    }
+
+    function triggerFolderSelect() {
+      document.getElementById('input-file-folder').click();
+    }
+
+    // ── Native File Input Handler ───────────────────────────────
+    async function handleNativeFileSelect(e) {
+      const files = e.target.files;
+      if (!files || files.length === 0) return;
+      await uploadFilesBatch(files);
+      e.target.value = '';
+    }
+
+    // ── Native Folder Input Handler ─────────────────────────────
+    async function handleNativeFolderSelect(e) {
+      const files = e.target.files;
+      if (!files || files.length === 0) return;
+
+      let folderName = 'project_folder';
+      if (files[0] && files[0].webkitRelativePath) {
+        folderName = files[0].webkitRelativePath.split('/')[0] || 'project_folder';
+      }
+
+      const relativePaths = Array.from(files).map(f => f.webkitRelativePath || f.name);
+      await uploadFolderPackage(files, folderName, relativePaths);
+      e.target.value = '';
+    }
+
+    // ── Drag & Drop Handlers ────────────────────────────────────
+    function handleDragOver(e) {
+      e.preventDefault();
+      document.getElementById('mega-dropzone').classList.add('dragover');
+    }
+
+    function handleDragLeave(e) {
+      e.preventDefault();
+      document.getElementById('mega-dropzone').classList.remove('dragover');
+    }
+
+    async function handleFileDrop(e) {
+      e.preventDefault();
+      document.getElementById('mega-dropzone').classList.remove('dragover');
+
+      const items = e.dataTransfer.items;
+      const files = e.dataTransfer.files;
+
+      if (!files || files.length === 0) return;
+
+      // Check if item contains webkitGetAsEntry to detect folders
+      let isFolder = false;
+      if (items && items.length > 0 && items[0].webkitGetAsEntry) {
+        const entry = items[0].webkitGetAsEntry();
+        if (entry && entry.isDirectory) {
+          isFolder = true;
+          handleDroppedDirectory(entry);
+          return;
+        }
+      }
+
+      await uploadFilesBatch(files);
+    }
+
+    async function handleDroppedDirectory(dirEntry) {
+      showProgress(10, `Traversing folder "${dirEntry.name}"...`);
+      const filesWithPaths = [];
+
+      async function traverse(entry, path = '') {
+        if (entry.isFile) {
+          const file = await new Promise((resolve) => entry.file(resolve));
+          filesWithPaths.push({ file, path: path + file.name });
+        } else if (entry.isDirectory) {
+          const reader = entry.createReader();
+          const entries = await new Promise((resolve) => reader.readEntries(resolve));
+          for (const child of entries) {
+            await traverse(child, path + entry.name + '/');
+          }
+        }
+      }
+
+      await traverse(dirEntry);
+
+      if (filesWithPaths.length === 0) {
+        hideProgress();
+        SH.showToast('Dropped folder is empty', 'error');
+        return;
+      }
+
+      const fileList = filesWithPaths.map(item => item.file);
+      const relativePaths = filesWithPaths.map(item => item.path);
+      await uploadFolderPackage(fileList, dirEntry.name, relativePaths);
+    }
+
+    // ── Core Upload Execution ───────────────────────────────────
+    async function uploadFilesBatch(fileList) {
+      const count = fileList.length;
+      showProgress(15, `Preparing ${count} file${count > 1 ? 's' : ''}...`);
+
+      try {
+        if (count === 1) {
+          const file = fileList[0];
+          showProgress(50, `Uploading ${file.name}...`);
+          const res = await window.SmartHubAPI.uploadSingle(file);
+          if (res && res.success) {
+            showProgress(100, 'Upload complete! 🚀');
+            SH.showToast(res.message || 'File uploaded successfully!', 'success');
+            setTimeout(hideProgress, 800);
+            loadVaultLibrary();
+            return;
+          } else {
+            hideProgress();
+            SH.showToast((res && res.error) || 'Upload failed', 'error');
+          }
+        } else {
+          showProgress(40, `Uploading batch of ${count} files...`);
+          const res = await window.SmartHubAPI.uploadFiles(fileList);
+          if (res && res.success) {
+            showProgress(100, 'Batch upload complete! 🚀');
+            SH.showToast(res.message, 'success');
+            setTimeout(hideProgress, 800);
+            loadVaultLibrary();
+            return;
+          } else {
+            hideProgress();
+            SH.showToast((res && res.error) || 'Upload failed', 'error');
+          }
+        }
+      } catch (err) {
+        hideProgress();
+        SH.showToast('Upload error: ' + err.message, 'error');
+      }
+    }
+
+    async function uploadFolderPackage(fileList, folderName, relativePaths) {
+      showProgress(35, `Packaging folder "${folderName}" (${fileList.length} files)...`);
+      try {
+        const res = await window.SmartHubAPI.uploadFolder(fileList, folderName, relativePaths);
+        if (res && res.success) {
+          showProgress(100, 'Folder bundled into ZIP! 🚀');
+          SH.showToast(res.message, 'success');
+          setTimeout(hideProgress, 800);
+          loadVaultLibrary();
+        } else {
+          hideProgress();
+          SH.showToast((res && res.error) || 'Folder upload failed', 'error');
+        }
+      } catch (err) {
+        hideProgress();
+        SH.showToast('Folder upload error: ' + err.message, 'error');
+      }
+    }
+
+    function showProgress(percent, text) {
+      const card = document.getElementById('upload-progress-card');
+      const bar = document.getElementById('progress-bar-fill');
+      const pct = document.getElementById('progress-percent-text');
+      const txt = document.getElementById('progress-status-text');
+
+      if (card) card.style.display = 'block';
+      if (bar) bar.style.width = percent + '%';
+      if (pct) pct.textContent = percent + '%';
+      if (txt && text) txt.textContent = text;
+    }
+
+    function hideProgress() {
+      const card = document.getElementById('upload-progress-card');
+      if (card) card.style.display = 'none';
+    }
+
+    // ── Load & Render Vault Library ─────────────────────────────
+    async function loadVaultLibrary() {
+      try {
+        const res = await window.SmartHubAPI.getUploadLibrary();
+        if (res && res.success) {
+          vaultItems = res.library || [];
+          updateStats(res.storageStats);
+          renderVaultGrid();
+        }
+      } catch (e) {
+        console.warn('Failed to load vault library:', e);
+      }
+    }
+
+    function updateStats(stats) {
+      if (!stats) return;
+      document.getElementById('stat-total-assets').textContent = stats.totalFiles || 0;
+      document.getElementById('stat-storage-used').textContent = stats.totalFormatted || '0 Bytes';
+
+      document.getElementById('count-all').textContent = stats.totalFiles || 0;
+      document.getElementById('count-images').textContent = stats.totalImages || 0;
+      document.getElementById('count-videos').textContent = stats.totalVideos || 0;
+      document.getElementById('count-folders').textContent = stats.totalFolders || 0;
+      document.getElementById('count-files').textContent = stats.totalDocs || 0;
+    }
+
+    function filterVault(type) {
+      currentFilter = type;
+      ['all', 'images', 'videos', 'folders', 'files'].forEach(k => {
+        const btn = document.getElementById(`btn-filter-${k}`);
+        if (btn) {
+          btn.className = (k === (type === 'all' ? 'all' : type + 's')) ? 'btn btn-xs btn-primary' : 'btn btn-xs btn-outline';
+        }
+      });
+      renderVaultGrid();
+    }
+
+    function renderVaultGrid() {
+      const grid = document.getElementById('vault-media-grid');
+      if (!grid) return;
+
+      let filtered = vaultItems;
+      if (currentFilter !== 'all') {
+        filtered = vaultItems.filter(item => item.type === currentFilter);
+      }
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div style="grid-column:1/-1;text-align:center;padding:60px 20px;border:1px dashed var(--border-outline);border-radius:var(--radius-xs);color:var(--text-muted);">
+            <div style="font-size:2.4rem;margin-bottom:10px;">📦</div>
+            <div style="font-weight:700;color:var(--text-primary);margin-bottom:4px;">No ${currentFilter === 'all' ? 'assets' : currentFilter + 's'} found</div>
+            <div style="font-size:0.82rem;">Upload files using the drag & drop area above!</div>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(item => {
+        const fullUrl = item.url.startsWith('http') ? item.url : (window.location.origin + item.url);
+        let previewHtml = '';
+
+        if (item.type === 'image') {
+          previewHtml = `<img src="${item.url}" alt="${escapeHtml(item.originalName || item.filename)}" loading="lazy">`;
+        } else if (item.type === 'video') {
+          previewHtml = `
+            <video src="${item.url}" muted preload="metadata" style="pointer-events:none;"></video>
+            <button onclick="playVideoModal('${item.url}', '${escapeHtml(item.originalName || item.filename)}')" style="position:absolute;inset:0;background:rgba(0,0,0,0.4);border:none;cursor:pointer;color:#fff;font-size:2.2rem;display:flex;align-items:center;justify-content:center;">
+              ▶️
+            </button>
+          `;
+        } else if (item.type === 'folder') {
+          previewHtml = `
+            <div style="text-align:center;">
+              <div class="file-badge-icon">📁</div>
+              <div style="font-size:0.75rem;color:var(--accent-cyan);font-weight:700;">${item.fileCount || 0} Files in Package</div>
+            </div>
+          `;
+        } else {
+          previewHtml = `
+            <div style="text-align:center;">
+              <div class="file-badge-icon">📄</div>
+              <div style="font-size:0.75rem;color:var(--text-muted);font-family:var(--font-tech);">${(item.originalName || '').split('.').pop().toUpperCase()}</div>
+            </div>
+          `;
+        }
+
+        return `
+          <div class="media-card">
+            <div class="media-preview-box">
+              ${previewHtml}
+              <span class="badge ${item.type === 'image' ? 'badge-green' : (item.type === 'video' ? 'badge-orange' : (item.type === 'folder' ? 'badge-cyan' : 'badge-purple'))}" style="position:absolute;top:10px;left:10px;font-size:0.68rem;">
+                ${item.type.toUpperCase()}
+              </span>
+            </div>
+            <div class="media-card-body">
+              <div>
+                <div style="font-weight:700;font-size:0.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text-primary);" title="${escapeHtml(item.originalName || item.name || item.filename)}">
+                  ${escapeHtml(item.originalName || item.name || item.filename)}
+                </div>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;font-size:0.75rem;color:var(--text-muted);">
+                  <span>${item.sizeFormatted || '0 B'}</span>
+                  <span>${new Date(item.createdAt).toLocaleDateString()}</span>
+                </div>
+              </div>
+
+              <div style="display:flex;gap:8px;margin-top:16px;">
+                ${item.type === 'folder' ? `
+                  <button class="btn btn-outline btn-xs" style="flex:1;" onclick="openFolderModal('${item.id}')">
+                    📂 Inspect Tree
+                  </button>
+                ` : `
+                  <button class="btn btn-outline btn-xs" style="flex:1;" onclick="copyFileUrl('${fullUrl}')">
+                    🔗 Copy Link
+                  </button>
+                `}
+                <a href="${item.url}" class="btn btn-secondary btn-xs" download style="padding:6px 10px;" title="Download File">
+                  ⬇️
+                </a>
+                <button class="btn btn-outline btn-xs" style="color:var(--accent-coral);border-color:rgba(239,68,68,0.3);padding:6px 10px;" onclick="deleteVaultItem('${item.id}')" title="Delete File">
+                  🗑️
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // ── Video Preview Modal ─────────────────────────────────────
+    function playVideoModal(url, title) {
+      const modal = document.getElementById('modal-video-player');
+      const player = document.getElementById('player-video-element');
+      const titleEl = document.getElementById('video-modal-title');
+      if (titleEl) titleEl.textContent = title;
+      if (player) {
+        player.src = url;
+        player.play().catch(() => {});
+      }
+      if (modal) modal.style.display = 'flex';
+    }
+
+    function closeVideoModal() {
+      const modal = document.getElementById('modal-video-player');
+      const player = document.getElementById('player-video-element');
+      if (player) {
+        player.pause();
+        player.src = '';
+      }
+      if (modal) modal.style.display = 'none';
+    }
+
+    // ── Folder Tree Modal ───────────────────────────────────────
+    function openFolderModal(folderId) {
+      const item = vaultItems.find(i => i.id === folderId);
+      if (!item) return;
+
+      const modal = document.getElementById('modal-folder-tree');
+      const titleEl = document.getElementById('tree-modal-title');
+      const subEl = document.getElementById('tree-modal-sub');
+      const contentEl = document.getElementById('tree-modal-content');
+      const downloadBtn = document.getElementById('tree-modal-download-btn');
+
+      if (titleEl) titleEl.textContent = `📁 ${item.name}`;
+      if (subEl) subEl.textContent = `${item.fileCount || 0} files · Total size: ${item.sizeFormatted} · ZIP Archive: ${item.zipSizeFormatted || item.sizeFormatted}`;
+      if (downloadBtn) downloadBtn.href = item.url;
+
+      if (contentEl) {
+        const fileList = item.files || [];
+        if (fileList.length === 0) {
+          contentEl.innerHTML = `<div>No file list available for this folder archive.</div>`;
+        } else {
+          contentEl.innerHTML = fileList.map(f => `
+            <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.05);">
+              <span>📄 ${escapeHtml(f.path)}</span>
+              <span style="color:var(--text-muted);">${f.sizeFormatted || ''}</span>
+            </div>
+          `).join('');
+        }
+      }
+
+      if (modal) modal.style.display = 'flex';
+    }
+
+    function closeFolderModal() {
+      const modal = document.getElementById('modal-folder-tree');
+      if (modal) modal.style.display = 'none';
+    }
+
+    // ── Copy Link & Delete ──────────────────────────────────────
+    function copyFileUrl(url) {
+      navigator.clipboard.writeText(url).then(() => {
+        SH.showToast('Encrypted media link copied to clipboard! 📋', 'success');
+      }).catch(() => {
+        prompt('Copy file URL:', url);
+      });
+    }
+
+    async function deleteVaultItem(id) {
+      if (!confirm('Are you sure you want to delete this file permanently from the media vault?')) return;
+      try {
+        const res = await window.SmartHubAPI.deleteUpload(id);
+        if (res && res.success) {
+          SH.showToast('Item deleted successfully', 'success');
+          loadVaultLibrary();
+        } else {
+          SH.showToast((res && res.error) || 'Failed to delete file', 'error');
+        }
+      } catch (err) {
+        SH.showToast('Delete error: ' + err.message, 'error');
+      }
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    // Initialize on ready
+    window.addEventListener('DOMContentLoaded', () => {
+      loadVaultLibrary();
+    });
+  </script>
+</body>
+</html>

@@ -179,8 +179,9 @@
       <!-- Input -->
       <div class="chat-input-section">
         <div style="display:flex;align-items:flex-end;gap:10px;">
+          <input type="file" id="comm-file-upload-input" style="display:none;" onchange="handleCommFileUpload(this)">
           <div class="chat-input-wrap" style="flex:1;">
-            <span style="cursor:pointer;font-size:18px;">📎</span>
+            <span style="cursor:pointer;font-size:18px;" title="Attach Image, Video, or File to Channel" onclick="document.getElementById('comm-file-upload-input').click()">📎</span>
             <textarea id="comm-input" rows="1" placeholder="Message #general…" onkeydown="handleCommInput(event)"></textarea>
             <span style="cursor:pointer;font-size:18px;">😊</span>
           </div>
@@ -231,6 +232,36 @@ function renderMessages(msgs) {
 
     const roleColors = { admin: 'var(--accent-pink)', moderator: 'var(--accent-blue)', member: 'var(--text-primary)' };
     const roleLabels = { admin: '🛡️ Admin', moderator: '⚔️ Mod', member: '' };
+    let attachHtml = '';
+    if (msg.attachment) {
+      const att = msg.attachment;
+      if (att.category === 'images') {
+        attachHtml = `
+          <div style="margin-top:8px;">
+            <a href="${att.url}" target="_blank">
+              <img src="${att.url}" style="max-width:320px;max-height:220px;border-radius:var(--radius-xs);border:1px solid var(--border);display:block;" alt="${att.name}">
+            </a>
+            <div style="font-size:0.72rem;color:var(--text-muted);margin-top:4px;">🖼️ ${att.name}</div>
+          </div>`;
+      } else if (att.category === 'videos') {
+        attachHtml = `
+          <div style="margin-top:8px;">
+            <video controls src="${att.url}" style="max-width:340px;max-height:220px;border-radius:var(--radius-xs);border:1px solid var(--border);display:block;background:#000;"></video>
+            <div style="font-size:0.72rem;color:var(--text-muted);margin-top:4px;">🎬 ${att.name}</div>
+          </div>`;
+      } else {
+        attachHtml = `
+          <div style="margin-top:8px;display:inline-flex;align-items:center;gap:10px;padding:8px 14px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:var(--radius-xs);">
+            <span style="font-size:1.4rem;">📦</span>
+            <div>
+              <div style="font-weight:700;font-size:0.85rem;">${att.name}</div>
+              <div style="font-size:0.7rem;color:var(--text-muted);">${(att.size / (1024*1024)).toFixed(2)} MB · Audited File</div>
+            </div>
+            <a href="${att.url}" download="${att.name}" class="btn btn-outline btn-sm" style="padding:4px 8px;font-size:0.75rem;margin-left:8px;">⬇️ Download</a>
+          </div>`;
+      }
+    }
+
     return `
       <div class="msg-group">
         <div class="online-indicator">
@@ -243,12 +274,47 @@ function renderMessages(msgs) {
             ${roleLabels[msg.role] ? `<span style="font-size:0.7rem;color:${roleColors[msg.role]};background:rgba(255,255,255,0.06);padding:1px 6px;border-radius:4px;">${roleLabels[msg.role]}</span>` : ''}
             <span class="msg-timestamp">${msg.time}</span>
           </div>
-          <div class="msg-text">${msg.text.replace(/@(\w+)/g, '<span style="color:var(--accent-purple);background:rgba(139,92,246,0.1);padding:0 3px;border-radius:3px;">@$1</span>')}</div>
-          ${msg.reactions.length ? `<div class="msg-reactions">${msg.reactions.map(r => `<span class="reaction" onclick="toggleReaction(this)">${r.emoji} ${r.count}</span>`).join('')}</div>` : ''}
+          ${msg.text ? `<div class="msg-text">${msg.text.replace(/@(\w+)/g, '<span style="color:var(--accent-purple);background:rgba(139,92,246,0.1);padding:0 3px;border-radius:3px;">@$1</span>')}</div>` : ''}
+          ${attachHtml}
+          ${msg.reactions && msg.reactions.length ? `<div class="msg-reactions">${msg.reactions.map(r => `<span class="reaction" onclick="toggleReaction(this)">${r.emoji} ${r.count}</span>`).join('')}</div>` : ''}
         </div>
       </div>`;
   }).join('');
   area.scrollTop = area.scrollHeight;
+}
+
+async function handleCommFileUpload(input) {
+  if (!input.files || !input.files[0]) return;
+  const file = input.files[0];
+  if (window.showToast) window.showToast(`Uploading ${file.name}...`, 'info');
+
+  try {
+    const res = await window.SmartHubAPI.uploadSingle(file);
+    if (res && res.success) {
+      const user = (window.getCurrentUser && window.getCurrentUser()) || { name: 'Developer', username: '@developer' };
+      const newMsg = {
+        user: user.name || user.username,
+        avatar: user.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(user.name || 'user')}&backgroundColor=6366f1`,
+        role: user.role === 'admin' ? 'admin' : 'member',
+        text: `Shared an audited ${res.category === 'images' ? 'image' : (res.category === 'videos' ? 'video' : 'package')}:`,
+        attachment: {
+          url: res.url,
+          name: file.name,
+          category: res.category,
+          size: file.size
+        },
+        time: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
+        reactions: [{ emoji: '🔥', count: 1 }]
+      };
+      communityMessages.push(newMsg);
+      renderMessages(communityMessages);
+      if (window.showToast) window.showToast('File uploaded and shared to channel! 🚀', 'success');
+    } else {
+      if (window.showToast) window.showToast((res && res.error) || 'Upload failed', 'error');
+    }
+  } catch (err) {
+    if (window.showToast) window.showToast('Error uploading: ' + err.message, 'error');
+  }
 }
 
 function renderOnlineMembers() {

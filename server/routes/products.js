@@ -95,7 +95,7 @@ router.get('/:id', (req, res) => {
 // ── Create New Product (Seller Studio) ────────────────────────
 router.post('/', authRequired, (req, res) => {
   try {
-    const { title, category, price, oldPrice, description, tags, thumb, type, badge } = req.body;
+    const { title, category, price, oldPrice, description, tags, thumb, type, badge, videoUrl, downloadUrl, bundleInfo } = req.body;
 
     if (!title || !category || !price) {
       return res.status(400).json({ success: false, error: 'Title, category and price are required' });
@@ -118,6 +118,9 @@ router.post('/', authRequired, (req, res) => {
       tags: Array.isArray(tags) ? tags : (typeof tags === 'string' ? tags.split(',').map(t => t.trim()) : ['Code']),
       badge: badge || 'New',
       thumb: thumb || `https://picsum.photos/seed/${encodeURIComponent(title)}/400/250`,
+      videoUrl: videoUrl || null,
+      downloadUrl: downloadUrl || null,
+      bundleInfo: bundleInfo || null,
       description: description || 'High performance digital source code asset.',
       type: type || 'Source Code',
       createdAt: new Date().toISOString()

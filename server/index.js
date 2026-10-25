@@ -18,6 +18,7 @@ const communityRoutes = require('./routes/community');
 const challengesRoutes = require('./routes/challenges');
 const sellerRoutes = require('./routes/seller');
 const adminRoutes = require('./routes/admin');
+const uploadRoutes = require('./routes/upload');
 
 const app = express();
 const server = http.createServer(app);
@@ -94,6 +95,7 @@ app.use('/api/community', communityRoutes);
 app.use('/api/challenges', challengesRoutes);
 app.use('/api/seller', sellerRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/upload', uploadRoutes);
 
 // Categories endpoint
 app.get('/api/categories', (req, res) => {
@@ -186,8 +188,14 @@ app.get('/api/stats', (req, res) => {
   }
 });
 
-// ── Static Frontend Serving ───────────────────────────────────
 const FRONTEND_ROOT = path.join(__dirname, '..');
+const UPLOADS_DIR = path.join(FRONTEND_ROOT, 'uploads');
+app.use('/uploads', express.static(UPLOADS_DIR, {
+  maxAge: '7d',
+  setHeaders: (res) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+  }
+}));
 app.use(express.static(FRONTEND_ROOT));
 
 // Fallback for HTML routing (Express 5 compatible)

@@ -356,10 +356,12 @@
       </div>
     </div>
     <div id="attach-file-view" style="display:none;">
-      <div style="border:2px dashed var(--border-outline);border-radius:var(--radius-md);padding:32px 20px;text-align:center;background:rgba(255,255,255,0.02);cursor:pointer;" onclick="simulateFileUpload()">
+      <input type="file" id="chat-file-upload-input" style="display:none;" onchange="handleChatFileUpload(this)">
+      <div id="chat-drop-box" style="border:2px dashed var(--accent-purple);border-radius:var(--radius-md);padding:32px 20px;text-align:center;background:rgba(139,92,246,0.04);cursor:pointer;transition:all 0.2s;" onclick="document.getElementById('chat-file-upload-input').click()">
         <div style="font-size:2.5rem;margin-bottom:8px;">📁</div>
         <div style="font-weight:700;">Click to select file or drag &amp; drop</div>
-        <div style="font-size:0.78rem;color:var(--text-muted);margin-top:4px;">Supports .zip, .png, .jpg, .pdf, .json (up to 25MB)</div>
+        <div style="font-size:0.78rem;color:var(--text-muted);margin-top:4px;">Supports Images, Videos, Codebases, ZIPs &amp; PDFs (up to 500MB)</div>
+        <div id="chat-upload-status" style="margin-top:12px;font-family:var(--font-tech);font-size:0.8rem;color:var(--accent-cyan);display:none;">Uploading file to Cloud Vault...</div>
       </div>
     </div>
   </div>
@@ -585,6 +587,36 @@ function renderMessages() {
             ${Array.from({length: 16}).map((_, idx) => `<div class="waveform-bar" style="height:${Math.max(6, (idx * 5) % 24)}px;"></div>`).join('')}
           </div>
           <span style="font-size:0.75rem;color:var(--text-muted);font-family:var(--font-mono);">${msg.duration || '0:14'}</span>
+        </div>`;
+    } else if (msg.type === 'image') {
+      bodyContent = `
+        <div style="border-radius:4px;overflow:hidden;">
+          <a href="${msg.fileUrl}" target="_blank" title="View Full Image">
+            <img src="${msg.fileUrl}" style="max-width:280px;max-height:220px;border-radius:4px;object-fit:cover;display:block;border:1px solid rgba(255,255,255,0.1);" alt="${escapeHtml(msg.fileName || 'Image')}">
+          </a>
+          <div style="font-size:0.72rem;color:var(--text-muted);margin-top:4px;display:flex;justify-content:space-between;">
+            <span>${escapeHtml(msg.fileName || 'image.png')}</span>
+            <span>${formatChatFileSize(msg.fileSize || 0)}</span>
+          </div>
+        </div>`;
+    } else if (msg.type === 'video') {
+      bodyContent = `
+        <div style="border-radius:4px;overflow:hidden;">
+          <video controls src="${msg.fileUrl}" style="max-width:320px;max-height:220px;border-radius:4px;display:block;background:#000;"></video>
+          <div style="font-size:0.72rem;color:var(--text-muted);margin-top:4px;display:flex;justify-content:space-between;">
+            <span>${escapeHtml(msg.fileName || 'video.mp4')}</span>
+            <span>${formatChatFileSize(msg.fileSize || 0)}</span>
+          </div>
+        </div>`;
+    } else if (msg.type === 'file') {
+      bodyContent = `
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:rgba(0,0,0,0.3);border:1px solid var(--border-outline);border-radius:var(--radius-xs);">
+          <span style="font-size:1.8rem;">📦</span>
+          <div style="flex:1;overflow:hidden;">
+            <div style="font-weight:700;font-size:0.85rem;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;">${escapeHtml(msg.fileName || 'Archive')}</div>
+            <div style="font-size:0.72rem;color:var(--text-muted);font-family:var(--font-tech);">${formatChatFileSize(msg.fileSize || 0)} · Cloud Vault Verified</div>
+          </div>
+          <a href="${msg.fileUrl}" download="${escapeHtml(msg.fileName || 'file')}" target="_blank" class="btn btn-outline btn-sm" style="padding:4px 8px;font-size:0.75rem;">⬇️ Download</a>
         </div>`;
     } else {
       bodyContent = `<div>${escapeHtml(msg.text || '')}</div>`;
@@ -1151,19 +1183,70 @@ function sendCodeSnippet() {
   SoundFX.playSend();
 }
 
-function simulateFileUpload() {
-  SH.closeModal('modal-attach-file');
-  const thread = chatThreads[currentChatId] || (chatThreads[currentChatId] = []);
-  thread.push({
-    id: 'm_' + Date.now(),
-    from: 'me',
-    text: '📎 Sent project archive: `smarthub_audited_bundle_v3.2.zip` (18.4 MB)',
-    time: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
-    sent: true
-  });
-  renderMessages();
-  SoundFX.playSend();
-  if (window.SH && window.SH.showToast) window.SH.showToast('File uploaded successfully! 📁', 'success');
+function formatChatFileSize(bytes) {
+  if (!bytes || bytes === 0) return '0 B';
+  const k = 1024;
+  const sizes = ['B', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+}
+
+async function handleChatFileUpload(input) {
+  if (!input.files || !input.files[0]) return;
+  const file = input.files[0];
+  const statusEl = document.getElementById('chat-upload-status');
+  if (statusEl) {
+    statusEl.style.display = 'block';
+    statusEl.textContent = `Uploading ${file.name}...`;
+  }
+
+  try {
+    const res = await window.SmartHubAPI.uploadSingle(file);
+    if (res && res.success) {
+      SH.closeModal('modal-attach-file');
+      if (statusEl) statusEl.style.display = 'none';
+
+      const fileType = res.category === 'images' ? 'image' : (res.category === 'videos' ? 'video' : 'file');
+      const thread = chatThreads[currentChatId] || (chatThreads[currentChatId] = []);
+      const contact = chatContacts.find(c => c.id === currentChatId);
+
+      const newMsg = {
+        id: 'm_' + Date.now(),
+        from: 'me',
+        type: fileType,
+        fileUrl: res.url,
+        fileName: file.name,
+        fileSize: file.size,
+        mimeType: res.mimeType || file.type,
+        time: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
+        sent: true
+      };
+
+      thread.push(newMsg);
+      if (contact) {
+        contact.lastMsg = `You sent a ${fileType}: ${file.name}`;
+        contact.time = newMsg.time;
+      }
+
+      renderMessages();
+      renderChatList(chatContacts);
+      SoundFX.playSend();
+      if (window.SH && window.SH.showToast) window.SH.showToast(`Uploaded ${file.name} to chat! 📎`, 'success');
+
+      // Sync message via API if available
+      if (window.SmartHubAPI) {
+        try {
+          window.SmartHubAPI.sendChatMessage(currentChatId, `[${fileType.toUpperCase()}] ${res.url}`);
+        } catch (e) {}
+      }
+    } else {
+      if (statusEl) statusEl.textContent = 'Upload failed: ' + ((res && res.error) || 'Unknown error');
+      if (window.SH && window.SH.showToast) window.SH.showToast('Upload failed', 'error');
+    }
+  } catch (err) {
+    if (statusEl) statusEl.textContent = 'Error: ' + err.message;
+    if (window.SH && window.SH.showToast) window.SH.showToast('Error uploading: ' + err.message, 'error');
+  }
 }
 
 // ── Call Simulation (Audio & Video) ───────────────────────────
