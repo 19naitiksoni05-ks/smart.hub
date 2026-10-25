@@ -97,9 +97,32 @@ function authOptional(req, res, next) {
   next();
 }
 
+// Admin Authentication Middleware
+function adminRequired(req, res, next) {
+  authRequired(req, res, () => {
+    const isSuperAdmin = req.user && (
+      req.user.role === 'admin' ||
+      req.user.email?.toLowerCase() === 'naitik19ansh@gmail.com' ||
+      req.user.username?.toLowerCase() === '@naitik19' ||
+      req.user.name?.toLowerCase().includes('naitik')
+    );
+
+    if (isSuperAdmin) {
+      if (req.user.role !== 'admin') req.user.role = 'admin';
+      return next();
+    }
+
+    return res.status(403).json({
+      success: false,
+      error: 'Forbidden: Super Admin privileges required to inspect and modify platform data'
+    });
+  });
+}
+
 module.exports = {
   authRequired,
   authOptional,
+  adminRequired,
   hashApiKey,
   JWT_SECRET
 };

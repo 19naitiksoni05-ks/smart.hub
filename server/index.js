@@ -17,6 +17,7 @@ const chatRoutes = require('./routes/chat');
 const communityRoutes = require('./routes/community');
 const challengesRoutes = require('./routes/challenges');
 const sellerRoutes = require('./routes/seller');
+const adminRoutes = require('./routes/admin');
 
 const app = express();
 const server = http.createServer(app);
@@ -92,6 +93,7 @@ app.use('/api/chat', chatRoutes);
 app.use('/api/community', communityRoutes);
 app.use('/api/challenges', challengesRoutes);
 app.use('/api/seller', sellerRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Categories endpoint
 app.get('/api/categories', (req, res) => {

@@ -87,6 +87,13 @@ function renderHeader(activePage = '') {
               <span class="settings-icon">⚙️</span>
             </a>
 
+            <!-- Admin Console Shortcut (Visible to Super Admin) -->
+            ${user && user.role === 'admin' ? `
+            <a href="admin.html" class="admin-topbar-pill ${activePage === 'admin.html' ? 'active' : ''}" style="background:linear-gradient(135deg,rgba(139,92,246,0.25),rgba(6,182,212,0.18));border:1.5px solid var(--accent-purple);color:#fff;padding:6px 12px;border-radius:var(--radius-xs);font-size:0.78rem;font-weight:700;display:inline-flex;align-items:center;gap:6px;box-shadow:0 0 14px rgba(139,92,246,0.3);text-decoration:none;" title="Super Admin Central Control">
+              <span>🛡️</span> Admin Console
+            </a>
+            ` : ''}
+
             <!-- Interactive Cart Trigger (Opens React Cart Drawer) -->
             <button class="cart-trigger-btn" id="header-cart-btn" title="Open Interactive Cart Drawer" aria-label="Cart">
               <span class="cart-icon">🛒</span>
@@ -100,6 +107,7 @@ function renderHeader(activePage = '') {
                 <a href="profile.html" class="user-avatar-btn" id="header-profile-btn" aria-label="View Profile for ${user.name}">
                   <img src="${user.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=user&backgroundColor=ff5b36'}" class="user-avatar-mini" alt="${user.name}">
                   <span class="user-name">${user.name}</span>
+                  ${user.role === 'admin' ? '<span style="font-size:0.65rem;background:var(--accent-purple);color:#fff;padding:1px 5px;border-radius:3px;font-family:var(--font-tech);margin-left:4px;">ADMIN</span>' : ''}
                 </a>
                 <button class="user-dropdown-toggle" id="user-dropdown-toggle" aria-label="Account Menu" title="Open Account Menu">▾</button>
               </div>
@@ -107,11 +115,15 @@ function renderHeader(activePage = '') {
                 <div class="dropdown-user-header">
                   <img src="${user.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=user&backgroundColor=ff5b36'}" class="dropdown-avatar" alt="${user.name}">
                   <div class="dropdown-user-info">
-                    <div class="dropdown-user-name">${user.name}</div>
+                    <div class="dropdown-user-name">${user.name} ${user.role === 'admin' ? '🛡️' : ''}</div>
                     <div class="dropdown-user-handle">${user.username || '@user'}</div>
                   </div>
                 </div>
                 <div class="dropdown-divider"></div>
+                ${user.role === 'admin' ? `
+                <a href="admin.html" class="dropdown-item" style="color:var(--accent-purple);font-weight:700;background:rgba(139,92,246,0.1);">🛡️ Super Admin Central (All Data)</a>
+                <div class="dropdown-divider"></div>
+                ` : ''}
                 <a href="profile.html" class="dropdown-item">👤 View Profile</a>
                 <a href="settings.html" class="dropdown-item">⚙️ Settings &amp; Preferences</a>
                 <a href="profile.html#projects" class="dropdown-item">📦 My Purchased Assets</a>
@@ -380,10 +392,22 @@ function renderHeader(activePage = '') {
               <span class="nav-icon-mini">💡</span> About
             </a>
 
+            <!-- 6. Super Admin Console (Visible to Admin) -->
+            ${user && user.role === 'admin' ? `
+            <a href="admin.html" class="nav-menu-btn ${activePage === 'admin.html' ? 'active' : ''}" style="color:var(--accent-purple);font-weight:800;">
+              <span class="nav-icon-mini">🛡️</span> Admin Central
+            </a>
+            ` : ''}
+
           </nav>
 
           <!-- Right Strip: Clean Platform Highlights & Quick Settings -->
           <div class="header-ticker-pills">
+            ${user && user.role === 'admin' ? `
+            <a href="admin.html" class="ticker-pill ticker-pill-interactive" style="border-color:var(--accent-purple);color:var(--accent-purple);font-weight:700;" title="Super Admin Dashboard">
+              🛡️ Admin [All Data]
+            </a>
+            ` : ''}
             <a href="index.html#about" class="ticker-pill ticker-pill-interactive about-pill" title="Learn About Smart Hub Platform">
               <span class="pulse-dot"></span> About Us
             </a>
@@ -398,6 +422,12 @@ function renderHeader(activePage = '') {
 
   <!-- Mobile Drawer Navigation -->
   <nav class="mobile-nav" id="mobile-nav">
+    ${user && user.role === 'admin' ? `
+    <div class="mobile-nav-section" style="background:rgba(139,92,246,0.06);border-left:3px solid var(--accent-purple);padding-left:12px;margin-bottom:12px;">
+      <div class="mobile-nav-title" style="color:var(--accent-purple);">Platform Administration</div>
+      <a href="admin.html" class="nav-link" style="color:var(--accent-purple);font-weight:700;">🛡️ Super Admin Dashboard [All Data]</a>
+    </div>
+    ` : ''}
     <div class="mobile-nav-section">
       <div class="mobile-nav-title">Marketplace &amp; Products</div>
       <a href="marketplace.html" class="nav-link">📦 All Products Catalog</a>

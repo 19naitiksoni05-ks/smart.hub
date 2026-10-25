@@ -583,6 +583,123 @@
       } catch (e) {}
     },
 
+    // ── Super Admin Control Center API ────────────────────────
+    async getAdminOverview() {
+      try {
+        const res = await fetch(`${this.baseUrl}/admin/overview`, { headers: this.getHeaders() });
+        return await res.json();
+      } catch (err) {
+        return { success: false, error: err.message };
+      }
+    },
+
+    async getAdminUsers() {
+      try {
+        const res = await fetch(`${this.baseUrl}/admin/users`, { headers: this.getHeaders() });
+        return await res.json();
+      } catch (err) {
+        return { success: false, error: err.message, users: [] };
+      }
+    },
+
+    async updateAdminUserRole(userId, role) {
+      try {
+        const res = await fetch(`${this.baseUrl}/admin/users/${userId}/role`, {
+          method: 'POST',
+          headers: this.getHeaders(),
+          body: JSON.stringify({ role })
+        });
+        return await res.json();
+      } catch (err) {
+        return { success: false, error: err.message };
+      }
+    },
+
+    async adjustAdminUserWallet(userId, amount, reason) {
+      try {
+        const res = await fetch(`${this.baseUrl}/admin/users/${userId}/wallet`, {
+          method: 'POST',
+          headers: this.getHeaders(),
+          body: JSON.stringify({ amount, reason })
+        });
+        return await res.json();
+      } catch (err) {
+        return { success: false, error: err.message };
+      }
+    },
+
+    async getAdminProducts() {
+      try {
+        const res = await fetch(`${this.baseUrl}/admin/products`, { headers: this.getHeaders() });
+        return await res.json();
+      } catch (err) {
+        return { success: false, error: err.message, products: [] };
+      }
+    },
+
+    async deleteAdminProduct(productId) {
+      try {
+        const res = await fetch(`${this.baseUrl}/admin/products/${productId}`, {
+          method: 'DELETE',
+          headers: this.getHeaders()
+        });
+        return await res.json();
+      } catch (err) {
+        return { success: false, error: err.message };
+      }
+    },
+
+    async getAdminTransactions() {
+      try {
+        const res = await fetch(`${this.baseUrl}/admin/transactions`, { headers: this.getHeaders() });
+        return await res.json();
+      } catch (err) {
+        return { success: false, error: err.message, transactions: [] };
+      }
+    },
+
+    async getAdminApiKeys() {
+      try {
+        const res = await fetch(`${this.baseUrl}/admin/api-keys`, { headers: this.getHeaders() });
+        return await res.json();
+      } catch (err) {
+        return { success: false, error: err.message, apiKeys: [] };
+      }
+    },
+
+    async revokeAdminApiKey(keyId) {
+      try {
+        const res = await fetch(`${this.baseUrl}/admin/api-keys/${keyId}`, {
+          method: 'DELETE',
+          headers: this.getHeaders()
+        });
+        return await res.json();
+      } catch (err) {
+        return { success: false, error: err.message };
+      }
+    },
+
+    async getAdminRawDatabase() {
+      try {
+        const res = await fetch(`${this.baseUrl}/admin/raw-database`, { headers: this.getHeaders() });
+        return await res.json();
+      } catch (err) {
+        return { success: false, error: err.message };
+      }
+    },
+
+    async syncAdminSupabase() {
+      try {
+        const res = await fetch(`${this.baseUrl}/admin/sync-supabase`, {
+          method: 'POST',
+          headers: this.getHeaders()
+        });
+        return await res.json();
+      } catch (err) {
+        return { success: false, error: err.message };
+      }
+    },
+
     // ── Auto Bootstrap Application ────────────────────────────
     async bootstrap() {
       try {

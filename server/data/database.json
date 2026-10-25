@@ -8,11 +8,11 @@
       "passwordHash": "$2b$10$Ap4//Ylal2v1aUmWzTwtGugZJRgxl7HAFAdPpYK9Cr8rnj.fcAZTK",
       "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=naitik19&backgroundColor=ff5b36",
       "walletBalance": 500,
-      "role": "buyer",
-      "xp": 0,
-      "badges": 0,
+      "role": "admin",
+      "xp": 5000,
+      "badges": 5,
       "location": "India",
-      "headline": "Smart Hub Developer",
+      "headline": "Platform & Architecture · Super Admin",
       "createdAt": "2026-10-24T19:15:56.573Z"
     }
   ],

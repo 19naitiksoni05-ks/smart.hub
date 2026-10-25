@@ -528,9 +528,10 @@
       <h3>Meet the Team Behind Smart Hub</h3>
       <div class="credits-grid">
         <div class="credit-item">
-          <div class="credit-avatar">⚡</div>
-          <div class="credit-name">Core Engineering</div>
-          <div class="credit-role">Platform & Architecture</div>
+          <div class="credit-avatar" style="box-shadow: 0 0 20px rgba(139, 92, 246, 0.45); border: 2px solid var(--accent-purple);">⚡</div>
+          <div class="credit-name" style="font-weight:800;color:var(--text-primary);">Naitik Soni</div>
+          <div class="credit-role" style="color:var(--accent-cyan);font-weight:600;">Platform &amp; Architecture</div>
+          <div style="font-size:0.7rem;color:var(--text-muted);font-family:var(--font-tech);margin-top:2px;">CORE ENGINEERING</div>
         </div>
         <div class="credit-item">
           <div class="credit-avatar" style="background:var(--grad-warm);">🎨</div>
@@ -583,6 +584,10 @@
       </div>
       <button class="btn btn-primary w-full" onclick="handleLogin()" style="width:100%;justify-content:center;">Sign In →</button>
       <p style="text-align:center;font-size:0.82rem;margin-top:12px;color:var(--text-muted);">Forgot password? <a href="login.html" onclick="SH.showToast('Opening secure password recovery...','info')" style="color:var(--accent-coral);font-weight:600;">Reset Password →</a></p>
+      <div style="text-align:center;margin-top:14px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.08);font-size:0.8rem;color:var(--text-muted);">
+        <span>Platform Admin? </span>
+        <a href="login.html?admin=true" style="color:var(--accent-purple);font-weight:700;">🛡️ Super Admin Portal →</a>
+      </div>
     </div>
     <div data-panel="signup" class="hidden">
       <div class="input-group" style="margin-bottom:14px;">
@@ -831,7 +836,11 @@ async function handleLogin() {
       if (res && res.success) {
         SH.showToast(res.message || 'Welcome back to Smart Hub! 👋', 'success');
         SH.closeModal('modal-login');
-        setTimeout(() => window.location.reload(), 600);
+        if (res.user?.role === 'admin' || res.user?.email === 'naitik19ansh@gmail.com') {
+          setTimeout(() => window.location.href = 'admin.html', 600);
+        } else {
+          setTimeout(() => window.location.reload(), 600);
+        }
         return;
       } else if (res && res.error) {
         SH.showToast(res.error, 'error');
@@ -840,18 +849,24 @@ async function handleLogin() {
     } catch (e) {}
   }
 
+  const isNaitik = email.toLowerCase().includes('naitik');
   const user = {
-    id: 'u_' + Date.now(),
-    name: email.split('@')[0],
-    username: '@' + email.split('@')[0],
+    id: isNaitik ? 'b9f83b04-538c-4aab-9d88-f35a2ecb1cbe' : 'u_' + Date.now(),
+    name: isNaitik ? 'Naitik Soni' : email.split('@')[0],
+    username: isNaitik ? '@naitik19' : '@' + email.split('@')[0],
+    role: isNaitik ? 'admin' : 'developer',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=user&backgroundColor=ff5b36',
-    walletBalance: 0,
+    walletBalance: isNaitik ? 50000 : 0,
     isLoggedIn: true,
   };
   localStorage.setItem('smarthub_user', JSON.stringify(user));
   SH.showToast('Welcome back to Smart Hub! 👋', 'success');
   SH.closeModal('modal-login');
-  setTimeout(() => window.location.reload(), 600);
+  if (user.role === 'admin') {
+    setTimeout(() => window.location.href = 'admin.html', 600);
+  } else {
+    setTimeout(() => window.location.reload(), 600);
+  }
 }
 
 async function handleSignup() {

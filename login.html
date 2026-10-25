@@ -30,10 +30,24 @@
       <p class="auth-subtitle">Sign in to manage your digital products, rupee wallet &amp; downloads</p>
     </div>
 
-    <!-- Dual Tab Switcher -->
-    <div class="auth-tabs-nav">
-      <button class="auth-tab-btn active">Sign In</button>
+    <!-- Multi-Role Tab Switcher -->
+    <div class="auth-tabs-nav" style="display:flex;gap:4px;">
+      <button type="button" class="auth-tab-btn active" id="tab-user-login" onclick="setLoginMode('user')">Developer Sign In</button>
+      <button type="button" class="auth-tab-btn" id="tab-admin-login" onclick="setLoginMode('admin')">🛡️ Super Admin</button>
       <a href="register.html" class="auth-tab-btn">Create Account</a>
+    </div>
+
+    <!-- Admin Portal Highlight Note (Toggled when admin tab clicked) -->
+    <div id="admin-mode-banner" style="display:none;background:linear-gradient(135deg,rgba(139,92,246,0.18),rgba(6,182,212,0.1));border:1.5px solid var(--accent-purple);border-radius:var(--radius-xs);padding:12px 14px;margin-bottom:16px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+        <div>
+          <div style="font-weight:800;color:#fff;font-size:0.86rem;">🛡️ Super Admin Access Portal</div>
+          <div style="font-size:0.75rem;color:var(--accent-cyan);">Naitik Soni (Platform &amp; Architecture)</div>
+        </div>
+        <button type="button" class="btn btn-outline btn-xs" onclick="quickFillAdminCredentials()" style="color:var(--accent-purple);border-color:rgba(139,92,246,0.4);font-weight:700;">
+          ⚡ Auto-Fill
+        </button>
+      </div>
     </div>
 
     <!-- Login Form -->
@@ -104,6 +118,50 @@
 <script src="js/main.js"></script>
 <script src="js/layout.js"></script>
 <script>
+// Mode Management (User vs Super Admin)
+let currentLoginMode = 'user';
+
+function setLoginMode(mode) {
+  currentLoginMode = mode;
+  const tabUser = document.getElementById('tab-user-login');
+  const tabAdmin = document.getElementById('tab-admin-login');
+  const adminBanner = document.getElementById('admin-mode-banner');
+  const submitBtn = document.getElementById('btn-submit-login');
+  const identityInput = document.getElementById('login-identity');
+
+  if (mode === 'admin') {
+    tabAdmin?.classList.add('active');
+    tabUser?.classList.remove('active');
+    if (adminBanner) adminBanner.style.display = 'block';
+    if (submitBtn) submitBtn.innerHTML = '🛡️ Authenticate as Super Admin →';
+    if (identityInput && !identityInput.value) {
+      identityInput.placeholder = 'naitik19ansh@gmail.com or @naitik19';
+    }
+  } else {
+    tabUser?.classList.add('active');
+    tabAdmin?.classList.remove('active');
+    if (adminBanner) adminBanner.style.display = 'none';
+    if (submitBtn) submitBtn.innerHTML = 'Sign In to Smart Hub →';
+    if (identityInput && !identityInput.value) {
+      identityInput.placeholder = 'Enter your email or username';
+    }
+  }
+}
+
+function quickFillAdminCredentials() {
+  document.getElementById('login-identity').value = 'naitik19ansh@gmail.com';
+  document.getElementById('login-password').value = '123456';
+  SH.showToast('Super Admin credentials loaded (Naitik Soni) ⚡', 'info');
+}
+
+// Check URL query on startup (e.g. login.html?admin=true)
+window.addEventListener('DOMContentLoaded', () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('admin') === 'true' || window.location.hash === '#admin') {
+    setLoginMode('admin');
+  }
+});
+
 // Password Visibility Toggle
 const pwdInput = document.getElementById('login-password');
 const pwdToggle = document.getElementById('pwd-toggle-btn');
@@ -135,13 +193,20 @@ async function handleFormLogin(e) {
     if (res && res.success) {
       SH.showToast(res.message || 'Signed in successfully! 🚀', 'success');
       setTimeout(() => {
-        window.location.href = 'index.html';
+        const isAdmin = res.user?.role === 'admin' ||
+                        res.user?.email === 'naitik19ansh@gmail.com' ||
+                        currentLoginMode === 'admin';
+        if (isAdmin) {
+          window.location.href = 'admin.html';
+        } else {
+          window.location.href = 'index.html';
+        }
       }, 700);
       return;
     } else if (res && res.error) {
       SH.showToast(res.error, 'error');
       submitBtn.disabled = false;
-      submitBtn.textContent = 'Sign In to Smart Hub →';
+      submitBtn.textContent = currentLoginMode === 'admin' ? '🛡️ Authenticate as Super Admin →' : 'Sign In to Smart Hub →';
       return;
     }
   } catch (err) {
@@ -154,22 +219,30 @@ async function handleFormLogin(e) {
     cleanName = cleanName.charAt(0).toUpperCase() + cleanName.slice(1);
     const handle = '@' + cleanName.toLowerCase();
 
+    const isNaitik = identity.toLowerCase().includes('naitik') || currentLoginMode === 'admin';
+
     const sessionUser = {
-      id: 'u_' + Math.floor(Math.random() * 8999 + 1000),
-      name: cleanName,
-      username: handle,
+      id: isNaitik ? 'b9f83b04-538c-4aab-9d88-f35a2ecb1cbe' : 'u_' + Math.floor(Math.random() * 8999 + 1000),
+      name: isNaitik ? 'Naitik Soni' : cleanName,
+      username: isNaitik ? '@naitik19' : handle,
+      email: isNaitik ? 'naitik19ansh@gmail.com' : (identity.includes('@') ? identity : `${cleanName.toLowerCase()}@smarthub.dev`),
+      role: isNaitik ? 'admin' : 'developer',
       avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(handle)}&backgroundColor=ff5b36`,
-      walletBalance: 0,
-      xp: 0,
-      level: 1,
+      walletBalance: isNaitik ? 50000 : 0,
+      xp: isNaitik ? 9990 : 0,
+      level: isNaitik ? 42 : 1,
       isLoggedIn: true,
     };
 
     localStorage.setItem('smarthub_user', JSON.stringify(sessionUser));
-    SH.showToast(`Welcome, ${cleanName}! 🚀`, 'success');
+    SH.showToast(`Welcome, ${sessionUser.name}! 🚀`, 'success');
 
     setTimeout(() => {
-      window.location.href = 'index.html';
+      if (sessionUser.role === 'admin') {
+        window.location.href = 'admin.html';
+      } else {
+        window.location.href = 'index.html';
+      }
     }, 700);
   }, 600);
 }
