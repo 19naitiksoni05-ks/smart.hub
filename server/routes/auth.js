@@ -282,6 +282,155 @@ router.post('/login', async (req, res) => {
   }
 });
 
+// ── 2b. Google Sign-In & Registration ─────────────────────────
+router.post('/google', async (req, res) => {
+  try {
+    let { credential, email, name, picture, googleId } = req.body;
+
+    // If Google ID token credential provided, decode and verify with Google
+    if (credential) {
+      try {
+        const gRes = await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${encodeURIComponent(credential)}`, {
+          signal: AbortSignal.timeout(3500)
+        });
+        if (gRes.ok) {
+          const gData = await gRes.json();
+          email = gData.email || email;
+          name = gData.name || name;
+          picture = gData.picture || picture;
+          googleId = gData.sub || googleId;
+        } else {
+          const decoded = jwt.decode(credential);
+          if (decoded && decoded.email) {
+            email = decoded.email;
+            name = decoded.name || name || decoded.email.split('@')[0];
+            picture = decoded.picture || picture;
+            googleId = decoded.sub || googleId;
+          }
+        }
+      } catch (err) {
+        const decoded = jwt.decode(credential);
+        if (decoded && decoded.email) {
+          email = decoded.email;
+          name = decoded.name || name || decoded.email.split('@')[0];
+          picture = decoded.picture || picture;
+          googleId = decoded.sub || googleId;
+        }
+      }
+    }
+
+    if (!email || !email.includes('@')) {
+      return res.status(400).json({ success: false, error: 'Valid Google email is required for authentication' });
+    }
+
+    const cleanEmail = email.toLowerCase().trim();
+    name = name ? name.trim() : cleanEmail.split('@')[0];
+    const usernameHandle = '@' + cleanEmail.split('@')[0];
+
+    // Find if user already exists
+    let user = db.findOne('users', u => 
+      (u.email && u.email.toLowerCase() === cleanEmail) ||
+      (u.googleId && u.googleId === googleId)
+    );
+
+    // If Super Admin email is used with Google, grant admin role
+    const isNaitikAdmin = cleanEmail === 'naitik19ansh@gmail.com' || cleanEmail.includes('naitik19');
+
+    if (user) {
+      // Existing user: update avatar if google picture provided and none set
+      const updates = {};
+      if (googleId && !user.googleId) updates.googleId = googleId;
+      if (picture && (!user.avatar || user.avatar.includes('dicebear'))) updates.avatar = picture;
+      if (isNaitikAdmin && user.role !== 'admin') updates.role = 'admin';
+
+      if (Object.keys(updates).length > 0) {
+        user = db.update('users', user.id, updates);
+      }
+    } else {
+      // New user: register via Google
+      const newUserId = 'u_' + Date.now();
+      const salt = bcrypt.genSaltSync(10);
+      const randomPasswordHash = bcrypt.hashSync(crypto.randomBytes(16).toString('hex'), salt);
+
+      const newUser = {
+        id: newUserId,
+        name,
+        username: usernameHandle,
+        email: cleanEmail,
+        googleId: googleId || null,
+        passwordHash: randomPasswordHash,
+        avatar: picture || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(name)}&backgroundColor=ff5b36`,
+        walletBalance: 0, // Purchases can only be made with added funds; no ₹500 welcome bonus
+        role: isNaitikAdmin ? 'admin' : 'buyer',
+        xp: 0,
+        badges: 0,
+        authProvider: 'google',
+        location: 'India',
+        headline: 'Smart Hub Developer',
+        createdAt: new Date().toISOString()
+      };
+
+      db.insert('users', newUser);
+      user = newUser;
+
+      // Auto-generate starter Developer API Key
+      const rawApiKey = 'sh_live_' + crypto.randomBytes(20).toString('hex');
+      const starterApiKey = {
+        id: 'key_' + Date.now(),
+        userId: user.id,
+        name: 'Default Google OAuth Key',
+        keyHash: hashApiKey(rawApiKey),
+        encryptedKey: encryptApiKey(rawApiKey),
+        keyPrefix: rawApiKey.slice(0, 12),
+        lastFour: rawApiKey.slice(-4),
+        scope: 'full_access',
+        status: 'active',
+        lastUsedAt: null,
+        createdAt: new Date().toISOString()
+      };
+      db.insert('apiKeys', starterApiKey);
+    }
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { id: user.id, email: user.email, role: user.role },
+      JWT_SECRET,
+      { expiresIn: '30d' }
+    );
+
+    // Broadcast user login via WebSocket
+    try {
+      const broadcastWs = req.app.get('broadcastWs');
+      if (broadcastWs) {
+        broadcastWs({
+          type: 'USER_LOGGED_IN',
+          provider: 'google',
+          user: { name: user.name, email: user.email }
+        });
+      }
+    } catch (wsErr) {}
+
+    res.json({
+      success: true,
+      message: `Signed in successfully via Google as ${user.name}! 🚀`,
+      token,
+      user: sanitizeUser(user)
+    });
+  } catch (err) {
+    console.error('Google auth error:', err);
+    res.status(500).json({ success: false, error: 'Google authentication failed: ' + err.message });
+  }
+});
+
+// ── 2c. Get Public Auth Configuration ──────────────────────────
+router.get('/config', (req, res) => {
+  res.json({
+    success: true,
+    googleClientId: process.env.GOOGLE_CLIENT_ID || '',
+    supabaseEnabled: isSupabaseConfigured()
+  });
+});
+
 // ── 3. Get Current Authenticated Profile ──────────────────────
 router.get('/me', authRequired, (req, res) => {
   const userKeys = db.find('apiKeys', k => k.userId === req.user.id && k.status === 'active');

@@ -31,7 +31,7 @@
       "headline": "Smart Hub Developer",
       "createdAt": "2026-10-25T06:31:25.671Z",
       "cover": "/uploads/images/Screenshot__1__1792920634969_373d9b62.png",
-      "updatedAt": "2026-10-25T14:46:33.287Z"
+      "updatedAt": "2026-10-25T14:49:08.599Z"
     },
     {
       "id": "b9f83b04-538c-4aab-9d88-f35a2ecb1cbe",
@@ -179,7 +179,30 @@
     }
   ],
   "orders": [],
-  "transactions": [],
+  "transactions": [
+    {
+      "id": "t_w_1792939748601",
+      "userId": "a9b9e238-6ec8-4622-8f22-9b6eb6939ac2",
+      "type": "debit",
+      "title": "Bank/UPI Withdrawal",
+      "amount": 1000,
+      "date": "2026-10-25",
+      "icon": "🏦",
+      "method": "UPI (cydty)",
+      "createdAt": "2026-10-25T14:49:08.601Z"
+    },
+    {
+      "id": "t_1792939740134",
+      "userId": "a9b9e238-6ec8-4622-8f22-9b6eb6939ac2",
+      "type": "credit",
+      "title": "Wallet Top-up (UPI)",
+      "amount": 1000,
+      "date": "2026-10-25",
+      "icon": "➕",
+      "method": "UPI",
+      "createdAt": "2026-10-25T14:49:00.134Z"
+    }
+  ],
   "posts": [
     {
       "id": "post_1792920308585",

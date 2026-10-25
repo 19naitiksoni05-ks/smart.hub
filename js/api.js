@@ -231,6 +231,33 @@
       }
     },
 
+    async loginWithGoogle(payload) {
+      try {
+        const res = await fetch(`${this.baseUrl}/auth/google`, {
+          method: 'POST',
+          headers: this.getHeaders(),
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (data.success && data.token) {
+          localStorage.setItem('smarthub_token', data.token);
+          localStorage.setItem('smarthub_user', JSON.stringify({ ...data.user, isLoggedIn: true }));
+        }
+        return data;
+      } catch (err) {
+        return { success: false, error: err.message };
+      }
+    },
+
+    async getAuthConfig() {
+      try {
+        const res = await fetch(`${this.baseUrl}/auth/config`);
+        return await res.json();
+      } catch (err) {
+        return { success: false, googleClientId: '' };
+      }
+    },
+
     async getMe() {
       try {
         const res = await fetch(`${this.baseUrl}/auth/me`, { headers: this.getHeaders() });
