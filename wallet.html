@@ -649,43 +649,66 @@ async function processTopup() {
   const amount = customInput ? parseInt(customInput) : selectedTopupAmount;
   if (!amount || amount < 10) { SH.showToast('Please enter a valid amount (min ₹10)', 'error'); return; }
 
+  const methodRadio = document.querySelector('input[name="payment-method"]:checked');
+  const method = methodRadio ? methodRadio.value.toUpperCase() : 'UPI';
+
   // Call Backend API
   try {
-    const res = await window.SmartHubAPI.topupWallet(amount, 'UPI');
-    if (res && res.success) {
-      walletBalance = res.newBalance;
-      document.getElementById('wallet-main-balance').textContent = '₹' + walletBalance.toLocaleString('en-IN');
-      document.querySelectorAll('.wallet-display').forEach(el => {
-        el.textContent = '₹' + walletBalance.toLocaleString('en-IN');
-      });
-      if (res.transaction) {
-        SmartHubData.transactions.unshift(res.transaction);
-        renderTransactions();
+    if (window.SmartHubAPI) {
+      const res = await window.SmartHubAPI.topupWallet(amount, method);
+      if (res && res.success) {
+        walletBalance = res.newBalance;
+        document.getElementById('wallet-main-balance').textContent = '₹' + walletBalance.toLocaleString('en-IN');
+        document.querySelectorAll('.wallet-display').forEach(el => {
+          el.textContent = '₹' + walletBalance.toLocaleString('en-IN');
+        });
+
+        // Sync local storage user
+        const curUser = (window.getCurrentUser && window.getCurrentUser()) || {};
+        curUser.walletBalance = walletBalance;
+        localStorage.setItem('smarthub_user', JSON.stringify(curUser));
+        window.dispatchEvent(new CustomEvent('wallet-updated', { detail: { balance: walletBalance } }));
+
+        if (res.transaction) {
+          if (!window.SmartHubData) window.SmartHubData = {};
+          if (!window.SmartHubData.transactions) window.SmartHubData.transactions = [];
+          window.SmartHubData.transactions.unshift(res.transaction);
+          renderTransactions();
+        }
+        SH.closeModal('modal-topup');
+        SH.showToast(res.message || `₹${amount.toLocaleString('en-IN')} added to your wallet! 🎉`, 'success');
+        document.getElementById('modal-custom-amount').value = '';
+        return;
+      } else if (res && res.error) {
+        SH.showToast(res.error, 'error');
+        return;
       }
-      SH.closeModal('modal-topup');
-      SH.showToast(`₹${amount.toLocaleString('en-IN')} added to wallet! 🎉`, 'success');
-      document.getElementById('modal-custom-amount').value = '';
-      return;
     }
   } catch (err) {
     console.warn('API topup fallback:', err);
   }
 
-  // Local fallback
+  // Local fallback if server unreachable
   walletBalance += amount;
   document.getElementById('wallet-main-balance').textContent = '₹' + walletBalance.toLocaleString('en-IN');
   document.querySelectorAll('.wallet-display').forEach(el => {
     el.textContent = '₹' + walletBalance.toLocaleString('en-IN');
   });
 
-  SmartHubData.transactions.unshift({
-    id: 't_new',
+  const curUser = (window.getCurrentUser && window.getCurrentUser()) || {};
+  curUser.walletBalance = walletBalance;
+  localStorage.setItem('smarthub_user', JSON.stringify(curUser));
+
+  if (!window.SmartHubData) window.SmartHubData = {};
+  if (!window.SmartHubData.transactions) window.SmartHubData.transactions = [];
+  window.SmartHubData.transactions.unshift({
+    id: 't_' + Date.now(),
     type: 'credit',
-    title: 'Wallet Top-up (UPI)',
+    title: `Wallet Top-up (${method})`,
     amount: amount,
     date: new Date().toISOString().split('T')[0],
     icon: '➕',
-    method: 'UPI'
+    method: method
   });
   renderTransactions();
 
@@ -699,31 +722,40 @@ async function loadBackendWallet() {
     if (window.SmartHubAPI) {
       const data = await window.SmartHubAPI.getWallet();
       if (data && data.wallet) {
-        walletBalance = data.wallet.balance;
+        walletBalance = Number(data.wallet.balance || 0);
         document.getElementById('wallet-main-balance').textContent = '₹' + walletBalance.toLocaleString('en-IN');
         document.querySelectorAll('.wallet-display').forEach(el => {
           el.textContent = '₹' + walletBalance.toLocaleString('en-IN');
         });
-        if (data.wallet.totalEarned !== undefined) {
-          const te = document.getElementById('wallet-total-earned');
-          if (te) te.textContent = '₹' + data.wallet.totalEarned.toLocaleString('en-IN');
-        }
-        if (data.wallet.totalSpent !== undefined) {
-          const ts = document.getElementById('wallet-total-spent');
-          if (ts) ts.textContent = '₹' + data.wallet.totalSpent.toLocaleString('en-IN');
-        }
-        if (data.wallet.withdrawn !== undefined) {
-          const tw = document.getElementById('wallet-total-withdrawn');
-          if (tw) tw.textContent = '₹' + data.wallet.withdrawn.toLocaleString('en-IN');
-        }
+
+        // Sync local storage user
+        const curUser = (window.getCurrentUser && window.getCurrentUser()) || {};
+        curUser.walletBalance = walletBalance;
+        localStorage.setItem('smarthub_user', JSON.stringify(curUser));
+
+        const te = document.getElementById('wallet-total-earned');
+        if (te) te.textContent = '₹' + Number(data.wallet.totalEarned || 0).toLocaleString('en-IN');
+
+        const ts = document.getElementById('wallet-total-spent');
+        if (ts) ts.textContent = '₹' + Number(data.wallet.totalSpent || 0).toLocaleString('en-IN');
+
+        const tw = document.getElementById('wallet-total-withdrawn');
+        if (tw) tw.textContent = '₹' + Number(data.wallet.withdrawn || 0).toLocaleString('en-IN');
+
         if (data.wallet.upiId) {
           const upiEl = document.getElementById('wallet-upi-id');
           if (upiEl) upiEl.textContent = data.wallet.upiId;
         }
+
+        if (window.SmartHubData) {
+          window.SmartHubData.transactions = data.transactions || [];
+        }
         renderTransactions();
       }
     }
-  } catch (e) {}
+  } catch (e) {
+    console.warn('Could not load backend wallet:', e);
+  }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
