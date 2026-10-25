@@ -732,7 +732,17 @@ app.post('/api/webhook/upi-success', async (req, res) => {
       const [price, setPrice] = useState(1999);
       const [tags, setTags] = useState('');
       const [desc, setDesc] = useState('');
+      const [thumb, setThumb] = useState(null);
+      const [videoUrl, setVideoUrl] = useState(null);
+      const [downloadUrl, setDownloadUrl] = useState(null);
+      const [bundleInfo, setBundleInfo] = useState(null);
+      const [bundleMode, setBundleMode] = useState('zip');
+      const [coverUploading, setCoverUploading] = useState(false);
+      const [videoUploading, setVideoUploading] = useState(false);
+      const [bundleUploading, setBundleUploading] = useState(false);
+      const [bundleProgressText, setBundleProgressText] = useState('');
       const [isPublished, setIsPublished] = useState(false);
+      const [isPublishing, setIsPublishing] = useState(false);
 
       // Dynamic platform fee (0.5% - 3% based on price and category) + statutory tax
       let feePct = 2.0;
@@ -751,9 +761,131 @@ app.post('/api/webhook/upi-success', async (req, res) => {
       const retentionPct = price > 0 ? ((netProfit / price) * 100).toFixed(1) : '99.5';
       const traditionalFee = Math.round(price * 0.30); // 30% competitor cut
 
-      function handlePublish(e) {
+      async function onCoverChange(e) {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        setCoverUploading(true);
+        try {
+          const res = await window.SmartHubAPI.uploadImage(file);
+          if (res && res.success) {
+            setThumb(res.url);
+            if (window.showToast) window.showToast('Cover artwork uploaded! 🖼️', 'success');
+          } else {
+            if (window.showToast) window.showToast((res && res.error) || 'Failed to upload cover', 'error');
+          }
+        } catch (err) {
+          if (window.showToast) window.showToast(err.message, 'error');
+        }
+        setCoverUploading(false);
+      }
+
+      async function onVideoChange(e) {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        setVideoUploading(true);
+        try {
+          const res = await window.SmartHubAPI.uploadVideo(file);
+          if (res && res.success) {
+            setVideoUrl(res.url);
+            if (window.showToast) window.showToast('Demo video walkthrough attached! 🎬', 'success');
+          } else {
+            if (window.showToast) window.showToast((res && res.error) || 'Failed to upload video', 'error');
+          }
+        } catch (err) {
+          if (window.showToast) window.showToast(err.message, 'error');
+        }
+        setVideoUploading(false);
+      }
+
+      async function onBundleFileChange(e) {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        setBundleUploading(true);
+        setBundleProgressText(`Uploading ${file.name}...`);
+        try {
+          const res = await window.SmartHubAPI.uploadSingle(file);
+          if (res && res.success) {
+            setDownloadUrl(res.url);
+            setBundleInfo({ type: 'zip', originalName: file.name, size: file.size });
+            if (window.showToast) window.showToast('Source codebase ZIP uploaded! 📦', 'success');
+          } else {
+            if (window.showToast) window.showToast((res && res.error) || 'Upload failed', 'error');
+          }
+        } catch (err) {
+          if (window.showToast) window.showToast(err.message, 'error');
+        }
+        setBundleUploading(false);
+      }
+
+      async function onBundleFolderChange(e) {
+        const filesList = e.target.files;
+        if (!filesList || filesList.length === 0) return;
+        const filesArr = Array.from(filesList);
+        const paths = filesArr.map(f => f.webkitRelativePath || f.name);
+        const folderName = paths[0] ? paths[0].split('/')[0] : 'ProjectFolder';
+
+        setBundleUploading(true);
+        setBundleProgressText(`Packaging ${filesArr.length} files from /${folderName}...`);
+
+        try {
+          const res = await window.SmartHubAPI.uploadFolder(filesArr, paths, folderName);
+          if (res && res.success) {
+            setDownloadUrl(res.zipUrl || res.folderPath);
+            setBundleInfo({ type: 'folder', folderName, fileCount: res.fileCount, totalSize: res.totalSize, zipUrl: res.zipUrl });
+            if (window.showToast) window.showToast(`Folder /${folderName} (${res.fileCount} files) zipped and secured! 📁`, 'success');
+          } else {
+            if (window.showToast) window.showToast((res && res.error) || 'Folder packaging failed', 'error');
+          }
+        } catch (err) {
+          if (window.showToast) window.showToast(err.message, 'error');
+        }
+        setBundleUploading(false);
+      }
+
+      async function handlePublish(e) {
         e.preventDefault();
+        if (!title.trim()) {
+          if (window.showToast) window.showToast('Please enter a product title', 'error');
+          return;
+        }
+
+        setIsPublishing(true);
+        const payload = {
+          title: title.trim(),
+          category,
+          price: Number(price) || 0,
+          tags: tags ? tags.split(',').map(t => t.trim()).filter(Boolean) : [category],
+          description: desc,
+          thumb: thumb || `https://picsum.photos/seed/${encodeURIComponent(title)}/400/250`,
+          videoUrl: videoUrl || null,
+          downloadUrl: downloadUrl || null,
+          bundleInfo: bundleInfo || null,
+          type: 'Web App'
+        };
+
+        if (window.SmartHubAPI) {
+          try {
+            const res = await window.SmartHubAPI.createProduct(payload);
+            if (res && res.success) {
+              setIsPublished(true);
+              setIsPublishing(false);
+              if (window.showToast) {
+                window.showToast(`🎉 "${title}" listed successfully! Up to 99.5% royalty retention activated.`, 'success');
+              }
+              if (window.loadSellerStats) window.loadSellerStats();
+              return;
+            } else if (res && res.error) {
+              if (window.showToast) window.showToast(res.error, 'error');
+              setIsPublishing(false);
+              return;
+            }
+          } catch (err) {
+            console.warn(err);
+          }
+        }
+
         setIsPublished(true);
+        setIsPublishing(false);
         if (window.showToast) {
           window.showToast(`🎉 "${title}" listed successfully! Up to 99.5% royalty retention activated.`, 'success');
         }
@@ -771,6 +903,7 @@ app.post('/api/webhook/upi-success', async (req, res) => {
                 type: 'text',
                 className: 'input',
                 value: title,
+                placeholder: 'e.g. Next.js 15 AI SaaS Boilerplate',
                 onChange: (e) => setTitle(e.target.value),
                 required: true
               })
@@ -809,6 +942,7 @@ app.post('/api/webhook/upi-success', async (req, res) => {
                 type: 'text',
                 className: 'input',
                 value: tags,
+                placeholder: 'React, TailwindCSS, PostgreSQL',
                 onChange: (e) => setTags(e.target.value)
               })
             ),
@@ -818,8 +952,164 @@ app.post('/api/webhook/upi-success', async (req, res) => {
                 className: 'input',
                 rows: 3,
                 value: desc,
+                placeholder: 'Explain what developers get: authentication, database setup, deployment instructions...',
                 onChange: (e) => setDesc(e.target.value)
               })
+            ),
+
+            // ── Multi-Asset Upload Module (Cover Image, Demo Video, Source Code/Folder) ──
+            h('div', {
+              style: {
+                border: '1.5px solid rgba(139, 92, 246, 0.35)',
+                borderRadius: '8px',
+                background: 'rgba(18, 15, 28, 0.75)',
+                padding: '18px',
+                marginBottom: '18px'
+              }
+            },
+              h('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' } },
+                h('span', { style: { fontFamily: 'var(--font-tech)', fontSize: '0.74rem', color: 'var(--accent-purple)', fontWeight: 700 } }, '// CLOUD MEDIA & REPO ATTACHMENT'),
+                h('a', { href: 'vault.html', target: '_blank', style: { fontSize: '0.74rem', color: 'var(--accent-cyan)', textDecoration: 'none', fontWeight: 600 } }, 'Cloud Vault ☁️ →')
+              ),
+              h('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px' } },
+                // 1. Cover Image Upload
+                h('div', { style: { border: '1px solid var(--border-outline)', borderRadius: '6px', padding: '12px', background: 'var(--bg-card)' } },
+                  h('div', { style: { display: 'flex', justifyContent: 'space-between', marginBottom: '6px' } },
+                    h('span', { style: { fontSize: '0.78rem', fontWeight: 700 } }, '🖼️ Cover Artwork'),
+                    thumb ? h('span', { style: { fontSize: '0.68rem', color: 'var(--accent-green)', fontWeight: 700 } }, '✓ READY') : null
+                  ),
+                  h('input', {
+                    type: 'file',
+                    id: 'react-pub-cover',
+                    accept: 'image/*',
+                    style: { display: 'none' },
+                    onChange: onCoverChange
+                  }),
+                  h('div', {
+                    style: {
+                      border: '1.5px dashed rgba(255,255,255,0.18)',
+                      borderRadius: '6px',
+                      padding: '12px 8px',
+                      textAlign: 'center',
+                      cursor: 'pointer',
+                      background: thumb ? 'rgba(34, 197, 94, 0.05)' : 'transparent'
+                    },
+                    onClick: () => { const el = document.getElementById('react-pub-cover'); if (el) el.click(); }
+                  },
+                    thumb ? h('div', null,
+                      h('img', { src: thumb, style: { width: '100%', height: '54px', objectFit: 'cover', borderRadius: '4px', marginBottom: '4px' } }),
+                      h('div', { style: { fontSize: '0.7rem', color: 'var(--accent-green)', fontWeight: 700 } }, '✓ Cover Updated')
+                    ) : h('div', null,
+                      h('div', { style: { fontSize: '1.3rem' } }, '🖼️'),
+                      h('div', { style: { fontSize: '0.75rem', fontWeight: 700 } }, coverUploading ? 'Uploading...' : 'Upload Cover Image'),
+                      h('div', { style: { fontSize: '0.65rem', color: 'var(--text-muted)' } }, 'PNG, JPG, WEBP')
+                    )
+                  )
+                ),
+
+                // 2. Demo Video Upload
+                h('div', { style: { border: '1px solid var(--border-outline)', borderRadius: '6px', padding: '12px', background: 'var(--bg-card)' } },
+                  h('div', { style: { display: 'flex', justifyContent: 'space-between', marginBottom: '6px' } },
+                    h('span', { style: { fontSize: '0.78rem', fontWeight: 700 } }, '🎬 Demo Video'),
+                    videoUrl ? h('span', { style: { fontSize: '0.68rem', color: 'var(--accent-cyan)', fontWeight: 700 } }, '✓ ATTACHED') : null
+                  ),
+                  h('input', {
+                    type: 'file',
+                    id: 'react-pub-video',
+                    accept: 'video/mp4,video/webm,video/quicktime',
+                    style: { display: 'none' },
+                    onChange: onVideoChange
+                  }),
+                  h('div', {
+                    style: {
+                      border: '1.5px dashed rgba(255,255,255,0.18)',
+                      borderRadius: '6px',
+                      padding: '12px 8px',
+                      textAlign: 'center',
+                      cursor: 'pointer',
+                      background: videoUrl ? 'rgba(6, 182, 212, 0.05)' : 'transparent'
+                    },
+                    onClick: () => { const el = document.getElementById('react-pub-video'); if (el) el.click(); }
+                  },
+                    videoUrl ? h('div', null,
+                      h('div', { style: { fontSize: '1.3rem' } }, '🎬'),
+                      h('div', { style: { fontSize: '0.72rem', color: 'var(--accent-cyan)', fontWeight: 700 } }, '✓ Video Attached'),
+                      h('div', { style: { fontSize: '0.65rem', color: 'var(--text-muted)' } }, 'Click to replace')
+                    ) : h('div', null,
+                      h('div', { style: { fontSize: '1.3rem' } }, '📹'),
+                      h('div', { style: { fontSize: '0.75rem', fontWeight: 700 } }, videoUploading ? 'Uploading...' : 'Demo Video (Optional)'),
+                      h('div', { style: { fontSize: '0.65rem', color: 'var(--text-muted)' } }, 'MP4, WEBM')
+                    )
+                  )
+                ),
+
+                // 3. Source Code Bundle or Folder
+                h('div', { style: { border: '1px solid var(--border-outline)', borderRadius: '6px', padding: '12px', background: 'var(--bg-card)' } },
+                  h('div', { style: { display: 'flex', justifyContent: 'space-between', marginBottom: '6px' } },
+                    h('span', { style: { fontSize: '0.78rem', fontWeight: 700 } }, '📁 Source Code'),
+                    downloadUrl ? h('span', { style: { fontSize: '0.68rem', color: 'var(--accent-green)', fontWeight: 700 } }, '✓ SECURED') : null
+                  ),
+                  h('div', { style: { display: 'flex', gap: '4px', marginBottom: '6px' } },
+                    h('button', {
+                      type: 'button',
+                      className: `btn btn-sm ${bundleMode === 'zip' ? 'btn-primary' : 'btn-outline'}`,
+                      style: { fontSize: '0.68rem', padding: '2px 6px', flex: 1 },
+                      onClick: () => setBundleMode('zip')
+                    }, 'ZIP File'),
+                    h('button', {
+                      type: 'button',
+                      className: `btn btn-sm ${bundleMode === 'folder' ? 'btn-primary' : 'btn-outline'}`,
+                      style: { fontSize: '0.68rem', padding: '2px 6px', flex: 1 },
+                      onClick: () => setBundleMode('folder')
+                    }, 'Full Folder')
+                  ),
+                  h('input', {
+                    type: 'file',
+                    id: 'react-pub-zip',
+                    accept: '.zip,.tar,.gz,.rar,.json,.js,.py,.ts',
+                    style: { display: 'none' },
+                    onChange: onBundleFileChange
+                  }),
+                  h('input', {
+                    type: 'file',
+                    id: 'react-pub-folder',
+                    webkitdirectory: '',
+                    directory: '',
+                    multiple: true,
+                    style: { display: 'none' },
+                    onChange: onBundleFolderChange
+                  }),
+                  h('div', {
+                    style: {
+                      border: '1.5px dashed rgba(255,255,255,0.18)',
+                      borderRadius: '6px',
+                      padding: '10px 8px',
+                      textAlign: 'center',
+                      cursor: 'pointer',
+                      background: downloadUrl ? 'rgba(34, 197, 94, 0.05)' : 'transparent'
+                    },
+                    onClick: () => {
+                      const id = bundleMode === 'folder' ? 'react-pub-folder' : 'react-pub-zip';
+                      const el = document.getElementById(id);
+                      if (el) el.click();
+                    }
+                  },
+                    downloadUrl ? h('div', null,
+                      h('div', { style: { fontSize: '1.2rem' } }, bundleInfo && bundleInfo.type === 'folder' ? '📁' : '📦'),
+                      h('div', { style: { fontSize: '0.72rem', color: 'var(--accent-green)', fontWeight: 700 } },
+                        bundleInfo && bundleInfo.type === 'folder' ? `✓ ${bundleInfo.fileCount} Files Zipped` : '✓ ZIP Secured'
+                      ),
+                      h('div', { style: { fontSize: '0.65rem', color: 'var(--text-muted)' } }, 'Click to replace')
+                    ) : h('div', null,
+                      h('div', { style: { fontSize: '1.2rem' } }, bundleMode === 'folder' ? '📁' : '📦'),
+                      h('div', { style: { fontSize: '0.75rem', fontWeight: 700 } },
+                        bundleUploading ? (bundleProgressText || 'Uploading...') : (bundleMode === 'folder' ? 'Select Project Folder' : 'Select ZIP Package')
+                      ),
+                      h('div', { style: { fontSize: '0.65rem', color: 'var(--text-muted)' } }, bundleMode === 'folder' ? 'Auto-packs to ZIP' : 'Audited Archive')
+                    )
+                  )
+                )
+              )
             ),
 
             // Revenue calculation
@@ -849,8 +1139,9 @@ app.post('/api/webhook/upi-success', async (req, res) => {
             h('button', {
               type: 'submit',
               className: 'btn btn-primary w-full',
+              disabled: isPublishing,
               style: { marginTop: '16px', width: '100%', justifyContent: 'center' }
-            }, isPublished ? '✓ Published to Catalog' : '🚀 Publish Asset to Smart Hub')
+            }, isPublishing ? 'Publishing Asset...' : (isPublished ? '✓ Published to Catalog' : '🚀 Publish Asset to Smart Hub'))
           )
         ),
 
@@ -859,12 +1150,17 @@ app.post('/api/webhook/upi-success', async (req, res) => {
           h('div', { className: 'preview-label' }, '// REAL-TIME LIVE PRODUCT CARD PREVIEW'),
           h('div', { className: 'product-card', style: { maxWidth: '380px', margin: '0 auto' } },
             h('div', { className: 'product-card-thumb' },
-              h('img', { src: 'https://picsum.photos/seed/aipreview/400/250', alt: title }),
-              h('div', { className: 'badge badge-cyan', style: { position: 'absolute', top: '10px', left: '10px' } }, '[ NEW DROP ]')
+              h('img', {
+                src: thumb || 'https://picsum.photos/seed/aipreview/400/250',
+                alt: title,
+                style: { width: '100%', height: '220px', objectFit: 'cover' }
+              }),
+              h('div', { className: 'badge badge-cyan', style: { position: 'absolute', top: '10px', left: '10px' } }, '[ NEW DROP ]'),
+              videoUrl ? h('div', { className: 'badge badge-purple', style: { position: 'absolute', top: '10px', right: '10px' } }, '🎬 VIDEO READY') : null
             ),
             h('div', { className: 'product-card-body' },
               h('div', { className: 'product-card-category' }, `[ ${category} ]`),
-              h('div', { className: 'product-card-title' }, title),
+              h('div', { className: 'product-card-title' }, title || 'Untitled Asset Boilerplate'),
               h('div', { className: 'product-card-meta' },
                 h('div', { className: 'product-card-author' },
                   h('img', { src: ((window.getCurrentUser && window.getCurrentUser()) || {}).avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=creator&backgroundColor=ff5b36', alt: 'Author' }),
@@ -872,6 +1168,9 @@ app.post('/api/webhook/upi-success', async (req, res) => {
                 ),
                 h('div', { className: 'product-card-stats' }, '★ 5.0 (New)')
               ),
+              downloadUrl ? h('div', { style: { fontSize: '0.74rem', color: 'var(--accent-green)', fontFamily: 'var(--font-tech)', marginBottom: '8px' } },
+                bundleInfo && bundleInfo.type === 'folder' ? `📦 Includes ${bundleInfo.fileCount} Files Directory Bundle` : '📦 Audited Codebase ZIP Included'
+              ) : null,
               h('div', { className: 'tag-cloud' },
                 tags.split(',').filter(Boolean).map(t => h('span', { key: t, className: 'tag' }, t.trim()))
               )

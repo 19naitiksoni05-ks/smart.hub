@@ -127,7 +127,7 @@
             <input class="create-post-input" type="text" placeholder="Share a project, tip, or thought…" onclick="openCreatePost()" readonly>
           </div>
           <div class="create-post-actions">
-            <div class="post-action" onclick="openCreatePost()">🖼️ Photo</div>
+            <div class="post-action" onclick="triggerFeedPhotoDirect()">🖼️ Photo</div>
             <div class="post-action" onclick="openCreatePost()">📦 Project</div>
             <div class="post-action" onclick="openCreatePost()">📝 Article</div>
             <div class="post-action" onclick="openCreatePost()">🏆 Achievement</div>
@@ -203,12 +203,22 @@
       </div>
     </div>
     <textarea class="input" rows="5" placeholder="What's on your mind? Share a project, tip, or achievement…" id="post-text" style="resize:none;border-radius:var(--radius-md);"></textarea>
-    <div style="display:flex;gap:8px;margin:12px 0;flex-wrap:wrap;">
-      <button class="post-action" onclick="SH.showToast('Photo attached!','success')">🖼️ Photo</button>
-      <button class="post-action" onclick="SH.showToast('Project linked!','success')">📦 Link Project</button>
-      <button class="post-action" onclick="SH.showToast('Tag added!','info')">#️⃣ Add Tags</button>
+    <!-- Image Preview Box -->
+    <div id="modal-post-img-preview-box" style="display:none;position:relative;margin:10px 0;border-radius:var(--radius-md);overflow:hidden;border:1.5px solid var(--border);">
+      <img id="modal-post-img-preview" src="" style="width:100%;max-height:220px;object-fit:cover;display:block;">
+      <button type="button" onclick="removeAttachedFeedImage()" style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,0.75);color:#fff;border:none;border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:0.85rem;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.4);" title="Remove Image">✕</button>
     </div>
-    <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="createPost()">Post 🚀</button>
+
+    <div style="display:flex;gap:8px;margin:12px 0;flex-wrap:wrap;align-items:center;">
+      <button type="button" class="post-action" onclick="document.getElementById('feed-post-img-file').click()" style="display:flex;align-items:center;gap:6px;">
+        <span>🖼️</span> Attach Photo
+      </button>
+      <input type="file" id="feed-post-img-file" accept="image/*" style="display:none;" onchange="handleFeedPostImage(this)">
+      <span id="feed-post-img-status" style="font-size:0.75rem;color:var(--text-muted);"></span>
+      <button type="button" class="post-action" onclick="SH.showToast('Select from your published assets to link','info')">📦 Link Project</button>
+      <button type="button" class="post-action" onclick="document.getElementById('post-text').value += ' #DevCommunity'">#️⃣ Add Tags</button>
+    </div>
+    <button class="btn btn-primary" id="btn-submit-feed-post" style="width:100%;justify-content:center;font-weight:700;" onclick="createPost()">Post to Developer Feed 🚀</button>
   </div>
 </div>
 
@@ -360,6 +370,54 @@ async function toggleLike(btn, currentLikes, postId = 'post001') {
   }
 }
 
+let attachedFeedImage = null;
+
+function triggerFeedPhotoDirect() {
+  openCreatePost();
+  setTimeout(() => {
+    const el = document.getElementById('feed-post-img-file');
+    if (el) el.click();
+  }, 150);
+}
+
+async function handleFeedPostImage(input) {
+  if (!input.files || !input.files[0]) return;
+  const file = input.files[0];
+  const statusEl = document.getElementById('feed-post-img-status');
+  if (statusEl) statusEl.textContent = 'Uploading media...';
+
+  try {
+    const res = await window.SmartHubAPI.uploadImage(file);
+    if (res && res.url) {
+      attachedFeedImage = res.url;
+      const box = document.getElementById('modal-post-img-preview-box');
+      const img = document.getElementById('modal-post-img-preview');
+      if (img) img.src = res.url;
+      if (box) box.style.display = 'block';
+      if (statusEl) {
+        statusEl.textContent = '✓ Attached';
+        statusEl.style.color = 'var(--accent-green)';
+      }
+    } else {
+      throw new Error(res && res.error ? res.error : 'Upload failed');
+    }
+  } catch (err) {
+    if (statusEl) statusEl.textContent = 'Upload failed';
+  }
+}
+
+function removeAttachedFeedImage() {
+  attachedFeedImage = null;
+  const box = document.getElementById('modal-post-img-preview-box');
+  const img = document.getElementById('modal-post-img-preview');
+  const statusEl = document.getElementById('feed-post-img-status');
+  const input = document.getElementById('feed-post-img-file');
+  if (box) box.style.display = 'none';
+  if (img) img.src = '';
+  if (statusEl) statusEl.textContent = '';
+  if (input) input.value = '';
+}
+
 function openCreatePost() {
   const user = (window.getCurrentUser && window.getCurrentUser()) || { name: 'Developer', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=user&backgroundColor=6366f1' };
   const av = document.getElementById('modal-post-avatar');
@@ -371,27 +429,46 @@ function openCreatePost() {
 
 async function createPost() {
   const text = document.getElementById('post-text').value.trim();
-  if (!text) { SH.showToast('Please write something!', 'error'); return; }
+  if (!text && !attachedFeedImage) {
+    SH.showToast('Please write something or attach a photo!', 'error');
+    return;
+  }
+
+  const btn = document.getElementById('btn-submit-feed-post');
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Publishing Post... 🚀';
+  }
+
+  const postContent = text || 'Shared project snapshot with community';
+  const imgToAttach = attachedFeedImage;
 
   if (window.SmartHubAPI) {
     try {
-      const res = await window.SmartHubAPI.createPost(text, ['Launch', 'DevLife']);
+      const res = await window.SmartHubAPI.createPost(postContent, ['Launch', 'DevCommunity'], imgToAttach);
       if (res && res.success) {
         SH.showToast('Post published to developer feed! 🚀', 'success');
         SH.closeModal('modal-create-post');
         document.getElementById('post-text').value = '';
+        removeAttachedFeedImage();
         if (res.post) {
           SmartHubData.posts.unshift(res.post);
           renderPosts();
         }
         return;
       }
-    } catch (e) {}
+    } catch (e) {} finally {
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = 'Post to Developer Feed 🚀';
+      }
+    }
   }
 
   SH.showToast('Post published! 🚀', 'success');
   SH.closeModal('modal-create-post');
   document.getElementById('post-text').value = '';
+  removeAttachedFeedImage();
 }
 
 function openPostDetail(id) {

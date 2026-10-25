@@ -21,22 +21,89 @@
       "username": "@naitik19",
       "email": "naitik19ansh@gmail.com",
       "passwordHash": "$2b$10$XWSvk2mpUrEwIqg8ZieCpOGRTETUN8nIonW5/KQa550HvPp1XuwfK",
-      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=naitik19&backgroundColor=ff5b36",
+      "avatar": "/uploads/images/avatar_test_1792913095876_c066afcd.png",
       "walletBalance": 500,
       "role": "admin",
       "xp": 5000,
       "badges": 5,
       "location": "India",
-      "headline": "Platform & Architecture · Super Admin",
-      "createdAt": "2026-10-24T19:15:56.573Z"
+      "headline": "Platform & Architecture Lead",
+      "createdAt": "2026-10-24T19:15:56.573Z",
+      "updatedAt": "2026-10-25T07:24:55.938Z",
+      "cover": "/uploads/images/avatar_test_1792913095876_c066afcd.png"
     }
   ],
-  "products": [],
+  "products": [
+    {
+      "id": "p_1792913095955",
+      "title": "FullStack Cloud Dashboard Asset",
+      "category": "React",
+      "price": 2499,
+      "oldPrice": null,
+      "rating": 5,
+      "reviews": 1,
+      "sales": 0,
+      "author": {
+        "id": "b9f83b04-538c-4aab-9d88-f35a2ecb1cbe",
+        "name": "Naitik Soni",
+        "avatar": "/uploads/images/avatar_test_1792913095876_c066afcd.png"
+      },
+      "tags": [
+        "React",
+        "NextJS",
+        "Verified"
+      ],
+      "badge": "New",
+      "thumb": "/uploads/images/avatar_test_1792913095876_c066afcd.png",
+      "videoUrl": "/uploads/demo-sample.mp4",
+      "downloadUrl": "/uploads/package-sample.zip",
+      "bundleInfo": {
+        "type": "folder",
+        "fileCount": 38,
+        "totalSize": "18.4 MB"
+      },
+      "description": "Production-ready full stack dashboard with uploaded video walkthrough and zipped source code bundle.",
+      "type": "Source Code",
+      "createdAt": "2026-10-25T07:24:55.955Z"
+    },
+    {
+      "id": "p_1792913021086",
+      "title": "FullStack Cloud Dashboard Asset",
+      "category": "React",
+      "price": 2499,
+      "oldPrice": null,
+      "rating": 5,
+      "reviews": 1,
+      "sales": 0,
+      "author": {
+        "id": "b9f83b04-538c-4aab-9d88-f35a2ecb1cbe",
+        "name": "Naitik Soni",
+        "avatar": "/uploads/images/avatar_test_1792913021057_d8b26b33.png"
+      },
+      "tags": [
+        "React",
+        "NextJS",
+        "Verified"
+      ],
+      "badge": "New",
+      "thumb": "/uploads/images/avatar_test_1792913021057_d8b26b33.png",
+      "videoUrl": "/uploads/demo-sample.mp4",
+      "downloadUrl": "/uploads/package-sample.zip",
+      "bundleInfo": {
+        "type": "folder",
+        "fileCount": 38,
+        "totalSize": "18.4 MB"
+      },
+      "description": "Production-ready full stack dashboard with uploaded video walkthrough and zipped source code bundle.",
+      "type": "Source Code",
+      "createdAt": "2026-10-25T07:23:41.086Z"
+    }
+  ],
   "categories": [
     {
       "name": "React",
       "icon": "⚛️",
-      "count": 0,
+      "count": 2,
       "color": "#61dafb",
       "bg": "rgba(97,218,251,0.1)"
     },
@@ -126,7 +193,52 @@
       "createdAt": "2026-10-24T19:03:54.515Z"
     }
   ],
-  "posts": [],
+  "posts": [
+    {
+      "id": "post_1792913095980",
+      "author": {
+        "id": "b9f83b04-538c-4aab-9d88-f35a2ecb1cbe",
+        "name": "Naitik Soni",
+        "username": "@naitik19",
+        "avatar": "/uploads/images/avatar_test_1792913095876_c066afcd.png",
+        "verified": false
+      },
+      "content": "Just published our new FullStack Cloud Dashboard package with video walkthrough demo! 🚀 Check it out in the store.",
+      "image": "/uploads/images/avatar_test_1792913095876_c066afcd.png",
+      "likes": 0,
+      "likedBy": [],
+      "comments": [],
+      "shares": 0,
+      "tags": [
+        "Launch",
+        "React",
+        "SmartHub"
+      ],
+      "createdAt": "2026-10-25T07:24:55.980Z"
+    },
+    {
+      "id": "post_1792913021103",
+      "author": {
+        "id": "b9f83b04-538c-4aab-9d88-f35a2ecb1cbe",
+        "name": "Naitik Soni",
+        "username": "@naitik19",
+        "avatar": "/uploads/images/avatar_test_1792913021057_d8b26b33.png",
+        "verified": false
+      },
+      "content": "Just published our new FullStack Cloud Dashboard package with video walkthrough demo! 🚀 Check it out in the store.",
+      "image": "/uploads/images/avatar_test_1792913021057_d8b26b33.png",
+      "likes": 0,
+      "likedBy": [],
+      "comments": [],
+      "shares": 0,
+      "tags": [
+        "Launch",
+        "React",
+        "SmartHub"
+      ],
+      "createdAt": "2026-10-25T07:23:41.103Z"
+    }
+  ],
   "channels": [
     {
       "id": "c001",
@@ -336,6 +448,50 @@
       "lastUsedAt": "2026-10-24T19:03:54.532Z",
       "createdAt": "2026-10-24T19:03:54.516Z",
       "updatedAt": "2026-10-24T19:03:54.532Z"
+    }
+  ],
+  "uploads": [
+    {
+      "id": "img_1792913095908_a73179",
+      "originalName": "avatar_test.png",
+      "filename": "avatar_test_1792913095876_c066afcd.png",
+      "category": "images",
+      "type": "image",
+      "mimetype": "image/png",
+      "size": 70,
+      "sizeFormatted": "70 Bytes",
+      "url": "/uploads/images/avatar_test_1792913095876_c066afcd.png",
+      "userId": "b9f83b04-538c-4aab-9d88-f35a2ecb1cbe",
+      "uploaderName": "Naitik Soni",
+      "createdAt": "2026-10-25T07:24:55.908Z"
+    },
+    {
+      "id": "img_1792913021062_c80a1b",
+      "originalName": "avatar_test.png",
+      "filename": "avatar_test_1792913021057_d8b26b33.png",
+      "category": "images",
+      "type": "image",
+      "mimetype": "image/png",
+      "size": 70,
+      "sizeFormatted": "70 Bytes",
+      "url": "/uploads/images/avatar_test_1792913021057_d8b26b33.png",
+      "userId": "b9f83b04-538c-4aab-9d88-f35a2ecb1cbe",
+      "uploaderName": "Naitik Soni",
+      "createdAt": "2026-10-25T07:23:41.062Z"
+    },
+    {
+      "id": "img_1792913004571_ad7eeb",
+      "originalName": "avatar_test.png",
+      "filename": "avatar_test_1792913004567_42dc4e31.png",
+      "category": "images",
+      "type": "image",
+      "mimetype": "image/png",
+      "size": 70,
+      "sizeFormatted": "70 Bytes",
+      "url": "/uploads/images/avatar_test_1792913004567_42dc4e31.png",
+      "userId": null,
+      "uploaderName": "Guest Developer",
+      "createdAt": "2026-10-25T07:23:24.571Z"
     }
   ]
 }

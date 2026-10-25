@@ -388,12 +388,14 @@ router.post('/reset-password', (req, res) => {
 // ── 6. Update Profile ────────────────────────────────────────
 router.put('/profile', authRequired, (req, res) => {
   try {
-    const { name, headline, location, avatar, bio, website, upiId } = req.body;
+    const { name, headline, location, avatar, bio, website, upiId, cover, coverPhoto } = req.body;
     const updates = {};
     if (name !== undefined) updates.name = name;
     if (headline !== undefined) updates.headline = headline;
     if (location !== undefined) updates.location = location;
     if (avatar !== undefined) updates.avatar = avatar;
+    if (cover !== undefined) updates.cover = cover;
+    if (coverPhoto !== undefined) updates.cover = coverPhoto;
     if (bio !== undefined) updates.bio = bio;
     if (website !== undefined) updates.website = website;
     if (upiId !== undefined) updates.upiId = upiId;

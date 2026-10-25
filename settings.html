@@ -574,6 +574,13 @@
                 <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=user5&backgroundColor=f59e0b" class="avatar-choice" onclick="pickAvatar('user5', 'f59e0b', this)" alt="Avatar 5">
                 <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=user6&backgroundColor=3b82f6" class="avatar-choice" onclick="pickAvatar('user6', '3b82f6', this)" alt="Avatar 6">
               </div>
+              <div style="display:flex;align-items:center;gap:12px;margin-top:14px;padding-top:14px;border-top:1px dashed var(--border-outline);">
+                <button type="button" class="btn btn-outline btn-xs" onclick="document.getElementById('settings-avatar-file').click()" style="display:inline-flex;align-items:center;gap:6px;font-weight:700;">
+                  <span>📤</span> Upload Custom Photo / Logo
+                </button>
+                <span id="settings-avatar-upload-status" style="font-size:0.75rem;color:var(--text-muted);">PNG, JPG, SVG, WebP up to 10MB</span>
+                <input type="file" id="settings-avatar-file" accept="image/*" style="display:none;" onchange="uploadSettingsCustomAvatar(this)">
+              </div>
             </div>
 
             <!-- Name and Username -->
@@ -932,6 +939,7 @@ $ smarthub publish --path=./my-react-template</code></pre>
 
 let currentAvatarSeed = 'user1';
 let currentAvatarBg = 'ff5b36';
+let customAvatarUrl = null;
 
 function initSettingsPage() {
   const user = getSessionUser() || {};
@@ -958,7 +966,14 @@ function initSettingsPage() {
   // Avatar preview
   const prev = document.getElementById('settings-avatar-preview');
   const nameLbl = document.getElementById('settings-avatar-name');
-  if (prev && user.avatar) prev.src = user.avatar;
+  if (prev && user.avatar) {
+    prev.src = user.avatar;
+    if (!user.avatar.includes('dicebear.com')) {
+      customAvatarUrl = user.avatar;
+      currentAvatarSeed = null;
+      document.querySelectorAll('.avatar-choice').forEach(img => img.classList.remove('active'));
+    }
+  }
   if (nameLbl) nameLbl.textContent = user.name || 'Developer Profile';
 
   // Load API keys
@@ -980,6 +995,7 @@ function switchSettingsTab(tabName, btnEl) {
 }
 
 function pickAvatar(seed, bg, el) {
+  customAvatarUrl = null;
   currentAvatarSeed = seed;
   currentAvatarBg = bg;
   document.querySelectorAll('.avatar-choice').forEach(img => img.classList.remove('active'));
@@ -988,6 +1004,31 @@ function pickAvatar(seed, bg, el) {
   const newUrl = `https://api.dicebear.com/7.x/avataaars/svg?seed=${seed}&backgroundColor=${bg}`;
   const prev = document.getElementById('settings-avatar-preview');
   if (prev) prev.src = newUrl;
+}
+
+async function uploadSettingsCustomAvatar(input) {
+  if (!input.files || !input.files[0]) return;
+  const file = input.files[0];
+  const statusEl = document.getElementById('settings-avatar-upload-status');
+  if (statusEl) statusEl.innerHTML = '<span style="color:var(--accent-purple);">⏳ Uploading image...</span>';
+
+  try {
+    const res = await window.SmartHubAPI.uploadImage(file);
+    if (res && res.url) {
+      customAvatarUrl = res.url;
+      currentAvatarSeed = null;
+      const prev = document.getElementById('settings-avatar-preview');
+      if (prev) prev.src = res.url;
+      document.querySelectorAll('.avatar-choice').forEach(img => img.classList.remove('active'));
+      if (statusEl) statusEl.innerHTML = '<span style="color:var(--accent-green);font-weight:700;">✓ Uploaded! Click "Save All Changes" below</span>';
+      if (window.SH && window.SH.showToast) window.SH.showToast('Custom photo uploaded! Remember to save changes.', 'success');
+    } else {
+      throw new Error(res && res.error ? res.error : 'Upload failed');
+    }
+  } catch (err) {
+    if (statusEl) statusEl.innerHTML = '<span style="color:var(--accent-red);">✕ Upload failed</span>';
+    if (window.SH && window.SH.showToast) window.SH.showToast('Photo upload error: ' + err.message, 'error');
+  }
 }
 
 function toggleSettingsTheme() {
@@ -1285,11 +1326,26 @@ function saveAllSettings() {
   user.website = webVal;
   user.upiId = upiVal;
 
-  if (currentAvatarSeed) {
+  if (customAvatarUrl) {
+    user.avatar = customAvatarUrl;
+  } else if (currentAvatarSeed) {
     user.avatar = `https://api.dicebear.com/7.x/avataaars/svg?seed=${currentAvatarSeed}&backgroundColor=${currentAvatarBg}`;
   }
 
   localStorage.setItem('smarthub_user', JSON.stringify(user));
+
+  // Sync to database
+  if (window.SmartHubAPI && window.SmartHubAPI.updateProfile) {
+    window.SmartHubAPI.updateProfile({
+      name: user.name,
+      avatar: user.avatar,
+      headline: user.headline,
+      bio: user.bio,
+      location: user.location,
+      website: user.website,
+      upiId: user.upiId
+    }).catch(() => {});
+  }
 
   // Re-render header immediately so the top bar updates live without needing a full reload!
   const headerEl = document.getElementById('page-header');

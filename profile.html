@@ -34,20 +34,25 @@
 
 <div class="profile-layout">
   <!-- Cover -->
-  <div class="profile-cover" id="profile-cover">
-    <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(139,92,246,0.5),rgba(6,182,212,0.4),rgba(236,72,153,0.3));"></div>
+  <div class="profile-cover" id="profile-cover" style="position:relative;background-size:cover;background-position:center;">
+    <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(139,92,246,0.45),rgba(6,182,212,0.35),rgba(236,72,153,0.25));pointer-events:none;"></div>
     <!-- Floating particles -->
-    <div class="bg-glow bg-glow-purple" style="width:300px;height:300px;top:-80px;right:100px;"></div>
-    <div class="bg-glow bg-glow-cyan" style="width:200px;height:200px;bottom:-40px;left:200px;"></div>
-    <button class="profile-cover-edit" onclick="SH.showToast('Cover photo updated!','success')">📷 Change Cover</button>
+    <div class="bg-glow bg-glow-purple" style="width:300px;height:300px;top:-80px;right:100px;pointer-events:none;"></div>
+    <div class="bg-glow bg-glow-cyan" style="width:200px;height:200px;bottom:-40px;left:200px;pointer-events:none;"></div>
+    <button class="profile-cover-edit" style="z-index:2;cursor:pointer;" onclick="document.getElementById('profile-cover-file').click()">📷 Change Cover</button>
+    <input type="file" id="profile-cover-file" accept="image/*" style="display:none;" onchange="handleCoverPhotoUpload(this)">
   </div>
 
   <!-- Profile Info -->
   <div class="profile-info-section">
-    <div class="profile-avatar-wrap">
+    <div class="profile-avatar-wrap" style="position:relative;cursor:pointer;" onclick="document.getElementById('profile-avatar-file').click()" title="Click to upload profile photo">
       <div class="avatar-ring">
-        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=user&backgroundColor=6366f1" id="profile-avatar" alt="User Avatar" style="width:120px;height:120px;border-radius:50%;border:3px solid var(--bg-primary);">
+        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=user&backgroundColor=6366f1" id="profile-avatar" alt="User Avatar" style="width:120px;height:120px;border-radius:50%;border:3px solid var(--bg-primary);object-fit:cover;">
       </div>
+      <div class="avatar-camera-badge" style="position:absolute;bottom:4px;right:4px;width:34px;height:34px;border-radius:50%;background:var(--accent-purple);color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.95rem;border:2.5px solid var(--bg-primary);box-shadow:0 3px 10px rgba(0,0,0,0.5);transition:all 0.2s ease;">
+        📷
+      </div>
+      <input type="file" id="profile-avatar-file" accept="image/*" style="display:none;" onchange="handleProfileAvatarUpload(this)">
     </div>
     <div class="profile-info-inner">
       <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px;">
@@ -189,38 +194,99 @@
 
 <!-- Upload Project Modal -->
 <div class="modal-overlay" id="modal-upload">
-  <div class="modal" style="max-width:580px;">
+  <div class="modal" style="max-width:640px;max-height:90vh;overflow-y:auto;">
     <div class="modal-header">
-      <h3>📦 Upload New Project</h3>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="font-size:1.4rem;">📦</span>
+        <div>
+          <h3 style="margin:0;font-size:1.15rem;">Publish New Project Asset</h3>
+          <div style="font-size:0.75rem;color:var(--text-muted);">Upload cover art, source code package, and optional walkthrough video</div>
+        </div>
+      </div>
       <span class="modal-close" onclick="SH.closeModal('modal-upload')">✕</span>
     </div>
-    <div style="display:flex;flex-direction:column;gap:14px;">
+    <div style="display:flex;flex-direction:column;gap:16px;">
       <div>
         <label style="font-size:0.82rem;color:var(--text-muted);display:block;margin-bottom:6px;">Project Title *</label>
-        <input class="input" type="text" placeholder="e.g., React E-Commerce Dashboard" id="proj-title">
+        <input class="input" type="text" placeholder="e.g., React E-Commerce Dashboard with Razorpay" id="proj-title">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div>
+          <label style="font-size:0.82rem;color:var(--text-muted);display:block;margin-bottom:6px;">Category</label>
+          <select class="input filter-select" style="appearance:auto;" id="proj-cat">
+            <option>React</option><option>Mobile</option><option>AI/ML</option><option>Templates</option><option>Backend</option><option>Blockchain</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:0.82rem;color:var(--text-muted);display:block;margin-bottom:6px;">Price (₹ INR) — 0 for Free</label>
+          <input class="input" type="number" placeholder="e.g., 1999" id="proj-price" min="0" value="1999">
+        </div>
       </div>
       <div>
-        <label style="font-size:0.82rem;color:var(--text-muted);display:block;margin-bottom:6px;">Category</label>
-        <select class="input filter-select" style="appearance:auto;" id="proj-cat">
-          <option>React</option><option>Mobile</option><option>AI/ML</option><option>Templates</option><option>Backend</option><option>Blockchain</option>
-        </select>
+        <label style="font-size:0.82rem;color:var(--text-muted);display:block;margin-bottom:6px;">Short Description *</label>
+        <textarea class="input" rows="2" placeholder="Explain what the project does and key features included…" id="proj-desc"></textarea>
       </div>
-      <div>
-        <label style="font-size:0.82rem;color:var(--text-muted);display:block;margin-bottom:6px;">Description *</label>
-        <textarea class="input" rows="3" placeholder="Describe your project…" id="proj-desc"></textarea>
+
+      <!-- Multi-Asset Upload Section -->
+      <div style="background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:var(--radius-md);padding:14px;display:flex;flex-direction:column;gap:12px;">
+        <div style="font-family:var(--font-tech);font-size:0.75rem;color:var(--accent-purple);font-weight:700;letter-spacing:0.05em;">
+          [ ATTACH DIGITAL ASSETS & MEDIA ]
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
+          <!-- 1. Cover Artwork -->
+          <div style="border:1px solid var(--border);border-radius:6px;padding:10px;background:var(--bg-card);text-align:center;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+              <span style="font-size:0.75rem;font-weight:700;">🖼️ Cover Art</span>
+              <span id="proj-cover-status" style="font-size:0.65rem;color:var(--text-muted);">PNG/JPG</span>
+            </div>
+            <div id="proj-cover-preview-box" style="border:1.5px dashed var(--border);border-radius:6px;padding:8px;cursor:pointer;min-height:74px;display:flex;flex-direction:column;align-items:center;justify-content:center;" onclick="document.getElementById('proj-cover-input').click()">
+              <div id="proj-cover-icon" style="font-size:1.4rem;">🖼️</div>
+              <div id="proj-cover-text" style="font-size:0.72rem;font-weight:600;margin-top:2px;">Upload Image</div>
+            </div>
+            <input type="file" id="proj-cover-input" accept="image/*" style="display:none;" onchange="handleModalCoverUpload(this)">
+          </div>
+
+          <!-- 2. Demo Video -->
+          <div style="border:1px solid var(--border);border-radius:6px;padding:10px;background:var(--bg-card);text-align:center;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+              <span style="font-size:0.75rem;font-weight:700;">🎬 Demo Video</span>
+              <span id="proj-video-status" style="font-size:0.65rem;color:var(--text-muted);">Optional</span>
+            </div>
+            <div id="proj-video-preview-box" style="border:1.5px dashed var(--border);border-radius:6px;padding:8px;cursor:pointer;min-height:74px;display:flex;flex-direction:column;align-items:center;justify-content:center;" onclick="document.getElementById('proj-video-input').click()">
+              <div id="proj-video-icon" style="font-size:1.4rem;">📹</div>
+              <div id="proj-video-text" style="font-size:0.72rem;font-weight:600;margin-top:2px;">Attach Video</div>
+            </div>
+            <input type="file" id="proj-video-input" accept="video/mp4,video/webm,video/quicktime" style="display:none;" onchange="handleModalVideoUpload(this)">
+          </div>
+
+          <!-- 3. Source Code Bundle or Folder -->
+          <div style="border:1px solid var(--border);border-radius:6px;padding:10px;background:var(--bg-card);text-align:center;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+              <span style="font-size:0.75rem;font-weight:700;">📁 Source Code</span>
+              <span id="proj-bundle-status" style="font-size:0.65rem;color:var(--text-muted);">ZIP/Folder</span>
+            </div>
+            <div style="display:flex;gap:4px;margin-bottom:6px;">
+              <button type="button" class="btn btn-xs" id="proj-mode-zip-btn" style="flex:1;padding:2px 4px;font-size:0.65rem;background:var(--accent-purple);color:#fff;" onclick="setModalBundleMode('zip')">ZIP</button>
+              <button type="button" class="btn btn-xs btn-outline" id="proj-mode-folder-btn" style="flex:1;padding:2px 4px;font-size:0.65rem;" onclick="setModalBundleMode('folder')">Folder</button>
+            </div>
+            <div id="proj-bundle-preview-box" style="border:1.5px dashed var(--border);border-radius:6px;padding:6px;cursor:pointer;min-height:46px;display:flex;flex-direction:column;align-items:center;justify-content:center;" onclick="triggerModalBundleSelect()">
+              <div id="proj-bundle-icon" style="font-size:1.2rem;">📦</div>
+              <div id="proj-bundle-text" style="font-size:0.7rem;font-weight:600;">Choose Code</div>
+            </div>
+            <input type="file" id="proj-zip-input" accept=".zip,.tar,.gz,.rar,.json,.js,.py,.ts" style="display:none;" onchange="handleModalZipUpload(this)">
+            <input type="file" id="proj-folder-input" webkitdirectory directory multiple style="display:none;" onchange="handleModalFolderUpload(this)">
+          </div>
+        </div>
+
+        <div id="modal-upload-summary" style="display:none;background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.3);padding:8px 12px;border-radius:6px;font-size:0.75rem;color:var(--accent-green);align-items:center;gap:6px;">
+          <span>✓</span> <span id="modal-upload-summary-text"></span>
+        </div>
       </div>
-      <div>
-        <label style="font-size:0.82rem;color:var(--text-muted);display:block;margin-bottom:6px;">Price (₹) — Leave 0 for free</label>
-        <input class="input" type="number" placeholder="e.g., 1999" id="proj-price" min="0">
-      </div>
-      <div style="padding:16px;border:2px dashed var(--border);border-radius:var(--radius-md);text-align:center;cursor:pointer;" onclick="SH.showToast('File picker opened!','info')">
-        <div style="font-size:2rem;margin-bottom:8px;">📁</div>
-        <div style="font-weight:600;">Drag & drop project files</div>
-        <div style="font-size:0.8rem;color:var(--text-muted);">.zip, max 50MB</div>
-      </div>
-      <div style="display:flex;gap:12px;">
+
+      <div style="display:flex;gap:12px;margin-top:6px;">
         <button class="btn btn-secondary" style="flex:1;justify-content:center;" onclick="SH.closeModal('modal-upload')">Cancel</button>
-        <button class="btn btn-primary" style="flex:1;justify-content:center;" onclick="uploadProject()">🚀 Upload & Publish</button>
+        <button class="btn btn-primary" id="btn-modal-upload-submit" style="flex:1;justify-content:center;font-weight:700;" onclick="uploadProject()">🚀 Upload &amp; Publish</button>
       </div>
     </div>
   </div>
@@ -400,35 +466,291 @@ function switchProfileTab(el) {
   if (panel) panel.style.display = '';
 }
 
+// ── PROFILE AVATAR & COVER PHOTO REAL-TIME UPLOAD ─────────────
+async function handleProfileAvatarUpload(input) {
+  if (!input.files || !input.files[0]) return;
+  const file = input.files[0];
+  if (window.SH && window.SH.showToast) window.SH.showToast('Uploading profile image...', 'info');
+
+  try {
+    const res = await window.SmartHubAPI.uploadImage(file);
+    if (res && res.url) {
+      const avatarEl = document.getElementById('profile-avatar');
+      if (avatarEl) avatarEl.src = res.url;
+
+      const user = JSON.parse(localStorage.getItem('smarthub_user') || '{}');
+      user.avatar = res.url;
+      localStorage.setItem('smarthub_user', JSON.stringify(user));
+
+      if (window.SmartHubAPI && window.SmartHubAPI.updateProfile) {
+        await window.SmartHubAPI.updateProfile({ avatar: res.url });
+      }
+
+      // Update avatar across layout header
+      document.querySelectorAll('.avatar-user, .user-avatar, .header-avatar, [data-user-avatar]').forEach(img => {
+        img.src = res.url;
+      });
+
+      if (window.SH && window.SH.showToast) {
+        window.SH.showToast('Profile photo updated successfully! 📷✨', 'success');
+      }
+    } else {
+      throw new Error(res && res.error ? res.error : 'Failed to upload photo');
+    }
+  } catch (err) {
+    if (window.SH && window.SH.showToast) window.SH.showToast('Upload error: ' + err.message, 'error');
+  }
+}
+
+async function handleCoverPhotoUpload(input) {
+  if (!input.files || !input.files[0]) return;
+  const file = input.files[0];
+  if (window.SH && window.SH.showToast) window.SH.showToast('Uploading cover photo...', 'info');
+
+  try {
+    const res = await window.SmartHubAPI.uploadImage(file);
+    if (res && res.url) {
+      const coverEl = document.getElementById('profile-cover');
+      if (coverEl) {
+        coverEl.style.backgroundImage = `url('${res.url}')`;
+        coverEl.style.backgroundSize = 'cover';
+        coverEl.style.backgroundPosition = 'center';
+      }
+
+      const user = JSON.parse(localStorage.getItem('smarthub_user') || '{}');
+      user.cover = res.url;
+      localStorage.setItem('smarthub_user', JSON.stringify(user));
+
+      if (window.SmartHubAPI && window.SmartHubAPI.updateProfile) {
+        await window.SmartHubAPI.updateProfile({ cover: res.url });
+      }
+
+      if (window.SH && window.SH.showToast) {
+        window.SH.showToast('Cover photo updated successfully! 🖼️✨', 'success');
+      }
+    } else {
+      throw new Error(res && res.error ? res.error : 'Failed to upload cover');
+    }
+  } catch (err) {
+    if (window.SH && window.SH.showToast) window.SH.showToast('Upload error: ' + err.message, 'error');
+  }
+}
+
+// ── MODAL PUBLISH ASSET UPLOAD STATE & CONTROLLERS ─────────────
+let modalCoverUrl = null;
+let modalVideoUrl = null;
+let modalDownloadUrl = null;
+let modalBundleInfo = null;
+let modalBundleMode = 'zip';
+
+function setModalBundleMode(mode) {
+  modalBundleMode = mode;
+  const zipBtn = document.getElementById('proj-mode-zip-btn');
+  const folderBtn = document.getElementById('proj-mode-folder-btn');
+  if (mode === 'zip') {
+    if (zipBtn) { zipBtn.className = 'btn btn-xs'; zipBtn.style.background = 'var(--accent-purple)'; zipBtn.style.color = '#fff'; }
+    if (folderBtn) { folderBtn.className = 'btn btn-xs btn-outline'; folderBtn.style.background = ''; folderBtn.style.color = ''; }
+  } else {
+    if (folderBtn) { folderBtn.className = 'btn btn-xs'; folderBtn.style.background = 'var(--accent-purple)'; folderBtn.style.color = '#fff'; }
+    if (zipBtn) { zipBtn.className = 'btn btn-xs btn-outline'; zipBtn.style.background = ''; zipBtn.style.color = ''; }
+  }
+}
+
+function triggerModalBundleSelect() {
+  const inputId = modalBundleMode === 'folder' ? 'proj-folder-input' : 'proj-zip-input';
+  const el = document.getElementById(inputId);
+  if (el) el.click();
+}
+
+async function handleModalCoverUpload(input) {
+  if (!input.files || !input.files[0]) return;
+  const file = input.files[0];
+  const statusEl = document.getElementById('proj-cover-status');
+  const previewBox = document.getElementById('proj-cover-preview-box');
+  if (statusEl) statusEl.textContent = 'Uploading...';
+
+  try {
+    const res = await window.SmartHubAPI.uploadImage(file);
+    if (res && res.url) {
+      modalCoverUrl = res.url;
+      if (statusEl) { statusEl.textContent = '✓ Ready'; statusEl.style.color = 'var(--accent-green)'; }
+      if (previewBox) {
+        previewBox.innerHTML = `
+          <img src="${res.url}" style="width:100%;height:54px;object-fit:cover;border-radius:4px;margin-bottom:2px;">
+          <div style="font-size:0.65rem;color:var(--accent-green);font-weight:700;">✓ Updated</div>
+        `;
+      }
+      updateModalSummary();
+    }
+  } catch (err) {
+    if (statusEl) statusEl.textContent = 'Failed';
+  }
+}
+
+async function handleModalVideoUpload(input) {
+  if (!input.files || !input.files[0]) return;
+  const file = input.files[0];
+  const statusEl = document.getElementById('proj-video-status');
+  const previewBox = document.getElementById('proj-video-preview-box');
+  if (statusEl) statusEl.textContent = 'Uploading...';
+
+  try {
+    const res = await window.SmartHubAPI.uploadVideo(file);
+    if (res && res.url) {
+      modalVideoUrl = res.url;
+      if (statusEl) { statusEl.textContent = '✓ Ready'; statusEl.style.color = 'var(--accent-cyan)'; }
+      if (previewBox) {
+        previewBox.innerHTML = `
+          <div style="font-size:1.3rem;">🎬</div>
+          <div style="font-size:0.68rem;color:var(--accent-cyan);font-weight:700;">✓ Video Attached</div>
+        `;
+      }
+      updateModalSummary();
+    }
+  } catch (err) {
+    if (statusEl) statusEl.textContent = 'Failed';
+  }
+}
+
+async function handleModalZipUpload(input) {
+  if (!input.files || !input.files[0]) return;
+  const file = input.files[0];
+  const statusEl = document.getElementById('proj-bundle-status');
+  const previewBox = document.getElementById('proj-bundle-preview-box');
+  if (statusEl) statusEl.textContent = 'Uploading...';
+
+  try {
+    const res = await window.SmartHubAPI.uploadSingle(file);
+    if (res && res.url) {
+      modalDownloadUrl = res.url;
+      modalBundleInfo = {
+        type: 'zip',
+        fileName: file.name,
+        size: res.size || file.size,
+        fileCount: 1
+      };
+      if (statusEl) { statusEl.textContent = '✓ Secured'; statusEl.style.color = 'var(--accent-green)'; }
+      if (previewBox) {
+        previewBox.innerHTML = `
+          <div style="font-size:1.1rem;">📦</div>
+          <div style="font-size:0.65rem;color:var(--accent-green);font-weight:700;">✓ ${file.name.slice(0, 16)}</div>
+        `;
+      }
+      updateModalSummary();
+    }
+  } catch (err) {
+    if (statusEl) statusEl.textContent = 'Failed';
+  }
+}
+
+async function handleModalFolderUpload(input) {
+  if (!input.files || input.files.length === 0) return;
+  const files = Array.from(input.files);
+  const statusEl = document.getElementById('proj-bundle-status');
+  const previewBox = document.getElementById('proj-bundle-preview-box');
+  if (statusEl) statusEl.textContent = `Packing ${files.length} files...`;
+
+  try {
+    const res = await window.SmartHubAPI.uploadFolder(files, 'project_code');
+    if (res && res.url) {
+      modalDownloadUrl = res.url;
+      modalBundleInfo = {
+        type: 'folder',
+        archiveName: res.archiveName || 'project_archive.zip',
+        fileCount: res.fileCount || files.length,
+        totalSize: res.totalSizeFormatted || `${(files.reduce((a, b) => a + b.size, 0) / (1024 * 1024)).toFixed(1)} MB`
+      };
+      if (statusEl) { statusEl.textContent = '✓ Zipped'; statusEl.style.color = 'var(--accent-green)'; }
+      if (previewBox) {
+        previewBox.innerHTML = `
+          <div style="font-size:1.1rem;">📁</div>
+          <div style="font-size:0.65rem;color:var(--accent-green);font-weight:700;">✓ ${modalBundleInfo.fileCount} Files Zipped</div>
+        `;
+      }
+      updateModalSummary();
+    }
+  } catch (err) {
+    if (statusEl) statusEl.textContent = 'Failed';
+  }
+}
+
+function updateModalSummary() {
+  const sumEl = document.getElementById('modal-upload-summary');
+  const textEl = document.getElementById('modal-upload-summary-text');
+  if (!sumEl || !textEl) return;
+  const parts = [];
+  if (modalCoverUrl) parts.push('🖼️ Cover Ready');
+  if (modalDownloadUrl) parts.push(modalBundleInfo && modalBundleInfo.type === 'folder' ? `📁 ${modalBundleInfo.fileCount} Files Auto-Zipped` : '📦 ZIP Code Attached');
+  if (modalVideoUrl) parts.push('🎬 Video Walkthrough Ready');
+
+  if (parts.length > 0) {
+    textEl.textContent = parts.join(' • ');
+    sumEl.style.display = 'flex';
+  }
+}
+
 async function uploadProject() {
   const title = document.getElementById('proj-title').value.trim();
   const desc = document.getElementById('proj-desc').value.trim();
   const price = document.getElementById('proj-price').value;
-  if (!title || !desc) { SH.showToast('Please fill in all required fields!', 'error'); return; }
+  const cat = document.getElementById('proj-cat').value;
+  const btn = document.getElementById('btn-modal-upload-submit');
 
-  if (window.SmartHubAPI) {
-    try {
-      const res = await window.SmartHubAPI.createProduct({
-        title,
-        description: desc,
-        price: Number(price) || 999,
-        category: 'React'
-      });
+  if (!title || !desc) {
+    if (window.SH && window.SH.showToast) window.SH.showToast('Please enter both title and description!', 'error');
+    return;
+  }
+
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Publishing Project... 🚀';
+  }
+
+  const payload = {
+    title,
+    description: desc,
+    price: Number(price) >= 0 ? Number(price) : 1999,
+    category: cat || 'React',
+    thumb: modalCoverUrl || `https://picsum.photos/seed/${encodeURIComponent(title)}/800/500`,
+    videoUrl: modalVideoUrl || null,
+    downloadUrl: modalDownloadUrl || null,
+    bundleInfo: modalBundleInfo || null,
+    tags: [cat, 'FullStack', 'Audited']
+  };
+
+  try {
+    if (window.SmartHubAPI) {
+      const res = await window.SmartHubAPI.createProduct(payload);
       if (res && res.success) {
-        SH.showToast(`"${title}" published successfully! 🚀`, 'success');
+        if (window.SH && window.SH.showToast) {
+          window.SH.showToast(`"${title}" published successfully to Smart Hub! 🚀`, 'success');
+        }
         SH.closeModal('modal-upload');
+        // Reset modal fields
+        document.getElementById('proj-title').value = '';
+        document.getElementById('proj-desc').value = '';
+        modalCoverUrl = null;
+        modalVideoUrl = null;
+        modalDownloadUrl = null;
+        modalBundleInfo = null;
         renderProfileProjects();
         return;
       }
-    } catch (e) {}
+    }
+  } catch (e) {} finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = '🚀 Upload & Publish';
+    }
   }
 
-  SH.showToast(`"${title}" published successfully! 🚀`, 'success');
+  if (window.SH && window.SH.showToast) {
+    window.SH.showToast(`"${title}" published successfully! 🚀`, 'success');
+  }
   SH.closeModal('modal-upload');
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-
   const user = (window.getCurrentUser && window.getCurrentUser());
   if (user) {
     const nameEl = document.getElementById('profile-name-text');
@@ -447,6 +769,16 @@ document.addEventListener('DOMContentLoaded', () => {
     if (badgesEl) badgesEl.textContent = user.badges || 0;
     const walletMeta = document.getElementById('profile-wallet-meta');
     if (walletMeta) walletMeta.textContent = `💰 ₹${(user.walletBalance || 0).toLocaleString('en-IN')} in Wallet`;
+
+    // Load custom profile cover if saved
+    if (user.cover) {
+      const coverEl = document.getElementById('profile-cover');
+      if (coverEl) {
+        coverEl.style.backgroundImage = `url('${user.cover}')`;
+        coverEl.style.backgroundSize = 'cover';
+        coverEl.style.backgroundPosition = 'center';
+      }
+    }
   } else {
     // Clean Guest state
     const nameEl = document.getElementById('profile-name-text');
