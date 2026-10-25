@@ -58,5 +58,6 @@ async function testConnection() {
 module.exports = {
   supabase,
   isConfigured: () => isConfigured,
+  isSupabaseConfigured: () => isConfigured,
   testConnection
 };

@@ -1,6 +1,21 @@
 {
   "users": [
     {
+      "id": "u_1792909641459",
+      "name": "Rahul",
+      "username": "@rahul",
+      "email": "rahul@gmail.com",
+      "passwordHash": "$2b$10$w0Aq.LEbFFyNStXxM4LQJe9b35q7thaUWpxu/7d05Uv7E7BTyPpRu",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=%40rahul&backgroundColor=ff5b36",
+      "walletBalance": 500,
+      "role": "buyer",
+      "xp": 100,
+      "badges": 1,
+      "location": "India",
+      "headline": "Smart Hub Developer",
+      "createdAt": "2026-10-25T06:27:21.460Z"
+    },
+    {
       "id": "b9f83b04-538c-4aab-9d88-f35a2ecb1cbe",
       "name": "Naitik Soni",
       "username": "@naitik19",
@@ -271,6 +286,19 @@
   "leaderboard": [],
   "reviews": [],
   "apiKeys": [
+    {
+      "id": "key_1792909641468",
+      "userId": "u_1792909641459",
+      "name": "Default Production Key",
+      "keyHash": "f759d30740cdec05a3bfed5e8dc6d99acbb7cb0da001c8901ab26f3b8759f92f",
+      "encryptedKey": "40338699e1ef8974aebf26b3eb5041db:0fe40256fc540efa9c33c66f8f13042a09921e162cf0dcaee21154b10d4176151443e3087d7c32193337d0e6ca6acaf4fbf176aae110e8ae7e6065a21f2c801b",
+      "keyPrefix": "sh_live_5fc3",
+      "lastFour": "02f4",
+      "scope": "full_access",
+      "status": "active",
+      "lastUsedAt": null,
+      "createdAt": "2026-10-25T06:27:21.569Z"
+    },
     {
       "id": "key_1792869526297",
       "userId": "b9f83b04-538c-4aab-9d88-f35a2ecb1cbe",
