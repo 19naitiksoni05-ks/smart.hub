@@ -86,7 +86,7 @@
       "email": "naitiksoni700@gmail.com",
       "passwordHash": "$2b$10$mMSjpm6oQLhgWCqrqdJfa.rd9c6yuXiXacNLJPqvof7QG9.t/INPq",
       "avatar": "/uploads/images/profilpic_-_Copy_1792920691972_ac19a138.png",
-      "walletBalance": 8308,
+      "walletBalance": 10260,
       "role": "buyer",
       "xp": 0,
       "badges": 0,
@@ -94,7 +94,7 @@
       "headline": "Smart Hub Developer",
       "createdAt": "2026-10-25T06:31:25.671Z",
       "cover": "/uploads/images/Screenshot__1__1792920634969_373d9b62.png",
-      "updatedAt": "2026-10-25T10:31:30.064Z"
+      "updatedAt": "2026-10-25T12:07:31.438Z"
     },
     {
       "id": "b9f83b04-538c-4aab-9d88-f35a2ecb1cbe",
@@ -123,7 +123,7 @@
       "oldPrice": 2999,
       "rating": 5,
       "reviews": 1,
-      "sales": 4,
+      "sales": 5,
       "author": {
         "id": "a9b9e238-6ec8-4622-8f22-9b6eb6939ac2",
         "name": "Naitik Soni",
@@ -152,7 +152,7 @@
       "type": "Source Code",
       "createdAt": "2026-10-25T07:30:27.884Z",
       "stars": 42,
-      "updatedAt": "2026-10-25T10:31:30.067Z"
+      "updatedAt": "2026-10-25T12:07:31.451Z"
     }
   ],
   "categories": [
@@ -242,6 +242,36 @@
     }
   ],
   "orders": [
+    {
+      "id": "ord_1792930051448_0",
+      "orderNumber": "SH-ORD-2026-1682",
+      "buyerId": null,
+      "buyerEmail": "drm_buyer_1792930051390@smarthub.io",
+      "productId": "p_1792913427884",
+      "productTitle": "Python Array & Algorithm Utility Suite",
+      "category": "Python",
+      "amount": 1999,
+      "platformFee": 40,
+      "statutoryTax": 7,
+      "sellerNetEarnings": 1952,
+      "platformFeePercent": "2.0%",
+      "discount": 0,
+      "license": "regular",
+      "paymentMethod": "upi",
+      "encKey": "SH-KEY-2026-13E1-4049-D04F",
+      "keyActivated": true,
+      "status": "completed",
+      "emailSent": true,
+      "emailSentTo": "drm_buyer_1792930051390@smarthub.io",
+      "emailSentAt": "2026-10-25T12:07:31.448Z",
+      "downloadUrl": null,
+      "downloadDisabled": true,
+      "deliveryMethod": "email_only",
+      "createdAt": "2026-10-25T12:07:31.448Z",
+      "activatedAt": "2026-10-25T12:07:31.605Z",
+      "activatedByEmail": "drm_buyer_1792930051390@smarthub.io",
+      "updatedAt": "2026-10-25T12:07:31.605Z"
+    },
     {
       "id": "ord_1792924290066_0",
       "orderNumber": "SH-ORD-2026-5488",
@@ -434,6 +464,18 @@
     }
   ],
   "transactions": [
+    {
+      "id": "t_s_1792930051442_0",
+      "userId": "a9b9e238-6ec8-4622-8f22-9b6eb6939ac2",
+      "type": "credit",
+      "title": "Sale: Python Array & Algorithm Utility Suite (Net after 2.0% fee & tax)",
+      "amount": 1952,
+      "date": "2026-10-25",
+      "icon": "💸",
+      "buyer": "drm_buyer_1792930051390@smarthub.io",
+      "method": "SmartHub Store",
+      "createdAt": "2026-10-25T12:07:31.443Z"
+    },
     {
       "id": "t_s_1792924290066_0",
       "userId": "a9b9e238-6ec8-4622-8f22-9b6eb6939ac2",
@@ -1311,6 +1353,26 @@
     }
   ],
   "emails": [
+    {
+      "id": "email_1792930051455_0",
+      "to": "drm_buyer_1792930051390@smarthub.io",
+      "subject": "🔒 Smart Hub Source Code Package & Encryption Key: Python Array & Algorithm Utility Suite",
+      "orderNumber": "SH-ORD-2026-1682",
+      "productId": "p_1792913427884",
+      "productTitle": "Python Array & Algorithm Utility Suite",
+      "encKey": "SH-KEY-2026-13E1-4049-D04F",
+      "activationUrl": "/repo.html?id=p_1792913427884&activateKey=SH-KEY-2026-13E1-4049-D04F",
+      "sentAt": "2026-10-25T12:07:31.455Z",
+      "status": "delivered",
+      "deliveryMethod": "Email Only (Direct Website Download Disabled)",
+      "attachedPackage": {
+        "filename": "python.zip",
+        "fileType": "application/zip",
+        "encryption": "AES-256 Multi-Factor Cryptographic Token"
+      },
+      "body": "Dear Developer,\n\nThank you for purchasing \"Python Array & Algorithm Utility Suite\" on Smart Hub India.\n\nYour source code package is cryptographically protected with AES-256 DRM. Direct website downloads, unauthorized copying, screenshots, and screen recordings are strictly restricted to protect developer intellectual property.\n\nYOUR ENCRYPTED SOURCE PACKAGE & ENCRYPTION KEY:\n======================================================\nPROJECT: Python Array & Algorithm Utility Suite\nATTACHED PACKAGE FILE: python.zip\nDELIVERY METHOD: Sent directly to your email inbox\nENCRYPTION KEY:\nSH-KEY-2026-13E1-4049-D04F\n======================================================\n\nIMPORTANT SECURITY NOTICE:\nDirect browser downloads from the website are completely disabled. Your complete source code archive is dispatched ONLY via this verified email alongside your unique encryption key.\n\nTO DECRYPT & INSPECT SOURCE CODE IN SMART HUB STUDIO:\n1. Open the project in Smart Hub:\n   http://localhost:5000/repo.html?id=p_1792913427884\n2. Enter your Encryption Key in the verification box, or simply click this instant activation link:\n   http://localhost:5000/repo.html?id=p_1792913427884&activateKey=SH-KEY-2026-13E1-4049-D04F\n3. Once verified in the browser, the source code will decrypt and unlock for viewing and copying.\n\nOrder Number: SH-ORD-2026-1682\nLicensee: drm_buyer_1792930051390@smarthub.io\nDelivery Timestamp: 2026-10-25T12:07:31.455Z\n\nHappy Building!\nThe Smart Hub Engineering Team",
+      "createdAt": "2026-10-25T12:07:31.455Z"
+    },
     {
       "id": "email_1792924290067_0",
       "to": "drm_buyer_1792924290063@smarthub.io",

@@ -232,18 +232,22 @@ router.post('/checkout', authOptional, (req, res) => {
         emailSent: true,
         emailSentTo: deliveryEmail,
         emailSentAt: new Date().toISOString(),
-        downloadUrl: `/api/orders/${orderNumber}/download`,
+        downloadUrl: null,
+        downloadDisabled: true,
+        deliveryMethod: 'email_only',
         createdAt: new Date().toISOString()
       };
 
       db.insert('orders', newOrder);
       db.update('products', product.id, { sales: (product.sales || 0) + it.qty });
 
-      // Generate Email Record & Save to database
+      const zipName = (product.bundleInfo && product.bundleInfo.folderName ? `${product.bundleInfo.folderName}.zip` : `${product.title.replace(/[^a-zA-Z0-9_-]/g, '_')}_source.zip`);
+
+      // Generate Email Record & Save to database (File & Key delivered to email only)
       const emailRecord = {
         id: 'email_' + Date.now() + '_' + i,
         to: deliveryEmail,
-        subject: `🔒 Smart Hub Encrypted Source Code Package & Activation Key: ${product.title}`,
+        subject: `🔒 Smart Hub Source Code Package & Encryption Key: ${product.title}`,
         orderNumber,
         productId: product.id,
         productTitle: product.title,
@@ -251,23 +255,36 @@ router.post('/checkout', authOptional, (req, res) => {
         activationUrl: `/repo.html?id=${product.id}&activateKey=${encKey}`,
         sentAt: new Date().toISOString(),
         status: 'delivered',
+        deliveryMethod: 'Email Only (Direct Website Download Disabled)',
+        attachedPackage: {
+          filename: zipName,
+          fileType: 'application/zip',
+          encryption: 'AES-256 Multi-Factor Cryptographic Token'
+        },
         body: `Dear Developer,
 
 Thank you for purchasing "${product.title}" on Smart Hub India.
 
-Your source code package is cryptographically protected with AES-256 DRM. To protect developer intellectual property, unauthorized copying, screenshots, and screen recordings are strictly restricted.
+Your source code package is cryptographically protected with AES-256 DRM. Direct website downloads, unauthorized copying, screenshots, and screen recordings are strictly restricted to protect developer intellectual property.
 
-YOUR ENCRYPTION KEY:
-=========================================
+YOUR ENCRYPTED SOURCE PACKAGE & ENCRYPTION KEY:
+======================================================
+PROJECT: ${product.title}
+ATTACHED PACKAGE FILE: ${zipName}
+DELIVERY METHOD: Sent directly to your email inbox
+ENCRYPTION KEY:
 ${encKey}
-=========================================
+======================================================
 
-TO DECRYPT & OPEN THE SOURCE CODE:
+IMPORTANT SECURITY NOTICE:
+Direct browser downloads from the website are completely disabled. Your complete source code archive is dispatched ONLY via this verified email alongside your unique encryption key.
+
+TO DECRYPT & INSPECT SOURCE CODE IN SMART HUB STUDIO:
 1. Open the project in Smart Hub:
    http://localhost:5000/repo.html?id=${product.id}
 2. Enter your Encryption Key in the verification box, or simply click this instant activation link:
    http://localhost:5000/repo.html?id=${product.id}&activateKey=${encKey}
-3. Once verified, the source code will decrypt and unlock for viewing, copying, and download.
+3. Once verified in the browser, the source code will decrypt and unlock for viewing and copying.
 
 Order Number: ${orderNumber}
 Licensee: ${deliveryEmail}
@@ -285,7 +302,9 @@ The Smart Hub Engineering Team`
         title: product.title,
         key: encKey,
         orderNumber,
-        downloadUrl: newOrder.downloadUrl,
+        downloadUrl: null,
+        downloadDisabled: true,
+        deliveryMethod: 'email_only',
         activationUrl: emailRecord.activationUrl
       });
     }
@@ -324,7 +343,9 @@ The Smart Hub Engineering Team`
       emailSentTo: deliveryEmail,
       emails: sentEmails,
       activationUrl: sentEmails[0] ? sentEmails[0].activationUrl : null,
-      downloadUrl: primaryOrder.downloadUrl,
+      downloadUrl: null,
+      downloadDisabled: true,
+      deliveryMethod: 'email_only',
       updatedWalletBalance: (buyer && paymentMethod === 'wallet') ? (buyer.walletBalance - finalAmount) : (buyer ? buyer.walletBalance : 0)
     });
   } catch (err) {
@@ -378,7 +399,9 @@ router.post('/activate-key', authOptional, (req, res) => {
       productId: order.productId,
       buyerEmail: order.buyerEmail,
       encKey: order.encKey,
-      downloadUrl: `/api/orders/${order.orderNumber}/download`,
+      downloadUrl: null,
+      downloadDisabled: true,
+      deliveryMethod: 'email_only',
       activatedAt: order.activatedAt
     });
   } catch (err) {
@@ -544,115 +567,13 @@ router.get('/verify-key/:key', (req, res) => {
   }
 });
 
-// ── Download Project Source Package (.zip) (Protected) ────────
+// ── Download Project Source Package (.zip) (Disabled - Dispatched via Email Only) ──
 router.get('/:idOrNumber/download', authOptional, (req, res) => {
-  try {
-    const param = req.params.idOrNumber;
-    let order = db.findOne('orders', o => o.orderNumber === param || o.id === param);
-    let product;
-
-    if (order) {
-      product = db.findById('products', order.productId);
-    } else {
-      product = db.findById('products', param);
-    }
-
-    if (!product) {
-      return res.status(404).json({ success: false, error: 'Product or order package not found' });
-    }
-
-    // Access authorization check
-    const user = req.user || null;
-    const clientKey = (req.query.key || req.headers['x-license-key'] || '').trim().toUpperCase();
-    let isAuthorized = false;
-
-    if (user && (user.role === 'admin' || (product.author && product.author.id === user.id))) {
-      isAuthorized = true;
-    } else if (order && order.keyActivated === true) {
-      isAuthorized = true;
-    } else if (clientKey) {
-      const matchedOrder = db.findOne('orders', o => 
-        o.productId === product.id && 
-        o.encKey && o.encKey.toUpperCase() === clientKey && 
-        o.keyActivated === true
-      );
-      if (matchedOrder) isAuthorized = true;
-    } else if (user) {
-      const userOrder = db.findOne('orders', o =>
-        o.productId === product.id &&
-        (o.buyerId === user.id || o.buyerEmail === user.email) &&
-        o.keyActivated === true
-      );
-      if (userOrder) isAuthorized = true;
-    }
-
-    if (!isAuthorized) {
-      return res.status(403).json({
-        success: false,
-        error: 'Access Denied: You must purchase this project and activate your email encryption key to download the source code package.'
-      });
-    }
-
-    // Check if a real physical zip archive exists on disk
-    const rootUploads = path.join(__dirname, '../../uploads');
-    let realZipPath = null;
-    if (product.bundleInfo && product.bundleInfo.zipUrl) {
-      const cleanRel = product.bundleInfo.zipUrl.replace(/^\/uploads\//, '');
-      const fullP = path.join(rootUploads, cleanRel);
-      if (fs.existsSync(fullP)) realZipPath = fullP;
-    }
-    if (!realZipPath && product.downloadUrl && product.downloadUrl.endsWith('.zip')) {
-      const cleanRel = product.downloadUrl.replace(/^\/uploads\//, '');
-      const fullP = path.join(rootUploads, cleanRel);
-      if (fs.existsSync(fullP)) realZipPath = fullP;
-    }
-
-    const filename = `${product.title.toLowerCase().replace(/[^a-z0-9]/g, '-')}-verified-bundle.zip`;
-
-    if (realZipPath) {
-      return res.download(realZipPath, filename);
-    }
-
-    // Fallback: package real folder into zip on demand
-    let folderId = product.bundleInfo && product.bundleInfo.folderId;
-    if (folderId) {
-      const folderPath = path.join(rootUploads, 'folders', folderId);
-      if (fs.existsSync(folderPath)) {
-        const zip = new AdmZip();
-        zip.addLocalFolder(folderPath);
-        const zipBuffer = zip.toBuffer();
-        res.setHeader('Content-Type', 'application/zip');
-        res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-        res.setHeader('Content-Length', zipBuffer.length);
-        return res.send(zipBuffer);
-      }
-    }
-
-    // Baseline fallback package
-    const zip = new AdmZip();
-    const licenseContent = `# 🚀 Smart Hub Verified Developer License
-Order ID: ${order ? order.orderNumber : ('SH-ORD-' + Date.now().toString(36).toUpperCase())}
-Product: ${product.title}
-License Type: Commercial Developer License
-Cryptographic Key: ${order ? order.encKey : 'SH-KEY-VERIFIED'}
-Delivery Date: ${new Date().toISOString()}
-
-Terms:
-1. You have perpetual rights to use, modify, deploy, and distribute this software for commercial and client projects.
-2. Verified with SHA-256 cryptographic signature by Smart Hub Technologies India.
-`;
-    zip.addFile('LICENSE.md', Buffer.from(licenseContent, 'utf8'));
-    zip.addFile('README.md', Buffer.from(`# ${product.title}\n\n${product.description || ''}`, 'utf8'));
-    const zipBuffer = zip.toBuffer();
-
-    res.setHeader('Content-Type', 'application/zip');
-    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-    res.setHeader('Content-Length', zipBuffer.length);
-    res.send(zipBuffer);
-  } catch (err) {
-    console.error('Download package error:', err);
-    res.status(500).json({ success: false, error: 'Failed to generate package download' });
-  }
+  return res.status(403).json({
+    success: false,
+    downloadDisabled: true,
+    error: 'Direct website downloads are disabled for intellectual property and security protection. The complete encrypted project source package (.zip) is dispatched exclusively to your verified email address along with your unique encryption key.'
+  });
 });
 
 module.exports = router;

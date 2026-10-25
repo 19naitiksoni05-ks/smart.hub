@@ -88,7 +88,7 @@
             <label class="input-label">Verified Email for Encrypted Token Delivery</label>
             <input type="email" class="input" id="checkout-email" placeholder="Enter your email address" required>
             <span style="font-size:0.72rem;color:var(--text-muted);margin-top:4px;">
-              Your download link + unique encryption key will be dispatched here within 10 seconds.
+              Your encrypted source code package (.zip) + unique encryption key will be dispatched here within 10 seconds.
             </span>
           </div>
 
@@ -166,7 +166,7 @@
         <div style="font-family:var(--font-tech);font-size:0.8rem;color:var(--accent-green);font-weight:700;letter-spacing:0.14em;margin-bottom:8px;">[ PAYMENT VERIFIED &amp; SOURCE CODE DELIVERED ]</div>
         <h2 style="font-size:2rem;margin-bottom:12px;">Transaction Completed Successfully!</h2>
         <p style="color:var(--text-secondary);max-width:540px;margin:0 auto 28px auto;">
-          The encrypted package download and unlock key have been dispatched to <strong id="success-email">your email address</strong>.
+          The encrypted source code package (.zip) and unlock encryption key have been dispatched exclusively to <strong id="success-email">your email address</strong>.
         </p>
 
         <!-- Cryptographic Token Container -->
@@ -178,18 +178,21 @@
               <button class="btn btn-outline btn-sm" onclick="copyEncKey()" id="copy-key-btn">Copy Key 📋</button>
             </div>
             <div style="font-size:0.75rem;color:var(--text-muted);margin-top:10px;">
-              Use this token to unlock the `.zip` archive or link it into your environment.
+              Use this key to unlock and decrypt the code viewer in the Smart Hub Studio.
             </div>
           </div>
         </div>
 
+        <div style="background:rgba(255,91,54,0.08);border:1.5px solid var(--accent-coral);border-radius:var(--radius-xs);padding:16px 20px;max-width:680px;margin:0 auto 24px auto;text-align:left;">
+          <div style="font-weight:700;color:var(--accent-coral);font-size:0.9rem;display:flex;align-items:center;gap:8px;">
+            <span>📧</span> Source Code File Dispatched Exclusively via Email
+          </div>
+          <div style="font-size:0.82rem;color:var(--text-muted);margin-top:6px;line-height:1.5;">
+            Direct website downloads are disabled for intellectual property and security protection. Your complete project archive (.zip) was sent directly to your verified email with your unique encryption key.
+          </div>
+        </div>
+
         <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
-          <button class="btn btn-primary" onclick="simulateDownload()">
-            📦 Download Source Code Bundle (.zip)
-          </button>
-          <a href="profile.html#projects" class="btn btn-outline">
-            👤 View in My Assets
-          </a>
           <a href="marketplace.html" class="btn btn-secondary">
             ← Return to Store
           </a>
@@ -652,8 +655,7 @@
     }
 
     function simulateDownload() {
-      showToast('Downloading verified source package (.zip)... 📦', 'success');
-      window.location.href = currentDownloadUrl;
+      showToast('Direct website downloads are disabled. The source code package (.zip) has been dispatched directly to your email with your encryption key! 📧', 'info');
     }
   </script>
 </body>

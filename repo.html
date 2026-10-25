@@ -477,9 +477,9 @@
             <button class="btn btn-outline" onclick="toggleStudioStar()" id="btn-studio-star" style="color:var(--accent-orange);">
               ★ Star <span id="studio-star-count">42</span>
             </button>
-            <button class="btn btn-outline" onclick="downloadProjectZip()" id="btn-studio-zip">
-              📦 Download Source ZIP
-            </button>
+            <div class="badge badge-coral" id="studio-delivery-badge" style="display:inline-flex;align-items:center;gap:6px;font-size:0.78rem;padding:7px 12px;border-radius:var(--radius-xs);border:1px solid rgba(255,91,54,0.3);background:rgba(255,91,54,0.08);color:var(--accent-coral);">
+              <span>📧</span> File Sent via Email Only
+            </div>
             <a href="checkout.html" class="btn btn-primary" id="btn-studio-buy">
               ⚡ Commercial License (<span id="studio-price-tag">₹1,999</span>)
             </a>
@@ -524,7 +524,7 @@
           <span style="font-size:1.4rem;">🔓</span>
           <div>
             <div style="font-weight:700;color:var(--accent-green);font-size:0.9rem;">Source Code Decrypted &amp; Activated</div>
-            <div style="font-size:0.78rem;color:var(--studio-text-muted);" id="licensed-buyer-info">Licensed Commercial Developer Access · Code Copy &amp; Download Unlocked</div>
+            <div style="font-size:0.78rem;color:var(--studio-text-muted);" id="licensed-buyer-info">Licensed Commercial Developer Access · Code Decrypted &amp; Active · Source Archive Dispatched to Email</div>
           </div>
         </div>
         <span class="badge badge-green">✓ KEY VERIFIED &amp; UNLOCKED</span>
@@ -727,9 +727,14 @@
               <a href="checkout.html" id="link-checkout-sidebar" class="btn btn-primary" style="width:100%;text-align:center;display:block;margin-bottom:10px;font-weight:700;">
                 ⚡ Purchase Commercial License
               </a>
-              <button class="btn btn-outline" onclick="downloadProjectZip()" style="width:100%;font-weight:700;">
-                📦 Download Source ZIP
-              </button>
+              <div style="background:rgba(255,91,54,0.06);border:1px dashed var(--accent-coral);border-radius:var(--radius-xs);padding:12px;margin-top:10px;text-align:center;">
+                <div style="font-size:0.82rem;font-weight:700;color:var(--accent-coral);display:flex;align-items:center;justify-content:center;gap:6px;">
+                  <span>📧</span> File Sent Directly to Email Only
+                </div>
+                <div style="font-size:0.75rem;color:var(--studio-text-muted);margin-top:4px;line-height:1.4;">
+                  The complete source code archive (.zip) and encryption key are dispatched exclusively to your verified email. Direct website downloads are disabled for security.
+                </div>
+              </div>
             </div>
           </div>
 
@@ -925,7 +930,7 @@
       if (banner) banner.style.display = 'none';
       if (activeBadge) {
         activeBadge.style.display = 'flex';
-        document.getElementById('licensed-buyer-info').textContent = `Licensed to ${buyerInfo} · Code View, Copy & Download Unlocked`;
+        document.getElementById('licensed-buyer-info').textContent = `Licensed to ${buyerInfo} · Code Decrypted & View Active · Source Archive Dispatched to Email`;
       }
       const buyBtn = document.getElementById('btn-studio-buy');
       if (buyBtn) {
@@ -1397,19 +1402,7 @@
 
     // ── Actions ────────────────────────────────────────────────
     function downloadProjectZip() {
-      if (!currentRepo) return;
-      if (!isProjectUnlocked) {
-        showDRMAlert('🔒 Purchase & Key Activation Required: Please purchase this project and enter your email encryption key to download the source bundle.');
-        focusActivationInput();
-        return;
-      }
-
-      let downloadLink = currentRepo.downloadUrl || `/api/orders/${currentRepo.id}/download`;
-      if (activeLicenseKey) {
-        downloadLink += (downloadLink.includes('?') ? '&' : '?') + `key=${encodeURIComponent(activeLicenseKey)}`;
-      }
-      showToast('Downloading verified decrypted source bundle (.zip)... 📦', 'success');
-      window.location.href = downloadLink;
+      showDRMAlert('📧 Email Dispatch Only: Direct website downloads are disabled for intellectual property and copyright security. The complete source code package (.zip) has been dispatched directly to your verified email with your unique encryption key.');
     }
 
     async function toggleStudioStar() {

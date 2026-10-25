@@ -356,7 +356,7 @@ router.get('/:id/repo', authOptional, (req, res) => {
       avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=naitik19&backgroundColor=ff5b36'
     };
 
-    const downloadUrl = (product.bundleInfo && product.bundleInfo.zipUrl) || product.downloadUrl || `/api/orders/${product.id}/download`;
+    const downloadUrl = null;
 
     // Check client authorization status
     const access = checkProjectAccess(product, req);
@@ -370,7 +370,9 @@ router.get('/:id/repo', authOptional, (req, res) => {
       price: product.price,
       thumb: product.thumb,
       videoUrl: product.videoUrl,
-      downloadUrl,
+      downloadUrl: null,
+      downloadDisabled: true,
+      deliveryMethod: 'email_only',
       bundleInfo: product.bundleInfo,
       fileCount: Object.keys(files).length,
       stars: product.stars || (product.reviews ? product.reviews * 12 : 38),
