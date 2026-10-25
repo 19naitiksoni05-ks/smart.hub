@@ -55,6 +55,7 @@
         try {
           const u = JSON.parse(user);
           if (u.id) headers['x-user-id'] = u.id;
+          if (u.email) headers['x-user-email'] = u.email;
         } catch (e) {}
       }
       return headers;
@@ -69,6 +70,7 @@
         try {
           const u = JSON.parse(user);
           if (u.id) headers['x-user-id'] = u.id;
+          if (u.email) headers['x-user-email'] = u.email;
         } catch (e) {}
       }
       return headers;
@@ -898,6 +900,14 @@
               if (data.challenges) window.SmartHubData.challenges = data.challenges;
               if (data.transactions) window.SmartHubData.transactions = data.transactions;
             }
+          }
+          // If user is logged in, sync genuine profile & wallet from backend
+          const rawUser = localStorage.getItem('smarthub_user');
+          if (rawUser) {
+            try {
+              await this.getMe();
+              await this.getWallet();
+            } catch (uErr) {}
           }
           // Init WS
           this.initWebSocket();

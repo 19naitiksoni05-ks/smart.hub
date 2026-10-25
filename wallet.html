@@ -684,37 +684,10 @@ async function processTopup() {
         return;
       }
     }
+    throw new Error('Wallet service is temporarily unreachable');
   } catch (err) {
-    console.warn('API topup fallback:', err);
+    SH.showToast(err.message || 'Top-up failed. Please check backend connection.', 'error');
   }
-
-  // Local fallback if server unreachable
-  walletBalance += amount;
-  document.getElementById('wallet-main-balance').textContent = '₹' + walletBalance.toLocaleString('en-IN');
-  document.querySelectorAll('.wallet-display').forEach(el => {
-    el.textContent = '₹' + walletBalance.toLocaleString('en-IN');
-  });
-
-  const curUser = (window.getCurrentUser && window.getCurrentUser()) || {};
-  curUser.walletBalance = walletBalance;
-  localStorage.setItem('smarthub_user', JSON.stringify(curUser));
-
-  if (!window.SmartHubData) window.SmartHubData = {};
-  if (!window.SmartHubData.transactions) window.SmartHubData.transactions = [];
-  window.SmartHubData.transactions.unshift({
-    id: 't_' + Date.now(),
-    type: 'credit',
-    title: `Wallet Top-up (${method})`,
-    amount: amount,
-    date: new Date().toISOString().split('T')[0],
-    icon: '➕',
-    method: method
-  });
-  renderTransactions();
-
-  SH.closeModal('modal-topup');
-  SH.showToast(`₹${amount.toLocaleString('en-IN')} added to wallet! 🎉`, 'success');
-  document.getElementById('modal-custom-amount').value = '';
 }
 
 async function loadBackendWallet() {
@@ -758,12 +731,18 @@ async function loadBackendWallet() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+function initWalletPage() {
   renderEarningsChart();
   renderTransactions();
   renderQuickAmounts();
   loadBackendWallet();
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initWalletPage);
+} else {
+  initWalletPage();
+}
 </script>
 </body>
 </html>

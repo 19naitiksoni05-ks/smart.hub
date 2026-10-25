@@ -7,13 +7,14 @@
       "email": "naitik19ansh@gmail.com",
       "passwordHash": "$2b$10$wE9N5t8D1n7uWl8lM9SgxeS9qF0g9hH9s7G3U8e6aG4tG6kH2XgOa",
       "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=naitik19&backgroundColor=ff5b36",
-      "walletBalance": 50000,
+      "walletBalance": 50010,
       "role": "admin",
-      "xp": 9999,
-      "badges": 12,
+      "xp": 10299,
+      "badges": 14,
       "location": "India",
       "headline": "Platform & Architecture · Super Admin",
-      "createdAt": "2026-01-01T00:00:00.000Z"
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "updatedAt": "2026-10-25T14:46:33.285Z"
     },
     {
       "id": "a9b9e238-6ec8-4622-8f22-9b6eb6939ac2",
@@ -24,13 +25,13 @@
       "avatar": "/uploads/images/profilpic_-_Copy_1792920691972_ac19a138.png",
       "walletBalance": 0,
       "role": "buyer",
-      "xp": 0,
-      "badges": 0,
+      "xp": 150,
+      "badges": 1,
       "location": "India",
       "headline": "Smart Hub Developer",
       "createdAt": "2026-10-25T06:31:25.671Z",
       "cover": "/uploads/images/Screenshot__1__1792920634969_373d9b62.png",
-      "updatedAt": "2026-10-25T13:29:50.653Z"
+      "updatedAt": "2026-10-25T14:46:33.287Z"
     },
     {
       "id": "b9f83b04-538c-4aab-9d88-f35a2ecb1cbe",
@@ -386,7 +387,7 @@
       "desc": "Initialize your production repository with structured directory architecture, clean branching conventions, and semantic Git commits.",
       "difficulty": 1,
       "xp": 150,
-      "participants": 2,
+      "participants": 5,
       "completed": true,
       "category": "Milestone",
       "deadline": "2026-12-31",
@@ -395,7 +396,7 @@
         "Repository Architecture",
         "Version Control"
       ],
-      "updatedAt": "2026-10-25T09:25:08.577Z"
+      "updatedAt": "2026-10-25T14:46:33.219Z"
     },
     {
       "id": "ms002",

@@ -4,9 +4,9 @@ const db = require('../db');
 const { authOptional } = require('../middleware/auth');
 
 // ── Get All Community Channels ────────────────────────────────
-router.get('/channels', (req, res) => {
+router.get(['/channels', '/'], (req, res) => {
   try {
-    const channels = db.get('channels');
+    const channels = db.get('channels') || [];
     res.json({ success: true, count: channels.length, channels });
   } catch (err) {
     res.status(500).json({ success: false, error: 'Failed to fetch channels' });

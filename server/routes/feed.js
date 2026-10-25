@@ -4,9 +4,9 @@ const db = require('../db');
 const { authRequired, authOptional } = require('../middleware/auth');
 
 // ── Get Feed Posts ───────────────────────────────────────────
-router.get('/posts', (req, res) => {
+router.get(['/posts', '/'], (req, res) => {
   try {
-    const posts = db.get('posts');
+    const posts = db.get('posts') || [];
     res.json({ success: true, count: posts.length, posts });
   } catch (err) {
     res.status(500).json({ success: false, error: 'Failed to fetch feed posts' });
@@ -14,7 +14,7 @@ router.get('/posts', (req, res) => {
 });
 
 // ── Create New Post ──────────────────────────────────────────
-router.post('/posts', authOptional, (req, res) => {
+router.post(['/posts', '/'], authOptional, (req, res) => {
   try {
     const { content, image, tags } = req.body;
     if (!content || !content.trim()) {

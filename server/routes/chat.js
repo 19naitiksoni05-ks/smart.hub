@@ -3,11 +3,11 @@ const router = express.Router();
 const db = require('../db');
 const { authOptional } = require('../middleware/auth');
 
-// ── Get Conversations ────────────────────────────────────────
-router.get('/conversations', (req, res) => {
+// ── Get Conversations / Threads ──────────────────────────────
+router.get(['/conversations', '/threads', '/'], (req, res) => {
   try {
-    const convs = db.get('conversations');
-    res.json({ success: true, count: convs.length, conversations: convs });
+    const convs = db.get('conversations') || [];
+    res.json({ success: true, count: convs.length, conversations: convs, threads: convs });
   } catch (err) {
     res.status(500).json({ success: false, error: 'Failed to fetch conversations' });
   }

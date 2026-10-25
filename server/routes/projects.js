@@ -330,7 +330,7 @@ ${runInstruction}
 }
 
 // ── GET Project Repository Details ────────────────────────────
-router.get('/:id/repo', authOptional, (req, res) => {
+function handleProjectRepo(req, res) {
   try {
     const prodId = req.params.id;
     let product = db.findById('products', prodId);
@@ -387,12 +387,15 @@ router.get('/:id/repo', authOptional, (req, res) => {
       createdAt: product.createdAt || new Date().toISOString()
     };
 
-    res.json({ success: true, repo });
+    res.json({ success: true, repo, project: repo });
   } catch (err) {
     console.error('Repo fetch error:', err);
     res.status(500).json({ success: false, error: 'Failed to fetch project repository metadata' });
   }
-});
+}
+
+router.get('/:id/repo', authOptional, handleProjectRepo);
+router.get('/:id', authOptional, handleProjectRepo);
 
 // ── GET Raw File Content (Blob) (Protected by DRM & License Key) ──
 router.get('/:id/blob', authOptional, (req, res) => {

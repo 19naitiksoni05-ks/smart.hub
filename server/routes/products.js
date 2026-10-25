@@ -67,6 +67,27 @@ router.get('/', (req, res) => {
   }
 });
 
+// ── Get Product Categories ────────────────────────────────────
+router.get('/categories', (req, res) => {
+  try {
+    const categories = db.get('categories') || [];
+    res.json({ success: true, count: categories.length, categories });
+  } catch (err) {
+    res.status(500).json({ success: false, error: 'Failed to fetch categories' });
+  }
+});
+
+// ── Get Featured Products ─────────────────────────────────────
+router.get('/featured', (req, res) => {
+  try {
+    const products = db.get('products') || [];
+    const featured = products.slice(0, 8);
+    res.json({ success: true, count: featured.length, products: featured });
+  } catch (err) {
+    res.status(500).json({ success: false, error: 'Failed to fetch featured products' });
+  }
+});
+
 // ── Get Single Product Details ────────────────────────────────
 router.get('/:id', (req, res) => {
   try {

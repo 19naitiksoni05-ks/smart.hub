@@ -36,13 +36,13 @@ router.get('/leaderboard', (req, res) => {
   }
 });
 
-// ── Submit Challenge Solution ────────────────────────────────
-router.post('/:id/submit', authOptional, (req, res) => {
+// ── Submit / Claim Challenge Solution ────────────────────────
+router.post(['/:id/submit', '/:id/claim', '/claim', '/submit'], authOptional, (req, res) => {
   try {
-    const challengeId = req.params.id;
+    const challengeId = req.params.id || req.body.challengeId || req.body.id || (db.get('challenges')[0] && db.get('challenges')[0].id);
     const { code, repoUrl } = req.body;
 
-    const challenge = db.findById('challenges', challengeId);
+    const challenge = challengeId ? db.findById('challenges', challengeId) : db.get('challenges')[0];
     if (!challenge) {
       return res.status(404).json({ success: false, error: 'Challenge not found' });
     }
@@ -70,7 +70,8 @@ router.post('/:id/submit', authOptional, (req, res) => {
       message: `🎉 Challenge verified! You earned +${earnedXp} XP and a new skill badge!`,
       earnedXp,
       newTotalXp: newXp,
-      newBadges
+      newBadges,
+      challengeId: challenge.id
     });
   } catch (err) {
     res.status(500).json({ success: false, error: 'Challenge submission failed' });

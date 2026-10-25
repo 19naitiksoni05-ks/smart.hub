@@ -345,7 +345,7 @@ The Smart Hub Engineering Team`
 });
 
 // ── Activate Encryption Key for Source Code Access ────────────
-router.post('/activate-key', authOptional, (req, res) => {
+router.post(['/activate-key', '/verify-key'], authOptional, (req, res) => {
   try {
     const rawKey = req.body.licenseKey || req.body.key || req.body.encKey;
     const { productId, email } = req.body;
@@ -401,7 +401,7 @@ router.post('/activate-key', authOptional, (req, res) => {
 });
 
 // ── Check Access Permission for Project Source Code ───────────
-router.get('/check-access/:productId', authOptional, (req, res) => {
+router.get(['/check-access/:productId', '/access-check/:productId'], authOptional, (req, res) => {
   try {
     const prodId = req.params.productId;
     const product = db.findById('products', prodId);

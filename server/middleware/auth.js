@@ -58,10 +58,25 @@ function resolveAuthContext(req) {
     }
   }
 
-  // 3. Fallback header for simulated sessions in development
+  // 3. Fallback header for simulated sessions in development / local storage
   const fallbackUserId = req.headers['x-user-id'];
   if (fallbackUserId) {
-    const user = db.findById('users', fallbackUserId);
+    let user = db.findById('users', fallbackUserId);
+    if (!user) {
+      user = db.findOne('users', u => 
+        u.id === fallbackUserId || 
+        (u.email && u.email.toLowerCase() === String(fallbackUserId).toLowerCase().trim()) ||
+        (u.username && u.username.toLowerCase() === String(fallbackUserId).toLowerCase().trim())
+      );
+    }
+    if (user) {
+      return { user, authType: 'dev_header' };
+    }
+  }
+
+  const fallbackUserEmail = req.headers['x-user-email'];
+  if (fallbackUserEmail) {
+    const user = db.findOne('users', u => u.email && u.email.toLowerCase() === String(fallbackUserEmail).toLowerCase().trim());
     if (user) {
       return { user, authType: 'dev_header' };
     }
