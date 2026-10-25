@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 const db = require('../db');
 const { supabase, isConfigured: isSupabaseConfigured } = require('../supabase');
 const { JWT_SECRET, authRequired, hashApiKey } = require('../middleware/auth');
+const { checkLoginLockout, recordFailedLogin, clearFailedLogin } = require('../middleware/security');
 
 function sanitizeUser(user) {
   if (!user) return null;
@@ -178,6 +179,13 @@ router.post('/login', async (req, res) => {
     }
 
     const cleanIdentity = identity.trim().toLowerCase();
+
+    // Check brute-force lockout guard
+    const lockout = checkLoginLockout(cleanIdentity);
+    if (lockout.locked) {
+      return res.status(429).json({ success: false, error: lockout.error });
+    }
+
     let user = db.findOne('users', u => 
       u.email.toLowerCase() === cleanIdentity || 
       u.username.toLowerCase() === cleanIdentity ||
@@ -216,6 +224,7 @@ router.post('/login', async (req, res) => {
 
     // Ensure user exists
     if (!user) {
+      recordFailedLogin(cleanIdentity);
       return res.status(401).json({
         success: false,
         error: 'No account found with this email or username. Please register or sign up first!'
@@ -250,8 +259,12 @@ router.post('/login', async (req, res) => {
     }
 
     if (!isMatch) {
+      recordFailedLogin(cleanIdentity);
       return res.status(401).json({ success: false, error: 'Incorrect password. Please enter the correct password.' });
     }
+
+    // Successful login: clear any failed attempt history
+    clearFailedLogin(cleanIdentity);
 
     // Also attempt Supabase Auth sign-in if configured
     if (isSupabaseConfigured() && supabase && user.email) {

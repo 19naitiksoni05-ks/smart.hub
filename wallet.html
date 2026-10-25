@@ -51,10 +51,10 @@
           <button class="btn btn-primary btn-lg" data-open-modal="modal-topup">
             ➕ Add Money
           </button>
-          <button class="btn btn-secondary" onclick="SH.showToast('Transfer initiated!','info')">
+          <button class="btn btn-secondary" onclick="openTransferModal()">
             ↗️ Transfer
           </button>
-          <button class="btn btn-secondary" onclick="SH.showToast('Withdrawal to bank account initiated!','success')">
+          <button class="btn btn-secondary" onclick="openWithdrawModal()">
             🏦 Withdraw to Bank
           </button>
         </div>
@@ -90,10 +90,10 @@
         <div class="glass-card" style="padding:24px;margin-bottom:24px;">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
             <h4>📈 Earnings Overview</h4>
-            <select class="filter-select">
-              <option>Last 6 Months</option>
-              <option>Last 12 Months</option>
-              <option>This Year</option>
+            <select class="filter-select" id="chart-filter-range" onchange="filterChart(this.value)">
+              <option value="6">Last 6 Months</option>
+              <option value="12">Last 12 Months</option>
+              <option value="year">This Year</option>
             </select>
           </div>
           <div class="chart-bar" id="earnings-chart"></div>
@@ -105,12 +105,12 @@
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
             <h4>📋 Transaction History</h4>
             <div style="display:flex;gap:8px;">
-              <select class="filter-select">
-                <option>All</option>
-                <option>Credits</option>
-                <option>Debits</option>
+              <select class="filter-select" id="tx-filter-type" onchange="filterTransactions(this.value)">
+                <option value="all">All</option>
+                <option value="credit">Credits</option>
+                <option value="debit">Debits</option>
               </select>
-              <button class="btn btn-secondary btn-sm" onclick="SH.showToast('Statement exported!','success')">⬇️ Export</button>
+              <button class="btn btn-secondary btn-sm" onclick="exportTransactionsStatement()">⬇️ Export</button>
             </div>
           </div>
           <div id="transactions-list"></div>
@@ -277,6 +277,62 @@
   </div>
 </div>
 
+<!-- Peer Transfer Modal -->
+<div class="modal-overlay" id="modal-transfer">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-header">
+      <h3>↗️ Transfer Funds to Peer Developer</h3>
+      <span class="modal-close" onclick="SH.closeModal('modal-transfer')">✕</span>
+    </div>
+
+    <div style="margin-bottom:18px;">
+      <label style="font-size:0.82rem;color:var(--text-muted);display:block;margin-bottom:8px;">Recipient (Email or @Username)</label>
+      <input class="input" type="text" placeholder="e.g. dev@smarthub.io or @alex_code" id="modal-transfer-recipient" style="width:100%;">
+    </div>
+
+    <div style="margin-bottom:18px;">
+      <label style="font-size:0.82rem;color:var(--text-muted);display:block;margin-bottom:8px;">Transfer Amount (₹)</label>
+      <input class="input" type="number" placeholder="₹ Amount (min ₹1)" id="modal-transfer-amount" min="1" style="width:100%;">
+    </div>
+
+    <div style="padding:12px 16px;background:rgba(6,182,212,0.08);border:1px solid rgba(6,182,212,0.2);border-radius:var(--radius-md);margin-bottom:20px;font-size:0.82rem;">
+      ⚡ Instant zero-fee peer transfer directly between Smart Hub verified developer wallets.
+    </div>
+
+    <button class="btn btn-primary" id="btn-submit-transfer" style="width:100%;justify-content:center;font-size:1rem;padding:14px;font-weight:700;" onclick="processTransfer()">
+      🚀 Send Rupee Transfer
+    </button>
+  </div>
+</div>
+
+<!-- Withdraw to Bank / UPI Modal -->
+<div class="modal-overlay" id="modal-withdraw">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-header">
+      <h3>🏦 Withdraw to Bank / UPI</h3>
+      <span class="modal-close" onclick="SH.closeModal('modal-withdraw')">✕</span>
+    </div>
+
+    <div style="margin-bottom:18px;">
+      <label style="font-size:0.82rem;color:var(--text-muted);display:block;margin-bottom:8px;">Withdrawal Amount (₹)</label>
+      <input class="input" type="number" placeholder="₹ Minimum ₹100" id="modal-withdraw-amount" min="100" style="width:100%;">
+    </div>
+
+    <div style="margin-bottom:18px;">
+      <label style="font-size:0.82rem;color:var(--text-muted);display:block;margin-bottom:8px;">UPI ID or Bank Account / IFSC</label>
+      <input class="input" type="text" placeholder="e.g. yourname@okhdfcbank or 1234567890/HDFC0001234" id="modal-withdraw-upi" style="width:100%;">
+    </div>
+
+    <div style="padding:12px 16px;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);border-radius:var(--radius-md);margin-bottom:20px;font-size:0.82rem;">
+      🏦 Automated IMPS / UPI payout initiated in real time. Direct bank credit arrives within 15 minutes.
+    </div>
+
+    <button class="btn btn-primary" id="btn-submit-withdraw" style="width:100%;justify-content:center;font-size:1rem;padding:14px;font-weight:700;" onclick="processWithdrawal()">
+      Confirm Bank Withdrawal 🏦
+    </button>
+  </div>
+</div>
+
 <div id="page-footer"></div>
 
 <script src="js/data.js"></script>
@@ -309,15 +365,235 @@ function renderEarningsChart() {
   if (labelsEl) labelsEl.innerHTML = earningsData.map(d => `<div class="month-label">${d.month}</div>`).join('');
 }
 
-function renderTransactions() {
+function openTransferModal() {
+  const input = document.getElementById('modal-transfer-amount');
+  if (input) input.value = '';
+  SH.openModal('modal-transfer');
+}
+
+function openWithdrawModal() {
+  const user = (window.getCurrentUser && window.getCurrentUser());
+  const upiInput = document.getElementById('modal-withdraw-upi');
+  if (upiInput && user && user.upiId) upiInput.value = user.upiId;
+  const amtInput = document.getElementById('modal-withdraw-amount');
+  if (amtInput) amtInput.value = '';
+  SH.openModal('modal-withdraw');
+}
+
+async function processTransfer() {
+  const recipient = document.getElementById('modal-transfer-recipient').value.trim();
+  const amount = parseFloat(document.getElementById('modal-transfer-amount').value);
+
+  if (!recipient) {
+    SH.showToast('Please enter recipient email or username', 'error');
+    return;
+  }
+  if (!amount || amount < 1) {
+    SH.showToast('Minimum transfer amount is ₹1', 'error');
+    return;
+  }
+  if (amount > walletBalance) {
+    SH.showToast('Insufficient wallet balance for this transfer', 'error');
+    return;
+  }
+
+  const btn = document.getElementById('btn-submit-transfer');
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Processing Transfer...';
+  }
+
+  try {
+    if (window.SmartHubAPI) {
+      const res = await window.SmartHubAPI.transferWallet(recipient, amount);
+      if (res && res.success) {
+        walletBalance = res.newBalance;
+        document.getElementById('wallet-main-balance').textContent = '₹' + walletBalance.toLocaleString('en-IN');
+        document.querySelectorAll('.wallet-display').forEach(el => {
+          el.textContent = '₹' + walletBalance.toLocaleString('en-IN');
+        });
+        SmartHubData.transactions.unshift({
+          id: 't_' + Date.now(),
+          type: 'debit',
+          title: `Transfer to ${recipient}`,
+          amount: amount,
+          date: new Date().toISOString().split('T')[0],
+          icon: '↗️',
+          method: 'Peer Transfer'
+        });
+        renderTransactions();
+        SH.closeModal('modal-transfer');
+        SH.showToast(res.message || `₹${amount.toLocaleString('en-IN')} transferred successfully!`, 'success');
+        return;
+      } else {
+        throw new Error(res && res.error ? res.error : 'Transfer failed');
+      }
+    }
+  } catch (err) {
+    SH.showToast(err.message, 'error');
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = '🚀 Send Rupee Transfer';
+    }
+  }
+}
+
+async function processWithdrawal() {
+  const amount = parseFloat(document.getElementById('modal-withdraw-amount').value);
+  const upiId = document.getElementById('modal-withdraw-upi').value.trim();
+
+  if (!amount || amount < 100) {
+    SH.showToast('Minimum withdrawal amount is ₹100', 'error');
+    return;
+  }
+  if (!upiId) {
+    SH.showToast('Please enter your UPI ID or Bank account details', 'error');
+    return;
+  }
+  if (amount > walletBalance) {
+    SH.showToast('Insufficient wallet balance for withdrawal', 'error');
+    return;
+  }
+
+  const btn = document.getElementById('btn-submit-withdraw');
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Initiating Withdrawal...';
+  }
+
+  try {
+    if (window.SmartHubAPI) {
+      const res = await window.SmartHubAPI.withdrawWallet(amount, upiId);
+      if (res && res.success) {
+        walletBalance = res.newBalance;
+        document.getElementById('wallet-main-balance').textContent = '₹' + walletBalance.toLocaleString('en-IN');
+        document.querySelectorAll('.wallet-display').forEach(el => {
+          el.textContent = '₹' + walletBalance.toLocaleString('en-IN');
+        });
+        if (res.transaction) {
+          SmartHubData.transactions.unshift(res.transaction);
+        } else {
+          SmartHubData.transactions.unshift({
+            id: 't_' + Date.now(),
+            type: 'debit',
+            title: `Bank/UPI Withdrawal`,
+            amount: amount,
+            date: new Date().toISOString().split('T')[0],
+            icon: '🏦',
+            method: `UPI (${upiId})`
+          });
+        }
+        renderTransactions();
+        SH.closeModal('modal-withdraw');
+        SH.showToast(res.message || `Withdrawal of ₹${amount.toLocaleString('en-IN')} initiated!`, 'success');
+        return;
+      } else {
+        throw new Error(res && res.error ? res.error : 'Withdrawal failed');
+      }
+    }
+  } catch (err) {
+    SH.showToast(err.message, 'error');
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = 'Confirm Bank Withdrawal 🏦';
+    }
+  }
+}
+
+function filterTransactions(type) {
+  renderTransactions(type);
+}
+
+function filterChart(range) {
+  if (range === '6') {
+    earningsData = [
+      { month: 'May', amount: 4800 },
+      { month: 'Jun', amount: 8200 },
+      { month: 'Jul', amount: 6400 },
+      { month: 'Aug', amount: 11000 },
+      { month: 'Sep', amount: 9500 },
+      { month: 'Oct', amount: 14200 },
+    ];
+  } else if (range === '12') {
+    earningsData = [
+      { month: 'Nov', amount: 2100 },
+      { month: 'Dec', amount: 3500 },
+      { month: 'Jan', amount: 4100 },
+      { month: 'Feb', amount: 3800 },
+      { month: 'Mar', amount: 5200 },
+      { month: 'Apr', amount: 4600 },
+      { month: 'May', amount: 4800 },
+      { month: 'Jun', amount: 8200 },
+      { month: 'Jul', amount: 6400 },
+      { month: 'Aug', amount: 11000 },
+      { month: 'Sep', amount: 9500 },
+      { month: 'Oct', amount: 14200 },
+    ];
+  } else {
+    earningsData = [
+      { month: 'Jan', amount: 4100 },
+      { month: 'Feb', amount: 3800 },
+      { month: 'Mar', amount: 5200 },
+      { month: 'Apr', amount: 4600 },
+      { month: 'May', amount: 4800 },
+      { month: 'Jun', amount: 8200 },
+      { month: 'Jul', amount: 6400 },
+      { month: 'Aug', amount: 11000 },
+      { month: 'Sep', amount: 9500 },
+      { month: 'Oct', amount: 14200 },
+    ];
+  }
+  renderEarningsChart();
+}
+
+function exportTransactionsStatement() {
+  const list = SmartHubData.transactions || [];
+  if (list.length === 0) {
+    SH.showToast('No transactions to export yet', 'info');
+    return;
+  }
+
+  let csvContent = 'data:text/csv;charset=utf-8,ID,Date,Type,Title,Amount (INR),Method\n';
+  list.forEach(t => {
+    const row = [
+      t.id,
+      t.date,
+      t.type,
+      `"${(t.title || '').replace(/"/g, '""')}"`,
+      t.amount,
+      `"${(t.method || '').replace(/"/g, '""')}"`
+    ].join(',');
+    csvContent += row + '\n';
+  });
+
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement('a');
+  link.setAttribute('href', encodedUri);
+  link.setAttribute('download', `SmartHub_Statement_${new Date().toISOString().split('T')[0]}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+
+  SH.showToast('Statement CSV exported successfully! 📊', 'success');
+}
+
+function renderTransactions(filterType = 'all') {
   const el = document.getElementById('transactions-list');
   if (!el) return;
-  const list = SmartHubData.transactions || [];
+  let list = SmartHubData.transactions || [];
+  if (filterType === 'credit') {
+    list = list.filter(t => t.type === 'credit');
+  } else if (filterType === 'debit') {
+    list = list.filter(t => t.type === 'debit');
+  }
+
   if (list.length === 0) {
     el.innerHTML = `
       <div style="text-align:center;padding:36px;color:var(--text-muted);font-size:0.85rem;">
         <div style="font-size:2rem;margin-bottom:8px;">📋</div>
-        No transactions recorded yet.
+        No transactions recorded in this view.
       </div>
     `;
     return;
@@ -428,6 +704,22 @@ async function loadBackendWallet() {
         document.querySelectorAll('.wallet-display').forEach(el => {
           el.textContent = '₹' + walletBalance.toLocaleString('en-IN');
         });
+        if (data.wallet.totalEarned !== undefined) {
+          const te = document.getElementById('wallet-total-earned');
+          if (te) te.textContent = '₹' + data.wallet.totalEarned.toLocaleString('en-IN');
+        }
+        if (data.wallet.totalSpent !== undefined) {
+          const ts = document.getElementById('wallet-total-spent');
+          if (ts) ts.textContent = '₹' + data.wallet.totalSpent.toLocaleString('en-IN');
+        }
+        if (data.wallet.withdrawn !== undefined) {
+          const tw = document.getElementById('wallet-total-withdrawn');
+          if (tw) tw.textContent = '₹' + data.wallet.withdrawn.toLocaleString('en-IN');
+        }
+        if (data.wallet.upiId) {
+          const upiEl = document.getElementById('wallet-upi-id');
+          if (upiEl) upiEl.textContent = data.wallet.upiId;
+        }
         renderTransactions();
       }
     }

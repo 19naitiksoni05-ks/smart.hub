@@ -1,6 +1,85 @@
 {
   "users": [
     {
+      "id": "u_admin_naitik",
+      "name": "Naitik Soni",
+      "username": "@naitik19",
+      "email": "naitik19ansh@gmail.com",
+      "passwordHash": "$2b$10$wE9N5t8D1n7uWl8lM9SgxeS9qF0g9hH9s7G3U8e6aG4tG6kH2XgOa",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=naitik19&backgroundColor=ff5b36",
+      "walletBalance": 50000,
+      "role": "admin",
+      "xp": 9999,
+      "badges": 12,
+      "location": "India",
+      "headline": "Platform & Architecture · Super Admin",
+      "createdAt": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "u_1792920308521",
+      "name": "Recipient Builder",
+      "username": "@recip_1792920308038",
+      "email": "recip_1792920308038@smarthub.io",
+      "passwordHash": "$2b$10$5liaGtMGBJzvOaf8CKYNZ.nxJ3FwB41RDhx31NK5yDC9TdFmjvJ1q",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=%40recip_1792920308038&backgroundColor=ff5b36",
+      "walletBalance": 750,
+      "role": "buyer",
+      "xp": 0,
+      "badges": 0,
+      "location": "India",
+      "headline": "Smart Hub Developer",
+      "createdAt": "2026-10-25T09:25:08.521Z",
+      "updatedAt": "2026-10-25T09:25:08.560Z"
+    },
+    {
+      "id": "u_1792920307927",
+      "name": "Test Security Dev",
+      "username": "@testsec_1792920307608",
+      "email": "dev_1792920307608@smarthub.io",
+      "passwordHash": "$2b$10$KKihat9xRt5qmkO12lGPO.logUlSafyfbxhtRRRxNA9tA0.yp48c.",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=testsec_1792920307608&backgroundColor=ff5b36",
+      "walletBalance": 7551,
+      "role": "buyer",
+      "xp": 150,
+      "badges": 1,
+      "location": "India",
+      "headline": "Smart Hub Developer",
+      "createdAt": "2026-10-25T09:25:07.927Z",
+      "updatedAt": "2026-10-25T09:25:08.610Z"
+    },
+    {
+      "id": "91d452a8-5f4e-413d-981f-c9c5ac899879",
+      "name": "Recipient Builder",
+      "username": "@recip_1792920238760",
+      "email": "recip_1792920238760@smarthub.io",
+      "passwordHash": "$2b$10$mPLcCNpktFXHMRXQfWtFYuFrHIqyQbQuBpphdDtfket6lKcblVSI2",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=%40recip_1792920238760&backgroundColor=ff5b36",
+      "walletBalance": 750,
+      "role": "buyer",
+      "xp": 0,
+      "badges": 0,
+      "location": "India",
+      "headline": "Smart Hub Developer",
+      "createdAt": "2026-10-25T09:24:00.851Z",
+      "updatedAt": "2026-10-25T09:24:00.888Z"
+    },
+    {
+      "id": "e9244a9f-2968-4bb1-a186-b99acfe4ac21",
+      "name": "Test Security Dev",
+      "username": "@testsec_1792920235583",
+      "email": "dev_1792920235583@smarthub.io",
+      "passwordHash": "$2b$10$uOIFkab9RysNGzaD5DqDBOkHxvi7AiaPHKlCsWfXpFBNI4rw0iwpO",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=testsec_1792920235583&backgroundColor=ff5b36",
+      "walletBalance": 1050,
+      "role": "buyer",
+      "xp": 150,
+      "badges": 1,
+      "location": "India",
+      "headline": "Smart Hub Developer",
+      "createdAt": "2026-10-25T09:23:58.649Z",
+      "updatedAt": "2026-10-25T09:24:00.903Z"
+    },
+    {
       "id": "a9b9e238-6ec8-4622-8f22-9b6eb6939ac2",
       "name": "Naitik Soni",
       "username": "@naitik",
@@ -42,7 +121,7 @@
       "oldPrice": null,
       "rating": 5,
       "reviews": 1,
-      "sales": 2,
+      "sales": 3,
       "author": {
         "id": "dev_guest",
         "name": "Verified Developer",
@@ -59,7 +138,7 @@
       "description": "Production-ready financial dashboard with UPI QR, analytics, and crypto key licensing.",
       "type": "Source Code",
       "createdAt": "2026-10-25T08:48:50.524Z",
-      "updatedAt": "2026-10-25T08:48:50.551Z"
+      "updatedAt": "2026-10-25T09:25:08.614Z"
     },
     {
       "id": "p_1792918130479",
@@ -272,6 +351,27 @@
   ],
   "orders": [
     {
+      "id": "ord_1792920308613_0",
+      "orderNumber": "SH-ORD-2026-5964",
+      "buyerId": "u_1792920307927",
+      "buyerEmail": "dev_1792920307608@smarthub.io",
+      "productId": "p_1792918130524",
+      "productTitle": "Enterprise Fintech Dashboard Next.js",
+      "category": "React",
+      "amount": 2499,
+      "platformFee": 50,
+      "statutoryTax": 9,
+      "sellerNetEarnings": 2440,
+      "platformFeePercent": "2.0%",
+      "discount": 0,
+      "license": "regular",
+      "paymentMethod": "wallet",
+      "encKey": "SH-ENC-2026-F29F-279A-137D",
+      "status": "completed",
+      "downloadUrl": "/api/orders/SH-ORD-2026-5964/download",
+      "createdAt": "2026-10-25T09:25:08.613Z"
+    },
+    {
       "id": "ord_1792918130553_1",
       "orderNumber": "SH-ORD-2026-2756",
       "buyerId": null,
@@ -337,6 +437,150 @@
   ],
   "transactions": [
     {
+      "id": "t_1792920308611",
+      "userId": "u_1792920307927",
+      "type": "debit",
+      "title": "Purchase: Enterprise Fintech Dashboard Next.js",
+      "amount": 2499,
+      "date": "2026-10-25",
+      "icon": "🛒",
+      "seller": "Verified Developer",
+      "method": "Rupee Wallet",
+      "createdAt": "2026-10-25T09:25:08.611Z"
+    },
+    {
+      "id": "t_w_1792920308568",
+      "userId": "u_1792920307927",
+      "type": "debit",
+      "title": "Bank/UPI Withdrawal",
+      "amount": 200,
+      "date": "2026-10-25",
+      "icon": "🏦",
+      "method": "UPI (builder@okaxis)",
+      "createdAt": "2026-10-25T09:25:08.568Z"
+    },
+    {
+      "id": "t_in_1792920308561",
+      "userId": "u_1792920308521",
+      "type": "credit",
+      "title": "Transfer from Test Security Dev",
+      "amount": 250,
+      "date": "2026-10-25",
+      "icon": "💸",
+      "method": "Peer Transfer",
+      "createdAt": "2026-10-25T09:25:08.561Z"
+    },
+    {
+      "id": "t_out_1792920308558",
+      "userId": "u_1792920307927",
+      "type": "debit",
+      "title": "Transfer to Recipient Builder",
+      "amount": 250,
+      "date": "2026-10-25",
+      "icon": "↗️",
+      "method": "Peer Transfer",
+      "createdAt": "2026-10-25T09:25:08.558Z"
+    },
+    {
+      "id": "t_1792920308524",
+      "userId": "u_1792920308521",
+      "type": "credit",
+      "title": "🎁 Welcome Bonus Credited",
+      "amount": 500,
+      "date": "2026-10-25",
+      "icon": "🎁",
+      "method": "SmartHub Grant",
+      "createdAt": "2026-10-25T09:25:08.524Z"
+    },
+    {
+      "id": "t_1792920308036",
+      "userId": "u_1792920307927",
+      "type": "credit",
+      "title": "Wallet Top-up (UPI)",
+      "amount": 10000,
+      "date": "2026-10-25",
+      "icon": "➕",
+      "method": "UPI",
+      "createdAt": "2026-10-25T09:25:08.036Z"
+    },
+    {
+      "id": "t_1792920307929",
+      "userId": "u_1792920307927",
+      "type": "credit",
+      "title": "🎁 Welcome Bonus Credited",
+      "amount": 500,
+      "date": "2026-10-25",
+      "icon": "🎁",
+      "method": "SmartHub Grant",
+      "createdAt": "2026-10-25T09:25:07.929Z"
+    },
+    {
+      "id": "t_w_1792920240895",
+      "userId": "e9244a9f-2968-4bb1-a186-b99acfe4ac21",
+      "type": "debit",
+      "title": "Bank/UPI Withdrawal",
+      "amount": 200,
+      "date": "2026-10-25",
+      "icon": "🏦",
+      "method": "UPI (builder@okaxis)",
+      "createdAt": "2026-10-25T09:24:00.895Z"
+    },
+    {
+      "id": "t_in_1792920240889",
+      "userId": "91d452a8-5f4e-413d-981f-c9c5ac899879",
+      "type": "credit",
+      "title": "Transfer from Test Security Dev",
+      "amount": 250,
+      "date": "2026-10-25",
+      "icon": "💸",
+      "method": "Peer Transfer",
+      "createdAt": "2026-10-25T09:24:00.889Z"
+    },
+    {
+      "id": "t_out_1792920240886",
+      "userId": "e9244a9f-2968-4bb1-a186-b99acfe4ac21",
+      "type": "debit",
+      "title": "Transfer to Recipient Builder",
+      "amount": 250,
+      "date": "2026-10-25",
+      "icon": "↗️",
+      "method": "Peer Transfer",
+      "createdAt": "2026-10-25T09:24:00.886Z"
+    },
+    {
+      "id": "t_1792920240852",
+      "userId": "91d452a8-5f4e-413d-981f-c9c5ac899879",
+      "type": "credit",
+      "title": "🎁 Welcome Bonus Credited",
+      "amount": 500,
+      "date": "2026-10-25",
+      "icon": "🎁",
+      "method": "SmartHub Grant",
+      "createdAt": "2026-10-25T09:24:00.852Z"
+    },
+    {
+      "id": "t_1792920238746",
+      "userId": "e9244a9f-2968-4bb1-a186-b99acfe4ac21",
+      "type": "credit",
+      "title": "Wallet Top-up (UPI)",
+      "amount": 1000,
+      "date": "2026-10-25",
+      "icon": "➕",
+      "method": "UPI",
+      "createdAt": "2026-10-25T09:23:58.746Z"
+    },
+    {
+      "id": "t_1792920238652",
+      "userId": "e9244a9f-2968-4bb1-a186-b99acfe4ac21",
+      "type": "credit",
+      "title": "🎁 Welcome Bonus Credited",
+      "amount": 500,
+      "date": "2026-10-25",
+      "icon": "🎁",
+      "method": "SmartHub Grant",
+      "createdAt": "2026-10-25T09:23:58.652Z"
+    },
+    {
       "id": "t_1792909885675",
       "userId": "a9b9e238-6ec8-4622-8f22-9b6eb6939ac2",
       "type": "credit",
@@ -371,6 +615,91 @@
     }
   ],
   "posts": [
+    {
+      "id": "post_1792920308585",
+      "author": {
+        "id": "u_1792920307927",
+        "name": "Test Security Dev",
+        "username": "@testsec_1792920307608",
+        "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=testsec_1792920307608&backgroundColor=ff5b36",
+        "verified": false
+      },
+      "content": "Testing production social feed functionality on Smart Hub 🚀",
+      "image": null,
+      "likes": 1,
+      "likedBy": [
+        "u_1792920307927"
+      ],
+      "comments": [
+        {
+          "id": "c_1792920308597",
+          "author": "Test Security Dev",
+          "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=testsec_1792920307608&backgroundColor=ff5b36",
+          "text": "Great work! Production backend looks solid.",
+          "createdAt": "2026-10-25T09:25:08.597Z"
+        }
+      ],
+      "shares": 0,
+      "tags": [
+        "Launch",
+        "ProductionReady"
+      ],
+      "createdAt": "2026-10-25T09:25:08.585Z",
+      "updatedAt": "2026-10-25T09:25:08.597Z"
+    },
+    {
+      "id": "post_1792920240912",
+      "author": {
+        "id": "e9244a9f-2968-4bb1-a186-b99acfe4ac21",
+        "name": "Test Security Dev",
+        "username": "@testsec_1792920235583",
+        "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=testsec_1792920235583&backgroundColor=ff5b36",
+        "verified": false
+      },
+      "content": "Testing production social feed functionality on Smart Hub 🚀",
+      "image": null,
+      "likes": 1,
+      "likedBy": [
+        "e9244a9f-2968-4bb1-a186-b99acfe4ac21"
+      ],
+      "comments": [
+        {
+          "id": "c_1792920240920",
+          "author": "Test Security Dev",
+          "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=testsec_1792920235583&backgroundColor=ff5b36",
+          "text": "Great work! Production backend looks solid.",
+          "createdAt": "2026-10-25T09:24:00.920Z"
+        }
+      ],
+      "shares": 0,
+      "tags": [
+        "Launch",
+        "ProductionReady"
+      ],
+      "createdAt": "2026-10-25T09:24:00.912Z",
+      "updatedAt": "2026-10-25T09:24:00.920Z"
+    },
+    {
+      "id": "post_1792918442152",
+      "author": {
+        "id": "a9b9e238-6ec8-4622-8f22-9b6eb6939ac2",
+        "name": "Naitik Soni",
+        "username": "@naitik",
+        "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=naitik&backgroundColor=ff5b36",
+        "verified": false
+      },
+      "content": "bgut",
+      "image": null,
+      "likes": 0,
+      "likedBy": [],
+      "comments": [],
+      "shares": 0,
+      "tags": [
+        "Launch",
+        "DevCommunity"
+      ],
+      "createdAt": "2026-10-25T08:54:02.152Z"
+    },
     {
       "id": "post_1792913095980",
       "author": {
@@ -492,15 +821,16 @@
       "desc": "Initialize your production repository with structured directory architecture, clean branching conventions, and semantic Git commits.",
       "difficulty": 1,
       "xp": 150,
-      "participants": 0,
-      "completed": false,
+      "participants": 2,
+      "completed": true,
       "category": "Milestone",
       "deadline": "2026-12-31",
       "skills": [
         "Git",
         "Repository Architecture",
         "Version Control"
-      ]
+      ],
+      "updatedAt": "2026-10-25T09:25:08.577Z"
     },
     {
       "id": "ms002",
@@ -586,6 +916,86 @@
   "leaderboard": [],
   "reviews": [],
   "apiKeys": [
+    {
+      "id": "key_1792920308525",
+      "userId": "u_1792920308521",
+      "name": "Default Production Key",
+      "keyHash": "cbb0132d3c59fe6a8fbc08fabbd7f1961db1038af42327464bb9cf998f6d90bf",
+      "encryptedKey": "9cf9e8be2563004debf87373e8357e6d:aa85207c25d5b29d2fc864f2e68cf530787944a9b88c8fec0413e2a4729a4207cf1c0cd02ec25193802817c8a7927aee10e3ba6ef61c0bdc52abd070b56c2c98",
+      "keyPrefix": "sh_live_f8c3",
+      "lastFour": "688c",
+      "scope": "full_access",
+      "status": "active",
+      "lastUsedAt": null,
+      "createdAt": "2026-10-25T09:25:08.552Z"
+    },
+    {
+      "id": "key_1792920307977",
+      "userId": "u_1792920307927",
+      "name": "Read Only Audit Key",
+      "keyHash": "afcb4d4851fa3549d102407a24ae2e5c90d575128247d109845fa48d27350449",
+      "encryptedKey": "dafbe19f03b0673483d508103e96a12a:87f8f505ffcfb332306de5a9cf46172e1fe520e160d1f93fe835130051ea619fbf9b2ceb5327ad8d3e5bc6f6454bef73347762ceb5b3a2ae47856486a21d8678",
+      "keyPrefix": "sh_live_e8c2",
+      "lastFour": "2b5e",
+      "scope": "read_only",
+      "status": "active",
+      "lastUsedAt": "2026-10-25T09:25:08.029Z",
+      "createdAt": "2026-10-25T09:25:08.019Z",
+      "updatedAt": "2026-10-25T09:25:08.029Z"
+    },
+    {
+      "id": "key_1792920307930",
+      "userId": "u_1792920307927",
+      "name": "Default Production Key",
+      "keyHash": "8b63749cdcbd54d6d5042fddf9d0b47a718c2e5f6281428c16766fb61e079981",
+      "encryptedKey": "4c88d595c26eb885d576e950641ab98c:39ce551157fa1910b2250692976960427c49f0b0fc210abaf70e52ad590c396a2f45702942a395f8e1ab68299c01c4f1be20a993cf6707ffbcb9363fdbd83b70",
+      "keyPrefix": "sh_live_2788",
+      "lastFour": "2747",
+      "scope": "full_access",
+      "status": "active",
+      "lastUsedAt": null,
+      "createdAt": "2026-10-25T09:25:07.969Z"
+    },
+    {
+      "id": "key_1792920240853",
+      "userId": "91d452a8-5f4e-413d-981f-c9c5ac899879",
+      "name": "Default Production Key",
+      "keyHash": "c90aec152cf79ddae253f39c300652a1e67456cb946bae11f737fd145003dee3",
+      "encryptedKey": "2f80ca65c1374c34b68560cb257e7980:780f2bd06439bdd2aed95f5c17f49070cfa3c0e7731be43093e2e604bcfab2245e2c8e1bb5668bda919a071af05e687c38fec564d0e8b5d9e6028ab955d57b3f",
+      "keyPrefix": "sh_live_c005",
+      "lastFour": "14df",
+      "scope": "full_access",
+      "status": "active",
+      "lastUsedAt": null,
+      "createdAt": "2026-10-25T09:24:00.881Z"
+    },
+    {
+      "id": "key_1792920238698",
+      "userId": "e9244a9f-2968-4bb1-a186-b99acfe4ac21",
+      "name": "Read Only Audit Key",
+      "keyHash": "bf6c14a423a0560f3643d75dca88b9ed3ea1c40827802d2768700bf7ec397cfb",
+      "encryptedKey": "c2f104aaa365accde6a666af787fbead:9cd133d1a6e675fdd9427748e7c76b8a66393f6ffe58ac04fee0b4e46c7e637e22fa9592bb50b2927d1e7ba22262ce3afad8c39d33d48bbf7357c82424065c0e",
+      "keyPrefix": "sh_live_220a",
+      "lastFour": "0e4f",
+      "scope": "read_only",
+      "status": "active",
+      "lastUsedAt": "2026-10-25T09:23:58.740Z",
+      "createdAt": "2026-10-25T09:23:58.733Z",
+      "updatedAt": "2026-10-25T09:23:58.740Z"
+    },
+    {
+      "id": "key_1792920238654",
+      "userId": "e9244a9f-2968-4bb1-a186-b99acfe4ac21",
+      "name": "Default Production Key",
+      "keyHash": "a3ba8a7698432ec18fbb6264444aba97dd6d9002d9c05f396e8b9826a57b2d17",
+      "encryptedKey": "66e2d52aa8b5b77bf2b28053caa8cc9d:3520a29d2dc2841aca6db0c55e9a685415cb7d79e427269266cd03f523357e089b3d336e19d34cf277128a692dcf44b122015636fcb7bc831704ab0786f8bd29",
+      "keyPrefix": "sh_live_f1a4",
+      "lastFour": "ca36",
+      "scope": "full_access",
+      "status": "active",
+      "lastUsedAt": null,
+      "createdAt": "2026-10-25T09:23:58.687Z"
+    },
     {
       "id": "key_1792909885678",
       "userId": "a9b9e238-6ec8-4622-8f22-9b6eb6939ac2",

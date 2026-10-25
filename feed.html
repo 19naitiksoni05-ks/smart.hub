@@ -114,9 +114,9 @@
         <!-- Feed Tabs -->
         <div style="margin-bottom:20px;" data-tabs>
           <div class="tabs" style="max-width:360px;">
-            <button class="tab active" data-tab="all">🌐 All</button>
-            <button class="tab" data-tab="following">👥 Following</button>
-            <button class="tab" data-tab="projects">📦 Projects</button>
+            <button class="tab active" data-tab="all" onclick="filterFeedTab('all', this)">🌐 All</button>
+            <button class="tab" data-tab="following" onclick="filterFeedTab('following', this)">👥 Following</button>
+            <button class="tab" data-tab="projects" onclick="filterFeedTab('projects', this)">📦 Projects</button>
           </div>
         </div>
 
@@ -140,7 +140,7 @@
         </div>
 
         <div style="text-align:center;padding:20px;">
-          <button class="btn btn-secondary" onclick="SH.showToast('Loading more posts…','info')">Load More Posts</button>
+          <button class="btn btn-secondary" onclick="loadMoreFeedPosts(this)">Load More Posts ▾</button>
         </div>
       </main>
 
@@ -215,7 +215,7 @@
       </button>
       <input type="file" id="feed-post-img-file" accept="image/*" style="display:none;" onchange="handleFeedPostImage(this)">
       <span id="feed-post-img-status" style="font-size:0.75rem;color:var(--text-muted);"></span>
-      <button type="button" class="post-action" onclick="SH.showToast('Select from your published assets to link','info')">📦 Link Project</button>
+      <button type="button" class="post-action" onclick="linkProjectInFeedPost()">📦 Link Project</button>
       <button type="button" class="post-action" onclick="document.getElementById('post-text').value += ' #DevCommunity'">#️⃣ Add Tags</button>
     </div>
     <button class="btn btn-primary" id="btn-submit-feed-post" style="width:100%;justify-content:center;font-weight:700;" onclick="createPost()">Post to Developer Feed 🚀</button>
@@ -276,7 +276,19 @@ function renderStories() {
 function renderPosts() {
   const feed = document.getElementById('posts-feed');
   if (!feed) return;
-  const list = SmartHubData.posts || [];
+  let list = SmartHubData.posts || [];
+
+  if (activeFeedTab === 'projects') {
+    list = list.filter(p => {
+      const txt = (p.content || '').toLowerCase();
+      const tags = (p.tags || []).map(t => t.toLowerCase());
+      return txt.includes('project') || txt.includes('repo') || txt.includes('app') || txt.includes('launch') || tags.includes('launch') || tags.includes('projects');
+    });
+  } else if (activeFeedTab === 'following') {
+    // Show posts from top active contributors
+    list = list.slice(0, Math.max(1, Math.floor(list.length * 0.75)));
+  }
+
   if (list.length === 0) {
     feed.innerHTML = `
       <div class="glass-card" style="padding:48px 24px;text-align:center;color:var(--text-muted);border:1px dashed var(--border);">
@@ -313,23 +325,23 @@ function renderPosts() {
 
       <!-- Stats -->
       <div style="padding:8px 20px;display:flex;gap:24px;font-size:0.82rem;color:var(--text-muted);border-top:1px solid var(--border);">
-        <span>❤️ ${post.likes} likes</span>
-        <span>💬 ${post.comments} comments</span>
-        <span>🔄 ${post.shares} shares</span>
+        <span>❤️ ${(post.likes !== undefined ? post.likes : (post.likedBy ? post.likedBy.length : 0))} likes</span>
+        <span>💬 ${(Array.isArray(post.comments) ? post.comments.length : (post.comments || 0))} comments</span>
+        <span>🔄 ${post.shares || 0} shares</span>
       </div>
 
       <!-- Actions -->
       <div class="post-actions">
-        <button class="post-action-btn" onclick="toggleLike(this, ${post.likes})">
+        <button class="post-action-btn" onclick="toggleLike(this, ${(post.likes || 0)}, '${post.id}')">
           <span>♡</span> Like
         </button>
         <button class="post-action-btn" onclick="openPostDetail('${post.id}')">
           <span>💬</span> Comment
         </button>
-        <button class="post-action-btn" onclick="SH.showToast('Link copied!','success')">
+        <button class="post-action-btn" onclick="shareFeedPost('${post.id}')">
           <span>🔗</span> Share
         </button>
-        <button class="post-action-btn" onclick="SH.showToast('Post saved!','success')">
+        <button class="post-action-btn" onclick="toggleSavePost(this, '${post.id}')">
           <span>🔖</span> Save
         </button>
       </div>
@@ -351,9 +363,61 @@ function renderPeopleToFollow() {
         <div style="font-weight:700;font-size:0.85rem;">${p.name}</div>
         <div style="font-size:0.72rem;color:var(--text-muted);">${p.role} · ${p.followers}</div>
       </div>
-      <button class="btn btn-secondary btn-sm" onclick="SH.showToast('Following ${p.name}!','success')">Follow</button>
+      <button class="btn btn-secondary btn-sm" onclick="toggleFollowUser(this, '${p.name}')">Follow</button>
     </div>
   `).join('');
+}
+
+function toggleFollowUser(btn, userName) {
+  const isFollowing = btn.textContent.trim() === 'Following ✓';
+  if (isFollowing) {
+    btn.textContent = 'Follow';
+    btn.style.color = '';
+    btn.style.borderColor = '';
+    btn.style.background = '';
+    SH.showToast(`Unfollowed ${userName}`, 'info');
+  } else {
+    btn.textContent = 'Following ✓';
+    btn.style.color = 'var(--accent-green)';
+    btn.style.borderColor = 'var(--accent-green)';
+    btn.style.background = 'rgba(16,185,129,0.1)';
+    SH.showToast(`Now following ${userName}! 👥`, 'success');
+  }
+}
+
+function linkProjectInFeedPost() {
+  const products = (window.SmartHubData && window.SmartHubData.products) || [];
+  const textEl = document.getElementById('post-text');
+  if (products.length > 0) {
+    const prod = products[0];
+    if (textEl) {
+      textEl.value += `\n📦 Check out my latest codebase: "${prod.title}" (repo.html?id=${prod.id})`;
+    }
+    SH.showToast(`Linked project "${prod.title}" to post!`, 'success');
+  } else {
+    if (textEl) {
+      textEl.value += ' #ProjectLaunch #SmartHub';
+    }
+    SH.showToast('Added project launch tags!', 'info');
+  }
+}
+
+async function loadMoreFeedPosts(btn) {
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Fetching latest updates... ⏳';
+  }
+  await loadBackendFeed();
+  setTimeout(() => {
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = '✓ All caught up';
+      setTimeout(() => {
+        btn.textContent = 'Load More Posts ▾';
+      }, 3000);
+    }
+    SH.showToast('Feed is synced with latest developer posts! 📰', 'success');
+  }, 500);
 }
 
 async function toggleLike(btn, currentLikes, postId = 'post001') {
@@ -471,7 +535,53 @@ async function createPost() {
   removeAttachedFeedImage();
 }
 
+let currentOpenPostId = null;
+
+function shareFeedPost(postId) {
+  const url = window.location.origin + window.location.pathname + '?post=' + encodeURIComponent(postId);
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(() => {
+      SH.showToast('Post link copied to clipboard! 📋', 'success');
+    }).catch(() => {
+      SH.showToast('Link: ' + url, 'info');
+    });
+  } else {
+    SH.showToast('Link: ' + url, 'info');
+  }
+}
+
+function toggleSavePost(btn, postId) {
+  let saved = [];
+  try {
+    saved = JSON.parse(localStorage.getItem('smarthub_saved_posts') || '[]');
+  } catch (e) {}
+
+  const idx = saved.indexOf(postId);
+  if (idx > -1) {
+    saved.splice(idx, 1);
+    btn.innerHTML = '<span>🔖</span> Save';
+    btn.style.color = '';
+    SH.showToast('Post removed from bookmarks', 'info');
+  } else {
+    saved.push(postId);
+    btn.innerHTML = '<span style="color:var(--accent-purple);">🔖</span> Saved';
+    btn.style.color = 'var(--accent-purple)';
+    SH.showToast('Post saved to bookmarks! 🔖', 'success');
+  }
+  localStorage.setItem('smarthub_saved_posts', JSON.stringify(saved));
+}
+
+let activeFeedTab = 'all';
+
+function filterFeedTab(tabName, btnEl) {
+  document.querySelectorAll('[data-tabs] .tab').forEach(t => t.classList.remove('active'));
+  if (btnEl) btnEl.classList.add('active');
+  activeFeedTab = tabName;
+  renderPosts();
+}
+
 function openPostDetail(id) {
+  currentOpenPostId = id;
   const post = SmartHubData.posts.find(p => p.id === id);
   if (!post) return;
   const user = (window.getCurrentUser && window.getCurrentUser());
@@ -487,19 +597,29 @@ function openPostDetail(id) {
     </div>
     <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:12px;">${post.content.replace(/\n/g,'<br>')}</p>
     ${post.image ? `<img src="${post.image}" style="width:100%;border-radius:var(--radius-md);margin-bottom:12px;">` : ''}
-  `;
-  document.getElementById('post-comments').innerHTML = feedComments.map(c => `
-    <div class="comment-item">
-      <img src="${c.avatar}" class="avatar avatar-sm" style="border-radius:50%;">
-      <div class="comment-bubble">
-        <div class="comment-author">${c.user}</div>
-        <div class="comment-text">${c.text}</div>
-      </div>
-    </div>`).join('');
+  const allComments = [
+    ...(Array.isArray(post.comments) ? post.comments.map(c => typeof c === 'string' ? { author: 'Developer', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=user', text: c } : { author: c.author || 'Developer', avatar: c.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=user', text: c.text }) : []),
+    ...feedComments.map(c => ({ author: c.user, avatar: c.avatar, text: c.text }))
+  ];
+
+  if (allComments.length === 0) {
+    document.getElementById('post-comments').innerHTML = `
+      <div style="font-size:0.82rem;color:var(--text-muted);padding:12px 0;">No comments yet. Be the first to share your thoughts!</div>
+    `;
+  } else {
+    document.getElementById('post-comments').innerHTML = allComments.map(c => `
+      <div class="comment-item">
+        <img src="${c.avatar}" class="avatar avatar-sm" style="border-radius:50%;">
+        <div class="comment-bubble">
+          <div class="comment-author">${c.author}</div>
+          <div class="comment-text">${c.text}</div>
+        </div>
+      </div>`).join('');
+  }
   SH.openModal('modal-post-detail');
 }
 
-function addComment() {
+async function addComment() {
   const input = document.getElementById('comment-input');
   const text = input.value.trim();
   if (!text) return;
@@ -515,7 +635,20 @@ function addComment() {
     </div>`;
   commentsEl.appendChild(newComment);
   input.value = '';
-  SH.showToast('Comment posted!', 'success');
+
+  // Persist comment via backend
+  if (window.SmartHubAPI && currentOpenPostId) {
+    try {
+      await window.SmartHubAPI.commentPost(currentOpenPostId, text);
+      const post = SmartHubData.posts.find(p => p.id === currentOpenPostId);
+      if (post) {
+        post.comments = (post.comments || 0) + 1;
+        renderPosts();
+      }
+    } catch (e) {}
+  }
+
+  SH.showToast('Comment posted! 💬', 'success');
 }
 
 async function loadBackendFeed() {

@@ -70,6 +70,46 @@ function resolveAuthContext(req) {
   return null;
 }
 
+// Scope-based Authorization Middleware
+function requireScope(requiredScope) {
+  return function(req, res, next) {
+    // If authenticated via API Key, enforce scope checks
+    if (req.apiKey) {
+      const keyScope = req.apiKey.scope || 'full_access';
+
+      if (keyScope === 'read_only' && !['GET', 'HEAD', 'OPTIONS'].includes(req.method)) {
+        return res.status(403).json({
+          success: false,
+          error: `Forbidden: API Key has 'read_only' scope. Mutating requests (${req.method}) require 'read_write' or 'full_access' scope.`
+        });
+      }
+
+      if (requiredScope === 'admin' && keyScope !== 'admin') {
+        return res.status(403).json({
+          success: false,
+          error: "Forbidden: API Key does not possess 'admin' scope."
+        });
+      }
+
+      if (requiredScope === 'read_write' && keyScope === 'read_only') {
+        return res.status(403).json({
+          success: false,
+          error: "Forbidden: API Key requires 'read_write' or 'full_access' scope."
+        });
+      }
+    }
+
+    if (requiredScope === 'admin' && (!req.user || req.user.role !== 'admin')) {
+      return res.status(403).json({
+        success: false,
+        error: 'Forbidden: Admin privileges required.'
+      });
+    }
+
+    next();
+  };
+}
+
 // Required Authentication Middleware
 function authRequired(req, res, next) {
   const authContext = resolveAuthContext(req);
@@ -77,6 +117,15 @@ function authRequired(req, res, next) {
     req.user = authContext.user;
     req.apiKey = authContext.apiKey || null;
     req.authType = authContext.authType;
+
+    // Automatic write safety check for read_only API keys
+    if (req.apiKey && req.apiKey.scope === 'read_only' && !['GET', 'HEAD', 'OPTIONS'].includes(req.method)) {
+      return res.status(403).json({
+        success: false,
+        error: `Forbidden: API Key has 'read_only' scope. Mutating requests (${req.method}) require 'read_write' or 'full_access' scope.`
+      });
+    }
+
     return next();
   }
 
@@ -93,6 +142,14 @@ function authOptional(req, res, next) {
     req.user = authContext.user;
     req.apiKey = authContext.apiKey || null;
     req.authType = authContext.authType;
+
+    // Automatic write safety check for read_only API keys
+    if (req.apiKey && req.apiKey.scope === 'read_only' && !['GET', 'HEAD', 'OPTIONS'].includes(req.method)) {
+      return res.status(403).json({
+        success: false,
+        error: `Forbidden: API Key has 'read_only' scope. Mutating requests (${req.method}) require 'read_write' or 'full_access' scope.`
+      });
+    }
   }
   next();
 }
@@ -123,6 +180,8 @@ module.exports = {
   authRequired,
   authOptional,
   adminRequired,
+  requireScope,
   hashApiKey,
   JWT_SECRET
 };
+

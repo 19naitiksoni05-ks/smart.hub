@@ -1103,7 +1103,7 @@ const homeEcoViews = {
           Production screens, responsive layouts, and verified integration tokens. Connect and share on the developer feed! 🚀
         </p>
         <div style="display:flex;gap:10px;">
-          <button class="btn btn-outline btn-sm" onclick="SH.showToast('Liked post! ❤️','success')" style="font-size:0.72rem;padding:4px 10px;">❤️ Like</button>
+          <button class="btn btn-outline btn-sm" onclick="this.innerHTML = this.classList.toggle('liked') ? '❤️ Liked' : '♡ Like'; SH.showToast('Liked showcase post! ❤️','success');" style="font-size:0.72rem;padding:4px 10px;">❤️ Like</button>
           <a href="feed.html" class="btn btn-primary btn-sm" style="font-size:0.72rem;padding:4px 10px;">View Feed →</a>
         </div>
       </div>

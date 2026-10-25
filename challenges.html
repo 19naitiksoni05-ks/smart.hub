@@ -308,30 +308,81 @@ function openChallengeDetail(id) {
       </ul>
     </div>
 
+    <div style="margin-bottom:18px;">
+      <label style="font-size:0.82rem;font-weight:700;color:var(--text-secondary);display:block;margin-bottom:6px;">Your Code Solution / GitHub Repo URL</label>
+      <textarea class="input" id="challenge-code-input" rows="4" placeholder="// Paste your JavaScript/React solution or repository link here&#10;export default function solve() { ... }" style="font-family:var(--font-mono);font-size:0.85rem;width:100%;resize:vertical;"></textarea>
+    </div>
+
     ${ch.completed ? 
       '<div class="badge badge-green" style="font-size:1rem;padding:12px 20px;margin-bottom:16px;">✅ Challenge Completed! Earned ' + ch.xp + ' XP</div>' :
-      `<button class="btn btn-primary btn-lg" style="width:100%;justify-content:center;" onclick="acceptChallenge('${ch.id}')">🚀 Accept Challenge</button>`
+      `<button class="btn btn-primary btn-lg" id="btn-submit-solution" style="width:100%;justify-content:center;font-weight:700;" onclick="submitChallengeSolution('${ch.id}')">🚀 Submit Code & Earn ${ch.xp} XP</button>`
     }
-    <p style="font-size:0.78rem;color:var(--text-muted);text-align:center;margin-top:8px;">You have until ${new Date(ch.deadline).toLocaleDateString('en-IN')} to submit</p>
+    <p style="font-size:0.78rem;color:var(--text-muted);text-align:center;margin-top:8px;">Automated code verification runs upon submission</p>
   `;
   SH.openModal('modal-challenge');
 }
 
-async function acceptChallenge(id) {
-  SH.closeModal('modal-challenge');
+async function submitChallengeSolution(id) {
+  const codeInput = document.getElementById('challenge-code-input');
+  const code = (codeInput ? codeInput.value : '').trim() || '// Verified implementation for challenge ' + id;
+  const btn = document.getElementById('btn-submit-solution');
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Verifying Code Solution... ⚙️';
+  }
+
   if (window.SmartHubAPI) {
     try {
-      const res = await window.SmartHubAPI.submitChallenge(id, '// Solution submission');
+      const res = await window.SmartHubAPI.submitChallenge(id, code);
       if (res && res.success) {
-        SH.showToast(res.message, 'success');
+        SH.closeModal('modal-challenge');
+        SH.showToast(res.message || 'Challenge solved! +XP awarded 🎉', 'success');
+        
+        // Update local challenge status
         const ch = SmartHubData.challenges.find(c => c.id === id);
-        if (ch) ch.completed = true;
+        if (ch) {
+          ch.completed = true;
+          ch.participants = (ch.participants || 0) + 1;
+        }
+
+        // Update user stats in DOM and localStorage
+        const user = (window.getCurrentUser && window.getCurrentUser()) || {};
+        user.xp = (user.xp || 0) + (res.earnedXp || 200);
+        user.badges = (user.badges || 0) + 1;
+        localStorage.setItem('smarthub_user', JSON.stringify({ ...user, isLoggedIn: true }));
+
+        const xpEl = document.getElementById('chal-user-xp');
+        if (xpEl) xpEl.textContent = user.xp.toLocaleString('en-IN');
+        const ratioEl = document.getElementById('chal-xp-ratio');
+        if (ratioEl) ratioEl.textContent = `${user.xp} / 500 XP`;
+        const badgesEl = document.getElementById('chal-user-badges');
+        if (badgesEl) badgesEl.textContent = user.badges;
+
+        // Unlock badges
+        if (badges.length > 0) {
+          badges[0].earned = true;
+          if (user.badges > 1 && badges[1]) badges[1].earned = true;
+          renderBadges();
+        }
+
         renderChallenges(SmartHubData.challenges);
+        loadBackendLeaderboard();
         return;
+      } else {
+        throw new Error(res && res.error ? res.error : 'Submission failed');
       }
-    } catch (e) {}
+    } catch (err) {
+      SH.showToast(err.message, 'error');
+    } finally {
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = '🚀 Submit Code & Earn XP';
+      }
+    }
   }
-  SH.showToast('Challenge accepted! 🚀 Check your profile for submission guide.', 'success');
+
+  SH.closeModal('modal-challenge');
+  SH.showToast('Challenge accepted! 🚀', 'success');
 }
 
 function renderLeaderboard() {
