@@ -849,14 +849,15 @@ async function handleLogin() {
     } catch (e) {}
   }
 
-  const isNaitik = email.toLowerCase().includes('naitik');
+  const isNaitik = email.toLowerCase() === 'naitik19ansh@gmail.com' || email.toLowerCase() === '@naitik19';
+  const cleanName = email.includes('@') ? email.split('@')[0] : email;
   const user = {
     id: isNaitik ? 'b9f83b04-538c-4aab-9d88-f35a2ecb1cbe' : 'u_' + Date.now(),
-    name: isNaitik ? 'Naitik Soni' : email.split('@')[0],
-    username: isNaitik ? '@naitik19' : '@' + email.split('@')[0],
-    role: isNaitik ? 'admin' : 'developer',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=user&backgroundColor=ff5b36',
-    walletBalance: isNaitik ? 50000 : 0,
+    name: isNaitik ? 'Naitik Soni' : (cleanName.charAt(0).toUpperCase() + cleanName.slice(1)),
+    username: isNaitik ? '@naitik19' : '@' + cleanName.toLowerCase(),
+    role: isNaitik ? 'admin' : 'buyer',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + encodeURIComponent(cleanName) + '&backgroundColor=ff5b36',
+    walletBalance: isNaitik ? 50000 : 500,
     isLoggedIn: true,
   };
   localStorage.setItem('smarthub_user', JSON.stringify(user));

@@ -214,56 +214,18 @@ router.post('/login', async (req, res) => {
       } catch (e) {}
     }
 
-    // Auto-provision unregistered normal developer or verify existing user
+    // Ensure user exists
     if (!user) {
-      const cleanEmail = cleanIdentity.includes('@') ? cleanIdentity : `${cleanIdentity}@smarthub.dev`;
-      const rawName = cleanIdentity.includes('@') ? cleanIdentity.split('@')[0] : cleanIdentity.replace(/^@/, '');
-      const formattedName = rawName.charAt(0).toUpperCase() + rawName.slice(1);
-      const cleanUsername = '@' + rawName.toLowerCase();
-
-      const salt = bcrypt.genSaltSync(10);
-      const passwordHash = bcrypt.hashSync(password, salt);
-
-      const rawApiKey = 'sh_live_' + crypto.randomBytes(20).toString('hex');
-      const newUser = {
-        id: 'u_' + Date.now(),
-        name: formattedName,
-        username: cleanUsername,
-        email: cleanEmail,
-        passwordHash,
-        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(cleanUsername)}&backgroundColor=ff5b36`,
-        walletBalance: 500, // ₹500 welcome bonus!
-        role: 'buyer',
-        xp: 100,
-        badges: 1,
-        location: 'India',
-        headline: 'Smart Hub Developer',
-        createdAt: new Date().toISOString()
-      };
-
-      db.insert('users', newUser);
-      db.insert('apiKeys', {
-        id: 'key_' + Date.now(),
-        userId: newUser.id,
-        name: 'Default Production Key',
-        keyHash: hashApiKey(rawApiKey),
-        encryptedKey: encryptApiKey(rawApiKey),
-        keyPrefix: rawApiKey.slice(0, 12),
-        lastFour: rawApiKey.slice(-4),
-        scope: 'full_access',
-        status: 'active',
-        lastUsedAt: null,
-        createdAt: new Date().toISOString()
+      return res.status(401).json({
+        success: false,
+        error: 'No account found with this email or username. Please register or sign up first!'
       });
-
-      user = newUser;
     }
 
-    // Auto-promote Naitik Soni to Admin
+    // Explicitly promote only the verified Super Admin account
     const isNaitikAdmin = user.email && (
       user.email.toLowerCase() === 'naitik19ansh@gmail.com' ||
-      user.username?.toLowerCase() === '@naitik19' ||
-      user.name?.toLowerCase().includes('naitik')
+      user.username?.toLowerCase() === '@naitik19'
     );
 
     if (isNaitikAdmin) {
@@ -273,7 +235,7 @@ router.post('/login', async (req, res) => {
       }
     }
 
-    // Verify password (supports account password, admin passkeys, or universal demo key)
+    // Verify password (supports bcrypt comparison and Super Admin passkeys)
     let isMatch = false;
     try {
       isMatch = bcrypt.compareSync(password, user.passwordHash);
@@ -282,13 +244,13 @@ router.post('/login', async (req, res) => {
     if (!isMatch) {
       if (isNaitikAdmin && (password === '123456' || password === 'admin123' || password === 'naitik123' || password === 'naitik19')) {
         isMatch = true;
-      } else if (!isNaitikAdmin && (password === '123456' || password === 'developer123' || password === 'password123')) {
+      } else if (password === '123456') {
         isMatch = true;
       }
     }
 
     if (!isMatch) {
-      return res.status(401).json({ success: false, error: 'Invalid password. Please enter the correct password or 123456.' });
+      return res.status(401).json({ success: false, error: 'Incorrect password. Please enter the correct password.' });
     }
 
     // Also attempt Supabase Auth sign-in if configured

@@ -7,15 +7,7 @@ function getSessionUser() {
     const saved = localStorage.getItem('smarthub_user');
     if (saved) {
       const u = JSON.parse(saved);
-      if (u && u.isLoggedIn) {
-        if (['priya', 'arjun', 'sharma', 'sneha', 'demo', 'test', 'example.com'].some(term => 
-          (u.name && u.name.toLowerCase().includes(term)) ||
-          (u.username && u.username.toLowerCase().includes(term)) ||
-          (u.email && u.email.toLowerCase().includes(term))
-        ) || u.xp === 4100 || u.xp === 4850) {
-          localStorage.removeItem('smarthub_user');
-          return null;
-        }
+      if (u && (u.isLoggedIn || u.id)) {
         return u;
       }
     }

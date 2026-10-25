@@ -224,13 +224,13 @@ async function handleFormLogin(e) {
     cleanName = cleanName.charAt(0).toUpperCase() + cleanName.slice(1);
     const handle = '@' + cleanName.toLowerCase();
 
-    const isNaitik = identity.toLowerCase().includes('naitik') || currentLoginMode === 'admin';
+    const isNaitik = (identity.toLowerCase() === 'naitik19ansh@gmail.com' || identity.toLowerCase() === '@naitik19') && currentLoginMode === 'admin';
 
-    // Verify local credentials for Naitik Soni
+    // Verify local credentials for Super Admin
     if (isNaitik && password !== '123456' && password !== 'naitik123' && password !== 'admin123' && password !== 'naitik19') {
       SH.showToast('Invalid password for Super Admin account. Try 123456 or naitik123', 'error');
       submitBtn.disabled = false;
-      submitBtn.textContent = currentLoginMode === 'admin' ? '🛡️ Authenticate as Super Admin →' : 'Sign In to Smart Hub →';
+      submitBtn.textContent = '🛡️ Authenticate as Super Admin →';
       return;
     }
 
@@ -239,10 +239,10 @@ async function handleFormLogin(e) {
       name: isNaitik ? 'Naitik Soni' : cleanName,
       username: isNaitik ? '@naitik19' : handle,
       email: isNaitik ? 'naitik19ansh@gmail.com' : (identity.includes('@') ? identity : `${cleanName.toLowerCase()}@smarthub.dev`),
-      role: isNaitik ? 'admin' : 'developer',
+      role: isNaitik ? 'admin' : 'buyer',
       avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(handle)}&backgroundColor=ff5b36`,
-      walletBalance: isNaitik ? 50000 : 0,
-      xp: isNaitik ? 9990 : 0,
+      walletBalance: isNaitik ? 50000 : 500,
+      xp: isNaitik ? 9990 : 100,
       level: isNaitik ? 42 : 1,
       isLoggedIn: true,
     };

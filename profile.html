@@ -428,22 +428,6 @@ async function uploadProject() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Purge any legacy fake/demo user from localStorage immediately
-  try {
-    const raw = localStorage.getItem('smarthub_user');
-    if (raw) {
-      const u = JSON.parse(raw);
-      if (!u || !u.isLoggedIn || ['priya', 'arjun', 'sharma', 'sneha', 'demo', 'test', 'example.com'].some(term => 
-        (u.name && u.name.toLowerCase().includes(term)) ||
-        (u.username && u.username.toLowerCase().includes(term)) ||
-        (u.email && u.email.toLowerCase().includes(term))
-      ) || u.xp === 4100 || u.xp === 4850) {
-        localStorage.removeItem('smarthub_user');
-      }
-    }
-  } catch (e) {
-    localStorage.removeItem('smarthub_user');
-  }
 
   const user = (window.getCurrentUser && window.getCurrentUser());
   if (user) {

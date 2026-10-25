@@ -2,46 +2,13 @@
 // SMART HUB — Core JavaScript Utilities & Interactive Engine
 // ============================================================
 
-// ── Auto-Purge Legacy Demo / Fake Users from LocalStorage ───
-(function purgeLegacyDemoUsers() {
-  try {
-    const raw = localStorage.getItem('smarthub_user');
-    if (raw) {
-      const u = JSON.parse(raw);
-      const isFake = !u || 
-        !u.isLoggedIn || 
-        ['priya', 'arjun', 'sharma', 'sneha', 'demo', 'test', 'example.com'].some(term => 
-          (u.name && u.name.toLowerCase().includes(term)) ||
-          (u.username && u.username.toLowerCase().includes(term)) ||
-          (u.email && u.email.toLowerCase().includes(term))
-        ) ||
-        (u.xp === 4100 || u.xp === 4850 || (u.xp && u.xp > 0 && !u.token));
-      if (isFake) {
-        localStorage.removeItem('smarthub_user');
-        localStorage.removeItem('smarthub_cart');
-        localStorage.removeItem('smarthub_last_order');
-      }
-    }
-  } catch (e) {
-    localStorage.removeItem('smarthub_user');
-  }
-})();
-
 // ── Active User State (Syncs with LocalStorage) ────────────
 function getCurrentUser() {
   try {
     const saved = localStorage.getItem('smarthub_user');
     if (saved) {
       const u = JSON.parse(saved);
-      if (u && u.isLoggedIn) {
-        if (['priya', 'arjun', 'sharma', 'sneha', 'demo', 'test', 'example.com'].some(term => 
-          (u.name && u.name.toLowerCase().includes(term)) ||
-          (u.username && u.username.toLowerCase().includes(term)) ||
-          (u.email && u.email.toLowerCase().includes(term))
-        ) || u.xp === 4100 || u.xp === 4850) {
-          localStorage.removeItem('smarthub_user');
-          return null;
-        }
+      if (u && (u.isLoggedIn || u.id)) {
         return u;
       }
     }
