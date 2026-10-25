@@ -480,9 +480,15 @@
             <div class="badge badge-coral" id="studio-delivery-badge" style="display:inline-flex;align-items:center;gap:6px;font-size:0.78rem;padding:7px 12px;border-radius:var(--radius-xs);border:1px solid rgba(255,91,54,0.3);background:rgba(255,91,54,0.08);color:var(--accent-coral);">
               <span>📧</span> File Sent via Email Only
             </div>
-            <a href="checkout.html" class="btn btn-primary" id="btn-studio-buy">
-              ⚡ Commercial License (<span id="studio-price-tag">₹1,999</span>)
+            <button class="btn btn-secondary" onclick="addToCartCurrentProject()" id="btn-studio-cart" style="font-weight:700;">
+              🛒 Add to Cart
+            </button>
+            <a href="checkout.html" class="btn btn-primary" id="btn-studio-buy" style="font-weight:700;">
+              ⚡ Buy Commercial License (<span id="studio-price-tag">₹1,999</span>)
             </a>
+            <span id="header-unlocked-badge" class="badge badge-green" style="display:none;font-size:0.78rem;padding:6px 12px;">
+              ✓ LICENSE ACTIVE
+            </span>
           </div>
         </div>
 
@@ -641,8 +647,13 @@
                     <a href="javascript:void(0)" onclick="navigateToDir('')" style="color:var(--accent-coral);text-decoration:none;">root</a>
                   </div>
                 </div>
-                <div style="font-family:var(--font-tech);font-size:0.75rem;color:var(--studio-text-muted);">
-                  <span id="studio-table-file-count">3</span> Real Files Uploaded
+                <div style="display:flex;align-items:center;gap:12px;">
+                  <button class="btn btn-outline btn-xs" id="btn-toggle-flat" onclick="toggleFlatView()" style="font-size:0.75rem;padding:3px 10px;font-family:var(--font-tech);">
+                    📄 Flat Files View
+                  </button>
+                  <div style="font-family:var(--font-tech);font-size:0.75rem;color:var(--studio-text-muted);">
+                    <span id="studio-table-file-count">3</span> Real Files Uploaded
+                  </div>
                 </div>
               </div>
 
@@ -724,10 +735,16 @@
             </div>
 
             <div id="sidebar-action-wrap">
-              <a href="checkout.html" id="link-checkout-sidebar" class="btn btn-primary" style="width:100%;text-align:center;display:block;margin-bottom:10px;font-weight:700;">
-                ⚡ Purchase Commercial License
+              <a href="checkout.html" id="link-checkout-sidebar" class="btn btn-primary" style="width:100%;text-align:center;display:block;margin-bottom:10px;font-weight:700;font-size:0.95rem;">
+                ⚡ Buy Commercial License
               </a>
-              <div style="background:rgba(255,91,54,0.06);border:1px dashed var(--accent-coral);border-radius:var(--radius-xs);padding:12px;margin-top:10px;text-align:center;">
+              <button class="btn btn-secondary" onclick="addToCartCurrentProject()" id="btn-sidebar-cart" style="width:100%;font-weight:700;margin-bottom:10px;font-size:0.95rem;">
+                🛒 Add to Cart
+              </button>
+              <div id="sidebar-unlocked-badge" class="badge badge-green" style="display:none;width:100%;justify-content:center;padding:8px;font-size:0.78rem;margin-bottom:10px;">
+                ✓ PURCHASED &amp; DECRYPTED
+              </div>
+              <div style="background:rgba(255,91,54,0.06);border:1px dashed var(--accent-coral);border-radius:var(--radius-xs);padding:12px;text-align:center;">
                 <div style="font-size:0.82rem;font-weight:700;color:var(--accent-coral);display:flex;align-items:center;justify-content:center;gap:6px;">
                   <span>📧</span> File Sent Directly to Email Only
                 </div>
@@ -762,6 +779,9 @@
   <script src="js/api.js"></script>
   <script src="js/main.js"></script>
   <script src="js/layout.js"></script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="js/react-components.js"></script>
 
   <script>
     let currentRepo = null;
@@ -932,21 +952,10 @@
         activeBadge.style.display = 'flex';
         document.getElementById('licensed-buyer-info').textContent = `Licensed to ${buyerInfo} · Code Decrypted & View Active · Source Archive Dispatched to Email`;
       }
-      const buyBtn = document.getElementById('btn-studio-buy');
-      if (buyBtn) {
-        buyBtn.textContent = '✓ License Active';
-        buyBtn.classList.remove('btn-primary');
-        buyBtn.classList.add('btn-outline');
-        buyBtn.style.borderColor = 'var(--accent-green)';
-        buyBtn.style.color = 'var(--accent-green)';
-      }
-      const sidebarBuy = document.getElementById('link-checkout-sidebar');
-      if (sidebarBuy) {
-        sidebarBuy.textContent = '✓ Purchased & Decrypted';
-        sidebarBuy.style.pointerEvents = 'none';
-        sidebarBuy.classList.remove('btn-primary');
-        sidebarBuy.classList.add('btn-outline');
-      }
+      const headerUnlocked = document.getElementById('header-unlocked-badge');
+      if (headerUnlocked) headerUnlocked.style.display = 'inline-flex';
+      const sidebarUnlocked = document.getElementById('sidebar-unlocked-badge');
+      if (sidebarUnlocked) sidebarUnlocked.style.display = 'flex';
     }
 
     function markProjectLocked() {
@@ -955,6 +964,10 @@
       const activeBadge = document.getElementById('license-active-badge');
       if (banner) banner.style.display = 'flex';
       if (activeBadge) activeBadge.style.display = 'none';
+      const headerUnlocked = document.getElementById('header-unlocked-badge');
+      if (headerUnlocked) headerUnlocked.style.display = 'none';
+      const sidebarUnlocked = document.getElementById('sidebar-unlocked-badge');
+      if (sidebarUnlocked) sidebarUnlocked.style.display = 'none';
     }
 
     function focusActivationInput() {
@@ -1093,11 +1106,74 @@
         `).join('');
       }
 
-      // Render File Table
-      renderDirectoryTable('');
+      // Determine initial directory: if all files are in a single top-level folder (e.g. 'python/'), default into it!
+      let initialDir = '';
+      if (repo.tree && repo.tree.length > 0) {
+        const filePaths = repo.tree.map(t => t.path);
+        const firstSlash = filePaths[0].indexOf('/');
+        if (firstSlash !== -1) {
+          const rootFolder = filePaths[0].substring(0, firstSlash);
+          const allShareRoot = filePaths.every(p => p.startsWith(rootFolder + '/'));
+          if (allShareRoot) {
+            initialDir = rootFolder;
+          }
+        }
+      }
+      renderDirectoryTable(initialDir);
 
       // Render README
       renderReadme(repo.readme);
+
+      // Auto-load primary file in code viewer so user can view code immediately
+      if (repo.tree && repo.tree.length > 0) {
+        const primary = repo.tree.find(t => t.path.endsWith('.py') || t.path.endsWith('.js') || t.path.endsWith('.ts')) || repo.tree[0];
+        if (primary) {
+          openFileBlob(primary.path);
+        }
+      }
+    }
+
+    let isFlatFileView = false;
+    function toggleFlatView() {
+      isFlatFileView = !isFlatFileView;
+      const btn = document.getElementById('btn-toggle-flat');
+      if (btn) btn.textContent = isFlatFileView ? '📁 Tree View' : '📄 Flat Files View';
+      renderDirectoryTable(isFlatFileView ? '' : currentDirectory);
+    }
+
+    function addToCartCurrentProject() {
+      if (!currentRepo) return;
+      const product = {
+        id: currentRepo.id,
+        title: currentRepo.title,
+        category: currentRepo.category || 'Python',
+        price: currentRepo.price || 1999,
+        qty: 1,
+        thumb: currentRepo.thumb || 'https://picsum.photos/seed/code/400/250',
+        badge: 'Verified'
+      };
+
+      if (window.SmartHubCart && typeof window.SmartHubCart.add === 'function') {
+        window.SmartHubCart.add(product);
+      } else if (typeof window.addToCart === 'function') {
+        window.addToCart(product);
+      } else {
+        try {
+          const current = JSON.parse(localStorage.getItem('smarthub_cart') || '[]');
+          const exist = current.find(p => p.id === product.id);
+          if (exist) {
+            exist.qty = (exist.qty || 1) + 1;
+          } else {
+            current.push(product);
+          }
+          localStorage.setItem('smarthub_cart', JSON.stringify(current));
+          window.dispatchEvent(new CustomEvent('cart-updated', { detail: current }));
+        } catch (e) {}
+        showToast(`Added "${product.title}" to cart! 🛒`, 'success');
+      }
+      setTimeout(() => {
+        window.dispatchEvent(new CustomEvent('open-cart'));
+      }, 300);
     }
 
     function getCategoryIcon(cat) {
@@ -1115,80 +1191,150 @@
 
     function switchStudioTab(tab) {
       document.querySelectorAll('.studio-tab-btn').forEach(b => b.classList.remove('active'));
-      document.getElementById(`tab-btn-${tab}`).classList.add('active');
+      const activeBtn = document.getElementById(`tab-btn-${tab}`);
+      if (activeBtn) activeBtn.classList.add('active');
 
       document.getElementById('pane-overview').style.display = tab === 'overview' ? 'block' : 'none';
       document.getElementById('pane-code').style.display = tab === 'code' ? 'block' : 'none';
       document.getElementById('pane-security').style.display = tab === 'security' ? 'block' : 'none';
+
+      if (tab === 'code' && !currentBlobPath && currentRepo && currentRepo.tree && currentRepo.tree.length > 0) {
+        const primary = currentRepo.tree.find(t => t.path.endsWith('.py') || t.path.endsWith('.js') || t.path.endsWith('.ts')) || currentRepo.tree[0];
+        if (primary) {
+          openFileBlob(primary.path);
+        }
+      }
     }
 
     // ── Directory Table & Real File Navigation ─────────────────
-    function renderDirectoryTable(dirPath) {
+    function renderDirectoryTable(dirPath = '') {
       currentDirectory = dirPath;
       updateBreadcrumbs(dirPath);
 
       const tableBody = document.getElementById('file-table-body');
       if (!tableBody || !currentRepo || !currentRepo.tree) return;
 
-      const prefix = dirPath ? (dirPath.endsWith('/') ? dirPath : dirPath + '/') : '';
+      const allFiles = currentRepo.tree || [];
+      let entries = [];
 
-      const entries = currentRepo.tree.filter(item => {
-        if (!prefix) {
-          return !item.path.includes('/');
+      if (isFlatFileView) {
+        entries = allFiles.map(item => ({
+          ...item,
+          fullPath: item.path,
+          displayName: item.path,
+          isFolder: false
+        }));
+      } else {
+        const dirPrefix = dirPath ? (dirPath.endsWith('/') ? dirPath : dirPath + '/') : '';
+        const folders = new Map();
+        const directFiles = [];
+
+        allFiles.forEach(item => {
+          const fullPath = item.path.replace(/\\/g, '/');
+          if (dirPrefix && !fullPath.startsWith(dirPrefix)) {
+            return;
+          }
+          const relative = dirPrefix ? fullPath.substring(dirPrefix.length) : fullPath;
+          const slashIdx = relative.indexOf('/');
+
+          if (slashIdx === -1) {
+            directFiles.push({
+              ...item,
+              fullPath: fullPath,
+              displayName: item.name || relative,
+              isFolder: false
+            });
+          } else {
+            const folderName = relative.substring(0, slashIdx);
+            const folderPath = dirPrefix ? `${dirPrefix}${folderName}` : folderName;
+            if (!folders.has(folderName)) {
+              folders.set(folderName, {
+                name: folderName,
+                displayName: folderName,
+                path: folderPath,
+                fullPath: folderPath,
+                type: 'dir',
+                isFolder: true,
+                fileCount: 0,
+                size: 0
+              });
+            }
+            const f = folders.get(folderName);
+            f.fileCount += 1;
+            f.size += (item.size || 0);
+          }
+        });
+
+        entries = [...Array.from(folders.values()), ...directFiles];
+
+        // If at root and only 1 folder exists (e.g. 'python/'), auto-step into it so files are immediately visible!
+        if (!dirPath && entries.length === 1 && entries[0].isFolder && allFiles.length > 0) {
+          const singleFolder = entries[0].path;
+          currentDirectory = singleFolder;
+          updateBreadcrumbs(singleFolder);
+          return renderDirectoryTable(singleFolder);
         }
-        if (!item.path.startsWith(prefix)) return false;
-        const remainder = item.path.substring(prefix.length);
-        return !remainder.includes('/');
-      });
 
-      // Sort: dirs first, then files
+        // Fallback: if empty, show all files directly
+        if (entries.length === 0 && allFiles.length > 0) {
+          entries = allFiles.map(item => ({
+            ...item,
+            fullPath: item.path,
+            displayName: item.path,
+            isFolder: false
+          }));
+        }
+      }
+
+      // Sort: folders first, then files
       entries.sort((a, b) => {
-        const aIsDir = a.type === 'dir' || a.type === 'tree';
-        const bIsDir = b.type === 'dir' || b.type === 'tree';
-        if (aIsDir && !bIsDir) return -1;
-        if (!aIsDir && bIsDir) return 1;
-        return a.name.localeCompare(b.name);
+        if (a.isFolder && !b.isFolder) return -1;
+        if (!a.isFolder && b.isFolder) return 1;
+        return (a.displayName || a.name || '').localeCompare(b.displayName || b.name || '');
       });
 
       let html = '';
 
-      if (dirPath) {
+      if (dirPath && !isFlatFileView) {
         const parentDir = dirPath.includes('/') ? dirPath.substring(0, dirPath.lastIndexOf('/')) : '';
         html += `
-          <tr class="file-row" onclick="navigateToDir('${parentDir}')">
-            <td colspan="4" class="file-name-cell" style="color:var(--accent-coral);">
-              <span>📁</span>
-              <strong>.. (Up one level)</strong>
+          <tr class="file-row" onclick="navigateToDir('${parentDir}')" style="background:rgba(255,91,54,0.03);">
+            <td colspan="4" class="file-name-cell" style="color:var(--accent-coral);cursor:pointer;padding:12px 20px;">
+              <span style="font-size:1.1rem;">📁</span>
+              <strong style="margin-left:4px;">.. (Up one level to ${parentDir || 'root'})</strong>
             </td>
           </tr>
         `;
       }
 
       entries.forEach(item => {
-        const isFolder = item.type === 'dir' || item.type === 'tree';
-        const icon = getFileIcon(item.name, isFolder);
-        const clickHandler = isFolder ? `navigateToDir('${item.path}')` : `openFileBlob('${item.path}')`;
-        const typeLabel = isFolder ? 'Folder' : getFileTypeLabel(item.name);
-        const lockBadge = (!isFolder && !isProjectUnlocked) ? '<span style="color:var(--accent-coral);margin-left:6px;font-size:0.75rem;">🔒 Encrypted</span>' : '';
+        const isFolder = item.isFolder || item.type === 'dir' || item.type === 'tree';
+        const icon = getFileIcon(item.name || item.displayName, isFolder);
+        const clickHandler = isFolder ? `navigateToDir('${item.path || item.fullPath}')` : `openFileBlob('${item.fullPath || item.path}')`;
+        const typeLabel = isFolder ? `Folder (${item.fileCount || 1} files)` : getFileTypeLabel(item.name || item.displayName);
+        const lockBadge = (!isFolder && !isProjectUnlocked) ? '<span class="badge badge-coral" style="font-size:0.65rem;margin-left:8px;">🔒 Encrypted</span>' : '';
+        const isMain = (!isFolder && (item.displayName.endsWith('python.py') || item.displayName.endsWith('main.py') || item.displayName.endsWith('index.js')));
+        const mainBadge = isMain ? '<span class="badge badge-cyan" style="font-size:0.65rem;margin-left:8px;">MAIN ENTRY</span>' : '';
 
         html += `
-          <tr class="file-row" onclick="${clickHandler}">
-            <td>
-              <div class="file-name-cell">
-                <span style="font-size:1.15rem;">${icon}</span>
-                <span style="font-family:var(--font-mono);font-weight:600;">${item.name}</span>
+          <tr class="file-row" onclick="${clickHandler}" style="cursor:pointer;transition:background 0.15s ease;">
+            <td style="padding:12px 20px;">
+              <div class="file-name-cell" style="display:flex;align-items:center;">
+                <span style="font-size:1.2rem;margin-right:8px;">${icon}</span>
+                <span style="font-family:var(--font-mono);font-weight:700;color:var(--studio-text);">${item.displayName || item.name}</span>
+                ${mainBadge}
                 ${lockBadge}
               </div>
             </td>
-            <td>
+            <td style="padding:12px 20px;">
               <span class="file-type-badge">${typeLabel}</span>
             </td>
-            <td style="text-align:right;font-family:var(--font-mono);color:var(--studio-text-muted);">
-              ${isFolder ? '—' : `${item.size || 0} B`}
+            <td style="padding:12px 20px;text-align:right;font-family:var(--font-mono);color:var(--studio-text-muted);">
+              ${isFolder ? `${(item.size || 0)} B` : `${item.size || 0} B`}
             </td>
-            <td style="text-align:right;">
-              <button class="btn btn-outline btn-sm" style="font-size:0.75rem;padding:3px 10px;">
-                ${isFolder ? 'Open 📂' : (isProjectUnlocked ? 'Inspect 👁️' : 'Decrypt 🔒')}
+            <td style="padding:12px 20px;text-align:right;">
+              <button class="btn btn-outline btn-sm" style="font-size:0.75rem;padding:4px 12px;font-weight:700;">
+                ${isFolder ? 'Open Folder 📂' : (isProjectUnlocked ? 'Inspect Code 👁️' : 'Decrypt Code 🔒')}
               </button>
             </td>
           </tr>
