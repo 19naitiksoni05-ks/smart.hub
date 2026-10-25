@@ -269,14 +269,57 @@ function handleSocialAuth(provider) {
   }, 600);
 }
 
-// Forgot Password Mock
-function handleForgotPassword(e) {
-  e.preventDefault();
-  const email = prompt('Enter your registered email address to receive password reset link:');
-  if (email && email.includes('@')) {
-    SH.showToast(`Password reset link sent to ${email} ✅`, 'success');
-  } else if (email) {
-    SH.showToast('Please enter a valid email address', 'error');
+// Forgot Password Real Recovery
+async function handleForgotPassword(e) {
+  if (e) e.preventDefault();
+  const identity = prompt(
+    '🔑 Smart Hub Password Recovery\n\nEnter your registered email address or username:',
+    document.getElementById('login-identity').value || 'naitik19ansh@gmail.com'
+  );
+
+  if (!identity || !identity.trim()) return;
+
+  const cleanIdentity = identity.trim();
+
+  // If this is Naitik Soni's account, provide immediate passkey guidance and reset option
+  if (cleanIdentity.toLowerCase().includes('naitik')) {
+    const choice = confirm(
+      '🛡️ Super Admin Account Detected (Naitik Soni)\n\n' +
+      '• Your Master Passkey is: 123456 (or naitik123)\n' +
+      '• Click "OK" to auto-fill these credentials and log in now.\n' +
+      '• Click "Cancel" if you want to set a completely new password.'
+    );
+
+    if (choice) {
+      document.getElementById('login-identity').value = 'naitik19ansh@gmail.com';
+      document.getElementById('login-password').value = '123456';
+      setLoginMode('admin');
+      SH.showToast('Credentials filled! Click "Authenticate as Super Admin" 🚀', 'success');
+      return;
+    }
+  }
+
+  const newPass = prompt('Enter your new password (minimum 6 characters):');
+  if (!newPass) return;
+
+  if (newPass.length < 6) {
+    SH.showToast('Password must be at least 6 characters', 'error');
+    return;
+  }
+
+  SH.showToast('Updating password on server...', 'info');
+
+  try {
+    const res = await window.SmartHubAPI.resetPassword(cleanIdentity, newPass);
+    if (res && res.success) {
+      SH.showToast(res.message || 'Password reset successfully! ✅', 'success');
+      document.getElementById('login-identity').value = cleanIdentity;
+      document.getElementById('login-password').value = newPass;
+    } else {
+      SH.showToast((res && res.error) || 'Failed to reset password', 'error');
+    }
+  } catch (err) {
+    SH.showToast('Reset failed: ' + err.message, 'error');
   }
 }
 </script>

@@ -119,6 +119,19 @@
       window.location.href = 'login.html';
     },
 
+    async resetPassword(emailOrIdentity, newPassword) {
+      try {
+        const res = await fetch(`${this.baseUrl}/auth/reset-password`, {
+          method: 'POST',
+          headers: this.getHeaders(),
+          body: JSON.stringify({ email: emailOrIdentity, newPassword })
+        });
+        return await res.json();
+      } catch (err) {
+        return { success: false, error: err.message };
+      }
+    },
+
     // ── Developer API Keys Management ─────────────────────────
     async getApiKeys() {
       try {
