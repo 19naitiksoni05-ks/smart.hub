@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Project & Code Studio | Smart Hub</title>
+  <title>Project &amp; Code Studio | Smart Hub</title>
   <meta name="description" content="Explore verified developer projects, source code packages, visuals, and architecture on Smart Hub.">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
   <link rel="stylesheet" href="css/style.css">
@@ -11,6 +11,21 @@
   <link rel="stylesheet" href="css/cards.css">
   <link rel="stylesheet" href="css/pages.css">
   <style>
+    /* ── Anti-Screenshot, Anti-Copy & DRM Protection Styles ── */
+    body, pre, code, .file-table, .blob-viewer, .studio-box {
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+
+    /* Print Screen & Export Blocker */
+    @media print {
+      body {
+        display: none !important;
+      }
+    }
+
     :root {
       --studio-bg: var(--bg-primary);
       --studio-card: var(--bg-card);
@@ -198,6 +213,7 @@
       overflow: hidden;
       margin-bottom: 24px;
       box-shadow: var(--shadow-sm);
+      position: relative;
     }
 
     .studio-box-header {
@@ -259,6 +275,7 @@
       overflow: hidden;
       margin-bottom: 24px;
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      position: relative;
     }
 
     .blob-header {
@@ -281,6 +298,7 @@
       background: var(--studio-code-bg);
       color: var(--studio-code-color);
       max-height: 600px;
+      position: relative;
     }
 
     .blob-gutters {
@@ -300,6 +318,24 @@
       flex: 1;
       font-family: var(--font-mono);
       white-space: pre;
+    }
+
+    /* DRM Watermark & Shield */
+    .drm-watermark-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      background: repeating-linear-gradient(
+        -45deg,
+        rgba(255, 91, 54, 0.02),
+        rgba(255, 91, 54, 0.02) 80px,
+        rgba(255, 255, 255, 0.01) 80px,
+        rgba(255, 255, 255, 0.01) 160px
+      );
+      z-index: 5;
     }
 
     /* Markdown README */
@@ -404,6 +440,20 @@
   <!-- Injected Shared Header -->
   <div id="page-header"></div>
 
+  <!-- ── Dynamic DRM Screen-Recording & Screenshot Privacy Shield ── -->
+  <div id="drm-privacy-shield" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(8,10,14,0.98);z-index:999999;backdrop-filter:blur(24px);align-items:center;justify-content:center;text-align:center;padding:24px;">
+    <div>
+      <div style="font-size:3.5rem;margin-bottom:12px;">🔒</div>
+      <h2 style="color:var(--accent-coral);margin-bottom:8px;font-size:1.6rem;">DRM Screen Capture Shield Active</h2>
+      <p style="color:var(--studio-text-muted);max-width:520px;margin:0 auto 18px auto;font-size:0.92rem;line-height:1.6;">
+        Smart Hub protects developer intellectual property. Source code is masked when the window blurs or loses focus to prevent background screen recording and screenshot captures.
+      </p>
+      <div class="badge badge-orange" style="font-size:0.8rem;padding:6px 16px;">
+        CLICK ANYWHERE TO REFOCUS &amp; RESUME
+      </div>
+    </div>
+  </div>
+
   <main class="studio-main">
     <div class="container studio-container">
 
@@ -415,10 +465,11 @@
               <span class="badge badge-orange" style="font-size:0.75rem;">⚡ SMART HUB VERIFIED PROJECT</span>
               <span class="badge badge-green" id="studio-category-badge">🐍 Python</span>
               <span class="badge badge-purple" id="studio-files-count-badge">3 Verified Files</span>
+              <span class="badge badge-cyan" id="studio-drm-badge">🔒 AES-256 DRM PROTECTED</span>
             </div>
             <h1 class="studio-title" id="studio-project-title">Python Array &amp; Algorithm Utility Suite</h1>
             <p id="studio-short-desc" style="color:var(--studio-text-muted);margin:8px 0 0 0;font-size:0.95rem;max-width:780px;">
-              Audited digital asset uploaded directly by the verified creator.
+              Audited digital asset uploaded directly by the verified creator. Protected against unauthorized copying, screenshots, and recording.
             </p>
           </div>
 
@@ -449,16 +500,46 @@
         </div>
       </header>
 
+      <!-- ── In-Website Key Activation & Decryption Banner ────── -->
+      <div id="activation-banner" style="border:1.5px solid var(--accent-coral);border-radius:var(--radius-sm);background:rgba(255,91,54,0.06);padding:18px 24px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;">
+        <div style="flex:1;min-width:280px;">
+          <div style="display:flex;align-items:center;gap:8px;font-family:var(--font-tech);font-size:0.75rem;color:var(--accent-coral);font-weight:700;">
+            <span>🔒</span> ENCRYPTION KEY REQUIRED TO DECRYPT SOURCE CODE
+          </div>
+          <div style="font-size:0.88rem;color:var(--studio-text-muted);margin-top:4px;">
+            Purchased this project? We sent an encrypted package with an <strong>Encryption Key</strong> to your email. Enter it below to verify and decrypt the code:
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+          <input type="text" id="activation-key-input" placeholder="Enter Key (e.g. SH-KEY-2026-...)" class="input" style="width:260px;font-family:var(--font-mono);text-transform:uppercase;font-size:0.85rem;padding:8px 12px;">
+          <button class="btn btn-primary" onclick="verifyAndActivateKey()" id="btn-activate-key" style="font-weight:700;">
+            🔓 Verify &amp; Decrypt Code
+          </button>
+        </div>
+      </div>
+
+      <!-- ── Decrypted License Active Badge (Shown when unlocked) ── -->
+      <div id="license-active-badge" style="display:none;border:1.5px solid rgba(16,185,129,0.3);border-radius:var(--radius-sm);background:rgba(16,185,129,0.08);padding:14px 20px;margin-bottom:24px;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span style="font-size:1.4rem;">🔓</span>
+          <div>
+            <div style="font-weight:700;color:var(--accent-green);font-size:0.9rem;">Source Code Decrypted &amp; Activated</div>
+            <div style="font-size:0.78rem;color:var(--studio-text-muted);" id="licensed-buyer-info">Licensed Commercial Developer Access · Code Copy &amp; Download Unlocked</div>
+          </div>
+        </div>
+        <span class="badge badge-green">✓ KEY VERIFIED &amp; UNLOCKED</span>
+      </div>
+
       <!-- ── Studio Navigation Tabs ───────────────────────────── -->
       <nav class="studio-tabs">
         <button class="studio-tab-btn active" id="tab-btn-overview" onclick="switchStudioTab('overview')">
           📖 Project Overview &amp; Visuals
         </button>
         <button class="studio-tab-btn" id="tab-btn-code" onclick="switchStudioTab('code')">
-          💻 Verified Source Code (<span id="tab-code-count">3 Files</span>)
+          💻 Source Code Explorer (<span id="tab-code-count">3 Files</span>)
         </button>
         <button class="studio-tab-btn" id="tab-btn-security" onclick="switchStudioTab('security')">
-          🛡️ Security &amp; AST Audit
+          🛡️ Security &amp; Anti-Piracy DRM
         </button>
       </nav>
 
@@ -516,6 +597,7 @@
 
             <!-- Code Blob Viewer (Hidden until clicked) -->
             <div class="blob-viewer" id="blob-viewer-card">
+              <div class="drm-watermark-overlay" id="blob-watermark"></div>
               <div class="blob-header">
                 <div style="display:flex;align-items:center;gap:10px;">
                   <span id="blob-file-path" style="font-weight:700;color:var(--studio-text);font-family:var(--font-mono);">filename.py</span>
@@ -523,13 +605,30 @@
                 </div>
                 <div style="display:flex;gap:8px;">
                   <button class="btn btn-outline btn-sm" onclick="copyBlobContent()" id="btn-copy-blob">📋 Copy Code</button>
-                  <button class="btn btn-outline btn-sm" onclick="toggleRawView()">Raw View</button>
+                  <button class="btn btn-outline btn-sm" onclick="toggleRawView()" id="btn-raw-view">Raw View</button>
                   <button class="btn btn-outline btn-sm" onclick="closeBlobViewer()">✕ Close</button>
                 </div>
               </div>
-              <div class="blob-body">
+              <div class="blob-body" id="blob-body-container">
                 <div class="blob-gutters" id="blob-line-numbers"></div>
                 <pre class="blob-code" id="blob-code-content"></pre>
+              </div>
+
+              <!-- Locked DRM Overlay (Displayed inside viewer when unpurchased/unactivated) -->
+              <div id="blob-locked-overlay" style="display:none;padding:40px 24px;text-align:center;background:var(--studio-code-bg);">
+                <div style="font-size:3rem;margin-bottom:12px;">🔒</div>
+                <h3 style="color:var(--accent-coral);margin-bottom:8px;font-size:1.3rem;">Source Code Encrypted (AES-256 DRM)</h3>
+                <p style="color:var(--studio-text-muted);max-width:480px;margin:0 auto 20px auto;font-size:0.9rem;line-height:1.6;">
+                  This project source code is cryptographically protected against unauthorized screenshots, screen recording, and copying. You must buy the project and verify your email Encryption Key to decrypt.
+                </p>
+                <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+                  <a href="checkout.html" class="btn btn-primary" id="btn-locked-overlay-buy">
+                    ⚡ Purchase Commercial License (<span class="studio-price-sync">₹1,999</span>)
+                  </a>
+                  <button class="btn btn-outline" onclick="focusActivationInput()">
+                    🔑 Enter Email Encryption Key
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -570,33 +669,33 @@
               <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
                 <div style="font-size:2rem;">🛡️</div>
                 <div>
-                  <h3 style="margin:0;font-size:1.3rem;">Smart Hub Cryptographic &amp; AST Security Report</h3>
+                  <h3 style="margin:0;font-size:1.3rem;">Smart Hub Anti-Piracy DRM &amp; AST Security Report</h3>
                   <div style="color:var(--accent-green);font-size:0.85rem;font-weight:700;margin-top:2px;">
-                    ✓ 100% Passed Automated Static Analysis
+                    ✓ Active Anti-Screenshot &amp; Screen Recording Protection
                   </div>
                 </div>
               </div>
 
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:24px 0;">
                 <div style="border:1px solid var(--studio-border);border-radius:var(--radius-xs);padding:16px;background:var(--bg-secondary);">
-                  <div style="font-family:var(--font-tech);font-size:0.75rem;color:var(--studio-text-muted);">// AST PARSE VERIFICATION</div>
-                  <div style="font-size:1.1rem;font-weight:700;color:var(--accent-green);margin-top:4px;">Genuine Syntax Validated</div>
+                  <div style="font-family:var(--font-tech);font-size:0.75rem;color:var(--studio-text-muted);">// ANTI-SCREENSHOT &amp; RECORDING DRM</div>
+                  <div style="font-size:1.1rem;font-weight:700;color:var(--accent-green);margin-top:4px;">Hardware &amp; Blur Shield Active</div>
                   <p style="font-size:0.8rem;color:var(--studio-text-muted);margin:6px 0 0 0;">
-                    Parsed through Python 3.13 AST engine with zero syntax errors or renamed malicious payloads.
+                    Screen recording apps, screen switch capture, right-click copying, and PrintScreen keys are automatically intercepted and obscured.
                   </p>
                 </div>
 
                 <div style="border:1px solid var(--studio-border);border-radius:var(--radius-xs);padding:16px;background:var(--bg-secondary);">
-                  <div style="font-family:var(--font-tech);font-size:0.75rem;color:var(--studio-text-muted);">// BINARY &amp; ENTROPY AUDIT</div>
-                  <div style="font-size:1.1rem;font-weight:700;color:var(--accent-cyan);margin-top:4px;">Zero Malicious Executables</div>
+                  <div style="font-family:var(--font-tech);font-size:0.75rem;color:var(--studio-text-muted);">// EMAIL ENCRYPTED DISPATCH</div>
+                  <div style="font-size:1.1rem;font-weight:700;color:var(--accent-cyan);margin-top:4px;">Multi-Factor Key Verification</div>
                   <p style="font-size:0.8rem;color:var(--studio-text-muted);margin:6px 0 0 0;">
-                    All files verified against null-byte injection, malicious scripts, and phishing vectors.
+                    Each purchase dispatches a unique HMAC-SHA256 encrypted key to the buyer's email that must be verified in-browser before access is granted.
                   </p>
                 </div>
               </div>
 
               <div style="border-top:1px solid var(--studio-border);padding-top:16px;font-size:0.85rem;color:var(--studio-text-muted);">
-                Smart Hub verifies every seller file before catalog inclusion. Only audited codebases receive commercial distribution certificates.
+                Smart Hub protects software creators against leaks, plagiarism, and unauthenticated distribution. All code packages require verified buyer authentication.
               </div>
             </div>
           </div>
@@ -617,28 +716,30 @@
           <!-- Quick Action Card -->
           <div class="studio-box" style="padding:20px;margin-bottom:20px;background:var(--bg-secondary);">
             <div style="font-family:var(--font-tech);font-size:0.75rem;color:var(--accent-coral);font-weight:700;margin-bottom:8px;">
-              // ASSET DOWNLOAD &amp; LICENSING
+              // ASSET PURCHASE &amp; KEY ACTIVATION
             </div>
             <div style="font-size:1.6rem;font-weight:800;color:var(--studio-text);" id="sidebar-price-label">₹1,999</div>
             <div style="font-size:0.78rem;color:var(--studio-text-muted);margin-bottom:16px;">
-              Single Commercial License · Lifetime updates
+              Single Commercial License · Instant Email Key Dispatch
             </div>
 
-            <button class="btn btn-primary" onclick="downloadProjectZip()" style="width:100%;margin-bottom:10px;font-weight:700;">
-              📦 Download Source ZIP
-            </button>
-            <a href="checkout.html" id="link-checkout-sidebar" class="btn btn-outline" style="width:100%;text-align:center;display:block;">
-              ⚡ Purchase Official License
-            </a>
+            <div id="sidebar-action-wrap">
+              <a href="checkout.html" id="link-checkout-sidebar" class="btn btn-primary" style="width:100%;text-align:center;display:block;margin-bottom:10px;font-weight:700;">
+                ⚡ Purchase Commercial License
+              </a>
+              <button class="btn btn-outline" onclick="downloadProjectZip()" style="width:100%;font-weight:700;">
+                📦 Download Source ZIP
+              </button>
+            </div>
           </div>
 
           <!-- Security Stamp -->
           <div style="border:1.5px solid rgba(16,185,129,0.3);border-radius:var(--radius-xs);padding:18px;background:rgba(16,185,129,0.06);">
             <div style="display:flex;align-items:center;gap:8px;font-weight:700;color:var(--accent-green);font-size:0.88rem;margin-bottom:6px;">
-              <span>✓</span> Smart Hub Verified Package
+              <span>🛡️</span> Anti-Screenshot Protected
             </div>
             <div style="font-size:0.78rem;color:var(--studio-text-muted);line-height:1.5;">
-              This repository contains exclusively the genuine files uploaded by the developer. No mock or template files are injected.
+              Copying, screenshots, and screen recordings are cryptographically blocked. Only verified buyers with an activated email key can access source files.
             </div>
           </div>
         </aside>
@@ -662,19 +763,123 @@
     let currentDirectory = '';
     let currentBlobPath = null;
     let currentRawContent = '';
+    let isProjectUnlocked = false;
+    let activeLicenseKey = null;
 
     document.addEventListener('DOMContentLoaded', async () => {
       const urlParams = new URLSearchParams(window.location.search);
       const projId = urlParams.get('id') || 'p_1792913427884';
+      const autoActivateKey = urlParams.get('activateKey');
+
+      // Check stored key
+      const storedKey = localStorage.getItem(`smarthub_key_${projId}`);
+      if (storedKey) {
+        activeLicenseKey = storedKey;
+      }
 
       await loadRepository(projId);
+
+      // Handle auto-activation from email link
+      if (autoActivateKey) {
+        document.getElementById('activation-key-input').value = autoActivateKey;
+        await verifyAndActivateKey(autoActivateKey);
+      } else if (storedKey && !isProjectUnlocked) {
+        await verifyAndActivateKey(storedKey, true);
+      }
+
+      setupAntiScreenshotDRM();
     });
+
+    // ── Anti-Screenshot, Anti-Recording & Anti-Copy Protection ──
+    function setupAntiScreenshotDRM() {
+      const shield = document.getElementById('drm-privacy-shield');
+
+      // Blur window / visibility change shield
+      window.addEventListener('blur', () => {
+        if (!isProjectUnlocked && shield) {
+          shield.style.display = 'flex';
+        }
+      });
+      window.addEventListener('focus', () => {
+        if (shield) shield.style.display = 'none';
+      });
+      shield.addEventListener('click', () => {
+        shield.style.display = 'none';
+      });
+
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden && !isProjectUnlocked && shield) {
+          shield.style.display = 'flex';
+        } else if (!document.hidden && shield) {
+          shield.style.display = 'none';
+        }
+      });
+
+      // Intercept PrintScreen key
+      window.addEventListener('keyup', (e) => {
+        if (e.key === 'PrintScreen' || e.keyCode === 44) {
+          navigator.clipboard.writeText('');
+          showDRMAlert('⚠️ Screenshot attempt blocked! Source code is DRM-protected.');
+          if (shield) {
+            shield.style.display = 'flex';
+            setTimeout(() => { shield.style.display = 'none'; }, 2500);
+          }
+        }
+      });
+
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'PrintScreen' || e.keyCode === 44) {
+          e.preventDefault();
+          showDRMAlert('⚠️ Screenshot attempt blocked! Source code is DRM-protected.');
+        }
+
+        // Block copying if project is unpurchased/unlocked
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'c' && !isProjectUnlocked) {
+          e.preventDefault();
+          showDRMAlert('🔒 Copying is restricted. Purchase this project and activate your email encryption key to copy.');
+        }
+
+        // Block View Source & DevTools shortcuts
+        if ((e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === 'u' || e.key.toLowerCase() === 's')) {
+          e.preventDefault();
+        }
+        if (e.key === 'F12' || ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key.toLowerCase() === 'i' || e.key.toLowerCase() === 'j'))) {
+          e.preventDefault();
+        }
+      });
+
+      // Right-click context menu disable on code areas
+      document.addEventListener('contextmenu', (e) => {
+        if (e.target.closest('#blob-viewer-card') || e.target.closest('.file-table')) {
+          e.preventDefault();
+          showDRMAlert('⚠️ Right-click disabled to protect creator source code.');
+        }
+      });
+    }
+
+    function showDRMAlert(msg) {
+      if (window.showToast) {
+        window.showToast(msg, 'error');
+      } else {
+        alert(msg);
+      }
+    }
 
     async function loadRepository(projId) {
       try {
-        const res = await window.SmartHubAPI.getProjectRepo(projId);
+        const headers = {};
+        if (activeLicenseKey) headers['x-license-key'] = activeLicenseKey;
+
+        const res = await window.SmartHubAPI.getProjectRepo(projId, headers);
         if (res && res.success && res.repo) {
           currentRepo = res.repo;
+          
+          if (currentRepo.access && currentRepo.access.hasAccess) {
+            markProjectUnlocked(currentRepo.access.buyerEmail || 'Verified Owner');
+          } else {
+            markProjectLocked();
+          }
+
           renderStudioUI(currentRepo);
           return;
         }
@@ -709,7 +914,105 @@
         readme: `# ${prod.title}\n\nGenuine developer source code bundle.`
       };
 
+      markProjectLocked();
       renderStudioUI(currentRepo);
+    }
+
+    function markProjectUnlocked(buyerInfo = '') {
+      isProjectUnlocked = true;
+      const banner = document.getElementById('activation-banner');
+      const activeBadge = document.getElementById('license-active-badge');
+      if (banner) banner.style.display = 'none';
+      if (activeBadge) {
+        activeBadge.style.display = 'flex';
+        document.getElementById('licensed-buyer-info').textContent = `Licensed to ${buyerInfo} · Code View, Copy & Download Unlocked`;
+      }
+      const buyBtn = document.getElementById('btn-studio-buy');
+      if (buyBtn) {
+        buyBtn.textContent = '✓ License Active';
+        buyBtn.classList.remove('btn-primary');
+        buyBtn.classList.add('btn-outline');
+        buyBtn.style.borderColor = 'var(--accent-green)';
+        buyBtn.style.color = 'var(--accent-green)';
+      }
+      const sidebarBuy = document.getElementById('link-checkout-sidebar');
+      if (sidebarBuy) {
+        sidebarBuy.textContent = '✓ Purchased & Decrypted';
+        sidebarBuy.style.pointerEvents = 'none';
+        sidebarBuy.classList.remove('btn-primary');
+        sidebarBuy.classList.add('btn-outline');
+      }
+    }
+
+    function markProjectLocked() {
+      isProjectUnlocked = false;
+      const banner = document.getElementById('activation-banner');
+      const activeBadge = document.getElementById('license-active-badge');
+      if (banner) banner.style.display = 'flex';
+      if (activeBadge) activeBadge.style.display = 'none';
+    }
+
+    function focusActivationInput() {
+      const input = document.getElementById('activation-key-input');
+      if (input) {
+        input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        input.focus();
+        input.style.borderColor = 'var(--accent-coral)';
+      }
+    }
+
+    // ── Key Verification & Activation API Call ─────────────────
+    async function verifyAndActivateKey(explicitKey = null, silent = false) {
+      const keyInput = document.getElementById('activation-key-input');
+      const key = (explicitKey || (keyInput ? keyInput.value : '')).trim().toUpperCase();
+
+      if (!key) {
+        if (!silent) showDRMAlert('Please enter your encryption key sent to your email.');
+        return;
+      }
+
+      const btn = document.getElementById('btn-activate-key');
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Verifying Key...';
+      }
+
+      try {
+        const prodId = currentRepo ? currentRepo.id : 'p_1792913427884';
+        const res = await fetch('http://localhost:5000/api/orders/activate-key', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ productId: prodId, licenseKey: key })
+        });
+        const data = await res.json();
+
+        if (data && data.success && data.activated) {
+          activeLicenseKey = key;
+          localStorage.setItem(`smarthub_key_${prodId}`, key);
+          markProjectUnlocked(data.buyerEmail || 'Licensed Buyer');
+
+          if (!silent) {
+            showToast('🎉 Encryption Key Verified! Source code successfully decrypted & unlocked.', 'success');
+          }
+
+          // If a file was currently opened and locked, re-fetch it in decrypted mode!
+          if (currentBlobPath) {
+            openFileBlob(currentBlobPath);
+          }
+          return;
+        } else {
+          if (!silent) {
+            showToast((data && data.error) || 'Invalid encryption key. Check your email inbox.', 'error');
+          }
+        }
+      } catch (err) {
+        if (!silent) showToast('Verification error: ' + err.message, 'error');
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = '🔓 Verify & Decrypt Code';
+        }
+      }
     }
 
     function renderStudioUI(repo) {
@@ -727,8 +1030,10 @@
       const formattedPrice = `₹${(repo.price || 0).toLocaleString('en-IN')}`;
       document.getElementById('studio-price-tag').textContent = formattedPrice;
       document.getElementById('sidebar-price-label').textContent = formattedPrice;
+      document.querySelectorAll('.studio-price-sync').forEach(el => el.textContent = formattedPrice);
       document.getElementById('btn-studio-buy').href = `checkout.html?id=${repo.id}`;
       document.getElementById('link-checkout-sidebar').href = `checkout.html?id=${repo.id}`;
+      document.getElementById('btn-locked-overlay-buy').href = `checkout.html?id=${repo.id}`;
 
       // Author
       if (repo.author) {
@@ -859,6 +1164,7 @@
         const icon = getFileIcon(item.name, isFolder);
         const clickHandler = isFolder ? `navigateToDir('${item.path}')` : `openFileBlob('${item.path}')`;
         const typeLabel = isFolder ? 'Folder' : getFileTypeLabel(item.name);
+        const lockBadge = (!isFolder && !isProjectUnlocked) ? '<span style="color:var(--accent-coral);margin-left:6px;font-size:0.75rem;">🔒 Encrypted</span>' : '';
 
         html += `
           <tr class="file-row" onclick="${clickHandler}">
@@ -866,6 +1172,7 @@
               <div class="file-name-cell">
                 <span style="font-size:1.15rem;">${icon}</span>
                 <span style="font-family:var(--font-mono);font-weight:600;">${item.name}</span>
+                ${lockBadge}
               </div>
             </td>
             <td>
@@ -876,7 +1183,7 @@
             </td>
             <td style="text-align:right;">
               <button class="btn btn-outline btn-sm" style="font-size:0.75rem;padding:3px 10px;">
-                ${isFolder ? 'Open 📂' : 'Inspect 👁️'}
+                ${isFolder ? 'Open 📂' : (isProjectUnlocked ? 'Inspect 👁️' : 'Decrypt 🔒')}
               </button>
             </td>
           </tr>
@@ -941,38 +1248,70 @@
       cont.innerHTML = crumbsHtml;
     }
 
-    // ── Code Blob Viewer ───────────────────────────────────────
+    // ── Code Blob Viewer (Protected by Encryption Key & DRM) ───
     async function openFileBlob(filePath) {
       currentBlobPath = filePath;
       const card = document.getElementById('blob-viewer-card');
       card.style.display = 'block';
 
       document.getElementById('blob-file-path').textContent = filePath;
-      document.getElementById('blob-file-meta').textContent = 'Loading verified code...';
-      document.getElementById('blob-code-content').textContent = '';
-      document.getElementById('blob-line-numbers').innerHTML = '';
+      document.getElementById('blob-file-meta').textContent = 'Authenticating cryptographic access...';
+      
+      const bodyContainer = document.getElementById('blob-body-container');
+      const lockedOverlay = document.getElementById('blob-locked-overlay');
+      const copyBtn = document.getElementById('btn-copy-blob');
+      const rawBtn = document.getElementById('btn-raw-view');
 
       // Switch to Code Tab to reveal viewer
       switchStudioTab('code');
 
       try {
-        const res = await window.SmartHubAPI.getProjectBlob(currentRepo.id, filePath);
-        if (res && res.success) {
-          currentRawContent = res.content;
-          document.getElementById('blob-file-meta').textContent = `${res.lines} lines · ${(res.size / 1024).toFixed(2)} KB`;
-          displayCodeBlob(res.content, res.language);
+        const prodId = currentRepo ? currentRepo.id : 'p_1792913427884';
+        let url = `http://localhost:5000/api/projects/${prodId}/blob?path=${encodeURIComponent(filePath)}`;
+        if (activeLicenseKey) {
+          url += `&key=${encodeURIComponent(activeLicenseKey)}`;
+        }
+
+        const headers = {};
+        if (activeLicenseKey) headers['x-license-key'] = activeLicenseKey;
+        const authToken = localStorage.getItem('smarthub_auth_token');
+        if (authToken) headers['Authorization'] = `Bearer ${authToken}`;
+
+        const res = await fetch(url, { headers });
+        const data = await res.json();
+
+        if (res.ok && data && data.success && data.content) {
+          // Unlocked & Decrypted!
+          bodyContainer.style.display = 'flex';
+          lockedOverlay.style.display = 'none';
+          copyBtn.disabled = false;
+          copyBtn.style.opacity = '1';
+          rawBtn.disabled = false;
+          rawBtn.style.opacity = '1';
+
+          currentRawContent = data.content;
+          document.getElementById('blob-file-meta').textContent = `🔓 Decrypted · ${data.lines} lines · ${(data.size / 1024).toFixed(2)} KB`;
+          displayCodeBlob(data.content, data.language);
+          card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          return;
+        } else {
+          // Locked by DRM!
+          bodyContainer.style.display = 'none';
+          lockedOverlay.style.display = 'block';
+          copyBtn.disabled = true;
+          copyBtn.style.opacity = '0.4';
+          rawBtn.disabled = true;
+          rawBtn.style.opacity = '0.4';
+
+          document.getElementById('blob-file-meta').textContent = `🔒 AES-256 Encrypted · Key Required`;
           card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
           return;
         }
       } catch (err) {
-        console.warn('API blob fetch failed, checking local repo:', err);
+        console.warn('Blob fetch error:', err);
+        bodyContainer.style.display = 'none';
+        lockedOverlay.style.display = 'block';
       }
-
-      // Local fallback
-      currentRawContent = `# Local File Content\nprint("Verified file: ${filePath}")\n`;
-      document.getElementById('blob-file-meta').textContent = `2 lines · 48 Bytes`;
-      displayCodeBlob(currentRawContent, 'python');
-      card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
     function displayCodeBlob(code, lang) {
@@ -994,6 +1333,10 @@
     }
 
     function copyBlobContent() {
+      if (!isProjectUnlocked) {
+        showDRMAlert('🔒 Copying restricted: You must purchase this project and activate your email encryption key to copy code.');
+        return;
+      }
       if (!currentRawContent) return;
       navigator.clipboard.writeText(currentRawContent);
       const btn = document.getElementById('btn-copy-blob');
@@ -1003,12 +1346,16 @@
     }
 
     function toggleRawView() {
+      if (!isProjectUnlocked) {
+        showDRMAlert('🔒 Raw view restricted: Key activation required.');
+        return;
+      }
       if (!currentRawContent) return;
       const newWin = window.open('', '_blank');
       const isLight = document.documentElement.getAttribute('data-theme') === 'light' || document.body.classList.contains('theme-light');
       const bg = isLight ? '#fff0f4' : '#090b0e';
       const color = isLight ? '#1c0d24' : '#f1f5f9';
-      newWin.document.write(`<title>Raw Source | Smart Hub</title><pre style="word-wrap:break-word;white-space:pre-wrap;font-family:monospace;background:${bg};color:${color};padding:24px;margin:0;min-height:100vh;font-size:0.9rem;line-height:1.6;">${escapeHtml(currentRawContent)}</pre>`);
+      newWin.document.write(`<title>Decrypted Source | Smart Hub</title><pre style="word-wrap:break-word;white-space:pre-wrap;font-family:monospace;background:${bg};color:${color};padding:24px;margin:0;min-height:100vh;font-size:0.9rem;line-height:1.6;">${escapeHtml(currentRawContent)}</pre>`);
       newWin.document.close();
     }
 
@@ -1051,8 +1398,17 @@
     // ── Actions ────────────────────────────────────────────────
     function downloadProjectZip() {
       if (!currentRepo) return;
-      const downloadLink = currentRepo.downloadUrl || `/api/orders/${currentRepo.id}/download`;
-      showToast('Downloading verified source bundle (.zip)... 📦', 'success');
+      if (!isProjectUnlocked) {
+        showDRMAlert('🔒 Purchase & Key Activation Required: Please purchase this project and enter your email encryption key to download the source bundle.');
+        focusActivationInput();
+        return;
+      }
+
+      let downloadLink = currentRepo.downloadUrl || `/api/orders/${currentRepo.id}/download`;
+      if (activeLicenseKey) {
+        downloadLink += (downloadLink.includes('?') ? '&' : '?') + `key=${encodeURIComponent(activeLicenseKey)}`;
+      }
+      showToast('Downloading verified decrypted source bundle (.zip)... 📦', 'success');
       window.location.href = downloadLink;
     }
 

@@ -23,6 +23,7 @@ Thumbs.db
 # Temporary & build files
 tmp/
 temp/
+scratch/
 
 # Uploaded User Media and Code Archives
 uploads/*

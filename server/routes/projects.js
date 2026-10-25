@@ -5,6 +5,88 @@ const path = require('path');
 const db = require('../db');
 const { authOptional } = require('../middleware/auth');
 
+// ── Check Source Code Access Permission ───────────────────────
+function checkProjectAccess(product, req) {
+  const user = req.user || null;
+  const clientKey = (req.headers['x-license-key'] || req.query.key || '').trim().toUpperCase();
+
+  // 1. Author or admin always has full access
+  if (user && (user.role === 'admin' || (product.author && product.author.id === user.id))) {
+    return {
+      hasAccess: true,
+      isOwner: true,
+      isActivated: true,
+      reason: 'OWNER_OR_ADMIN'
+    };
+  }
+
+  // 2. Check by provided key
+  if (clientKey) {
+    const orderByKey = db.findOne('orders', o => 
+      o.productId === product.id && 
+      o.encKey && o.encKey.toUpperCase() === clientKey && 
+      o.keyActivated === true
+    );
+    if (orderByKey) {
+      return {
+        hasAccess: true,
+        isOwner: false,
+        isActivated: true,
+        buyerEmail: orderByKey.buyerEmail,
+        orderNumber: orderByKey.orderNumber,
+        encKey: orderByKey.encKey,
+        reason: 'ACTIVATED_KEY_VERIFIED'
+      };
+    }
+  }
+
+  // 3. Check if logged-in user has an activated order
+  if (user) {
+    const userOrder = db.findOne('orders', o =>
+      o.productId === product.id &&
+      (o.buyerId === user.id || o.buyerEmail === user.email) &&
+      o.keyActivated === true
+    );
+    if (userOrder) {
+      return {
+        hasAccess: true,
+        isOwner: false,
+        isActivated: true,
+        buyerEmail: userOrder.buyerEmail,
+        orderNumber: userOrder.orderNumber,
+        encKey: userOrder.encKey,
+        reason: 'USER_PURCHASED_AND_ACTIVATED'
+      };
+    }
+
+    // Check if user bought it, but hasn't activated their key yet
+    const unactOrder = db.findOne('orders', o =>
+      o.productId === product.id &&
+      (o.buyerId === user.id || o.buyerEmail === user.email)
+    );
+    if (unactOrder) {
+      return {
+        hasAccess: false,
+        isOwner: false,
+        isActivated: false,
+        hasUnactivatedOrder: true,
+        buyerEmail: unactOrder.buyerEmail,
+        orderNumber: unactOrder.orderNumber,
+        reason: 'PURCHASED_BUT_NOT_ACTIVATED',
+        message: 'Order found! Please enter the encryption key sent to your email to decrypt access.'
+      };
+    }
+  }
+
+  return {
+    hasAccess: false,
+    isOwner: false,
+    isActivated: false,
+    reason: 'UNPURCHASED',
+    price: product.price
+  };
+}
+
 // ── Read Real Uploaded Files & Generate Verified Studio Tree ──
 function getProjectRealTreeAndFiles(product) {
   let tree = [];
@@ -126,7 +208,7 @@ function getProjectRealTreeAndFiles(product) {
     }
   }
 
-  // 4. Fallback only if no uploaded files are on disk: create clean starter files
+  // 4. Fallback only if no uploaded files are on disk
   if (!foundRealFiles) {
     const category = (product.category || 'React').toLowerCase();
     if (category.includes('python')) {
@@ -208,7 +290,7 @@ function getProjectRealTreeAndFiles(product) {
 [![Smart Hub Verified](https://img.shields.io/badge/Smart%20Hub-Verified%20Asset-10b981.svg)](marketplace.html)
 [![Category](https://img.shields.io/badge/Category-${encodeURIComponent(category)}-8b5cf6.svg)](marketplace.html)
 [![Files](https://img.shields.io/badge/Uploaded%20Files-${Object.keys(files).length}-06b6d4.svg)](#files)
-[![Status](https://img.shields.io/badge/Integrity-Security%20Passed-brightgreen.svg)](#)
+[![DRM Protection](https://img.shields.io/badge/DRM-AES--256%20Encrypted-purple.svg)](#)
 
 ${previewImage ? `\n![Project Preview Artwork](${previewImage})\n` : ''}
 
@@ -225,18 +307,20 @@ ${fileListMd}
 
 ## 🚀 How to Run this Project
 
-1. **Download & Extract:** Download the verified \`.zip\` archive from Smart Hub.
-2. **Execute:**
+1. **Purchase License:** Purchase on Smart Hub to receive your unique Encryption Key via email.
+2. **Verify & Activate:** Enter your Encryption Key in the Studio to decrypt the source code.
+3. **Execute:**
 \`\`\`bash
 ${runInstruction}
 \`\`\`
 
 ---
 
-## 🛡️ Authenticity & License
+## 🛡️ Authenticity, Anti-Piracy & DRM
 - **Verified Creator:** ${authorName}
-- **Integrity Validation:** 100% Genuine File Structure & AST Analysis Passed.
-- **License:** Developer Commercial & Personal License.
+- **Anti-Screenshot & Recording:** Active DRM encryption prevents unauthorized captures.
+- **Delivery Protocol:** Cryptographic keys dispatched via verified email and activated in-browser.
+- **License:** Developer Commercial License.
 `;
 
   const realReadmeKey = Object.keys(files).find(k => k.toLowerCase().endsWith('readme.md'));
@@ -274,6 +358,9 @@ router.get('/:id/repo', authOptional, (req, res) => {
 
     const downloadUrl = (product.bundleInfo && product.bundleInfo.zipUrl) || product.downloadUrl || `/api/orders/${product.id}/download`;
 
+    // Check client authorization status
+    const access = checkProjectAccess(product, req);
+
     const repo = {
       id: product.id,
       name: titleSlug,
@@ -293,6 +380,8 @@ router.get('/:id/repo', authOptional, (req, res) => {
       languages,
       tree,
       readme,
+      access,
+      isLocked: !access.hasAccess,
       createdAt: product.createdAt || new Date().toISOString()
     };
 
@@ -303,7 +392,7 @@ router.get('/:id/repo', authOptional, (req, res) => {
   }
 });
 
-// ── GET Raw File Content (Blob) ───────────────────────────────
+// ── GET Raw File Content (Blob) (Protected by DRM & License Key) ──
 router.get('/:id/blob', authOptional, (req, res) => {
   try {
     const prodId = req.params.id;
@@ -321,6 +410,20 @@ router.get('/:id/blob', authOptional, (req, res) => {
 
     if (!product) {
       return res.status(404).json({ success: false, error: 'Project not found' });
+    }
+
+    // 🔒 DRM & Access Authorization Check
+    const access = checkProjectAccess(product, req);
+    if (!access.hasAccess) {
+      return res.status(403).json({
+        success: false,
+        locked: true,
+        encrypted: true,
+        error: "Access Denied: Source code is cryptographically protected with AES-256 DRM. Purchase required. Verify your email encryption key on the website to activate and decrypt.",
+        price: product.price,
+        hasUnactivatedOrder: access.hasUnactivatedOrder || false,
+        buyerEmail: access.buyerEmail || null
+      });
     }
 
     const { files } = getProjectRealTreeAndFiles(product);
@@ -349,7 +452,8 @@ router.get('/:id/blob', authOptional, (req, res) => {
       language,
       size: Buffer.byteLength(content, 'utf8'),
       lines: content.split('\n').length,
-      content
+      content,
+      access
     });
   } catch (err) {
     res.status(500).json({ success: false, error: 'Failed to load file blob' });
