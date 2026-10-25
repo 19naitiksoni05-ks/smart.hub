@@ -85,14 +85,16 @@
       "username": "@naitik",
       "email": "naitiksoni700@gmail.com",
       "passwordHash": "$2b$10$mMSjpm6oQLhgWCqrqdJfa.rd9c6yuXiXacNLJPqvof7QG9.t/INPq",
-      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=naitik&backgroundColor=ff5b36",
+      "avatar": "/uploads/images/profilpic_-_Copy_1792920691972_ac19a138.png",
       "walletBalance": 500,
       "role": "buyer",
       "xp": 0,
       "badges": 0,
       "location": "India",
       "headline": "Smart Hub Developer",
-      "createdAt": "2026-10-25T06:31:25.671Z"
+      "createdAt": "2026-10-25T06:31:25.671Z",
+      "cover": "/uploads/images/Screenshot__1__1792920634969_373d9b62.png",
+      "updatedAt": "2026-10-25T09:31:31.979Z"
     },
     {
       "id": "b9f83b04-538c-4aab-9d88-f35a2ecb1cbe",
@@ -1038,6 +1040,62 @@
     }
   ],
   "uploads": [
+    {
+      "id": "img_1792920691974_5b6168",
+      "originalName": "profilpic - Copy.png",
+      "filename": "profilpic_-_Copy_1792920691972_ac19a138.png",
+      "category": "images",
+      "type": "image",
+      "mimetype": "image/png",
+      "size": 15491,
+      "sizeFormatted": "15.13 KB",
+      "url": "/uploads/images/profilpic_-_Copy_1792920691972_ac19a138.png",
+      "userId": "a9b9e238-6ec8-4622-8f22-9b6eb6939ac2",
+      "uploaderName": "Naitik Soni",
+      "createdAt": "2026-10-25T09:31:31.974Z"
+    },
+    {
+      "id": "img_1792920659331_4bac1e",
+      "originalName": "Screenshot 2026-07-14 201044.png",
+      "filename": "Screenshot_2026-07-14_201044_1792920659295_1246a271.png",
+      "category": "images",
+      "type": "image",
+      "mimetype": "image/png",
+      "size": 1880843,
+      "sizeFormatted": "1.79 MB",
+      "url": "/uploads/images/Screenshot_2026-07-14_201044_1792920659295_1246a271.png",
+      "userId": "a9b9e238-6ec8-4622-8f22-9b6eb6939ac2",
+      "uploaderName": "Naitik Soni",
+      "createdAt": "2026-10-25T09:30:59.331Z"
+    },
+    {
+      "id": "img_1792920651247_a872ed",
+      "originalName": "WhatsApp Image 2026-06-11 at 11.14.03 PM 5.jpeg",
+      "filename": "WhatsApp_Image_2026-06-11_at_11_14_03_PM_1792920651245_29501ef4.jpeg",
+      "category": "images",
+      "type": "image",
+      "mimetype": "image/jpeg",
+      "size": 133366,
+      "sizeFormatted": "130.24 KB",
+      "url": "/uploads/images/WhatsApp_Image_2026-06-11_at_11_14_03_PM_1792920651245_29501ef4.jpeg",
+      "userId": "a9b9e238-6ec8-4622-8f22-9b6eb6939ac2",
+      "uploaderName": "Naitik Soni",
+      "createdAt": "2026-10-25T09:30:51.248Z"
+    },
+    {
+      "id": "img_1792920634996_384810",
+      "originalName": "Screenshot (1).png",
+      "filename": "Screenshot__1__1792920634969_373d9b62.png",
+      "category": "images",
+      "type": "image",
+      "mimetype": "image/png",
+      "size": 3750674,
+      "sizeFormatted": "3.58 MB",
+      "url": "/uploads/images/Screenshot__1__1792920634969_373d9b62.png",
+      "userId": "a9b9e238-6ec8-4622-8f22-9b6eb6939ac2",
+      "uploaderName": "Naitik Soni",
+      "createdAt": "2026-10-25T09:30:34.996Z"
+    },
     {
       "id": "folder_1792913414182_92b1a2",
       "name": "project_code",

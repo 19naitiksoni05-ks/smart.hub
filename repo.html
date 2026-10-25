@@ -11,38 +11,81 @@
   <link rel="stylesheet" href="css/cards.css">
   <link rel="stylesheet" href="css/pages.css">
   <style>
-    /* ── GitHub-Style Repo Explorer CSS ── */
+    /* ── Smart Hub GitHub-Style Repository Explorer CSS ── */
     :root {
-      --gh-bg: #0d1117;
-      --gh-card: #161b22;
-      --gh-border: #30363d;
-      --gh-border-subtle: #21262d;
-      --gh-text: #c9d1d9;
-      --gh-text-muted: #8b949e;
-      --gh-btn-bg: #21262d;
-      --gh-btn-hover: #30363d;
-      --gh-blue: #58a6ff;
-      --gh-green: #238636;
-      --gh-green-hover: #2ea043;
+      --gh-bg: var(--bg-primary);
+      --gh-card: var(--bg-card);
+      --gh-card-header: var(--bg-secondary);
+      --gh-border: var(--border-outline);
+      --gh-border-subtle: var(--border-outline-subtle);
+      --gh-border-strong: var(--border-outline-strong);
+      --gh-text: var(--text-primary);
+      --gh-text-muted: var(--text-secondary);
+      --gh-btn-bg: var(--bg-secondary);
+      --gh-btn-hover: var(--bg-card-hover);
+      --gh-blue: var(--accent-purple);
+      --gh-accent: var(--accent-coral);
+      --gh-green: var(--accent-green);
+      --gh-green-hover: #16a34a;
+      --gh-code-bg: #090b0e;
+      --gh-code-color: #f1f5f9;
+      --gh-gutter-bg: #0d1014;
+      --gh-gutter-text: #64748b;
+      --gh-row-hover: rgba(139, 92, 246, 0.08);
+      --gh-dropdown-bg: var(--bg-card);
+      --gh-dropdown-shadow: 0 16px 36px rgba(0, 0, 0, 0.5);
+    }
+
+    [data-theme="light"],
+    body.theme-light {
+      --gh-bg: var(--bg-primary);
+      --gh-card: var(--bg-card);
+      --gh-card-header: var(--bg-secondary);
+      --gh-border: var(--border-outline);
+      --gh-border-subtle: var(--border-outline-subtle);
+      --gh-border-strong: var(--border-outline-strong);
+      --gh-text: var(--text-primary);
+      --gh-text-muted: var(--text-secondary);
+      --gh-btn-bg: var(--bg-secondary);
+      --gh-btn-hover: var(--bg-card-hover);
+      --gh-blue: var(--accent-purple);
+      --gh-accent: var(--accent-coral);
+      --gh-green: #16a34a;
+      --gh-green-hover: #15803d;
+      --gh-code-bg: #fdf2f6;
+      --gh-code-color: #1e1028;
+      --gh-gutter-bg: #f8e1ec;
+      --gh-gutter-text: #8e6d97;
+      --gh-row-hover: rgba(121, 40, 202, 0.08);
+      --gh-dropdown-bg: #fff5f8;
+      --gh-dropdown-shadow: 0 16px 36px rgba(121, 40, 202, 0.16);
     }
 
     body {
-      background-color: var(--gh-bg);
-      color: var(--gh-text);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: var(--font-primary);
+      min-height: 100vh;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    .repo-page-main {
+      min-height: calc(100vh - var(--header-h) - var(--topbar-h));
+      padding-top: 24px;
+      padding-bottom: 80px;
     }
 
     .repo-container {
-      max-width: 1280px;
+      max-width: var(--container-w, 1320px);
       margin: 0 auto;
-      padding: 24px 20px 80px 20px;
+      padding: 0 clamp(16px, 2.5vw, 32px);
     }
 
     /* Repo Header */
     .repo-header {
       padding-bottom: 20px;
-      margin-bottom: 20px;
-      border-bottom: 1px solid var(--gh-border);
+      margin-bottom: 24px;
+      border-bottom: 1.5px solid var(--gh-border);
     }
     .repo-title-row {
       display: flex;
@@ -50,112 +93,131 @@
       justify-content: space-between;
       flex-wrap: wrap;
       gap: 16px;
-      margin-bottom: 16px;
+      margin-bottom: 18px;
     }
     .repo-breadcrumb {
       display: flex;
       align-items: center;
-      gap: 8px;
-      font-size: 1.25rem;
-      font-weight: 600;
+      gap: 10px;
+      font-size: 1.35rem;
+      font-family: var(--font-heading);
+      font-weight: 700;
     }
     .repo-breadcrumb a {
       color: var(--gh-blue);
       text-decoration: none;
+      transition: var(--transition-fast);
     }
     .repo-breadcrumb a:hover {
+      color: var(--gh-accent);
       text-decoration: underline;
     }
     .repo-badge-public {
-      font-size: 0.75rem;
-      padding: 2px 8px;
-      border: 1px solid var(--gh-border);
-      border-radius: 2em;
+      font-size: 0.72rem;
+      font-family: var(--font-tech);
+      padding: 3px 10px;
+      border: 1.5px solid var(--gh-border);
+      border-radius: var(--radius-full);
       color: var(--gh-text-muted);
-      font-weight: 500;
+      background: var(--gh-btn-bg);
+      font-weight: 600;
+      letter-spacing: 0.05em;
     }
     .repo-actions-group {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
       flex-wrap: wrap;
     }
     .gh-btn {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 7px;
       background: var(--gh-btn-bg);
-      border: 1px solid var(--gh-border);
+      border: 1.5px solid var(--gh-border);
       color: var(--gh-text);
-      padding: 5px 12px;
-      border-radius: 6px;
-      font-size: 0.82rem;
+      padding: 7px 14px;
+      border-radius: var(--radius-xs);
+      font-size: 0.84rem;
+      font-family: var(--font-primary);
       font-weight: 600;
       cursor: pointer;
-      transition: background 0.15s ease, border-color 0.15s ease;
+      transition: var(--transition-fast);
       text-decoration: none;
+      box-shadow: var(--shadow-sm);
     }
     .gh-btn:hover {
       background: var(--gh-btn-hover);
-      border-color: #8b949e;
-      color: #fff;
+      border-color: var(--gh-border-strong);
+      color: var(--gh-text);
+      transform: translateY(-1px);
     }
     .gh-btn-primary {
-      background: var(--gh-green);
-      border-color: rgba(240, 246, 252, 0.1);
-      color: #fff;
+      background: var(--grad-primary) !important;
+      border: 1.5px solid transparent !important;
+      color: #ffffff !important;
+      font-weight: 700 !important;
+      box-shadow: var(--shadow-glow-coral) !important;
     }
     .gh-btn-primary:hover {
-      background: var(--gh-green-hover);
-      border-color: rgba(240, 246, 252, 0.1);
+      transform: translateY(-2px) !important;
+      box-shadow: 0 0 24px rgba(255, 91, 54, 0.45) !important;
     }
     .gh-counter {
-      background: rgba(110, 118, 129, 0.4);
-      padding: 1px 6px;
-      border-radius: 2em;
+      background: rgba(139, 92, 246, 0.14);
+      border: 1px solid var(--gh-border);
+      color: var(--gh-text);
+      padding: 1px 8px;
+      border-radius: var(--radius-full);
       font-size: 0.72rem;
-      margin-left: 4px;
+      font-family: var(--font-tech);
+      font-weight: 700;
     }
 
     /* Repo Navigation Tabs */
     .repo-nav-tabs {
       display: flex;
-      gap: 8px;
+      gap: 6px;
       overflow-x: auto;
-      border-bottom: 1px solid var(--gh-border);
+      border-bottom: 1.5px solid var(--gh-border);
       margin-bottom: 24px;
-      padding-bottom: 2px;
+      padding-bottom: 0;
     }
     .repo-nav-tab {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding: 8px 16px;
+      padding: 10px 18px;
       font-size: 0.88rem;
+      font-family: var(--font-tech);
+      font-weight: 600;
       color: var(--gh-text-muted);
       cursor: pointer;
-      border-radius: 6px 6px 0 0;
-      border-bottom: 2px solid transparent;
+      border-radius: var(--radius-xs) var(--radius-xs) 0 0;
+      border: none;
+      border-bottom: 2.5px solid transparent;
       white-space: nowrap;
       text-decoration: none;
+      transition: var(--transition-fast);
     }
     .repo-nav-tab:hover {
       color: var(--gh-text);
-      background: rgba(177, 186, 196, 0.08);
+      background: var(--gh-btn-hover);
     }
     .repo-nav-tab.active {
-      color: #fff;
-      font-weight: 600;
-      border-bottom: 2px solid #f78166;
+      color: var(--gh-accent);
+      border-bottom-color: var(--gh-accent);
+      background: var(--gh-card);
+      font-weight: 700;
     }
 
     /* Repo Main Layout (Left 75% + Right Sidebar 25%) */
     .repo-grid {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) 280px;
-      gap: 28px;
+      grid-template-columns: minmax(0, 1fr) 300px;
+      gap: 32px;
     }
-    @media (max-width: 900px) {
+    @media (max-width: 960px) {
       .repo-grid {
         grid-template-columns: 1fr;
       }
@@ -168,21 +230,24 @@
       align-items: center;
       flex-wrap: wrap;
       gap: 12px;
-      margin-bottom: 16px;
+      margin-bottom: 18px;
     }
     .repo-path-crumbs {
       display: flex;
       align-items: center;
       gap: 6px;
-      font-size: 0.92rem;
-      font-weight: 500;
+      font-size: 0.94rem;
+      font-weight: 600;
+      font-family: var(--font-heading);
       flex-wrap: wrap;
     }
     .repo-path-crumbs a {
       color: var(--gh-blue);
       text-decoration: none;
+      transition: var(--transition-fast);
     }
     .repo-path-crumbs a:hover {
+      color: var(--gh-accent);
       text-decoration: underline;
     }
     .repo-path-crumbs .separator {
@@ -191,62 +256,65 @@
 
     /* File Table Box */
     .repo-box {
-      border: 1px solid var(--gh-border);
-      border-radius: 6px;
+      border: 1.5px solid var(--gh-border);
+      border-radius: var(--radius-md);
       background: var(--gh-card);
       overflow: hidden;
       margin-bottom: 24px;
+      box-shadow: var(--shadow-sm);
     }
     .repo-box-header {
-      background: #161b22;
-      border-bottom: 1px solid var(--gh-border);
-      padding: 12px 16px;
+      background: var(--gh-card-header);
+      border-bottom: 1.5px solid var(--gh-border);
+      padding: 12px 18px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 0.82rem;
+      font-size: 0.84rem;
       flex-wrap: wrap;
       gap: 8px;
     }
     .repo-commit-author {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
     }
     .repo-commit-avatar {
-      width: 22px;
-      height: 22px;
+      width: 24px;
+      height: 24px;
       border-radius: 50%;
       object-fit: cover;
+      border: 1.5px solid var(--gh-border);
     }
     .repo-commit-msg {
       color: var(--gh-text);
-      font-weight: 500;
+      font-weight: 600;
     }
     .repo-commit-meta {
       display: flex;
       align-items: center;
       gap: 12px;
       color: var(--gh-text-muted);
-      font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
     }
 
     /* File Table List */
     .file-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 0.85rem;
+      font-size: 0.86rem;
     }
     .file-row {
       border-top: 1px solid var(--gh-border-subtle);
-      transition: background 0.12s ease;
+      transition: background 0.15s ease;
       cursor: pointer;
     }
     .file-row:hover {
-      background: rgba(110, 118, 129, 0.08);
+      background: var(--gh-row-hover);
     }
     .file-row td {
-      padding: 9px 16px;
+      padding: 11px 18px;
       vertical-align: middle;
     }
     .file-name-cell {
@@ -254,45 +322,47 @@
       align-items: center;
       gap: 10px;
       color: var(--gh-text);
-      font-weight: 500;
+      font-weight: 600;
       white-space: nowrap;
     }
     .file-row:hover .file-name-cell {
-      color: var(--gh-blue);
-      text-decoration: underline;
+      color: var(--gh-accent);
+      text-decoration: none;
     }
     .file-commit-cell {
       color: var(--gh-text-muted);
-      max-width: 340px;
+      max-width: 360px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-      font-size: 0.8rem;
+      font-size: 0.82rem;
     }
     .file-time-cell {
       text-align: right;
       color: var(--gh-text-muted);
       font-size: 0.78rem;
+      font-family: var(--font-mono);
       white-space: nowrap;
     }
 
     /* Code Blob Viewer */
     .blob-viewer {
       display: none;
-      border: 1px solid var(--gh-border);
-      border-radius: 6px;
-      background: #0d1117;
+      border: 1.5px solid var(--gh-border);
+      border-radius: var(--radius-md);
+      background: var(--gh-card);
       overflow: hidden;
       margin-bottom: 24px;
+      box-shadow: var(--shadow-sm);
     }
     .blob-header {
-      background: #161b22;
-      border-bottom: 1px solid var(--gh-border);
-      padding: 10px 16px;
+      background: var(--gh-card-header);
+      border-bottom: 1.5px solid var(--gh-border);
+      padding: 12px 18px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 0.82rem;
+      font-size: 0.84rem;
       flex-wrap: wrap;
       gap: 8px;
     }
@@ -301,84 +371,92 @@
       align-items: center;
       gap: 12px;
       color: var(--gh-text-muted);
-      font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+      font-family: var(--font-mono);
     }
     .blob-body {
       display: flex;
       overflow-x: auto;
-      font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
-      font-size: 0.82rem;
-      line-height: 1.6;
-      background: #0d1117;
+      font-family: var(--font-mono);
+      font-size: 0.84rem;
+      line-height: 1.65;
+      background: var(--gh-code-bg);
     }
     .blob-gutters {
       user-select: none;
       text-align: right;
-      padding: 12px 14px 12px 14px;
-      color: rgba(110, 118, 129, 0.4);
-      border-right: 1px solid var(--gh-border-subtle);
-      background: #090d13;
+      padding: 14px 16px;
+      color: var(--gh-gutter-text);
+      border-right: 1.5px solid var(--gh-border-subtle);
+      background: var(--gh-gutter-bg);
     }
     .blob-code {
-      padding: 12px 18px;
-      color: #e6edf3;
+      padding: 14px 20px;
+      color: var(--gh-code-color);
       white-space: pre;
       flex: 1;
       margin: 0;
+      background: var(--gh-code-bg);
     }
 
     /* README Viewer */
     .readme-card {
-      border: 1px solid var(--gh-border);
-      border-radius: 6px;
+      border: 1.5px solid var(--gh-border);
+      border-radius: var(--radius-md);
       background: var(--gh-card);
       overflow: hidden;
+      box-shadow: var(--shadow-sm);
     }
     .readme-header {
-      background: #161b22;
-      border-bottom: 1px solid var(--gh-border);
-      padding: 12px 16px;
-      font-size: 0.85rem;
-      font-weight: 600;
+      background: var(--gh-card-header);
+      border-bottom: 1.5px solid var(--gh-border);
+      padding: 12px 18px;
+      font-size: 0.88rem;
+      font-family: var(--font-heading);
+      font-weight: 700;
       display: flex;
       align-items: center;
       gap: 8px;
+      color: var(--gh-text);
     }
     .readme-content {
       padding: 28px 32px;
       line-height: 1.7;
-      font-size: 0.92rem;
-      color: #c9d1d9;
+      font-size: 0.94rem;
+      color: var(--gh-text);
     }
-    .readme-content h1 { font-size: 1.8rem; margin: 0 0 16px 0; border-bottom: 1px solid var(--gh-border-subtle); padding-bottom: 10px; }
-    .readme-content h2 { font-size: 1.35rem; margin: 24px 0 12px 0; border-bottom: 1px solid var(--gh-border-subtle); padding-bottom: 8px; }
-    .readme-content h3 { font-size: 1.1rem; margin: 18px 0 8px 0; }
-    .readme-content p { margin-bottom: 16px; }
+    .readme-content h1 { font-family: var(--font-heading); font-size: 1.85rem; margin: 0 0 16px 0; border-bottom: 1.5px solid var(--gh-border-subtle); padding-bottom: 10px; color: var(--gh-text); }
+    .readme-content h2 { font-family: var(--font-heading); font-size: 1.4rem; margin: 24px 0 12px 0; border-bottom: 1px solid var(--gh-border-subtle); padding-bottom: 8px; color: var(--gh-text); }
+    .readme-content h3 { font-family: var(--font-heading); font-size: 1.15rem; margin: 18px 0 8px 0; color: var(--gh-text); }
+    .readme-content p { margin-bottom: 16px; color: var(--gh-text); }
     .readme-content ul, .readme-content ol { padding-left: 24px; margin-bottom: 16px; }
     .readme-content li { margin-bottom: 6px; }
     .readme-content blockquote {
       border-left: 4px solid var(--gh-blue);
-      padding: 4px 16px;
+      padding: 8px 18px;
       margin: 16px 0;
       color: var(--gh-text-muted);
-      background: rgba(56, 139, 253, 0.05);
+      background: rgba(139, 92, 246, 0.06);
+      border-radius: 0 var(--radius-xs) var(--radius-xs) 0;
     }
     .readme-content pre {
-      background: #090d13;
-      border: 1px solid var(--gh-border);
-      border-radius: 6px;
-      padding: 14px 18px;
+      background: var(--gh-code-bg);
+      border: 1.5px solid var(--gh-border);
+      border-radius: var(--radius-sm);
+      padding: 16px 20px;
       overflow-x: auto;
-      font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
-      font-size: 0.85rem;
+      font-family: var(--font-mono);
+      font-size: 0.86rem;
       margin: 14px 0 18px 0;
+      color: var(--gh-code-color);
     }
     .readme-content code:not(pre code) {
-      background: rgba(110, 118, 129, 0.4);
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-family: ui-monospace, SFMono-Regular, monospace;
-      font-size: 0.84em;
+      background: rgba(139, 92, 246, 0.12);
+      border: 1px solid var(--gh-border-subtle);
+      color: var(--gh-text);
+      padding: 2px 7px;
+      border-radius: var(--radius-xs);
+      font-family: var(--font-mono);
+      font-size: 0.85em;
     }
     .readme-content img {
       max-width: 100%;
@@ -387,39 +465,46 @@
 
     /* Right Sidebar Elements */
     .repo-sidebar-section {
-      padding-bottom: 20px;
-      margin-bottom: 20px;
-      border-bottom: 1px solid var(--gh-border);
-      font-size: 0.85rem;
+      padding-bottom: 22px;
+      margin-bottom: 22px;
+      border-bottom: 1.5px solid var(--gh-border);
+      font-size: 0.86rem;
     }
     .repo-sidebar-title {
-      font-weight: 600;
+      font-weight: 700;
+      font-family: var(--font-heading);
       color: var(--gh-text);
-      margin-bottom: 10px;
-      font-size: 0.95rem;
+      margin-bottom: 12px;
+      font-size: 1rem;
+      letter-spacing: 0.02em;
     }
     .repo-tag-pill {
       display: inline-block;
-      padding: 3px 10px;
-      border-radius: 2em;
+      padding: 4px 12px;
+      border-radius: var(--radius-full);
       font-size: 0.75rem;
-      background: rgba(56, 139, 253, 0.15);
+      font-family: var(--font-tech);
+      font-weight: 600;
+      background: rgba(139, 92, 246, 0.12);
+      border: 1px solid var(--gh-border);
       color: var(--gh-blue);
       margin: 3px 4px 3px 0;
       text-decoration: none;
-      font-weight: 500;
+      transition: var(--transition-fast);
     }
     .repo-tag-pill:hover {
       background: var(--gh-blue);
-      color: #fff;
+      color: #ffffff;
+      border-color: transparent;
     }
     .lang-bar {
       display: flex;
-      height: 8px;
-      border-radius: 4px;
+      height: 10px;
+      border-radius: var(--radius-full);
       overflow: hidden;
-      margin-bottom: 10px;
-      background: #30363d;
+      margin-bottom: 12px;
+      background: var(--gh-btn-bg);
+      border: 1px solid var(--gh-border);
     }
     .lang-bar-segment {
       height: 100%;
@@ -428,7 +513,7 @@
       display: flex;
       flex-wrap: wrap;
       gap: 12px;
-      font-size: 0.78rem;
+      font-size: 0.8rem;
     }
     .lang-legend-item {
       display: flex;
@@ -436,8 +521,8 @@
       gap: 6px;
     }
     .lang-legend-dot {
-      width: 9px;
-      height: 9px;
+      width: 10px;
+      height: 10px;
       border-radius: 50%;
     }
 
@@ -447,30 +532,33 @@
       top: 100%;
       right: 0;
       margin-top: 6px;
-      width: 340px;
-      background: #161b22;
-      border: 1px solid var(--gh-border);
-      border-radius: 6px;
-      box-shadow: 0 8px 24px rgba(1, 4, 9, 0.8);
-      padding: 16px;
+      width: 350px;
+      background: var(--gh-dropdown-bg);
+      border: 1.5px solid var(--gh-border);
+      border-radius: var(--radius-md);
+      box-shadow: var(--gh-dropdown-shadow);
+      padding: 18px;
       z-index: 100;
       display: none;
+      backdrop-filter: blur(16px);
     }
     .clone-tabs {
       display: flex;
       gap: 12px;
       border-bottom: 1px solid var(--gh-border);
-      margin-bottom: 12px;
+      margin-bottom: 14px;
       padding-bottom: 6px;
     }
     .clone-tab-btn {
       background: none;
       border: none;
       color: var(--gh-text-muted);
-      font-size: 0.8rem;
-      font-weight: 600;
+      font-size: 0.82rem;
+      font-family: var(--font-tech);
+      font-weight: 700;
       cursor: pointer;
-      padding-bottom: 4px;
+      padding-bottom: 6px;
+      transition: var(--transition-fast);
     }
     .clone-tab-btn.active {
       color: var(--gh-blue);
@@ -478,31 +566,53 @@
     }
     .clone-input-row {
       display: flex;
-      background: #0d1117;
-      border: 1px solid var(--gh-border);
-      border-radius: 4px;
+      background: var(--gh-bg);
+      border: 1.5px solid var(--gh-border);
+      border-radius: var(--radius-xs);
       overflow: hidden;
-      margin-bottom: 12px;
+      margin-bottom: 14px;
     }
     .clone-input-field {
       flex: 1;
       background: transparent;
       border: none;
       color: var(--gh-text);
-      padding: 6px 10px;
-      font-size: 0.78rem;
-      font-family: ui-monospace, SFMono-Regular, monospace;
+      padding: 8px 12px;
+      font-size: 0.8rem;
+      font-family: var(--font-mono);
       outline: none;
     }
+    .branch-dropdown {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      margin-top: 6px;
+      background: var(--gh-dropdown-bg);
+      border: 1.5px solid var(--gh-border);
+      border-radius: var(--radius-sm);
+      width: 200px;
+      z-index: 90;
+      padding: 6px 0;
+      box-shadow: var(--gh-dropdown-shadow);
+      backdrop-filter: blur(16px);
+    }
   </style>
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem('smarthub_theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+      if (savedTheme === 'light') document.body && document.body.classList.add('theme-light');
+    })();
+  </script>
 </head>
 <body>
 
   <!-- Injected Shared Header -->
   <div id="page-header"></div>
 
-  <main class="page-container" style="padding-top: calc(var(--header-h) + 16px);">
-    <div class="repo-container">
+  <main class="repo-page-main">
+    <div class="container repo-container">
 
       <!-- ── Repository Top Header ────────────────────────────── -->
       <header class="repo-header">
@@ -567,8 +677,8 @@
                 <button class="gh-btn" onclick="toggleBranchDropdown()">
                   🌿 <span id="current-branch-label">main</span> ▾
                 </button>
-                <div id="branch-dropdown-menu" style="display:none;position:absolute;top:100%;left:0;margin-top:6px;background:#161b22;border:1px solid var(--gh-border);border-radius:6px;width:180px;z-index:90;padding:6px 0;box-shadow:0 8px 24px rgba(0,0,0,0.5);">
-                  <div style="padding:6px 12px;font-size:0.75rem;color:var(--gh-text-muted);border-bottom:1px solid var(--gh-border);font-weight:600;">Switch branches</div>
+                <div id="branch-dropdown-menu" class="branch-dropdown">
+                  <div style="padding:8px 14px;font-size:0.75rem;color:var(--gh-text-muted);border-bottom:1.5px solid var(--gh-border);font-weight:700;font-family:var(--font-tech);letter-spacing:0.05em;">SWITCH BRANCH</div>
                   <div id="branches-list-container"></div>
                 </div>
               </div>
@@ -704,11 +814,11 @@
           </div>
 
           <!-- Verified Smart Hub Audit Badge -->
-          <div style="background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.3);border-radius:6px;padding:14px;font-size:0.8rem;line-height:1.4;">
-            <div style="display:flex;align-items:center;gap:6px;font-weight:700;color:var(--accent-green);margin-bottom:6px;">
+          <div style="background:rgba(34,197,94,0.08);border:1.5px solid rgba(34,197,94,0.35);border-radius:var(--radius-xs);padding:16px;font-size:0.8rem;line-height:1.5;box-shadow:0 4px 16px rgba(34,197,94,0.08);">
+            <div style="display:flex;align-items:center;gap:8px;font-weight:700;color:var(--accent-green);margin-bottom:6px;font-family:var(--font-heading);">
               <span>🛡️</span> Smart Hub Security Verified
             </div>
-            <div style="color:var(--text-muted);font-size:0.74rem;">
+            <div style="color:var(--text-secondary);font-size:0.75rem;">
               Passed automated static analysis, package dependency audits, and license authentication on the backend server.
             </div>
           </div>
@@ -851,9 +961,9 @@
       const branchesCont = document.getElementById('branches-list-container');
       if (branchesCont && repo.branches) {
         branchesCont.innerHTML = repo.branches.map(b => `
-          <div style="padding:6px 14px;cursor:pointer;font-size:0.82rem;display:flex;align-items:center;gap:8px;" 
-               class="branch-item" onclick="switchBranch('${b}')" onmouseover="this.style.background='rgba(110,118,129,0.1)'" onmouseout="this.style.background='transparent'">
-            <span style="color:${b === (repo.defaultBranch || 'main') ? 'var(--gh-blue)' : 'transparent'};">✓</span> ${b}
+          <div style="padding:8px 14px;cursor:pointer;font-size:0.84rem;display:flex;align-items:center;gap:8px;transition:var(--transition-fast);" 
+               class="branch-item" onclick="switchBranch('${b}')" onmouseover="this.style.background='var(--gh-row-hover)'" onmouseout="this.style.background='transparent'">
+            <span style="color:${b === (repo.defaultBranch || 'main') ? 'var(--gh-blue)' : 'transparent'};font-weight:700;">✓</span> ${b}
           </div>
         `).join('');
       }
@@ -1089,7 +1199,10 @@
     function toggleRawView() {
       if (!currentRawContent) return;
       const newWin = window.open('', '_blank');
-      newWin.document.write(`<pre style="word-wrap:break-word;white-space:pre-wrap;font-family:monospace;background:#0d1117;color:#c9d1d9;padding:20px;">${escapeHtml(currentRawContent)}</pre>`);
+      const isLight = document.documentElement.getAttribute('data-theme') === 'light' || document.body.classList.contains('theme-light');
+      const bg = isLight ? '#fff0f4' : '#090b0e';
+      const color = isLight ? '#1c0d24' : '#f1f5f9';
+      newWin.document.write(`<title>Raw Source | Smart Hub</title><pre style="word-wrap:break-word;white-space:pre-wrap;font-family:JetBrains Mono, SFMono-Regular, monospace;background:${bg};color:${color};padding:24px;margin:0;min-height:100vh;font-size:0.88rem;line-height:1.6;">${escapeHtml(currentRawContent)}</pre>`);
       newWin.document.close();
     }
 
