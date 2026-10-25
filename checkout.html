@@ -104,13 +104,15 @@
         <div style="border:1.5px solid var(--border-outline-strong);border-radius:var(--radius-xs);padding:28px;background:var(--bg-card);">
           <div style="font-family:var(--font-tech);font-size:0.75rem;color:var(--accent-coral);font-weight:700;margin-bottom:12px;">// ORDER SUMMARY</div>
 
-          <!-- Product Item Preview -->
-          <div style="display:flex;gap:14px;padding-bottom:20px;border-bottom:1.5px solid var(--border-outline);margin-bottom:20px;">
-            <img src="https://picsum.photos/seed/code/160/100" id="order-img" style="width:84px;height:60px;object-fit:cover;border-radius:2px;border:1px solid var(--border-outline);">
-            <div>
-              <div style="font-family:var(--font-tech);font-size:0.68rem;color:var(--accent-coral);" id="order-cat">[ CODE PACKAGE ]</div>
-              <div style="font-weight:700;font-size:0.92rem;line-height:1.3;" id="order-title">Digital Product</div>
-              <div style="font-size:0.78rem;color:var(--text-muted);margin-top:4px;">License: Commercial Developer</div>
+          <!-- Product Items List Preview -->
+          <div id="order-items-container" style="max-height:280px;overflow-y:auto;padding-right:4px;margin-bottom:16px;">
+            <div style="display:flex;gap:14px;padding-bottom:16px;border-bottom:1.5px solid var(--border-outline);margin-bottom:16px;" id="order-single-preview">
+              <img src="https://picsum.photos/seed/code/160/100" id="order-img" style="width:84px;height:60px;object-fit:cover;border-radius:2px;border:1px solid var(--border-outline);">
+              <div style="flex:1;">
+                <div style="font-family:var(--font-tech);font-size:0.68rem;color:var(--accent-coral);" id="order-cat">[ CODE PACKAGE ]</div>
+                <div style="font-weight:700;font-size:0.92rem;line-height:1.3;" id="order-title">Digital Product</div>
+                <div style="font-size:0.78rem;color:var(--text-muted);margin-top:4px;" id="order-license-label">License: Commercial Developer</div>
+              </div>
             </div>
           </div>
 
@@ -167,15 +169,17 @@
           The encrypted package download and unlock key have been dispatched to <strong id="success-email">your email address</strong>.
         </p>
 
-        <!-- Cryptographic Token Box -->
-        <div style="max-width:560px;margin:0 auto 30px auto;border:1.5px solid var(--accent-coral);border-radius:var(--radius-xs);padding:24px;background:#060809;text-align:left;">
-          <div style="font-family:var(--font-tech);font-size:0.72rem;color:var(--accent-coral);margin-bottom:6px;">YOUR UNIQUE ENCRYPTED TOKEN KEY:</div>
-          <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.05);padding:10px 16px;border-radius:2px;border:1px solid var(--border-outline);">
-            <span style="font-family:var(--font-mono);font-size:1.1rem;color:var(--accent-cyan);font-weight:700;" id="success-enc-key">SH-ENC-VERIFIED-TOKEN</span>
-            <button class="btn btn-outline btn-sm" onclick="copyEncKey()" id="copy-key-btn">Copy Key 📋</button>
-          </div>
-          <div style="font-size:0.75rem;color:var(--text-muted);margin-top:10px;">
-            Use this token to unlock the `.zip` archive or link it into your Next.js environment.
+        <!-- Cryptographic Token Container -->
+        <div id="success-keys-container" style="max-width:680px;margin:0 auto 30px auto;display:flex;flex-direction:column;gap:16px;text-align:left;">
+          <div style="border:1.5px solid var(--accent-coral);border-radius:var(--radius-xs);padding:24px;background:#060809;">
+            <div style="font-family:var(--font-tech);font-size:0.72rem;color:var(--accent-coral);margin-bottom:6px;">YOUR UNIQUE ENCRYPTED TOKEN KEY:</div>
+            <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.05);padding:10px 16px;border-radius:2px;border:1px solid var(--border-outline);">
+              <span style="font-family:var(--font-mono);font-size:1.1rem;color:var(--accent-cyan);font-weight:700;" id="success-enc-key">SH-ENC-VERIFIED-TOKEN</span>
+              <button class="btn btn-outline btn-sm" onclick="copyEncKey()" id="copy-key-btn">Copy Key 📋</button>
+            </div>
+            <div style="font-size:0.75rem;color:var(--text-muted);margin-top:10px;">
+              Use this token to unlock the `.zip` archive or link it into your environment.
+            </div>
           </div>
         </div>
 
@@ -208,10 +212,16 @@
   <script src="js/react-components.js"></script>
 
   <script>
+    let checkoutMode = 'single'; // 'single' or 'cart'
+    let currentProduct = null;
+    let currentLicense = 'regular';
+    let checkoutCartItems = [];
     let currentPrice = 0;
     let discountApplied = 0;
+    let currentProdCategory = '';
+    let currentDownloadUrl = '';
 
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
       const user = (window.getCurrentUser && window.getCurrentUser());
       const walletBal = document.getElementById('checkout-wallet-bal');
       if (walletBal) walletBal.textContent = `₹${(user ? user.walletBalance || 0 : 0).toLocaleString('en-IN')}`;
@@ -222,12 +232,153 @@
 
       const urlParams = new URLSearchParams(window.location.search);
       const prodId = urlParams.get('id');
-      const license = urlParams.get('license');
+      currentLicense = urlParams.get('license') || 'regular';
       const discountParam = Number(urlParams.get('discount') || 0);
 
-      const prod = prodId && SmartHubData.products ? SmartHubData.products.find(p => p.id === prodId) : (SmartHubData.products && SmartHubData.products[0]);
+      // 1. Check if single product requested via URL
+      if (prodId) {
+        await setupSingleProductCheckout(prodId, discountParam);
+        return;
+      }
+
+      // 2. Check if items exist in localStorage cart
+      let storedCart = [];
+      try {
+        const raw = localStorage.getItem('smarthub_cart');
+        if (raw) storedCart = JSON.parse(raw);
+      } catch (e) {}
+
+      if (storedCart && storedCart.length > 0) {
+        setupCartCheckout(storedCart, discountParam);
+        return;
+      }
+
+      // 3. Neither ?id nor cart items exist: fallback to catalog preview
+      setupEmptyStateWithCatalogPicker(discountParam);
+    });
+
+    async function setupSingleProductCheckout(prodId, discountParam = 0) {
+      checkoutMode = 'single';
+      let prod = (window.SmartHubData && window.SmartHubData.products) 
+        ? window.SmartHubData.products.find(p => p.id === prodId) 
+        : null;
+
+      if (!prod && window.SmartHubAPI) {
+        try {
+          const res = await window.SmartHubAPI.getProduct(prodId);
+          if (res && res.success && res.product) {
+            prod = res.product;
+          }
+        } catch (e) {
+          console.warn('Could not fetch product via API:', e);
+        }
+      }
+
+      if (!prod && window.SmartHubData && window.SmartHubData.products && window.SmartHubData.products.length > 0) {
+        prod = window.SmartHubData.products[0];
+      }
 
       if (!prod) {
+        setupEmptyStateWithCatalogPicker(discountParam);
+        return;
+      }
+
+      currentProduct = prod;
+      currentProdCategory = prod.category || '';
+      currentDownloadUrl = '/api/orders/' + prod.id + '/download';
+
+      // Render single product preview
+      const container = document.getElementById('order-items-container');
+      if (container) {
+        container.innerHTML = `
+          <div style="display:flex;gap:14px;padding-bottom:16px;border-bottom:1.5px solid var(--border-outline);margin-bottom:16px;" id="order-single-preview">
+            <img src="${prod.thumb || 'https://picsum.photos/seed/code/160/100'}" style="width:84px;height:60px;object-fit:cover;border-radius:2px;border:1px solid var(--border-outline);">
+            <div style="flex:1;">
+              <div style="font-family:var(--font-tech);font-size:0.68rem;color:var(--accent-coral);">[ ${(prod.category || 'CODE').toUpperCase()} ]</div>
+              <div style="font-weight:700;font-size:0.92rem;line-height:1.3;">${prod.title}</div>
+              <div style="font-size:0.78rem;color:var(--text-muted);margin-top:4px;">License: ${currentLicense === 'extended' ? 'Extended Commercial' : 'Commercial Developer'}</div>
+            </div>
+            <div style="font-family:var(--font-tech);font-weight:700;color:var(--text-primary);align-self:center;">
+              ₹${(currentLicense === 'extended' ? Math.round(prod.price * 3.2) : prod.price).toLocaleString('en-IN')}
+            </div>
+          </div>
+        `;
+      }
+
+      currentPrice = currentLicense === 'extended' ? Math.round(prod.price * 3.2) : prod.price;
+      if (discountParam > 0) {
+        discountApplied = Math.round(currentPrice * (discountParam / 100));
+      }
+      updateTotals();
+    }
+
+    function setupCartCheckout(items, discountParam = 0) {
+      checkoutMode = 'cart';
+      checkoutCartItems = items;
+      currentProdCategory = items[0].category || '';
+      currentDownloadUrl = '/api/orders/' + (items[0].id || items[0].productId) + '/download';
+
+      const container = document.getElementById('order-items-container');
+      if (container) {
+        let itemsHtml = `
+          <div style="font-size:0.75rem;color:var(--accent-coral);font-family:var(--font-tech);margin-bottom:10px;">
+            CART ITEMS (${items.reduce((s, it) => s + (it.qty || 1), 0)} TOTAL)
+          </div>
+        `;
+        let computedSum = 0;
+
+        items.forEach((it, idx) => {
+          const itemTotal = (it.price || 0) * (it.qty || 1);
+          computedSum += itemTotal;
+          itemsHtml += `
+            <div style="display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--border-outline);align-items:center;">
+              <img src="${it.thumb || 'https://picsum.photos/seed/code/160/100'}" style="width:50px;height:40px;object-fit:cover;border-radius:2px;border:1px solid var(--border-outline);">
+              <div style="flex:1;min-width:0;">
+                <div style="font-weight:700;font-size:0.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${it.title}</div>
+                <div style="font-size:0.72rem;color:var(--text-muted);">Qty: ${it.qty || 1} · ${(it.category || 'Asset').toUpperCase()}</div>
+              </div>
+              <div style="font-family:var(--font-tech);font-size:0.88rem;font-weight:700;color:var(--accent-cyan);">
+                ₹${itemTotal.toLocaleString('en-IN')}
+              </div>
+            </div>
+          `;
+        });
+
+        container.innerHTML = itemsHtml;
+        currentPrice = computedSum;
+      }
+
+      if (discountParam > 0) {
+        discountApplied = Math.round(currentPrice * (discountParam / 100));
+      }
+      updateTotals();
+    }
+
+    async function setupEmptyStateWithCatalogPicker(discountParam = 0) {
+      // First try to populate with available products
+      let prods = (window.SmartHubData && window.SmartHubData.products) ? window.SmartHubData.products : [];
+      if ((!prods || prods.length === 0) && window.SmartHubAPI) {
+        try {
+          const res = await window.SmartHubAPI.getProducts();
+          if (res && res.products && res.products.length > 0) {
+            prods = res.products;
+          }
+        } catch (e) {}
+      }
+
+      if (prods && prods.length > 0) {
+        // Automatically default to the first verified product
+        setupSingleProductCheckout(prods[0].id, discountParam);
+        
+        // Add a switcher banner above summary
+        const container = document.getElementById('order-items-container');
+        if (container) {
+          const note = document.createElement('div');
+          note.style.cssText = 'padding:8px 12px;background:rgba(249,115,22,0.1);border:1px solid var(--accent-coral);border-radius:2px;margin-bottom:12px;font-size:0.75rem;color:var(--text-secondary);';
+          note.innerHTML = `💡 <strong>No item in cart:</strong> Defaulted to featured package. <a href="marketplace.html" style="color:var(--accent-coral);text-decoration:underline;">Browse catalog</a> to pick another.`;
+          container.prepend(note);
+        }
+      } else {
         const main = document.querySelector('main');
         if (main) {
           main.innerHTML = `
@@ -241,23 +392,8 @@
             </div>
           `;
         }
-        return;
       }
-
-      currentProdCategory = prod.category || '';
-      document.getElementById('order-title').textContent = prod.title;
-      document.getElementById('order-cat').textContent = `[ ${prod.category.toUpperCase()} ]`;
-      document.getElementById('order-img').src = prod.thumb;
-      currentDownloadUrl = '/api/orders/' + prod.id + '/download';
-      
-      currentPrice = license === 'extended' ? Math.round(prod.price * 3.2) : prod.price;
-      if (discountParam > 0) {
-        discountApplied = Math.round(currentPrice * (discountParam / 100));
-      }
-      updateTotals();
-    });
-
-    let currentProdCategory = '';
+    }
 
     function getPlatformFeeRate(price, category = '') {
       let rate = 0.02; // 2% baseline
@@ -320,8 +456,6 @@
       }
     }
 
-    let currentDownloadUrl = '';
-
     async function executeOrderPayment() {
       const email = document.getElementById('checkout-email').value;
       if (!email || !email.includes('@')) {
@@ -330,19 +464,9 @@
       }
 
       const total = Math.max(0, currentPrice - discountApplied);
-      const user = getCurrentUser();
+      const user = (window.getCurrentUser && window.getCurrentUser()) || {};
       const payMethodInput = document.querySelector('input[name="pay-method"]:checked');
       const selectedPayMethod = payMethodInput ? payMethodInput.value : 'wallet';
-
-      const urlParams = new URLSearchParams(window.location.search);
-      const prodId = urlParams.get('id');
-      if (!prodId) {
-        showToast('No product selected for checkout.', 'error');
-        btn.disabled = false;
-        btn.textContent = '🔒 Authorize & Download Source Code';
-        return;
-      }
-      const license = urlParams.get('license') || 'regular';
       const couponInput = document.getElementById('order-coupon-input');
       const couponCode = couponInput ? couponInput.value.trim() : '';
 
@@ -350,26 +474,89 @@
       btn.disabled = true;
       btn.textContent = '🔒 Cryptographically Processing Payment on Backend...';
 
+      let payload = {
+        paymentMethod: selectedPayMethod,
+        deliveryEmail: email,
+        couponCode
+      };
+
+      if (checkoutMode === 'cart') {
+        payload.items = checkoutCartItems;
+      } else {
+        if (!currentProduct || !currentProduct.id) {
+          showToast('No product selected for checkout.', 'error');
+          btn.disabled = false;
+          btn.textContent = '🔒 Authorize & Download Source Code';
+          return;
+        }
+        payload.productId = currentProduct.id;
+        payload.license = currentLicense;
+      }
+
       try {
-        const res = await window.SmartHubAPI.executeCheckout({
-          productId: prodId,
-          paymentMethod: selectedPayMethod,
-          deliveryEmail: email,
-          couponCode,
-          license
-        });
+        const res = await window.SmartHubAPI.executeCheckout(payload);
 
         if (res && res.success) {
+          // Clear cart if in cart mode
+          if (checkoutMode === 'cart') {
+            try {
+              localStorage.removeItem('smarthub_cart');
+              window.dispatchEvent(new CustomEvent('cart-updated', { detail: [] }));
+              const badge = document.getElementById('header-cart-count');
+              if (badge) badge.style.display = 'none';
+            } catch (e) {}
+          }
+
           // Hide main grid, show success view
           document.getElementById('checkout-main-grid').style.display = 'none';
           const successView = document.getElementById('checkout-success-view');
           successView.style.display = 'block';
           document.getElementById('success-email').textContent = email;
-          document.getElementById('success-enc-key').textContent = res.encKey;
-          currentDownloadUrl = res.downloadUrl || `/api/orders/${prodId}/download`;
+
+          // Render one or multiple cryptographic keys
+          const keysContainer = document.getElementById('success-keys-container');
+          if (keysContainer) {
+            if (res.encKeys && res.encKeys.length > 1) {
+              let keysHtml = '';
+              res.encKeys.forEach((kObj, idx) => {
+                keysHtml += `
+                  <div style="border:1.5px solid var(--accent-coral);border-radius:var(--radius-xs);padding:20px;background:#060809;margin-bottom:12px;">
+                    <div style="font-family:var(--font-tech);font-size:0.72rem;color:var(--accent-coral);margin-bottom:6px;">
+                      [ ${idx + 1}/${res.encKeys.length} ] ${kObj.title.toUpperCase()} ENCRYPTION KEY:
+                    </div>
+                    <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.05);padding:10px 14px;border-radius:2px;border:1px solid var(--border-outline);gap:8px;">
+                      <span style="font-family:var(--font-mono);font-size:1.05rem;color:var(--accent-cyan);font-weight:700;word-break:break-all;" id="key-val-${idx}">${kObj.key}</span>
+                      <button class="btn btn-outline btn-sm" onclick="copySpecificKey('${kObj.key}', this)">Copy 📋</button>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;">
+                      <span style="font-size:0.72rem;color:var(--text-muted);">Order: ${kObj.orderNumber || ''}</span>
+                      <a href="${kObj.downloadUrl}" class="btn btn-primary btn-sm">Download .zip 📦</a>
+                    </div>
+                  </div>
+                `;
+              });
+              keysContainer.innerHTML = keysHtml;
+            } else {
+              const singleKey = res.encKey || (res.encKeys && res.encKeys[0] && res.encKeys[0].key) || 'SH-ENC-VERIFIED';
+              keysContainer.innerHTML = `
+                <div style="border:1.5px solid var(--accent-coral);border-radius:var(--radius-xs);padding:24px;background:#060809;">
+                  <div style="font-family:var(--font-tech);font-size:0.72rem;color:var(--accent-coral);margin-bottom:6px;">YOUR UNIQUE ENCRYPTED TOKEN KEY:</div>
+                  <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.05);padding:10px 16px;border-radius:2px;border:1px solid var(--border-outline);">
+                    <span style="font-family:var(--font-mono);font-size:1.1rem;color:var(--accent-cyan);font-weight:700;" id="success-enc-key">${singleKey}</span>
+                    <button class="btn btn-outline btn-sm" onclick="copyEncKey()" id="copy-key-btn">Copy Key 📋</button>
+                  </div>
+                  <div style="font-size:0.75rem;color:var(--text-muted);margin-top:10px;">
+                    Use this token to unlock the `.zip` archive or link it into your Next.js environment.
+                  </div>
+                </div>
+              `;
+            }
+          }
+
+          currentDownloadUrl = res.downloadUrl || (res.orders && res.orders[0] && res.orders[0].downloadUrl) || `/api/orders/${(currentProduct ? currentProduct.id : 'PRJ')}/download`;
 
           localStorage.setItem('smarthub_last_order', JSON.stringify({ amount: res.order ? res.order.amount : total, time: Date.now() }));
-          showToast('Payment verified! Cryptographic token generated. ⚡', 'success');
+          showToast('Payment verified! Cryptographic tokens generated. ⚡', 'success');
           window.scrollTo({ top: 120, behavior: 'smooth' });
           return;
         } else if (res && res.error) {
@@ -382,16 +569,21 @@
         console.warn('API checkout error, falling back locally:', err);
       }
 
-      // Local fallback
+      // Local Fallback simulation
       if (selectedPayMethod === 'wallet') {
-        if (user.walletBalance < total) {
-          showToast(`Insufficient wallet balance. You have ₹${user.walletBalance}`, 'error');
+        if ((user.walletBalance || 0) < total) {
+          showToast(`Insufficient wallet balance. You have ₹${user.walletBalance || 0}`, 'error');
           btn.disabled = false;
           btn.textContent = `🔒 Complete Payment & Generate Key (₹${total.toLocaleString('en-IN')})`;
           return;
         }
-        user.walletBalance -= total;
+        user.walletBalance = (user.walletBalance || 0) - total;
         localStorage.setItem('smarthub_user', JSON.stringify(user));
+      }
+
+      if (checkoutMode === 'cart') {
+        localStorage.removeItem('smarthub_cart');
+        window.dispatchEvent(new CustomEvent('cart-updated', { detail: [] }));
       }
 
       document.getElementById('checkout-main-grid').style.display = 'none';
@@ -399,15 +591,26 @@
       successView.style.display = 'block';
       document.getElementById('success-email').textContent = email;
 
-      // Multi-factor dynamic token derivation (project + timestamp + CSPRNG entropy)
-      const projTag = (prodId || 'PRJ').replace(/[^a-zA-Z0-9]/g, '').slice(-4).toUpperCase() || 'P892';
+      const projTag = ((currentProduct && currentProduct.id) || 'PRJ').replace(/[^a-zA-Z0-9]/g, '').slice(-4).toUpperCase() || 'P892';
       const randBytes = new Uint8Array(4);
       window.crypto.getRandomValues(randBytes);
       const randNonce = Array.from(randBytes.slice(0, 2), b => b.toString(16).padStart(2, '0')).join('').toUpperCase();
       const randSig = Array.from(randBytes.slice(2, 4), b => b.toString(16).padStart(2, '0')).join('').toUpperCase();
       const dynamicKey = `SH-ENC-${new Date().getFullYear()}-${projTag}-${randNonce}-${randSig}`;
-      document.getElementById('success-enc-key').textContent = dynamicKey;
-      currentDownloadUrl = `/api/orders/${prodId}/download`;
+      
+      const keysContainer = document.getElementById('success-keys-container');
+      if (keysContainer) {
+        keysContainer.innerHTML = `
+          <div style="border:1.5px solid var(--accent-coral);border-radius:var(--radius-xs);padding:24px;background:#060809;">
+            <div style="font-family:var(--font-tech);font-size:0.72rem;color:var(--accent-coral);margin-bottom:6px;">YOUR UNIQUE ENCRYPTED TOKEN KEY:</div>
+            <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.05);padding:10px 16px;border-radius:2px;border:1px solid var(--border-outline);">
+              <span style="font-family:var(--font-mono);font-size:1.1rem;color:var(--accent-cyan);font-weight:700;" id="success-enc-key">${dynamicKey}</span>
+              <button class="btn btn-outline btn-sm" onclick="copyEncKey()" id="copy-key-btn">Copy Key 📋</button>
+            </div>
+          </div>
+        `;
+      }
+      currentDownloadUrl = `/api/orders/${(currentProduct ? currentProduct.id : 'PRJ')}/download`;
 
       localStorage.setItem('smarthub_last_order', JSON.stringify({ amount: total, time: Date.now() }));
       showToast('Payment successful! Encrypted key generated. ⚡', 'success');
@@ -415,12 +618,21 @@
     }
 
     function copyEncKey() {
-      const key = document.getElementById('success-enc-key').textContent;
-      navigator.clipboard.writeText(key);
+      const keyEl = document.getElementById('success-enc-key');
+      const key = keyEl ? keyEl.textContent : '';
+      if (key) navigator.clipboard.writeText(key);
       const btn = document.getElementById('copy-key-btn');
+      if (btn) btn.textContent = 'Copied ✓';
+      showToast('Encryption key copied to clipboard!', 'info');
+      setTimeout(() => { if (btn) btn.textContent = 'Copy Key 📋'; }, 2000);
+    }
+
+    function copySpecificKey(key, btn) {
+      navigator.clipboard.writeText(key);
+      const orig = btn.textContent;
       btn.textContent = 'Copied ✓';
       showToast('Encryption key copied to clipboard!', 'info');
-      setTimeout(() => btn.textContent = 'Copy Key 📋', 2000);
+      setTimeout(() => { btn.textContent = orig; }, 2000);
     }
 
     function simulateDownload() {

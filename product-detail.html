@@ -115,6 +115,9 @@
             <a href="checkout.html" id="prod-buy-now-btn" class="btn btn-primary btn-lg" style="justify-content:center;font-weight:800;">
               ⚡ Buy Now with ₹ INR Wallet / UPI →
             </a>
+            <a href="repo.html" id="prod-view-repo-btn" class="btn btn-secondary btn-lg" style="justify-content:center;font-weight:700;border:1px solid var(--accent-cyan);color:var(--accent-cyan);">
+              ⌥ Explore Codebase (GitHub View) ↗
+            </a>
             <button class="btn btn-outline btn-lg" id="prod-add-cart-btn" onclick="triggerAddToCart()" style="justify-content:center;">
               🛒 Add to Interactive Cart
             </button>
@@ -317,6 +320,8 @@
       document.getElementById('prod-author-name').innerHTML = `${prod.author.name} <span style="color:var(--accent-cyan);">✓ Verified Seller</span>`;
       document.getElementById('prod-author-avatar').src = prod.author.avatar;
       document.getElementById('prod-buy-now-btn').href = `checkout.html?id=${prod.id}`;
+      const repoBtn = document.getElementById('prod-view-repo-btn');
+      if (repoBtn) repoBtn.href = `repo.html?id=${prod.id}`;
       const chatBtn = document.getElementById('prod-chat-author-btn');
       if (chatBtn) chatBtn.href = `chat.html?seller=${encodeURIComponent(prod.author.name)}&product=${prod.id}`;
       if (prod.badge) {

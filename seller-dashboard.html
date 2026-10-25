@@ -675,8 +675,9 @@
                 <td style="padding:16px 18px;font-family:var(--font-tech);">${p.sales} sales</td>
                 <td style="padding:16px 18px;font-family:var(--font-tech);color:var(--accent-green);font-weight:800;">₹${(p.earnings || 0).toLocaleString('en-IN')}</td>
                 <td style="padding:16px 18px;"><span class="badge badge-green">LIVE</span></td>
-                <td style="padding:16px 18px;text-align:right;">
-                  <a href="product-detail.html?id=${p.id}" class="btn btn-outline btn-sm">View in Store →</a>
+                <td style="padding:16px 18px;text-align:right;white-space:nowrap;">
+                  <a href="repo.html?id=${p.id}" class="btn btn-outline btn-sm" style="margin-right:6px;border-color:var(--accent-cyan);color:var(--accent-cyan);">⌥ View Repo</a>
+                  <a href="product-detail.html?id=${p.id}" class="btn btn-secondary btn-sm">Store →</a>
                 </td>
               </tr>
             `).join('');

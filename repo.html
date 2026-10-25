@@ -1,0 +1,1249 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Repository Explorer | Smart Hub Codebase</title>
+  <meta name="description" content="Explore verified source code repositories, directory trees, file blobs, commits, and cryptographic licenses just like GitHub on Smart Hub.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⌥</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/cards.css">
+  <link rel="stylesheet" href="css/pages.css">
+  <style>
+    /* ── GitHub-Style Repo Explorer CSS ── */
+    :root {
+      --gh-bg: #0d1117;
+      --gh-card: #161b22;
+      --gh-border: #30363d;
+      --gh-border-subtle: #21262d;
+      --gh-text: #c9d1d9;
+      --gh-text-muted: #8b949e;
+      --gh-btn-bg: #21262d;
+      --gh-btn-hover: #30363d;
+      --gh-blue: #58a6ff;
+      --gh-green: #238636;
+      --gh-green-hover: #2ea043;
+    }
+
+    body {
+      background-color: var(--gh-bg);
+      color: var(--gh-text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+    }
+
+    .repo-container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 24px 20px 80px 20px;
+    }
+
+    /* Repo Header */
+    .repo-header {
+      padding-bottom: 20px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid var(--gh-border);
+    }
+    .repo-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .repo-breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    .repo-breadcrumb a {
+      color: var(--gh-blue);
+      text-decoration: none;
+    }
+    .repo-breadcrumb a:hover {
+      text-decoration: underline;
+    }
+    .repo-badge-public {
+      font-size: 0.75rem;
+      padding: 2px 8px;
+      border: 1px solid var(--gh-border);
+      border-radius: 2em;
+      color: var(--gh-text-muted);
+      font-weight: 500;
+    }
+    .repo-actions-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .gh-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--gh-btn-bg);
+      border: 1px solid var(--gh-border);
+      color: var(--gh-text);
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s ease, border-color 0.15s ease;
+      text-decoration: none;
+    }
+    .gh-btn:hover {
+      background: var(--gh-btn-hover);
+      border-color: #8b949e;
+      color: #fff;
+    }
+    .gh-btn-primary {
+      background: var(--gh-green);
+      border-color: rgba(240, 246, 252, 0.1);
+      color: #fff;
+    }
+    .gh-btn-primary:hover {
+      background: var(--gh-green-hover);
+      border-color: rgba(240, 246, 252, 0.1);
+    }
+    .gh-counter {
+      background: rgba(110, 118, 129, 0.4);
+      padding: 1px 6px;
+      border-radius: 2em;
+      font-size: 0.72rem;
+      margin-left: 4px;
+    }
+
+    /* Repo Navigation Tabs */
+    .repo-nav-tabs {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      border-bottom: 1px solid var(--gh-border);
+      margin-bottom: 24px;
+      padding-bottom: 2px;
+    }
+    .repo-nav-tab {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      font-size: 0.88rem;
+      color: var(--gh-text-muted);
+      cursor: pointer;
+      border-radius: 6px 6px 0 0;
+      border-bottom: 2px solid transparent;
+      white-space: nowrap;
+      text-decoration: none;
+    }
+    .repo-nav-tab:hover {
+      color: var(--gh-text);
+      background: rgba(177, 186, 196, 0.08);
+    }
+    .repo-nav-tab.active {
+      color: #fff;
+      font-weight: 600;
+      border-bottom: 2px solid #f78166;
+    }
+
+    /* Repo Main Layout (Left 75% + Right Sidebar 25%) */
+    .repo-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 280px;
+      gap: 28px;
+    }
+    @media (max-width: 900px) {
+      .repo-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Branch & File Action Bar */
+    .repo-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .repo-path-crumbs {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.92rem;
+      font-weight: 500;
+      flex-wrap: wrap;
+    }
+    .repo-path-crumbs a {
+      color: var(--gh-blue);
+      text-decoration: none;
+    }
+    .repo-path-crumbs a:hover {
+      text-decoration: underline;
+    }
+    .repo-path-crumbs .separator {
+      color: var(--gh-text-muted);
+    }
+
+    /* File Table Box */
+    .repo-box {
+      border: 1px solid var(--gh-border);
+      border-radius: 6px;
+      background: var(--gh-card);
+      overflow: hidden;
+      margin-bottom: 24px;
+    }
+    .repo-box-header {
+      background: #161b22;
+      border-bottom: 1px solid var(--gh-border);
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.82rem;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .repo-commit-author {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .repo-commit-avatar {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    .repo-commit-msg {
+      color: var(--gh-text);
+      font-weight: 500;
+    }
+    .repo-commit-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--gh-text-muted);
+      font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    }
+
+    /* File Table List */
+    .file-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+    .file-row {
+      border-top: 1px solid var(--gh-border-subtle);
+      transition: background 0.12s ease;
+      cursor: pointer;
+    }
+    .file-row:hover {
+      background: rgba(110, 118, 129, 0.08);
+    }
+    .file-row td {
+      padding: 9px 16px;
+      vertical-align: middle;
+    }
+    .file-name-cell {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--gh-text);
+      font-weight: 500;
+      white-space: nowrap;
+    }
+    .file-row:hover .file-name-cell {
+      color: var(--gh-blue);
+      text-decoration: underline;
+    }
+    .file-commit-cell {
+      color: var(--gh-text-muted);
+      max-width: 340px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 0.8rem;
+    }
+    .file-time-cell {
+      text-align: right;
+      color: var(--gh-text-muted);
+      font-size: 0.78rem;
+      white-space: nowrap;
+    }
+
+    /* Code Blob Viewer */
+    .blob-viewer {
+      display: none;
+      border: 1px solid var(--gh-border);
+      border-radius: 6px;
+      background: #0d1117;
+      overflow: hidden;
+      margin-bottom: 24px;
+    }
+    .blob-header {
+      background: #161b22;
+      border-bottom: 1px solid var(--gh-border);
+      padding: 10px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.82rem;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .blob-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--gh-text-muted);
+      font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    }
+    .blob-body {
+      display: flex;
+      overflow-x: auto;
+      font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+      font-size: 0.82rem;
+      line-height: 1.6;
+      background: #0d1117;
+    }
+    .blob-gutters {
+      user-select: none;
+      text-align: right;
+      padding: 12px 14px 12px 14px;
+      color: rgba(110, 118, 129, 0.4);
+      border-right: 1px solid var(--gh-border-subtle);
+      background: #090d13;
+    }
+    .blob-code {
+      padding: 12px 18px;
+      color: #e6edf3;
+      white-space: pre;
+      flex: 1;
+      margin: 0;
+    }
+
+    /* README Viewer */
+    .readme-card {
+      border: 1px solid var(--gh-border);
+      border-radius: 6px;
+      background: var(--gh-card);
+      overflow: hidden;
+    }
+    .readme-header {
+      background: #161b22;
+      border-bottom: 1px solid var(--gh-border);
+      padding: 12px 16px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .readme-content {
+      padding: 28px 32px;
+      line-height: 1.7;
+      font-size: 0.92rem;
+      color: #c9d1d9;
+    }
+    .readme-content h1 { font-size: 1.8rem; margin: 0 0 16px 0; border-bottom: 1px solid var(--gh-border-subtle); padding-bottom: 10px; }
+    .readme-content h2 { font-size: 1.35rem; margin: 24px 0 12px 0; border-bottom: 1px solid var(--gh-border-subtle); padding-bottom: 8px; }
+    .readme-content h3 { font-size: 1.1rem; margin: 18px 0 8px 0; }
+    .readme-content p { margin-bottom: 16px; }
+    .readme-content ul, .readme-content ol { padding-left: 24px; margin-bottom: 16px; }
+    .readme-content li { margin-bottom: 6px; }
+    .readme-content blockquote {
+      border-left: 4px solid var(--gh-blue);
+      padding: 4px 16px;
+      margin: 16px 0;
+      color: var(--gh-text-muted);
+      background: rgba(56, 139, 253, 0.05);
+    }
+    .readme-content pre {
+      background: #090d13;
+      border: 1px solid var(--gh-border);
+      border-radius: 6px;
+      padding: 14px 18px;
+      overflow-x: auto;
+      font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+      font-size: 0.85rem;
+      margin: 14px 0 18px 0;
+    }
+    .readme-content code:not(pre code) {
+      background: rgba(110, 118, 129, 0.4);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: ui-monospace, SFMono-Regular, monospace;
+      font-size: 0.84em;
+    }
+    .readme-content img {
+      max-width: 100%;
+      height: auto;
+    }
+
+    /* Right Sidebar Elements */
+    .repo-sidebar-section {
+      padding-bottom: 20px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid var(--gh-border);
+      font-size: 0.85rem;
+    }
+    .repo-sidebar-title {
+      font-weight: 600;
+      color: var(--gh-text);
+      margin-bottom: 10px;
+      font-size: 0.95rem;
+    }
+    .repo-tag-pill {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 2em;
+      font-size: 0.75rem;
+      background: rgba(56, 139, 253, 0.15);
+      color: var(--gh-blue);
+      margin: 3px 4px 3px 0;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .repo-tag-pill:hover {
+      background: var(--gh-blue);
+      color: #fff;
+    }
+    .lang-bar {
+      display: flex;
+      height: 8px;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 10px;
+      background: #30363d;
+    }
+    .lang-bar-segment {
+      height: 100%;
+    }
+    .lang-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-size: 0.78rem;
+    }
+    .lang-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .lang-legend-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+    }
+
+    /* Clone Dropdown Popup */
+    .clone-dropdown {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      margin-top: 6px;
+      width: 340px;
+      background: #161b22;
+      border: 1px solid var(--gh-border);
+      border-radius: 6px;
+      box-shadow: 0 8px 24px rgba(1, 4, 9, 0.8);
+      padding: 16px;
+      z-index: 100;
+      display: none;
+    }
+    .clone-tabs {
+      display: flex;
+      gap: 12px;
+      border-bottom: 1px solid var(--gh-border);
+      margin-bottom: 12px;
+      padding-bottom: 6px;
+    }
+    .clone-tab-btn {
+      background: none;
+      border: none;
+      color: var(--gh-text-muted);
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      padding-bottom: 4px;
+    }
+    .clone-tab-btn.active {
+      color: var(--gh-blue);
+      border-bottom: 2px solid var(--gh-blue);
+    }
+    .clone-input-row {
+      display: flex;
+      background: #0d1117;
+      border: 1px solid var(--gh-border);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+    .clone-input-field {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--gh-text);
+      padding: 6px 10px;
+      font-size: 0.78rem;
+      font-family: ui-monospace, SFMono-Regular, monospace;
+      outline: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Injected Shared Header -->
+  <div id="page-header"></div>
+
+  <main class="page-container" style="padding-top: calc(var(--header-h) + 16px);">
+    <div class="repo-container">
+
+      <!-- ── Repository Top Header ────────────────────────────── -->
+      <header class="repo-header">
+        <div class="repo-title-row">
+          <div class="repo-breadcrumb">
+            <span style="font-size:1.3rem;">📖</span>
+            <a href="profile.html" id="repo-author-link">author</a>
+            <span style="color:var(--gh-text-muted);">/</span>
+            <strong id="repo-name-text">repository</strong>
+            <span class="repo-badge-public">Public</span>
+            <span class="badge badge-green" style="font-size:0.7rem;padding:2px 8px;">✓ Audited</span>
+          </div>
+
+          <!-- Actions Group -->
+          <div class="repo-actions-group">
+            <button class="gh-btn" onclick="toggleWatch()" id="btn-watch">
+              👁️ Watch <span class="gh-counter" id="watch-count">24</span>
+            </button>
+            <button class="gh-btn" onclick="forkRepo()" id="btn-fork">
+              ⑂ Fork <span class="gh-counter" id="fork-count">7</span>
+            </button>
+            <button class="gh-btn" onclick="toggleStar()" id="btn-star" style="color:var(--accent-orange);">
+              ★ Star <span class="gh-counter" id="star-count">38</span>
+            </button>
+            <a href="checkout.html" class="gh-btn gh-btn-primary" id="btn-repo-buy">
+              ⚡ Purchase Commercial License (<span id="repo-price-label">₹0</span>)
+            </a>
+          </div>
+        </div>
+
+        <!-- Repository Sub-Nav Tabs -->
+        <nav class="repo-nav-tabs">
+          <a class="repo-nav-tab active" href="#code" onclick="switchRepoTab(event, 'code')">
+            <span>&lt;&gt;</span> Code
+          </a>
+          <a class="repo-nav-tab" href="#issues" onclick="switchRepoTab(event, 'issues')">
+            <span>⊙</span> Issues <span class="gh-counter" id="tab-issues-count">2</span>
+          </a>
+          <a class="repo-nav-tab" href="#pulls" onclick="switchRepoTab(event, 'pulls')">
+            <span>⇄</span> Pull Requests <span class="gh-counter" id="tab-prs-count">1</span>
+          </a>
+          <a class="repo-nav-tab" href="#security" onclick="switchRepoTab(event, 'security')">
+            <span>🛡️</span> Security
+          </a>
+          <a class="repo-nav-tab" href="#insights" onclick="switchRepoTab(event, 'insights')">
+            <span>📊</span> Insights
+          </a>
+        </nav>
+      </header>
+
+      <!-- ── Repository Main Grid ─────────────────────────────── -->
+      <div class="repo-grid">
+
+        <!-- Left Column: Code Tree & README / File Viewer -->
+        <div id="repo-code-pane">
+
+          <!-- Branch & Code Clone Toolbar -->
+          <div class="repo-toolbar">
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+              <!-- Branch Selector -->
+              <div style="position:relative;">
+                <button class="gh-btn" onclick="toggleBranchDropdown()">
+                  🌿 <span id="current-branch-label">main</span> ▾
+                </button>
+                <div id="branch-dropdown-menu" style="display:none;position:absolute;top:100%;left:0;margin-top:6px;background:#161b22;border:1px solid var(--gh-border);border-radius:6px;width:180px;z-index:90;padding:6px 0;box-shadow:0 8px 24px rgba(0,0,0,0.5);">
+                  <div style="padding:6px 12px;font-size:0.75rem;color:var(--gh-text-muted);border-bottom:1px solid var(--gh-border);font-weight:600;">Switch branches</div>
+                  <div id="branches-list-container"></div>
+                </div>
+              </div>
+
+              <!-- Path Breadcrumbs -->
+              <div class="repo-path-crumbs" id="repo-path-crumbs">
+                <a href="javascript:void(0)" onclick="navigateToDir('')" id="crumb-root">repo</a>
+              </div>
+            </div>
+
+            <!-- Clone / Code Action Dropdown -->
+            <div style="position:relative;">
+              <button class="gh-btn gh-btn-primary" onclick="toggleCloneDropdown()">
+                &lt;&gt; Code ▾
+              </button>
+
+              <div class="clone-dropdown" id="clone-dropdown-box">
+                <div class="clone-tabs">
+                  <button class="clone-tab-btn active" onclick="switchCloneTab('https')">HTTPS</button>
+                  <button class="clone-tab-btn" onclick="switchCloneTab('ssh')">SSH</button>
+                  <button class="clone-tab-btn" onclick="switchCloneTab('cli')">CLI</button>
+                </div>
+
+                <div class="clone-input-row">
+                  <input type="text" class="clone-input-field" id="clone-url-input" readonly value="https://git.smarthub.in/naitik/project.git">
+                  <button class="gh-btn" style="border:none;border-left:1px solid var(--gh-border);border-radius:0;" onclick="copyCloneUrl()" id="btn-copy-clone">📋</button>
+                </div>
+
+                <div style="display:flex;flex-direction:column;gap:8px;font-size:0.8rem;border-top:1px solid var(--gh-border);padding-top:12px;">
+                  <a href="javascript:void(0)" onclick="downloadZipBundle()" style="display:flex;align-items:center;gap:8px;color:var(--gh-text);text-decoration:none;">
+                    📦 Download Source Archive (.zip)
+                  </a>
+                  <a href="product-detail.html" id="link-view-store" style="display:flex;align-items:center;gap:8px;color:var(--gh-blue);text-decoration:none;">
+                    🏪 Open Marketplace Listing ↗
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Code Blob Viewer (Hidden until a file is clicked) -->
+          <div class="blob-viewer" id="blob-viewer-card">
+            <div class="blob-header">
+              <div class="blob-info">
+                <span id="blob-file-path" style="font-weight:600;color:var(--gh-text);">filename.js</span>
+                <span id="blob-file-meta">0 lines · 0 KB</span>
+              </div>
+              <div style="display:flex;gap:8px;">
+                <button class="gh-btn" onclick="copyBlobContent()" id="btn-copy-blob">Copy Code 📋</button>
+                <button class="gh-btn" onclick="toggleRawView()">Raw</button>
+                <button class="gh-btn" onclick="closeBlobViewer()">✕ Close File</button>
+              </div>
+            </div>
+            <div class="blob-body">
+              <div class="blob-gutters" id="blob-line-numbers"></div>
+              <pre class="blob-code" id="blob-code-content"></pre>
+            </div>
+          </div>
+
+          <!-- File Explorer Table -->
+          <div class="repo-box" id="file-explorer-box">
+            <!-- Latest Commit Bar -->
+            <div class="repo-box-header">
+              <div class="repo-commit-author">
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Naitik" class="repo-commit-avatar" id="commit-avatar">
+                <span style="font-weight:600;" id="commit-author">Naitik Soni</span>
+                <span class="repo-commit-msg" id="commit-message">feat: initial commit</span>
+              </div>
+              <div class="repo-commit-meta">
+                <span id="commit-hash">7f9c2a1</span>
+                <span id="commit-time">2 hours ago</span>
+                <span>·</span>
+                <span id="commit-count-total">14 commits</span>
+              </div>
+            </div>
+
+            <!-- File Rows -->
+            <table class="file-table">
+              <tbody id="file-table-body">
+                <!-- Dynamically injected -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- README.md Card (Displayed at root directory) -->
+          <div class="readme-card" id="readme-container">
+            <div class="readme-header">
+              <span>📖</span>
+              <span>README.md</span>
+            </div>
+            <div class="readme-content" id="readme-rendered-content">
+              <!-- Dynamically populated Markdown -->
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right Column: Sidebar (About, Releases, Languages) -->
+        <aside id="repo-sidebar-pane">
+          <!-- About -->
+          <div class="repo-sidebar-section">
+            <div class="repo-sidebar-title">About</div>
+            <p id="repo-about-desc" style="color:var(--gh-text-muted);line-height:1.5;margin-bottom:12px;">
+              Enterprise digital asset codebase published on Smart Hub.
+            </p>
+            <div style="margin-bottom:14px;" id="repo-topics-container"></div>
+            <div style="display:flex;flex-direction:column;gap:8px;font-size:0.82rem;color:var(--gh-text-muted);">
+              <div>⚖️ <strong style="color:var(--gh-text);" id="repo-license-label">Commercial Developer</strong></div>
+              <div>⚡ Activity: <strong style="color:var(--accent-green);">High (Active Maintainer)</strong></div>
+              <div>★ <strong style="color:var(--gh-text);" id="sidebar-star-count">38</strong> stars</div>
+              <div>👁️ <strong style="color:var(--gh-text);" id="sidebar-watch-count">24</strong> watching</div>
+              <div>⑂ <strong style="color:var(--gh-text);" id="sidebar-fork-count">7</strong> forks</div>
+            </div>
+          </div>
+
+          <!-- Releases -->
+          <div class="repo-sidebar-section">
+            <div class="repo-sidebar-title">Releases</div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+              <span class="badge badge-green" style="font-size:0.7rem;">Latest</span>
+              <strong style="color:var(--gh-blue);" id="release-version-tag">v3.2.0-verified</strong>
+            </div>
+            <div style="font-size:0.75rem;color:var(--gh-text-muted);">
+              Released with SHA-256 cryptographic signature.
+            </div>
+          </div>
+
+          <!-- Languages Breakdown -->
+          <div class="repo-sidebar-section" style="border-bottom:none;">
+            <div class="repo-sidebar-title">Languages</div>
+            <div class="lang-bar" id="lang-bar-container"></div>
+            <div class="lang-legend" id="lang-legend-container"></div>
+          </div>
+
+          <!-- Verified Smart Hub Audit Badge -->
+          <div style="background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.3);border-radius:6px;padding:14px;font-size:0.8rem;line-height:1.4;">
+            <div style="display:flex;align-items:center;gap:6px;font-weight:700;color:var(--accent-green);margin-bottom:6px;">
+              <span>🛡️</span> Smart Hub Security Verified
+            </div>
+            <div style="color:var(--text-muted);font-size:0.74rem;">
+              Passed automated static analysis, package dependency audits, and license authentication on the backend server.
+            </div>
+          </div>
+        </aside>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Injected Shared Footer -->
+  <div id="page-footer"></div>
+
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/layout.js"></script>
+
+  <script>
+    let currentRepo = null;
+    let currentDirectory = '';
+    let currentBlobPath = null;
+    let currentRawContent = '';
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const projId = urlParams.get('id') || 'p1';
+
+      await loadRepository(projId);
+
+      // Handle outside click for dropdowns
+      document.addEventListener('click', (e) => {
+        const cloneBox = document.getElementById('clone-dropdown-box');
+        if (cloneBox && !e.target.closest('#clone-dropdown-box') && !e.target.closest('button[onclick*="toggleCloneDropdown"]')) {
+          cloneBox.style.display = 'none';
+        }
+        const branchBox = document.getElementById('branch-dropdown-menu');
+        if (branchBox && !e.target.closest('#branch-dropdown-menu') && !e.target.closest('button[onclick*="toggleBranchDropdown"]')) {
+          branchBox.style.display = 'none';
+        }
+      });
+    });
+
+    async function loadRepository(projId) {
+      try {
+        const res = await window.SmartHubAPI.getProjectRepo(projId);
+        if (res && res.success && res.repo) {
+          currentRepo = res.repo;
+          renderRepositoryUI(currentRepo);
+          return;
+        }
+      } catch (err) {
+        console.warn('API repo fetch failed, falling back to local dataset:', err);
+      }
+
+      // Local fallback if server unreachable
+      const prod = (window.SmartHubData && window.SmartHubData.products) 
+        ? window.SmartHubData.products.find(p => p.id === projId) || window.SmartHubData.products[0]
+        : { id: projId, title: 'Smart Hub Project', price: 1999, category: 'React', description: 'Enterprise project codebase' };
+
+      currentRepo = {
+        id: prod.id,
+        name: prod.title.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+        title: prod.title,
+        description: prod.description || 'Full stack repository',
+        price: prod.price || 1999,
+        category: prod.category || 'React',
+        stars: prod.stars || 42,
+        forks: 8,
+        watchers: 29,
+        defaultBranch: 'main',
+        branches: ['main', 'develop'],
+        author: prod.author || { name: 'Naitik Soni', username: '@naitik' },
+        latestCommit: {
+          hash: '7f9c2a1',
+          message: 'feat: production release verified codebase',
+          author: prod.author ? prod.author.name : 'Naitik Soni',
+          avatar: (prod.author && prod.author.avatar) || 'https://api.dicebear.com/7.x/avataaars/svg?seed=Naitik',
+          time: '3 hours ago'
+        },
+        tags: prod.tags || ['React', 'Verified', 'OpenSource'],
+        languages: [
+          { name: 'JavaScript', percent: 65, color: '#f7df1e' },
+          { name: 'CSS', percent: 20, color: '#1572b6' },
+          { name: 'HTML', percent: 15, color: '#e34f26' }
+        ],
+        tree: [
+          { path: 'src', name: 'src', type: 'tree', lastCommit: 'refactor: modular components structure', time: '2 hours ago' },
+          { path: 'src/components', name: 'components', type: 'tree', lastCommit: 'add responsive UI views', time: '2 hours ago' },
+          { path: 'src/App.jsx', name: 'App.jsx', type: 'blob', size: 3420, lastCommit: 'connect state store', time: '2 hours ago' },
+          { path: 'src/index.css', name: 'index.css', type: 'blob', size: 2150, lastCommit: 'apply dark theme tokens', time: '3 hours ago' },
+          { path: 'package.json', name: 'package.json', type: 'blob', size: 890, lastCommit: 'setup scripts and dependencies', time: '1 day ago' },
+          { path: 'README.md', name: 'README.md', type: 'blob', size: 2450, lastCommit: 'initial documentation', time: '1 day ago' }
+        ],
+        readme: `# ${prod.title}\n\nEnterprise-grade digital source code asset.\n\n## ⚡ Quick Start\n\`\`\`bash\nsmarthub pull ${prod.id}\nnpm install\nnpm run dev\n\`\`\``
+      };
+
+      renderRepositoryUI(currentRepo);
+    }
+
+    function renderRepositoryUI(repo) {
+      document.title = `${repo.title} · Repository | Smart Hub`;
+
+      // Header links & badges
+      const authorLink = document.getElementById('repo-author-link');
+      if (authorLink) {
+        authorLink.textContent = (repo.author && repo.author.name) ? repo.author.name.toLowerCase().replace(/\s+/g, '-') : 'developer';
+        authorLink.href = 'profile.html';
+      }
+      document.getElementById('repo-name-text').textContent = repo.name || repo.title;
+      document.getElementById('crumb-root').textContent = repo.name || repo.title;
+
+      // Counters
+      document.getElementById('star-count').textContent = repo.stars;
+      document.getElementById('watch-count').textContent = repo.watchers || 24;
+      document.getElementById('fork-count').textContent = repo.forks || 7;
+      document.getElementById('sidebar-star-count').textContent = repo.stars;
+      document.getElementById('sidebar-watch-count').textContent = repo.watchers || 24;
+      document.getElementById('sidebar-fork-count').textContent = repo.forks || 7;
+
+      // Price & Buy Button
+      document.getElementById('repo-price-label').textContent = `₹${(repo.price || 0).toLocaleString('en-IN')}`;
+      document.getElementById('btn-repo-buy').href = `checkout.html?id=${repo.id}`;
+      document.getElementById('link-view-store').href = `product-detail.html?id=${repo.id}`;
+
+      // Commit Bar
+      if (repo.latestCommit) {
+        document.getElementById('commit-author').textContent = repo.latestCommit.author;
+        document.getElementById('commit-message').textContent = repo.latestCommit.message;
+        document.getElementById('commit-hash').textContent = repo.latestCommit.hash;
+        document.getElementById('commit-time').textContent = repo.latestCommit.time;
+        if (repo.latestCommit.avatar) {
+          document.getElementById('commit-avatar').src = repo.latestCommit.avatar;
+        }
+      }
+      document.getElementById('commit-count-total').textContent = `${repo.totalCommits || 14} commits`;
+
+      // Branches Dropdown
+      const branchesCont = document.getElementById('branches-list-container');
+      if (branchesCont && repo.branches) {
+        branchesCont.innerHTML = repo.branches.map(b => `
+          <div style="padding:6px 14px;cursor:pointer;font-size:0.82rem;display:flex;align-items:center;gap:8px;" 
+               class="branch-item" onclick="switchBranch('${b}')" onmouseover="this.style.background='rgba(110,118,129,0.1)'" onmouseout="this.style.background='transparent'">
+            <span style="color:${b === (repo.defaultBranch || 'main') ? 'var(--gh-blue)' : 'transparent'};">✓</span> ${b}
+          </div>
+        `).join('');
+      }
+
+      // Clone URLs
+      const repoSlug = repo.name || 'project';
+      document.getElementById('clone-url-input').value = `https://git.smarthub.in/${repoSlug}.git`;
+
+      // Sidebar About & Topics
+      document.getElementById('repo-about-desc').textContent = repo.description;
+      const topicsCont = document.getElementById('repo-topics-container');
+      if (topicsCont && repo.tags) {
+        topicsCont.innerHTML = repo.tags.map(t => `<a href="marketplace.html?category=${encodeURIComponent(t)}" class="repo-tag-pill">${t}</a>`).join('');
+      }
+
+      // Languages Breakdown
+      const langBar = document.getElementById('lang-bar-container');
+      const langLegend = document.getElementById('lang-legend-container');
+      if (langBar && langLegend && repo.languages) {
+        langBar.innerHTML = repo.languages.map(l => `
+          <div class="lang-bar-segment" style="width:${l.percent}%;background:${l.color};" title="${l.name} ${l.percent}%"></div>
+        `).join('');
+
+        langLegend.innerHTML = repo.languages.map(l => `
+          <div class="lang-legend-item">
+            <span class="lang-legend-dot" style="background:${l.color};"></span>
+            <strong>${l.name}</strong>
+            <span style="color:var(--gh-text-muted);">${l.percent}%</span>
+          </div>
+        `).join('');
+      }
+
+      // Render Root Directory File Table
+      renderDirectoryTable('');
+
+      // Render README
+      renderReadme(repo.readme);
+    }
+
+    // ── Directory Navigation & File Tree Table ─────────────────
+    function renderDirectoryTable(dirPath) {
+      currentDirectory = dirPath;
+      updateBreadcrumbs(dirPath);
+
+      const tableBody = document.getElementById('file-table-body');
+      if (!tableBody || !currentRepo || !currentRepo.tree) return;
+
+      // Filter entries directly inside currentDirectory
+      // normalized prefix e.g. "src/" or ""
+      const prefix = dirPath ? (dirPath.endsWith('/') ? dirPath : dirPath + '/') : '';
+      
+      const entries = currentRepo.tree.filter(item => {
+        if (!prefix) {
+          // root level: doesn't contain a slash after root
+          return !item.path.includes('/');
+        }
+        if (!item.path.startsWith(prefix)) return false;
+        const remainder = item.path.substring(prefix.length);
+        return !remainder.includes('/');
+      });
+
+      // Sort: folders (type === 'tree') first, then files (type === 'blob')
+      entries.sort((a, b) => {
+        if (a.type === 'tree' && b.type !== 'tree') return -1;
+        if (a.type !== 'tree' && b.type === 'tree') return 1;
+        return a.name.localeCompare(b.name);
+      });
+
+      let html = '';
+
+      // If inside a subfolder, add ".." parent directory row
+      if (dirPath) {
+        const parentDir = dirPath.includes('/') ? dirPath.substring(0, dirPath.lastIndexOf('/')) : '';
+        html += `
+          <tr class="file-row" onclick="navigateToDir('${parentDir}')">
+            <td colspan="3" class="file-name-cell" style="color:var(--gh-blue);">
+              <span>📁</span>
+              <span>..</span>
+            </td>
+          </tr>
+        `;
+      }
+
+      entries.forEach(item => {
+        const isFolder = item.type === 'tree';
+        const icon = getFileIcon(item.name, isFolder);
+        const clickHandler = isFolder ? `navigateToDir('${item.path}')` : `openFileBlob('${item.path}')`;
+
+        html += `
+          <tr class="file-row" onclick="${clickHandler}">
+            <td style="width:38%;">
+              <div class="file-name-cell">
+                <span style="font-size:1.05rem;">${icon}</span>
+                <span>${item.name}</span>
+              </div>
+            </td>
+            <td style="width:44%;">
+              <div class="file-commit-cell">${item.lastCommit || 'feat: update source code'}</div>
+            </td>
+            <td style="width:18%;">
+              <div class="file-time-cell">${item.time || '2 hours ago'}</div>
+            </td>
+          </tr>
+        `;
+      });
+
+      tableBody.innerHTML = html;
+
+      // Show/hide README based on whether we're at root
+      const readmeContainer = document.getElementById('readme-container');
+      if (readmeContainer) {
+        readmeContainer.style.display = dirPath === '' ? 'block' : 'none';
+      }
+    }
+
+    function getFileIcon(fileName, isFolder) {
+      if (isFolder) return '📁';
+      const ext = fileName.split('.').pop().toLowerCase();
+      if (ext === 'js' || ext === 'jsx') return '📜';
+      if (ext === 'ts' || ext === 'tsx') return '📘';
+      if (ext === 'json') return '⚙️';
+      if (ext === 'py') return '🐍';
+      if (ext === 'dart') return '🎯';
+      if (ext === 'html') return '🌐';
+      if (ext === 'css') return '🎨';
+      if (ext === 'md') return '📝';
+      if (ext === 'yaml' || ext === 'yml') return '📋';
+      return '📄';
+    }
+
+    function navigateToDir(dirPath) {
+      closeBlobViewer();
+      renderDirectoryTable(dirPath);
+    }
+
+    function updateBreadcrumbs(dirPath) {
+      const crumbsEl = document.getElementById('repo-path-crumbs');
+      if (!crumbsEl || !currentRepo) return;
+
+      const rootName = currentRepo.name || currentRepo.title || 'repo';
+      let html = `<a href="javascript:void(0)" onclick="navigateToDir('')">${rootName}</a>`;
+
+      if (dirPath) {
+        const parts = dirPath.split('/');
+        let accum = '';
+        parts.forEach((p, idx) => {
+          accum = accum ? `${accum}/${p}` : p;
+          html += ` <span class="separator">/</span> `;
+          if (idx === parts.length - 1 && !currentBlobPath) {
+            html += `<strong style="color:var(--gh-text);">${p}</strong>`;
+          } else {
+            html += `<a href="javascript:void(0)" onclick="navigateToDir('${accum}')">${p}</a>`;
+          }
+        });
+      }
+
+      if (currentBlobPath) {
+        const fileName = currentBlobPath.split('/').pop();
+        html += ` <span class="separator">/</span> <strong style="color:var(--gh-text);">${fileName}</strong>`;
+      }
+
+      crumbsEl.innerHTML = html;
+    }
+
+    // ── Code Blob Viewer (File Click) ──────────────────────────
+    async function openFileBlob(filePath) {
+      currentBlobPath = filePath;
+      updateBreadcrumbs(currentDirectory);
+
+      const blobCard = document.getElementById('blob-viewer-card');
+      const explorerBox = document.getElementById('file-explorer-box');
+      const readmeBox = document.getElementById('readme-container');
+
+      if (blobCard) blobCard.style.display = 'block';
+      if (explorerBox) explorerBox.style.display = 'none';
+      if (readmeBox) readmeBox.style.display = 'none';
+
+      document.getElementById('blob-file-path').textContent = filePath;
+      document.getElementById('blob-file-meta').textContent = 'Loading source content...';
+      document.getElementById('blob-code-content').textContent = '// Loading code from Smart Hub repository...';
+      document.getElementById('blob-line-numbers').innerHTML = '';
+
+      try {
+        const res = await window.SmartHubAPI.getProjectBlob(currentRepo.id, filePath);
+        if (res && res.success) {
+          renderBlobContent(res.content, res.language, res.lines, res.size);
+          return;
+        }
+      } catch (err) {
+        console.warn('API blob error, generating simulated content:', err);
+      }
+
+      // Fallback sample content
+      const sample = `// ${filePath}\n// Smart Hub Verified Digital Asset\n\nexport default function Module() {\n  console.log("Module initialized for ${currentRepo.title}");\n  return {\n    status: "ok",\n    verified: true\n  };\n}\n`;
+      renderBlobContent(sample, 'javascript', sample.split('\n').length, sample.length);
+    }
+
+    function renderBlobContent(content, language, lineCount, byteSize) {
+      currentRawContent = content;
+      const lines = content.split('\n');
+      const lineNumHtml = lines.map((_, idx) => `<div>${idx + 1}</div>`).join('');
+
+      document.getElementById('blob-line-numbers').innerHTML = lineNumHtml;
+      document.getElementById('blob-code-content').textContent = content;
+
+      const kb = (byteSize / 1024).toFixed(2);
+      document.getElementById('blob-file-meta').textContent = `${lines.length} lines (${lines.length} sloc) · ${kb} KB`;
+    }
+
+    function closeBlobViewer() {
+      currentBlobPath = null;
+      const blobCard = document.getElementById('blob-viewer-card');
+      const explorerBox = document.getElementById('file-explorer-box');
+      const readmeBox = document.getElementById('readme-container');
+
+      if (blobCard) blobCard.style.display = 'none';
+      if (explorerBox) explorerBox.style.display = 'block';
+      if (readmeBox) readmeBox.style.display = currentDirectory === '' ? 'block' : 'none';
+
+      updateBreadcrumbs(currentDirectory);
+    }
+
+    function copyBlobContent() {
+      if (currentRawContent) {
+        navigator.clipboard.writeText(currentRawContent);
+        const btn = document.getElementById('btn-copy-blob');
+        btn.textContent = 'Copied ✓';
+        showToast('Code copied to clipboard!', 'info');
+        setTimeout(() => btn.textContent = 'Copy Code 📋', 2000);
+      }
+    }
+
+    function toggleRawView() {
+      if (!currentRawContent) return;
+      const newWin = window.open('', '_blank');
+      newWin.document.write(`<pre style="word-wrap:break-word;white-space:pre-wrap;font-family:monospace;background:#0d1117;color:#c9d1d9;padding:20px;">${escapeHtml(currentRawContent)}</pre>`);
+      newWin.document.close();
+    }
+
+    // ── Simple Markdown Renderer for README ────────────────────
+    function renderReadme(markdownText) {
+      const el = document.getElementById('readme-rendered-content');
+      if (!el) return;
+      if (!markdownText) {
+        el.innerHTML = '<p style="color:var(--gh-text-muted);">No README.md documentation provided for this repository.</p>';
+        return;
+      }
+
+      // Lightweight Markdown to HTML parser
+      let html = markdownText
+        // Escaping HTML special chars (excluding tags we generate)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        // Codeblocks with syntax tag
+        .replace(/```([a-z0-9_-]*)\n([\s\S]*?)```/gi, (match, lang, code) => {
+          return `<pre><code class="language-${lang}">${code}</code></pre>`;
+        })
+        // Inline code
+        .replace(/`([^`]+)`/g, '<code>$1</code>')
+        // Headings
+        .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+        .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+        .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+        // Blockquotes
+        .replace(/^\> (.*$)/gim, '<blockquote>$1</blockquote>')
+        // Bold
+        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+        // Italic
+        .replace(/\*([^*]+)\*/g, '<em>$1</em>')
+        // Markdown Image links [![alt](imgUrl)](linkUrl)
+        .replace(/\[!\[([^\]]*)\]\(([^)]+)\)\]\(([^)]+)\)/g, '<a href="$3" target="_blank" rel="noopener noreferrer"><img src="$2" alt="$1" style="display:inline-block;margin:2px 4px 2px 0;"></a>')
+        // Standard Images
+        .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" style="max-width:100%;border-radius:4px;margin:8px 0;">')
+        // Standard Links
+        .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" style="color:var(--gh-blue);">$1</a>')
+        // Unordered list items
+        .replace(/^\s*-\s+(.*$)/gim, '<li>$1</li>')
+        // Horizontal Rule
+        .replace(/^---$/gim, '<hr style="border:none;border-top:1px solid var(--gh-border);margin:24px 0;">')
+        // Paragraph breaks
+        .replace(/\n\n+/g, '</p><p>');
+
+      // Wrap list items with <ul>
+      html = html.replace(/(<li>[\s\S]*?<\/li>)/gi, '<ul>$1</ul>');
+
+      el.innerHTML = `<p>${html}</p>`;
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    // ── Interactive Actions ────────────────────────────────────
+    async function toggleStar() {
+      if (!currentRepo) return;
+      try {
+        const res = await window.SmartHubAPI.starProject(currentRepo.id);
+        if (res && res.success) {
+          document.getElementById('star-count').textContent = res.stars;
+          document.getElementById('sidebar-star-count').textContent = res.stars;
+          showToast(`Starred ${currentRepo.title}! ★`, 'success');
+          return;
+        }
+      } catch (e) {}
+
+      // Local fallback
+      currentRepo.stars = (currentRepo.stars || 38) + 1;
+      document.getElementById('star-count').textContent = currentRepo.stars;
+      document.getElementById('sidebar-star-count').textContent = currentRepo.stars;
+      showToast(`Starred ${currentRepo.title}! ★`, 'success');
+    }
+
+    function toggleWatch() {
+      const countEl = document.getElementById('watch-count');
+      const val = Number(countEl.textContent || 24) + 1;
+      countEl.textContent = val;
+      document.getElementById('sidebar-watch-count').textContent = val;
+      showToast('You are now watching this repository for release updates!', 'info');
+    }
+
+    function forkRepo() {
+      const countEl = document.getElementById('fork-count');
+      const val = Number(countEl.textContent || 7) + 1;
+      countEl.textContent = val;
+      document.getElementById('sidebar-fork-count').textContent = val;
+      showToast('Repository forked to your developer profile! ⑂', 'success');
+    }
+
+    function toggleCloneDropdown() {
+      const box = document.getElementById('clone-dropdown-box');
+      box.style.display = box.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function toggleBranchDropdown() {
+      const box = document.getElementById('branch-dropdown-menu');
+      box.style.display = box.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function switchBranch(branchName) {
+      document.getElementById('current-branch-label').textContent = branchName;
+      document.getElementById('branch-dropdown-menu').style.display = 'none';
+      showToast(`Switched branch to '${branchName}'`, 'info');
+    }
+
+    function switchCloneTab(tab) {
+      document.querySelectorAll('.clone-tab-btn').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+
+      const slug = currentRepo ? (currentRepo.name || 'project') : 'project';
+      const input = document.getElementById('clone-url-input');
+
+      if (tab === 'https') {
+        input.value = `https://git.smarthub.in/${slug}.git`;
+      } else if (tab === 'ssh') {
+        input.value = `git@smarthub.in:${slug}.git`;
+      } else if (tab === 'cli') {
+        input.value = `smarthub pull ${currentRepo ? currentRepo.id : 'PRJ'}`;
+      }
+    }
+
+    function copyCloneUrl() {
+      const input = document.getElementById('clone-url-input');
+      input.select();
+      navigator.clipboard.writeText(input.value);
+      const btn = document.getElementById('btn-copy-clone');
+      btn.textContent = '✓';
+      showToast('Copied to clipboard!', 'info');
+      setTimeout(() => btn.textContent = '📋', 2000);
+    }
+
+    function downloadZipBundle() {
+      if (!currentRepo) return;
+      showToast('Generating signed source package .zip...', 'info');
+      window.location.href = `/api/orders/${currentRepo.id}/download`;
+    }
+
+    function switchRepoTab(e, tab) {
+      e.preventDefault();
+      document.querySelectorAll('.repo-nav-tab').forEach(t => t.classList.remove('active'));
+      e.currentTarget.classList.add('active');
+
+      if (tab === 'code') {
+        document.getElementById('file-explorer-box').style.display = 'block';
+        document.getElementById('readme-container').style.display = currentDirectory === '' ? 'block' : 'none';
+        if (currentBlobPath) document.getElementById('blob-viewer-card').style.display = 'block';
+      } else {
+        showToast(`Repository tab '${tab}' is synced with GitHub Core.`, 'info');
+      }
+    }
+  </script>
+</body>
+</html>

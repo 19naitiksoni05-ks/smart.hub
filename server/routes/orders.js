@@ -48,32 +48,67 @@ function generateDynamicLicenseKey({ productId, orderNumber, buyerEmail, timesta
 // ── Execute Encrypted Checkout ───────────────────────────────
 router.post('/checkout', authOptional, (req, res) => {
   try {
-    const { productId, paymentMethod = 'wallet', deliveryEmail, couponCode, license = 'regular' } = req.body;
-
-    const product = db.findById('products', productId);
-    if (!product) {
-      return res.status(404).json({ success: false, error: 'Product not found' });
-    }
+    const { productId, items, paymentMethod = 'wallet', deliveryEmail, couponCode, license = 'regular' } = req.body;
 
     if (!deliveryEmail || !deliveryEmail.includes('@')) {
       return res.status(400).json({ success: false, error: 'Valid delivery email address is required' });
     }
 
-    // Calculate Price
-    let basePrice = product.price;
-    if (license === 'extended') {
-      basePrice = Math.round(product.price * 3.2);
+    // Determine target checkout items
+    let checkoutItems = [];
+    if (Array.isArray(items) && items.length > 0) {
+      for (const it of items) {
+        const pId = it.productId || it.id;
+        const prod = db.findById('products', pId);
+        if (prod) {
+          checkoutItems.push({
+            product: prod,
+            qty: Number(it.qty) || 1,
+            license: it.license || license || 'regular'
+          });
+        }
+      }
+      if (checkoutItems.length === 0) {
+        return res.status(404).json({ success: false, error: 'None of the requested products were found' });
+      }
+    } else if (productId) {
+      const product = db.findById('products', productId);
+      if (!product) {
+        return res.status(404).json({ success: false, error: 'Product not found' });
+      }
+      checkoutItems.push({
+        product,
+        qty: 1,
+        license
+      });
+    } else {
+      return res.status(400).json({ success: false, error: 'No product or cart items provided for checkout' });
     }
+
+    // Calculate aggregated prices
+    let totalBase = 0;
+    const computedItems = checkoutItems.map(item => {
+      let unitPrice = item.product.price;
+      if (item.license === 'extended') {
+        unitPrice = Math.round(item.product.price * 3.2);
+      }
+      const itemSubtotal = unitPrice * item.qty;
+      totalBase += itemSubtotal;
+      return {
+        ...item,
+        unitPrice,
+        subtotal: itemSubtotal
+      };
+    });
 
     let discount = 0;
     if (couponCode && couponCode.toUpperCase() === 'OUTLINE10') {
-      discount = Math.round(basePrice * 0.10);
+      discount = Math.round(totalBase * 0.10);
     }
-    const finalAmount = Math.max(0, basePrice - discount);
-
+    const finalAmount = Math.max(0, totalBase - discount);
     const buyer = req.user || null;
 
-    // Wallet payment deduction
+    // Wallet payment verification & deduction
     if (paymentMethod === 'wallet') {
       if (!buyer) {
         return res.status(401).json({
@@ -94,110 +129,124 @@ router.post('/checkout', authOptional, (req, res) => {
       db.update('users', buyer.id, { walletBalance: newBuyerBal });
 
       // Record buyer debit transaction
+      const titles = computedItems.map(i => i.product.title).join(', ');
       db.insert('transactions', {
         id: 't_' + Date.now(),
         userId: buyer.id,
         type: 'debit',
-        title: `Purchase: ${product.title}`,
+        title: `Purchase: ${titles.length > 50 ? titles.substring(0, 47) + '...' : titles}`,
         amount: finalAmount,
         date: new Date().toISOString().split('T')[0],
         icon: '🛒',
-        seller: product.author ? product.author.name : 'Smart Hub Creator',
+        seller: computedItems[0].product.author ? computedItems[0].product.author.name : 'Smart Hub Creator',
         method: 'Rupee Wallet'
       });
     } else {
       // Direct UPI / Card transaction record if user logged in
       if (buyer) {
+        const titles = computedItems.map(i => i.product.title).join(', ');
         db.insert('transactions', {
           id: 't_' + Date.now(),
           userId: buyer.id,
           type: 'debit',
-          title: `Purchase: ${product.title}`,
+          title: `Purchase: ${titles.length > 50 ? titles.substring(0, 47) + '...' : titles}`,
           amount: finalAmount,
           date: new Date().toISOString().split('T')[0],
           icon: '📱',
-          seller: product.author ? product.author.name : 'Smart Hub Creator',
+          seller: computedItems[0].product.author ? computedItems[0].product.author.name : 'Smart Hub Creator',
           method: paymentMethod.toUpperCase()
         });
       }
     }
 
-    // Calculate 0.5% - 3% Platform Fee based on price, category and statutory tax
-    let feeRate = 0.02; // 2.0% baseline
-    if (finalAmount >= 10000) {
-      feeRate = 0.005; // 0.5% for high-value codebases
-    } else if (finalAmount >= 3000) {
-      feeRate = 0.012; // 1.2%
-    } else if (finalAmount >= 1000) {
-      feeRate = 0.02; // 2.0%
-    } else {
-      feeRate = 0.03; // 3.0% for low-cost items
-    }
-    const cat = (product.category || '').toLowerCase();
-    if (cat.includes('ai') || cat.includes('ml') || cat.includes('blockchain')) {
-      feeRate = Math.max(0.005, feeRate - 0.003);
-    }
-    const platformFee = Math.round(finalAmount * feeRate);
-    const statutoryGst = Math.round(platformFee * 0.18); // 18% statutory tax on platform services per law
-    const totalDeductions = platformFee + statutoryGst;
-    const sellerNetEarnings = Math.max(0, finalAmount - totalDeductions);
+    // Process each item: create order, dynamic license token, update seller earnings & sales count
+    const createdOrders = [];
+    const encKeysList = [];
 
-    // Credit seller's wallet with net earnings (deducted only on sale)
-    if (product.author && product.author.id) {
-      const seller = db.findById('users', product.author.id);
-      if (seller) {
-        db.update('users', seller.id, { walletBalance: (seller.walletBalance || 0) + sellerNetEarnings });
-        db.insert('transactions', {
-          id: 't_s_' + Date.now(),
-          userId: seller.id,
-          type: 'credit',
-          title: `Sale: ${product.title} (Net after ${(feeRate * 100).toFixed(1)}% fee & tax)`,
-          amount: sellerNetEarnings,
-          date: new Date().toISOString().split('T')[0],
-          icon: '💸',
-          buyer: deliveryEmail,
-          method: 'SmartHub Store'
-        });
+    for (let i = 0; i < computedItems.length; i++) {
+      const it = computedItems[i];
+      const product = it.product;
+      const itemRatio = totalBase > 0 ? (it.subtotal / totalBase) : (1 / computedItems.length);
+      const itemFinalAmount = Math.max(0, Math.round(it.subtotal - (discount * itemRatio)));
+
+      // Calculate Platform Fee
+      let feeRate = 0.02;
+      if (itemFinalAmount >= 10000) feeRate = 0.005;
+      else if (itemFinalAmount >= 3000) feeRate = 0.012;
+      else if (itemFinalAmount >= 1000) feeRate = 0.02;
+      else feeRate = 0.03;
+
+      const cat = (product.category || '').toLowerCase();
+      if (cat.includes('ai') || cat.includes('ml') || cat.includes('blockchain')) {
+        feeRate = Math.max(0.005, feeRate - 0.003);
       }
+      const platformFee = Math.round(itemFinalAmount * feeRate);
+      const statutoryGst = Math.round(platformFee * 0.18);
+      const sellerNetEarnings = Math.max(0, itemFinalAmount - (platformFee + statutoryGst));
+
+      // Credit seller wallet
+      if (product.author && product.author.id) {
+        const seller = db.findById('users', product.author.id);
+        if (seller) {
+          db.update('users', seller.id, { walletBalance: (seller.walletBalance || 0) + sellerNetEarnings });
+          db.insert('transactions', {
+            id: 't_s_' + Date.now() + '_' + i,
+            userId: seller.id,
+            type: 'credit',
+            title: `Sale: ${product.title} (Net after ${(feeRate * 100).toFixed(1)}% fee & tax)`,
+            amount: sellerNetEarnings,
+            date: new Date().toISOString().split('T')[0],
+            icon: '💸',
+            buyer: deliveryEmail,
+            method: 'SmartHub Store'
+          });
+        }
+      }
+
+      // Generate dynamic license key
+      const orderNumber = `SH-ORD-2026-${Math.floor(1000 + Math.random() * 9000)}`;
+      const encKey = generateDynamicLicenseKey({
+        productId: product.id,
+        orderNumber,
+        buyerEmail: deliveryEmail,
+        timestamp: Date.now() + i
+      });
+
+      const newOrder = {
+        id: 'ord_' + Date.now() + '_' + i,
+        orderNumber,
+        buyerId: buyer ? buyer.id : null,
+        buyerEmail: deliveryEmail,
+        productId: product.id,
+        productTitle: product.title,
+        category: product.category,
+        amount: itemFinalAmount,
+        platformFee,
+        statutoryTax: statutoryGst,
+        sellerNetEarnings,
+        platformFeePercent: (feeRate * 100).toFixed(1) + '%',
+        discount: Math.round(discount * itemRatio),
+        license: it.license,
+        paymentMethod,
+        encKey,
+        status: 'completed',
+        downloadUrl: `/api/orders/${orderNumber}/download`,
+        createdAt: new Date().toISOString()
+      };
+
+      db.insert('orders', newOrder);
+      db.update('products', product.id, { sales: (product.sales || 0) + it.qty });
+
+      createdOrders.push(newOrder);
+      encKeysList.push({
+        title: product.title,
+        key: encKey,
+        orderNumber,
+        downloadUrl: newOrder.downloadUrl
+      });
     }
 
-    // Generate unique, multi-factor cryptographic license key on backend
-    const orderNumber = `SH-ORD-2026-${Math.floor(1000 + Math.random() * 9000)}`;
-    const encKey = generateDynamicLicenseKey({
-      productId: product.id,
-      orderNumber,
-      buyerEmail: deliveryEmail,
-      timestamp: Date.now()
-    });
-
-    const newOrder = {
-      id: 'ord_' + Date.now(),
-      orderNumber,
-      buyerId: buyer ? buyer.id : null,
-      buyerEmail: deliveryEmail,
-      productId: product.id,
-      productTitle: product.title,
-      category: product.category,
-      amount: finalAmount,
-      platformFee,
-      statutoryTax: statutoryGst,
-      sellerNetEarnings,
-      platformFeePercent: (feeRate * 100).toFixed(1) + '%',
-      discount,
-      license,
-      paymentMethod,
-      encKey,
-      status: 'completed',
-      downloadUrl: `/api/orders/${orderNumber}/download`,
-      createdAt: new Date().toISOString()
-    };
-
-    db.insert('orders', newOrder);
-
-    // Update product sales count
-    db.update('products', product.id, { sales: (product.sales || 0) + 1 });
-
-    // Broadcast real sale to all connected clients
+    // Broadcast sale
     try {
       const broadcastWs = req.app.get('broadcastWs');
       if (broadcastWs) {
@@ -206,10 +255,10 @@ router.post('/checkout', authOptional, (req, res) => {
         broadcastWs({
           type: 'NEW_SALE',
           order: {
-            orderNumber: newOrder.orderNumber,
-            productTitle: newOrder.productTitle,
-            amount: newOrder.amount,
-            createdAt: newOrder.createdAt
+            orderNumber: createdOrders[0].orderNumber,
+            productTitle: createdOrders.length === 1 ? createdOrders[0].productTitle : `${createdOrders.length} Products Bundle`,
+            amount: finalAmount,
+            createdAt: createdOrders[0].createdAt
           },
           totalSales,
           ordersCount: allOrders.length
@@ -219,17 +268,20 @@ router.post('/checkout', authOptional, (req, res) => {
       console.warn('[WS] broadcast sale error:', wsErr);
     }
 
+    const primaryOrder = createdOrders[0];
     res.status(201).json({
       success: true,
-      message: 'Transaction completed successfully! Cryptographic license key generated by backend.',
-      order: newOrder,
-      encKey,
-      downloadUrl: newOrder.downloadUrl,
+      message: 'Transaction completed successfully! Cryptographic license keys generated by backend.',
+      order: primaryOrder,
+      orders: createdOrders,
+      encKey: primaryOrder.encKey,
+      encKeys: encKeysList,
+      downloadUrl: primaryOrder.downloadUrl,
       updatedWalletBalance: (buyer && paymentMethod === 'wallet') ? (buyer.walletBalance - finalAmount) : (buyer ? buyer.walletBalance : 0)
     });
   } catch (err) {
     console.error('Checkout error:', err);
-    res.status(500).json({ success: false, error: 'Payment processing failed' });
+    res.status(500).json({ success: false, error: 'Payment processing failed: ' + err.message });
   }
 });
 

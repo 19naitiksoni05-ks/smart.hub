@@ -35,6 +35,119 @@
   ],
   "products": [
     {
+      "id": "p_1792918130524",
+      "title": "Enterprise Fintech Dashboard Next.js",
+      "category": "React",
+      "price": 2499,
+      "oldPrice": null,
+      "rating": 5,
+      "reviews": 1,
+      "sales": 2,
+      "author": {
+        "id": "dev_guest",
+        "name": "Verified Developer",
+        "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=dev&backgroundColor=6366f1"
+      },
+      "tags": [
+        "Code"
+      ],
+      "badge": "New",
+      "thumb": "https://picsum.photos/seed/Enterprise%20Fintech%20Dashboard%20Next.js/400/250",
+      "videoUrl": null,
+      "downloadUrl": null,
+      "bundleInfo": null,
+      "description": "Production-ready financial dashboard with UPI QR, analytics, and crypto key licensing.",
+      "type": "Source Code",
+      "createdAt": "2026-10-25T08:48:50.524Z",
+      "updatedAt": "2026-10-25T08:48:50.551Z"
+    },
+    {
+      "id": "p_1792918130479",
+      "title": "Free Open Source AI UI Kit",
+      "category": "React",
+      "price": 0,
+      "oldPrice": null,
+      "rating": 5,
+      "reviews": 1,
+      "sales": 1,
+      "author": {
+        "id": "dev_guest",
+        "name": "Verified Developer",
+        "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=dev&backgroundColor=6366f1"
+      },
+      "tags": [
+        "Code"
+      ],
+      "badge": "New",
+      "thumb": "https://picsum.photos/seed/Free%20Open%20Source%20AI%20UI%20Kit/400/250",
+      "videoUrl": null,
+      "downloadUrl": null,
+      "bundleInfo": null,
+      "description": "Zero cost community UI components for AI apps.",
+      "type": "Source Code",
+      "createdAt": "2026-10-25T08:48:50.479Z",
+      "updatedAt": "2026-10-25T08:48:50.555Z"
+    },
+    {
+      "id": "p_1792913427884",
+      "title": "dsvb",
+      "category": "React",
+      "price": 1999,
+      "oldPrice": null,
+      "rating": 5,
+      "reviews": 1,
+      "sales": 0,
+      "author": {
+        "id": "a9b9e238-6ec8-4622-8f22-9b6eb6939ac2",
+        "name": "Naitik Soni",
+        "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=naitik&backgroundColor=ff5b36"
+      },
+      "tags": [
+        "React",
+        "FullStack",
+        "Audited"
+      ],
+      "badge": "New",
+      "thumb": "/uploads/images/Screenshot_2026-10-25_115438_1792913394059_1d933efd.png",
+      "videoUrl": null,
+      "downloadUrl": null,
+      "bundleInfo": null,
+      "description": "advgv",
+      "type": "Source Code",
+      "createdAt": "2026-10-25T07:30:27.884Z"
+    },
+    {
+      "id": "p_1792913361892",
+      "title": "asf",
+      "category": "Mobile",
+      "price": 2500,
+      "oldPrice": null,
+      "rating": 5,
+      "reviews": 1,
+      "sales": 0,
+      "author": {
+        "id": "a9b9e238-6ec8-4622-8f22-9b6eb6939ac2",
+        "name": "Naitik Soni",
+        "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=naitik&backgroundColor=ff5b36"
+      },
+      "tags": [
+        "react"
+      ],
+      "badge": "New",
+      "thumb": "/uploads/images/ChatGPT_Image_Aug_20__2026__02_32_39_AM_1792913255492_00751619.png",
+      "videoUrl": null,
+      "downloadUrl": null,
+      "bundleInfo": {
+        "type": "folder",
+        "folderName": "python",
+        "fileCount": 3,
+        "totalSize": 853
+      },
+      "description": "dvbsfh",
+      "type": "Web App",
+      "createdAt": "2026-10-25T07:29:21.892Z"
+    },
+    {
       "id": "p_1792913095955",
       "title": "FullStack Cloud Dashboard Asset",
       "category": "React",
@@ -103,14 +216,14 @@
     {
       "name": "React",
       "icon": "⚛️",
-      "count": 2,
+      "count": 5,
       "color": "#61dafb",
       "bg": "rgba(97,218,251,0.1)"
     },
     {
       "name": "Mobile",
       "icon": "📱",
-      "count": 0,
+      "count": 1,
       "color": "#f59e0b",
       "bg": "rgba(245,158,11,0.1)"
     },
@@ -157,7 +270,71 @@
       "bg": "rgba(236,72,153,0.1)"
     }
   ],
-  "orders": [],
+  "orders": [
+    {
+      "id": "ord_1792918130553_1",
+      "orderNumber": "SH-ORD-2026-2756",
+      "buyerId": null,
+      "buyerEmail": "naitik19ansh@gmail.com",
+      "productId": "p_1792918130479",
+      "productTitle": "Free Open Source AI UI Kit",
+      "category": "React",
+      "amount": 0,
+      "platformFee": 0,
+      "statutoryTax": 0,
+      "sellerNetEarnings": 0,
+      "platformFeePercent": "3.0%",
+      "discount": 0,
+      "license": "regular",
+      "paymentMethod": "card",
+      "encKey": "SH-ENC-2026-F21A-FE8F-83ED",
+      "status": "completed",
+      "downloadUrl": "/api/orders/SH-ORD-2026-2756/download",
+      "createdAt": "2026-10-25T08:48:50.553Z"
+    },
+    {
+      "id": "ord_1792918130550_0",
+      "orderNumber": "SH-ORD-2026-3696",
+      "buyerId": null,
+      "buyerEmail": "naitik19ansh@gmail.com",
+      "productId": "p_1792918130524",
+      "productTitle": "Enterprise Fintech Dashboard Next.js",
+      "category": "React",
+      "amount": 2499,
+      "platformFee": 50,
+      "statutoryTax": 9,
+      "sellerNetEarnings": 2440,
+      "platformFeePercent": "2.0%",
+      "discount": 0,
+      "license": "regular",
+      "paymentMethod": "card",
+      "encKey": "SH-ENC-2026-F29F-F0CC-AEA0",
+      "status": "completed",
+      "downloadUrl": "/api/orders/SH-ORD-2026-3696/download",
+      "createdAt": "2026-10-25T08:48:50.550Z"
+    },
+    {
+      "id": "ord_1792918130539_0",
+      "orderNumber": "SH-ORD-2026-9988",
+      "buyerId": null,
+      "buyerEmail": "naitik19ansh@gmail.com",
+      "productId": "p_1792918130524",
+      "productTitle": "Enterprise Fintech Dashboard Next.js",
+      "category": "React",
+      "amount": 2499,
+      "platformFee": 50,
+      "statutoryTax": 9,
+      "sellerNetEarnings": 2440,
+      "platformFeePercent": "2.0%",
+      "discount": 0,
+      "license": "regular",
+      "paymentMethod": "upi",
+      "encKey": "SH-ENC-2026-F29F-EF22-AB14",
+      "status": "completed",
+      "downloadUrl": "/api/orders/SH-ORD-2026-9988/download",
+      "createdAt": "2026-10-25T08:48:50.539Z"
+    }
+  ],
   "transactions": [
     {
       "id": "t_1792909885675",
@@ -451,6 +628,133 @@
     }
   ],
   "uploads": [
+    {
+      "id": "folder_1792913414182_92b1a2",
+      "name": "project_code",
+      "type": "folder",
+      "category": "folders",
+      "fileCount": 3,
+      "size": 853,
+      "sizeFormatted": "853 Bytes",
+      "zipSize": 1207,
+      "zipSizeFormatted": "1.18 KB",
+      "url": "/uploads/archives/project_code_1792913414196.zip",
+      "folderUrl": "/uploads/folders/folder_1792913414182_92b1a2",
+      "files": [
+        {
+          "path": "python/python.py",
+          "size": 250,
+          "sizeFormatted": "250 Bytes"
+        },
+        {
+          "path": "python/sumofarray.py",
+          "size": 468,
+          "sizeFormatted": "468 Bytes"
+        },
+        {
+          "path": "python/.vscode/settings.json",
+          "size": 135,
+          "sizeFormatted": "135 Bytes"
+        }
+      ],
+      "userId": "a9b9e238-6ec8-4622-8f22-9b6eb6939ac2",
+      "uploaderName": "Naitik Soni",
+      "createdAt": "2026-10-25T07:30:14.231Z"
+    },
+    {
+      "id": "img_1792913394071_db5ee5",
+      "originalName": "Screenshot 2026-10-25 115438.png",
+      "filename": "Screenshot_2026-10-25_115438_1792913394059_1d933efd.png",
+      "category": "images",
+      "type": "image",
+      "mimetype": "image/png",
+      "size": 574089,
+      "sizeFormatted": "560.63 KB",
+      "url": "/uploads/images/Screenshot_2026-10-25_115438_1792913394059_1d933efd.png",
+      "userId": "a9b9e238-6ec8-4622-8f22-9b6eb6939ac2",
+      "uploaderName": "Naitik Soni",
+      "createdAt": "2026-10-25T07:29:54.071Z"
+    },
+    {
+      "id": "folder_1792913302577_11c4ba",
+      "name": "python_python_py_python_sumofarray_py_python__vscode_settings_json",
+      "type": "folder",
+      "category": "folders",
+      "fileCount": 3,
+      "size": 853,
+      "sizeFormatted": "853 Bytes",
+      "zipSize": 1161,
+      "zipSizeFormatted": "1.13 KB",
+      "url": "/uploads/archives/python_python_py_python_sumofarray_py_python__vscode_settings_json_1792913302586.zip",
+      "folderUrl": "/uploads/folders/folder_1792913302577_11c4ba",
+      "files": [
+        {
+          "path": "p",
+          "size": 250,
+          "sizeFormatted": "250 Bytes"
+        },
+        {
+          "path": "y",
+          "size": 468,
+          "sizeFormatted": "468 Bytes"
+        },
+        {
+          "path": "t",
+          "size": 135,
+          "sizeFormatted": "135 Bytes"
+        }
+      ],
+      "userId": "a9b9e238-6ec8-4622-8f22-9b6eb6939ac2",
+      "uploaderName": "Naitik Soni",
+      "createdAt": "2026-10-25T07:28:22.605Z"
+    },
+    {
+      "id": "folder_1792913273829_52ae18",
+      "name": "python_python_py_python_sumofarray_py_python__vscode_settings_json",
+      "type": "folder",
+      "category": "folders",
+      "fileCount": 3,
+      "size": 853,
+      "sizeFormatted": "853 Bytes",
+      "zipSize": 1161,
+      "zipSizeFormatted": "1.13 KB",
+      "url": "/uploads/archives/python_python_py_python_sumofarray_py_python__vscode_settings_json_1792913273840.zip",
+      "folderUrl": "/uploads/folders/folder_1792913273829_52ae18",
+      "files": [
+        {
+          "path": "p",
+          "size": 250,
+          "sizeFormatted": "250 Bytes"
+        },
+        {
+          "path": "y",
+          "size": 468,
+          "sizeFormatted": "468 Bytes"
+        },
+        {
+          "path": "t",
+          "size": 135,
+          "sizeFormatted": "135 Bytes"
+        }
+      ],
+      "userId": "a9b9e238-6ec8-4622-8f22-9b6eb6939ac2",
+      "uploaderName": "Naitik Soni",
+      "createdAt": "2026-10-25T07:27:53.885Z"
+    },
+    {
+      "id": "img_1792913255519_852417",
+      "originalName": "ChatGPT Image Aug 20, 2026, 02_32_39 AM.png",
+      "filename": "ChatGPT_Image_Aug_20__2026__02_32_39_AM_1792913255492_00751619.png",
+      "category": "images",
+      "type": "image",
+      "mimetype": "image/png",
+      "size": 1642865,
+      "sizeFormatted": "1.57 MB",
+      "url": "/uploads/images/ChatGPT_Image_Aug_20__2026__02_32_39_AM_1792913255492_00751619.png",
+      "userId": "a9b9e238-6ec8-4622-8f22-9b6eb6939ac2",
+      "uploaderName": "Naitik Soni",
+      "createdAt": "2026-10-25T07:27:35.520Z"
+    },
     {
       "id": "img_1792913095908_a73179",
       "originalName": "avatar_test.png",

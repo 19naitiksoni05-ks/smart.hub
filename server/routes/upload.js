@@ -266,46 +266,51 @@ router.post('/folder', authOptional, folderUpload.any(), async (req, res) => {
     // 1. Write individual files into folder tree
     files.forEach((file, index) => {
       totalBytes += file.size;
-      const relPath = relativePaths[index] || file.originalname;
-      const safeRelPath = relPath.replace(/^(\.\.[\/\\])+/, ''); // prevent directory traversal
-      const destPath = path.join(targetFolderDir, safeRelPath);
+      const rawRel = relativePaths[index] || file.originalname || `file_${index}`;
+      let cleanRel = String(rawRel).replace(/^(\.\.[\/\\])+/, '').trim();
+      if (cleanRel.startsWith(folderTitle + '/') || cleanRel.startsWith(folderTitle + '\\')) {
+        cleanRel = cleanRel.substring(folderTitle.length + 1);
+      }
+      if (!cleanRel || cleanRel === '.' || cleanRel === '/') {
+        cleanRel = file.originalname || `file_${index}`;
+      }
+
+      let destPath = path.join(targetFolderDir, cleanRel);
+      // Guard against writing to directory itself
+      if (destPath === targetFolderDir) {
+        destPath = path.join(targetFolderDir, file.originalname || `file_${index}`);
+      }
       const destDir = path.dirname(destPath);
 
       if (!fs.existsSync(destDir)) {
         fs.mkdirSync(destDir, { recursive: true });
       }
 
+      // If destPath is an existing directory, append file name
+      if (fs.existsSync(destPath) && fs.statSync(destPath).isDirectory()) {
+        destPath = path.join(destPath, file.originalname || `file_${index}`);
+      }
+
       fs.writeFileSync(destPath, file.buffer);
       fileManifest.push({
-        path: safeRelPath,
+        path: cleanRel,
         size: file.size,
         sizeFormatted: formatBytes(file.size)
       });
     });
 
-    // 2. Generate a downloadable ZIP archive of the uploaded folder
+    // 2. Generate a downloadable ZIP archive of the uploaded folder using AdmZip
     const zipFilename = `${folderTitle}_${Date.now()}.zip`;
     const zipFilePath = path.join(DIRS.archives, zipFilename);
-    const output = fs.createWriteStream(zipFilePath);
     
-    let archive;
-    if (typeof archiver === 'function') {
-      archive = archiver('zip', { zlib: { level: 9 } });
-    } else if (archiver.ZipArchive) {
-      archive = new archiver.ZipArchive({ zlib: { level: 9 } });
-    } else if (typeof archiver.create === 'function') {
-      archive = archiver.create('zip', { zlib: { level: 9 } });
-    } else {
-      throw new Error('Unsupported archiver module');
+    try {
+      const AdmZip = require('adm-zip');
+      const zip = new AdmZip();
+      zip.addLocalFolder(targetFolderDir, folderTitle);
+      zip.writeZip(zipFilePath);
+    } catch (zipErr) {
+      console.warn('[Folder Zip] AdmZip warning:', zipErr);
     }
-
-    await new Promise((resolve, reject) => {
-      output.on('close', resolve);
-      archive.on('error', reject);
-      archive.pipe(output);
-      archive.directory(targetFolderDir, folderTitle);
-      archive.finalize();
-    });
 
     const archiveStats = fs.statSync(zipFilePath);
     const zipUrl = `/uploads/archives/${zipFilename}`;

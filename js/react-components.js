@@ -743,6 +743,7 @@ app.post('/api/webhook/upi-success', async (req, res) => {
       const [bundleProgressText, setBundleProgressText] = useState('');
       const [isPublished, setIsPublished] = useState(false);
       const [isPublishing, setIsPublishing] = useState(false);
+      const [createdProduct, setCreatedProduct] = useState(null);
 
       // Dynamic platform fee (0.5% - 3% based on price and category) + statutory tax
       let feePct = 2.0;
@@ -867,6 +868,8 @@ app.post('/api/webhook/upi-success', async (req, res) => {
           try {
             const res = await window.SmartHubAPI.createProduct(payload);
             if (res && res.success) {
+              const prod = res.product || { id: 'p_' + Date.now(), title };
+              setCreatedProduct(prod);
               setIsPublished(true);
               setIsPublishing(false);
               if (window.showToast) {
@@ -1141,7 +1144,48 @@ app.post('/api/webhook/upi-success', async (req, res) => {
               className: 'btn btn-primary w-full',
               disabled: isPublishing,
               style: { marginTop: '16px', width: '100%', justifyContent: 'center' }
-            }, isPublishing ? 'Publishing Asset...' : (isPublished ? '✓ Published to Catalog' : '🚀 Publish Asset to Smart Hub'))
+            }, isPublishing ? 'Publishing Asset...' : (isPublished ? '✓ Published to Catalog' : '🚀 Publish Asset to Smart Hub')),
+
+            isPublished && createdProduct ? h('div', {
+              style: {
+                marginTop: '16px',
+                padding: '16px',
+                background: 'rgba(34, 197, 94, 0.08)',
+                border: '1.5px solid var(--accent-green)',
+                borderRadius: '8px',
+                textAlign: 'center'
+              }
+            },
+              h('div', { style: { fontSize: '0.82rem', fontWeight: 700, color: 'var(--accent-green)', marginBottom: '10px' } },
+                `🎉 "${title}" published live to Smart Hub Database!`
+              ),
+              h('div', { style: { display: 'flex', gap: '8px', justifyContent: 'center', flexWrap: 'wrap' } },
+                h('a', {
+                  href: `repo.html?id=${createdProduct.id}`,
+                  className: 'btn btn-primary btn-sm',
+                  style: { textDecoration: 'none', fontWeight: 700 }
+                }, '⌥ View Project Repository (GitHub View) →'),
+                h('a', {
+                  href: `product-detail.html?id=${createdProduct.id}`,
+                  className: 'btn btn-outline btn-sm',
+                  style: { textDecoration: 'none' }
+                }, '🏪 Store Listing'),
+                h('button', {
+                  type: 'button',
+                  className: 'btn btn-secondary btn-sm',
+                  onClick: () => {
+                    setIsPublished(false);
+                    setCreatedProduct(null);
+                    setTitle('');
+                    setDesc('');
+                    setTags('');
+                    setThumb(null);
+                    setVideoUrl(null);
+                    setDownloadUrl(null);
+                  }
+                }, '+ Publish Another')
+              )
+            ) : null
           )
         ),
 
@@ -1175,9 +1219,22 @@ app.post('/api/webhook/upi-success', async (req, res) => {
                 tags.split(',').filter(Boolean).map(t => h('span', { key: t, className: 'tag' }, t.trim()))
               )
             ),
-            h('div', { className: 'product-card-footer' },
+            h('div', { className: 'product-card-footer', style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' } },
               h('div', { className: 'price' }, `₹${Number(price || 0).toLocaleString('en-IN')}`),
-              h('button', { className: 'btn btn-primary btn-sm' }, `Buy ₹${Number(price || 0).toLocaleString('en-IN')}`)
+              h('div', { style: { display: 'flex', gap: '6px' } },
+                h('button', {
+                  className: 'btn btn-primary btn-sm',
+                  type: 'button',
+                  onClick: () => {
+                    window.location.href = createdProduct ? `checkout.html?id=${createdProduct.id}` : (window.SmartHubData && window.SmartHubData.products && window.SmartHubData.products[0] ? `checkout.html?id=${window.SmartHubData.products[0].id}` : 'checkout.html');
+                  }
+                }, `Buy ₹${Number(price || 0).toLocaleString('en-IN')}`),
+                h('a', {
+                  href: createdProduct ? `repo.html?id=${createdProduct.id}` : (window.SmartHubData && window.SmartHubData.products && window.SmartHubData.products[0] ? `repo.html?id=${window.SmartHubData.products[0].id}` : 'repo.html'),
+                  className: 'btn btn-outline btn-sm',
+                  style: { textDecoration: 'none', padding: '4px 8px', fontSize: '0.75rem', borderColor: 'var(--accent-cyan)', color: 'var(--accent-cyan)' }
+                }, '⌥ Repo')
+              )
             )
           )
         )

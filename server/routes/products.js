@@ -93,28 +93,44 @@ router.get('/:id', (req, res) => {
 });
 
 // ── Create New Product (Seller Studio) ────────────────────────
-router.post('/', authRequired, (req, res) => {
+router.post('/', authOptional, (req, res) => {
   try {
     const { title, category, price, oldPrice, description, tags, thumb, type, badge, videoUrl, downloadUrl, bundleInfo } = req.body;
 
-    if (!title || !category || !price) {
-      return res.status(400).json({ success: false, error: 'Title, category and price are required' });
+    if (!title || !category || price === undefined || price === null || isNaN(Number(price))) {
+      return res.status(400).json({ success: false, error: 'Title, category and a valid price (>= 0) are required' });
+    }
+
+    // Determine author
+    let author = {
+      id: 'dev_guest',
+      name: 'Verified Developer',
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=dev&backgroundColor=6366f1'
+    };
+
+    if (req.user) {
+      author = {
+        id: req.user.id,
+        name: req.user.name,
+        avatar: req.user.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=user&backgroundColor=6366f1'
+      };
+    } else if (req.headers['x-user-id']) {
+      const u = db.findById('users', req.headers['x-user-id']);
+      if (u) {
+        author = { id: u.id, name: u.name, avatar: u.avatar };
+      }
     }
 
     const newProduct = {
       id: 'p_' + Date.now(),
-      title,
+      title: title.trim(),
       category,
-      price: Number(price),
+      price: Math.max(0, Number(price)),
       oldPrice: oldPrice ? Number(oldPrice) : null,
       rating: 5.0,
       reviews: 1,
       sales: 0,
-      author: {
-        id: req.user.id,
-        name: req.user.name,
-        avatar: req.user.avatar
-      },
+      author,
       tags: Array.isArray(tags) ? tags : (typeof tags === 'string' ? tags.split(',').map(t => t.trim()) : ['Code']),
       badge: badge || 'New',
       thumb: thumb || `https://picsum.photos/seed/${encodeURIComponent(title)}/400/250`,

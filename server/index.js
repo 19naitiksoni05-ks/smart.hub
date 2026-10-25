@@ -19,6 +19,7 @@ const challengesRoutes = require('./routes/challenges');
 const sellerRoutes = require('./routes/seller');
 const adminRoutes = require('./routes/admin');
 const uploadRoutes = require('./routes/upload');
+const projectsRoutes = require('./routes/projects');
 
 const app = express();
 const server = http.createServer(app);
@@ -96,6 +97,7 @@ app.use('/api/challenges', challengesRoutes);
 app.use('/api/seller', sellerRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/projects', projectsRoutes);
 
 // Categories endpoint
 app.get('/api/categories', (req, res) => {

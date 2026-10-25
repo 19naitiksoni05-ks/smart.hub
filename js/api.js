@@ -137,8 +137,13 @@
 
     async uploadFolder(fileList, folderName = 'project_folder', relativePaths = []) {
       try {
+        if (Array.isArray(folderName)) {
+          const tmp = folderName;
+          folderName = typeof relativePaths === 'string' ? relativePaths : 'project_folder';
+          relativePaths = tmp;
+        }
         const formData = new FormData();
-        formData.append('folderName', folderName);
+        formData.append('folderName', folderName || 'project_folder');
         Array.from(fileList).forEach((file, idx) => {
           formData.append('folderFiles', file);
           if (!relativePaths[idx] && file.webkitRelativePath) {
@@ -387,6 +392,45 @@
           method: 'POST',
           headers: this.getHeaders(),
           body: JSON.stringify(productData)
+        });
+        const data = await res.json();
+        if (data.success && data.product && window.SmartHubData && window.SmartHubData.products) {
+          window.SmartHubData.products.unshift(data.product);
+        }
+        return data;
+      } catch (err) {
+        return { success: false, error: err.message };
+      }
+    },
+
+    // ── GitHub-like Project Repository API ────────────────────
+    async getProjectRepo(id) {
+      try {
+        const res = await fetch(`${this.baseUrl}/projects/${id}/repo`, {
+          headers: this.getHeaders()
+        });
+        return await res.json();
+      } catch (err) {
+        return { success: false, error: err.message };
+      }
+    },
+
+    async getProjectBlob(id, path) {
+      try {
+        const res = await fetch(`${this.baseUrl}/projects/${id}/blob?path=${encodeURIComponent(path)}`, {
+          headers: this.getHeaders()
+        });
+        return await res.json();
+      } catch (err) {
+        return { success: false, error: err.message };
+      }
+    },
+
+    async starProject(id) {
+      try {
+        const res = await fetch(`${this.baseUrl}/projects/${id}/star`, {
+          method: 'POST',
+          headers: this.getHeaders()
         });
         return await res.json();
       } catch (err) {

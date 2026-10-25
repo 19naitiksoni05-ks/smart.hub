@@ -302,10 +302,27 @@
 
 const langColors = { React: '#61dafb', JavaScript: '#f7df1e', 'Node.js': '#339933', Flutter: '#02569b', Python: '#3776ab', TypeScript: '#3178c6', HTML: '#e34f26', CSS: '#1572b6' };
 
-function renderProfileProjects() {
+async function renderProfileProjects() {
   const grid = document.getElementById('profile-projects-grid');
   if (!grid) return;
+
+  // Sync with live database API if available
+  if (window.SmartHubAPI) {
+    try {
+      const res = await window.SmartHubAPI.getProducts();
+      if (res && res.products && res.products.length > 0) {
+        if (!window.SmartHubData) window.SmartHubData = {};
+        window.SmartHubData.products = res.products;
+      }
+    } catch (e) {}
+  }
+
   const list = (window.SmartHubData && window.SmartHubData.products) || (typeof SmartHubData !== 'undefined' ? SmartHubData.products : []) || [];
+  
+  // Update header count
+  const statProdEl = document.getElementById('profile-stat-products');
+  if (statProdEl) statProdEl.textContent = list.length;
+
   if (list.length === 0) {
     grid.innerHTML = `
       <div style="grid-column:1/-1;text-align:center;padding:48px 24px;border:1px dashed var(--border);border-radius:var(--radius-lg);background:rgba(255,255,255,0.02);">
@@ -317,22 +334,31 @@ function renderProfileProjects() {
     `;
     return;
   }
-  grid.innerHTML = list.slice(0, 6).map(p => `
-    <div class="project-repo-card">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;">
-        <div style="font-weight:700;font-size:0.95rem;color:var(--accent-cyan);">${p.title}</div>
-        ${p.badge ? `<span class="badge badge-orange">${p.badge}</span>` : ''}
-      </div>
-      <p style="font-size:0.82rem;margin-bottom:12px;display:-webkit-box;-webkit-line-clamp:2;line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${p.description}</p>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
-        ${p.tags.map(t => `<span class="tag">${t}</span>`).join('')}
-      </div>
-      <div style="display:flex;align-items:center;justify-content:space-between;">
-        <div style="display:flex;gap:12px;font-size:0.78rem;color:var(--text-muted);">
-          <span>★ ${p.rating}</span>
-          <span>💾 ${p.sales >= 1000 ? (p.sales/1000).toFixed(1)+'k' : p.sales} sales</span>
+
+  grid.innerHTML = list.map(p => `
+    <div class="project-repo-card" onclick="window.location.href='repo.html?id=${p.id}'" style="cursor:pointer;position:relative;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px;transition:var(--transition);" onmouseover="this.style.borderColor='var(--accent-cyan)';this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='var(--border)';this.style.transform='none'">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;gap:8px;">
+        <div style="display:flex;align-items:center;gap:8px;min-width:0;">
+          <span style="font-size:1.15rem;">📖</span>
+          <div style="font-weight:700;font-size:0.95rem;color:var(--accent-cyan);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.title}</div>
         </div>
-        <div style="font-weight:800;color:var(--accent-green);">₹${p.price.toLocaleString('en-IN')}</div>
+        ${p.badge ? `<span class="badge badge-orange" style="flex-shrink:0;">${p.badge}</span>` : `<span class="badge badge-green" style="font-size:0.68rem;flex-shrink:0;">✓ Audited</span>`}
+      </div>
+      <p style="font-size:0.82rem;color:var(--text-secondary);margin-bottom:12px;display:-webkit-box;-webkit-line-clamp:2;line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.4;">${p.description || 'Verified codebase repository on Smart Hub.'}</p>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;">
+        ${(p.tags || [p.category || 'React']).map(t => `<span class="tag" style="font-size:0.72rem;">${t}</span>`).join('')}
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid rgba(255,255,255,0.06);">
+        <div style="display:flex;gap:12px;font-size:0.78rem;color:var(--text-muted);">
+          <span>★ ${p.rating || 4.9}</span>
+          <span>💾 ${p.sales >= 1000 ? (p.sales/1000).toFixed(1)+'k' : (p.sales || 0)} sales</span>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <a href="repo.html?id=${p.id}" class="btn btn-outline btn-xs" onclick="event.stopPropagation()" style="font-size:0.72rem;padding:3px 8px;border-color:var(--accent-cyan);color:var(--accent-cyan);">
+            ⌥ View Repo ↗
+          </a>
+          <div style="font-weight:800;color:var(--accent-green);font-size:0.88rem;margin-left:4px;">₹${(p.price || 0).toLocaleString('en-IN')}</div>
+        </div>
       </div>
     </div>`).join('');
 }

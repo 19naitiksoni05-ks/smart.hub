@@ -297,7 +297,8 @@ function renderProducts(products) {
           <div class="price"><span class="currency">₹</span>${p.price.toLocaleString('en-IN')}</div>
           ${p.oldPrice ? `<div style="display:flex;gap:8px;align-items:center;margin-top:2px;"><span class="price-old">₹${p.oldPrice.toLocaleString('en-IN')}</span><span class="price-discount">-${discount}%</span></div>` : ''}
         </div>
-        <div style="display:flex;gap:6px;">
+        <div style="display:flex;gap:6px;align-items:center;">
+          <a href="repo.html?id=${p.id}" class="btn btn-outline btn-sm" onclick="event.stopPropagation()" title="View Codebase (GitHub View)" style="padding:4px 8px;font-size:0.75rem;border-color:var(--accent-cyan);color:var(--accent-cyan);">⌥ Repo</a>
           <button class="btn btn-outline btn-sm" onclick="event.stopPropagation();window.addToCart('${p.id}')" title="Add to Cart">🛒</button>
           <a href="checkout.html?id=${p.id}" class="btn btn-primary btn-sm" onclick="event.stopPropagation()">Buy ₹${p.price.toLocaleString('en-IN')}</a>
         </div>
