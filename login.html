@@ -204,22 +204,35 @@ async function handleFormLogin(e) {
       }, 700);
       return;
     } else if (res && res.error) {
-      SH.showToast(res.error, 'error');
-      submitBtn.disabled = false;
-      submitBtn.textContent = currentLoginMode === 'admin' ? '🛡️ Authenticate as Super Admin →' : 'Sign In to Smart Hub →';
-      return;
+      const errLower = String(res.error).toLowerCase();
+      // Only abort if it's an explicit credential/validation rejection from a reachable server
+      if (!errLower.includes('fetch') && !errLower.includes('network') && !errLower.includes('failed to fetch')) {
+        SH.showToast(res.error, 'error');
+        submitBtn.disabled = false;
+        submitBtn.textContent = currentLoginMode === 'admin' ? '🛡️ Authenticate as Super Admin →' : 'Sign In to Smart Hub →';
+        return;
+      }
+      console.warn('Backend server unreachable or opened via file:// protocol. Transitioning to local session mode...');
     }
   } catch (err) {
     console.warn('API error, using client fallback:', err);
   }
 
-  // Graceful fallback if backend is offline
+  // Graceful fallback if backend is offline or opened directly as local file
   setTimeout(() => {
     let cleanName = identity.includes('@') ? identity.split('@')[0] : identity.replace(/^@/, '');
     cleanName = cleanName.charAt(0).toUpperCase() + cleanName.slice(1);
     const handle = '@' + cleanName.toLowerCase();
 
     const isNaitik = identity.toLowerCase().includes('naitik') || currentLoginMode === 'admin';
+
+    // Verify local credentials for Naitik Soni
+    if (isNaitik && password !== '123456' && password !== 'naitik123' && password !== 'admin123' && password !== 'naitik19') {
+      SH.showToast('Invalid password for Super Admin account. Try 123456 or naitik123', 'error');
+      submitBtn.disabled = false;
+      submitBtn.textContent = currentLoginMode === 'admin' ? '🛡️ Authenticate as Super Admin →' : 'Sign In to Smart Hub →';
+      return;
+    }
 
     const sessionUser = {
       id: isNaitik ? 'b9f83b04-538c-4aab-9d88-f35a2ecb1cbe' : 'u_' + Math.floor(Math.random() * 8999 + 1000),
@@ -244,7 +257,7 @@ async function handleFormLogin(e) {
         window.location.href = 'index.html';
       }
     }, 700);
-  }, 600);
+  }, 350);
 }
 
 // Social Login
