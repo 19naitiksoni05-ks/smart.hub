@@ -233,6 +233,8 @@ router.post('/checkout', authOptional, (req, res) => {
 
       const zipName = (product.bundleInfo && product.bundleInfo.folderName ? `${product.bundleInfo.folderName}.zip` : `${product.title.replace(/[^a-zA-Z0-9_-]/g, '_')}_source.zip`);
 
+      const origin = req.get('origin') || (req.protocol + '://' + req.get('host')) || 'http://localhost:5000';
+
       // Generate Email Record & Save to database (File & Key delivered to email only)
       const emailRecord = {
         id: 'email_' + Date.now() + '_' + i,
@@ -271,9 +273,9 @@ Direct browser downloads from the website are completely disabled. Your complete
 
 TO DECRYPT & INSPECT SOURCE CODE IN SMART HUB STUDIO:
 1. Open the project in Smart Hub:
-   http://localhost:5000/repo.html?id=${product.id}
+   ${origin}/repo.html?id=${product.id}
 2. Enter your Encryption Key in the verification box, or simply click this instant activation link:
-   http://localhost:5000/repo.html?id=${product.id}&activateKey=${encKey}
+   ${origin}/repo.html?id=${product.id}&activateKey=${encKey}
 3. Once verified in the browser, the source code will decrypt and unlock for viewing and copying.
 
 Order Number: ${orderNumber}

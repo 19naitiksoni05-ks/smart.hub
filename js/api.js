@@ -7,11 +7,15 @@
   'use strict';
 
   // Determine API base URL
-  const isServerHost = window.location.port === '5000' || window.location.port === '3000';
-  const API_BASE = isServerHost ? '/api' : 'http://localhost:5000/api';
-  const WS_URL = isServerHost 
+  const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+  const isLocalExpressPort = isLocalhost && (window.location.port === '5000' || window.location.port === '3000');
+
+  // On Vercel or live domain, always use relative '/api'
+  // Only use 'http://localhost:5000/api' if opened from a local secondary server (like Live Server port 5500)
+  const API_BASE = (!isLocalhost || isLocalExpressPort) ? '/api' : 'http://localhost:5000/api';
+  const WS_URL = !isLocalhost 
     ? (window.location.protocol === 'https:' ? 'wss://' : 'ws://') + window.location.host 
-    : 'ws://localhost:5000';
+    : (isLocalExpressPort ? (window.location.protocol === 'https:' ? 'wss://' : 'ws://') + window.location.host : 'ws://localhost:5000');
 
   const SmartHubAPI = {
     baseUrl: API_BASE,
@@ -22,7 +26,8 @@
     // ── Health Check ──────────────────────────────────────────
     async checkHealth() {
       try {
-        const res = await fetch(`${this.baseUrl}/health`, { signal: AbortSignal.timeout(1200) });
+        const signal = (typeof AbortSignal !== 'undefined' && typeof AbortSignal.timeout === 'function') ? AbortSignal.timeout(5000) : undefined;
+        const res = await fetch(`${this.baseUrl}/health`, signal ? { signal } : {});
         if (res.ok) {
           const data = await res.json();
           this.isOnline = true;
@@ -36,7 +41,8 @@
 
     async getStats() {
       try {
-        const res = await fetch(`${this.baseUrl}/stats`, { signal: AbortSignal.timeout(2000) });
+        const signal = (typeof AbortSignal !== 'undefined' && typeof AbortSignal.timeout === 'function') ? AbortSignal.timeout(5000) : undefined;
+        const res = await fetch(`${this.baseUrl}/stats`, signal ? { signal } : {});
         if (res.ok) {
           return await res.json();
         }

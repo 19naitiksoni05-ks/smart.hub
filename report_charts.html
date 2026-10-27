@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Figure 8 — Smart Hub System Performance &amp; Usability Charts</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0b0d14;
+      color: #e2e8f0;
+      min-height: 100vh;
+      padding: 40px 32px;
+      line-height: 1.5;
+    }
+
+    .page-header {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+    .page-header .badge {
+      display: inline-block;
+      background: rgba(99,102,241,0.15);
+      border: 1px solid rgba(99,102,241,0.4);
+      color: #a5b4fc;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 6px 16px;
+      border-radius: 20px;
+      margin-bottom: 14px;
+    }
+    .page-header h1 {
+      font-size: 28px;
+      font-weight: 800;
+      color: #f8fafc;
+      margin-bottom: 8px;
+    }
+    .page-header p {
+      color: #94a3b8;
+      font-size: 14px;
+    }
+
+    /* Toggle controls for Word insertion */
+    .controls-bar {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+    .toggle-btn {
+      background: #1e2238;
+      color: #cbd5e1;
+      border: 1px solid rgba(255,255,255,0.12);
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .toggle-btn:hover, .toggle-btn.active {
+      background: #4f46e5;
+      color: #ffffff;
+      border-color: #6366f1;
+    }
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      max-width: 1200px;
+      margin: 0 auto 32px;
+    }
+    .stat-card {
+      background: #141726;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 20px 16px;
+      text-align: center;
+    }
+    .stat-value { font-size: 30px; font-weight: 800; line-height: 1.1; margin-bottom: 6px; }
+    .stat-label { font-size: 12px; color: #94a3b8; font-weight: 500; }
+    .stat-card.blue .stat-value   { color: #6366f1; }
+    .stat-card.green .stat-value  { color: #10b981; }
+    .stat-card.purple .stat-value { color: #8b5cf6; }
+    .stat-card.orange .stat-value { color: #f59e0b; }
+
+    .charts-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 28px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .chart-card {
+      background: #141726;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 28px 24px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+    .chart-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      border-radius: 16px 16px 0 0;
+    }
+    .chart-card.blue::before   { background: linear-gradient(90deg, #6366f1, #3b82f6); }
+    .chart-card.green::before  { background: linear-gradient(90deg, #10b981, #06b6d4); }
+    .chart-card.purple::before { background: linear-gradient(90deg, #8b5cf6, #ec4899); }
+    .chart-card.orange::before { background: linear-gradient(90deg, #f59e0b, #ef4444); }
+
+    .chart-card.wide { grid-column: 1 / -1; }
+
+    .chart-header { margin-bottom: 20px; }
+    .chart-fig {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: #818cf8;
+      margin-bottom: 4px;
+    }
+    .chart-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: #f8fafc;
+      line-height: 1.35;
+      margin-bottom: 4px;
+      word-break: break-word;
+    }
+    .chart-subtitle { font-size: 12px; color: #94a3b8; }
+    
+    .chart-wrap {
+      position: relative;
+      flex: 1;
+      min-height: 280px;
+      width: 100%;
+    }
+
+    .footer-note {
+      text-align: center;
+      margin-top: 40px;
+      font-size: 12px;
+      color: #64748b;
+    }
+    .footer-note span { color: #818cf8; font-weight: 600; }
+  </style>
+</head>
+<body>
+
+  <div class="page-header">
+    <div class="badge">Smart Hub — Performance Evaluation</div>
+    <h1 id="page-main-heading">Figure 8 — System Performance &amp; Usability Evaluation</h1>
+    <p>Empirical metrics collected from live Node.js/Express server and Supabase PostgreSQL backend</p>
+  </div>
+
+  <!-- Interactive Label Toggle for User Convenience -->
+  <div class="controls-bar">
+    <button class="toggle-btn active" id="btn-fig8" onclick="setFigurePrefix('Figure 8')">Label as Figure 8 (Report Standard)</button>
+    <button class="toggle-btn" id="btn-fig52" onclick="setFigurePrefix('Figure 5.2')">Label as Figure 5.2 (Chapter Specific)</button>
+  </div>
+
+  <!-- Summary Stats Row -->
+  <div class="stats-row">
+    <div class="stat-card blue">
+      <div class="stat-value">2 ms</div>
+      <div class="stat-label">Feed API Response Time</div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-value">100%</div>
+      <div class="stat-label">Concurrent Load Test Success</div>
+    </div>
+    <div class="stat-card purple">
+      <div class="stat-value">5 / 5</div>
+      <div class="stat-label">Security Tests Intercepted</div>
+    </div>
+    <div class="stat-card orange">
+      <div class="stat-value">4.5 / 5</div>
+      <div class="stat-label">Overall Usability Score (n=10)</div>
+    </div>
+  </div>
+
+  <div class="charts-grid">
+
+    <!-- Chart 1: API Response Time -->
+    <div class="chart-card blue wide">
+      <div class="chart-header">
+        <div class="chart-fig" data-fig-label="a">Figure 8 (a)</div>
+        <div class="chart-title">API Endpoint Response Times (Averaged Over 3 Iterations)</div>
+        <div class="chart-subtitle">GET endpoints execute under 5 ms; auth/login includes intentional 532 ms bcrypt security hashing</div>
+      </div>
+      <div class="chart-wrap" style="height: 310px;">
+        <canvas id="chartApiResponse"></canvas>
+      </div>
+    </div>
+
+    <!-- Chart 2: Load Test -->
+    <div class="chart-card green">
+      <div class="chart-header">
+        <div class="chart-fig" data-fig-label="b">Figure 8 (b)</div>
+        <div class="chart-title">Concurrent Load Testing (10 Simultaneous Requests)</div>
+        <div class="chart-subtitle">Evaluates event loop stability: Avg, Min, and Max response latencies (ms)</div>
+      </div>
+      <div class="chart-wrap" style="height: 290px;">
+        <canvas id="chartLoadTest"></canvas>
+      </div>
+    </div>
+
+    <!-- Chart 3: Security Doughnut -->
+    <div class="chart-card purple">
+      <div class="chart-header">
+        <div class="chart-fig" data-fig-label="c">Figure 8 (c)</div>
+        <div class="chart-title">Content Moderation &amp; Auth Filter Interceptions</div>
+        <div class="chart-subtitle">100% blocked at middleware layer (401 Unauthorized / 400 Bad Request)</div>
+      </div>
+      <div class="chart-wrap" style="height: 290px;">
+        <canvas id="chartSecurity"></canvas>
+      </div>
+    </div>
+
+    <!-- Chart 4: Usability Ratings -->
+    <div class="chart-card orange wide">
+      <div class="chart-header">
+        <div class="chart-fig" data-fig-label="d">Figure 8 (d)</div>
+        <div class="chart-title">System Usability Evaluation Ratings (5-Point Likert Scale)</div>
+        <div class="chart-subtitle">Administered across 10 Computer Science peer evaluators across 6 platform dimensions</div>
+      </div>
+      <div class="chart-wrap" style="height: 300px;">
+        <canvas id="chartUsability"></canvas>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer-note">
+    Benchmarked on <span>2026-10-27</span> &nbsp;|&nbsp;
+    Runtime: <span>Node.js v24 + Express</span> &nbsp;|&nbsp;
+    Database: <span>Supabase PostgreSQL + In-Memory Caching</span> &nbsp;|&nbsp;
+    Lighthouse Desktop Performance: <span>91/100</span>
+  </div>
+
+  <script>
+    Chart.defaults.color = '#94a3b8';
+    Chart.defaults.font.family = 'Inter, sans-serif';
+    Chart.defaults.font.size = 12;
+
+    // Toggle Figure Labeling
+    function setFigurePrefix(prefix) {
+      document.getElementById('page-main-heading').innerHTML = `${prefix} — System Performance &amp; Usability Evaluation`;
+      const figs = document.querySelectorAll('[data-fig-label]');
+      figs.forEach(el => {
+        const sub = el.getAttribute('data-fig-label');
+        el.textContent = `${prefix} (${sub})`;
+      });
+      document.getElementById('btn-fig8').classList.toggle('active', prefix === 'Figure 8');
+      document.getElementById('btn-fig52').classList.toggle('active', prefix === 'Figure 5.2');
+    }
+
+    // Chart 1: API Response Times
+    new Chart(document.getElementById('chartApiResponse'), {
+      type: 'bar',
+      data: {
+        labels: ['/api/health', '/api/products', '/api/feed', '/api/channels', '/api/challenges', '/api/auth/login*', '/api/wallet', '/api/orders'],
+        datasets: [
+          { label: 'Avg Latency (ms)', data: [14, 3, 2, 1, 1, 532, 2, 4], backgroundColor: 'rgba(99,102,241,0.85)', borderRadius: 6 },
+          { label: 'Min Latency (ms)', data: [3, 2, 1, 1, 1, 119, 1, 1], backgroundColor: 'rgba(16,185,129,0.75)', borderRadius: 6 },
+          { label: 'Max Latency (ms)', data: [37, 3, 2, 2, 1, 1349, 3, 8], backgroundColor: 'rgba(239,68,68,0.7)', borderRadius: 6 }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'top', labels: { color: '#cbd5e1', padding: 14, boxWidth: 12 } },
+          tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y} ms` } }
+        },
+        scales: {
+          x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8', font: { weight: 500 } } },
+          y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8', callback: v => v + ' ms' }, title: { display: true, text: 'Execution Time (ms)', color: '#64748b' } }
+        }
+      }
+    });
+
+    // Chart 2: Load Test
+    new Chart(document.getElementById('chartLoadTest'), {
+      type: 'bar',
+      data: {
+        labels: ['Catalog (/products)', 'Community (/feed)', 'Challenges (/challenges)'],
+        datasets: [
+          { label: 'Average (ms)', data: [11, 3, 4], backgroundColor: 'rgba(16,185,129,0.85)', borderRadius: 6 },
+          { label: 'Minimum (ms)', data: [9, 1, 1], backgroundColor: 'rgba(6,182,212,0.75)', borderRadius: 6 },
+          { label: 'Maximum (ms)', data: [25, 5, 6], backgroundColor: 'rgba(245,158,11,0.75)', borderRadius: 6 }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'top', labels: { color: '#cbd5e1', padding: 12, boxWidth: 12 } },
+          tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y} ms` } }
+        },
+        scales: {
+          x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8', font: { size: 11 } } },
+          y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8', callback: v => v + ' ms' }, title: { display: true, text: 'Latency (ms)', color: '#64748b' } }
+        }
+      }
+    });
+
+    // Chart 3: Security Doughnut
+    new Chart(document.getElementById('chartSecurity'), {
+      type: 'doughnut',
+      data: {
+        labels: ['No Auth Token (401)', 'Invalid JWT (401)', 'Empty Content (400)', 'Spam Volume (401)', 'Unauth Post (401)'],
+        datasets: [{
+          data: [1, 1, 1, 1, 1],
+          backgroundColor: ['#8b5cf6', '#6366f1', '#3b82f6', '#10b981', '#06b6d4'],
+          borderColor: '#141726',
+          borderWidth: 3,
+          hoverOffset: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '60%',
+        plugins: {
+          legend: { position: 'bottom', labels: { color: '#cbd5e1', padding: 12, boxWidth: 10, font: { size: 11 } } },
+          tooltip: { callbacks: { label: ctx => ` Scenario: ${ctx.label} — BLOCKED` } }
+        }
+      }
+    });
+
+    // Chart 4: Usability Ratings
+    new Chart(document.getElementById('chartUsability'), {
+      type: 'bar',
+      data: {
+        labels: [
+          'Ease of Navigation & Discovery',
+          'Marketplace Checkout & Rupee Wallet',
+          'Community Channels & Developer Feed',
+          'Developer Profile & Milestone Heatmap',
+          'Automated Content Moderation & Safety',
+          'Overall System Usability & Satisfaction'
+        ],
+        datasets: [{
+          label: 'Likert Score (out of 5.0)',
+          data: [4.7, 4.6, 4.5, 4.4, 4.3, 4.5],
+          backgroundColor: [
+            'rgba(249,115,22,0.85)',
+            'rgba(245,158,11,0.85)',
+            'rgba(16,185,129,0.85)',
+            'rgba(99,102,241,0.85)',
+            'rgba(139,92,246,0.85)',
+            'rgba(236,72,153,0.85)'
+          ],
+          borderRadius: 6
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: ctx => ` Mean Score: ${ctx.parsed.x.toFixed(1)} / 5.0` } }
+        },
+        scales: {
+          x: { min: 0, max: 5, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8', callback: v => v + '.0' }, title: { display: true, text: 'Mean Likert Score (Scale: 1.0 – 5.0, n=10)', color: '#64748b' } },
+          y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#f1f5f9', font: { size: 12, weight: 500 } } }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

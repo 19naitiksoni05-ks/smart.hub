@@ -128,12 +128,12 @@
               <span style="color:var(--accent-green);font-weight:700;">FREE</span>
             </div>
             <div style="display:flex;justify-content:space-between;">
-              <span style="color:var(--text-secondary);">Platform Fee (<span id="order-fee-percent">1.5%</span>):</span>
-              <span class="font-mono" id="order-platform-fee">₹0</span>
+              <span style="color:var(--text-secondary);">Buyer Transaction Fee:</span>
+              <span style="color:var(--accent-green);font-weight:700;">₹0 (ZERO FEE)</span>
             </div>
-            <div style="display:flex;justify-content:space-between;">
-              <span style="color:var(--text-secondary);">Statutory Tax (18% GST):</span>
-              <span class="font-mono" id="order-tax">₹0</span>
+            <div style="display:flex;justify-content:space-between;font-size:0.82rem;color:var(--text-muted);">
+              <span>Platform Service &amp; GST:</span>
+              <span style="color:var(--accent-green);">Absorbed by Platform (0%)</span>
             </div>
           </div>
 
@@ -526,18 +526,15 @@
 
     function updateTotals() {
       const baseAfterDisc = Math.max(0, currentPrice - discountApplied);
-      const feeRate = getPlatformFeeRate(baseAfterDisc, currentProdCategory);
-      const platformFee = Math.max(1, Math.round(baseAfterDisc * feeRate));
-      const govtTax = Math.round(platformFee * 0.18); // 18% statutory tax on platform services
-      const total = baseAfterDisc + platformFee + govtTax;
+      const total = baseAfterDisc;
 
       document.getElementById('order-subtotal').textContent = `₹${currentPrice.toLocaleString('en-IN')}`;
       const feePercentEl = document.getElementById('order-fee-percent');
-      if (feePercentEl) feePercentEl.textContent = `${(feeRate * 100).toFixed(1)}%`;
+      if (feePercentEl) feePercentEl.textContent = `0%`;
       const feeEl = document.getElementById('order-platform-fee');
-      if (feeEl) feeEl.textContent = `₹${platformFee.toLocaleString('en-IN')}`;
+      if (feeEl) feeEl.textContent = `₹0 (FREE)`;
       const taxEl = document.getElementById('order-tax');
-      if (taxEl) taxEl.textContent = `₹${govtTax.toLocaleString('en-IN')}`;
+      if (taxEl) taxEl.textContent = `₹0`;
 
       document.getElementById('order-total').textContent = `₹${total.toLocaleString('en-IN')}`;
       const payAmtEl = document.getElementById('pay-button-amount');

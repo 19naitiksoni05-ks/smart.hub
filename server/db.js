@@ -3,12 +3,25 @@ const path = require('path');
 const bcrypt = require('bcryptjs');
 const { supabase, isConfigured } = require('./supabase');
 
-const DATA_DIR = path.join(__dirname, 'data');
-const DB_FILE = path.join(DATA_DIR, 'database.json');
+const IS_VERCEL = Boolean(process.env.VERCEL);
+const DATA_DIR = IS_VERCEL ? '/tmp' : path.join(__dirname, 'data');
+const DB_FILE = IS_VERCEL ? '/tmp/database.json' : path.join(DATA_DIR, 'database.json');
+const ORIGINAL_DB_FILE = path.join(__dirname, 'data', 'database.json');
 
 // Ensure data directory exists
 if (!fs.existsSync(DATA_DIR)) {
-  fs.mkdirSync(DATA_DIR, { recursive: true });
+  try {
+    fs.mkdirSync(DATA_DIR, { recursive: true });
+  } catch (e) {}
+}
+
+// On Vercel, seed /tmp/database.json from bundled database file
+if (IS_VERCEL && !fs.existsSync(DB_FILE)) {
+  try {
+    if (fs.existsSync(ORIGINAL_DB_FILE)) {
+      fs.copyFileSync(ORIGINAL_DB_FILE, DB_FILE);
+    }
+  } catch (e) {}
 }
 
 // Clean initial database structure for fresh deployment
@@ -67,6 +80,12 @@ class Database {
       if (fs.existsSync(DB_FILE)) {
         const raw = fs.readFileSync(DB_FILE, 'utf8');
         this.data = JSON.parse(raw);
+      } else if (fs.existsSync(ORIGINAL_DB_FILE)) {
+        const raw = fs.readFileSync(ORIGINAL_DB_FILE, 'utf8');
+        this.data = JSON.parse(raw);
+        if (IS_VERCEL) {
+          try { fs.writeFileSync(DB_FILE, raw, 'utf8'); } catch (e) {}
+        }
       } else {
         this.data = getInitialSeedData();
         this.save();
@@ -85,9 +104,14 @@ class Database {
       fs.renameSync(tempPath, DB_FILE);
       return true;
     } catch (err) {
-      // Fallback direct write
-      fs.writeFileSync(DB_FILE, JSON.stringify(this.data, null, 2), 'utf8');
-      return true;
+      try {
+        // Fallback direct write
+        fs.writeFileSync(DB_FILE, JSON.stringify(this.data, null, 2), 'utf8');
+        return true;
+      } catch (writeErr) {
+        console.error('Database save error:', writeErr.message);
+        return false;
+      }
     }
   }
 

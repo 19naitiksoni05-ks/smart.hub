@@ -996,8 +996,8 @@
       }
 
       try {
-        const prodId = currentRepo ? currentRepo.id : 'p_1792913427884';
-        const res = await fetch('http://localhost:5000/api/orders/activate-key', {
+        const apiBase = (window.SmartHubAPI ? window.SmartHubAPI.baseUrl : '/api');
+        const res = await fetch(`${apiBase}/orders/activate-key`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ productId: prodId, licenseKey: key })
@@ -1418,7 +1418,8 @@
 
       try {
         const prodId = currentRepo ? currentRepo.id : 'p_1792913427884';
-        let url = `http://localhost:5000/api/projects/${prodId}/blob?path=${encodeURIComponent(filePath)}`;
+        const apiBase = (window.SmartHubAPI ? window.SmartHubAPI.baseUrl : '/api');
+        let url = `${apiBase}/projects/${prodId}/blob?path=${encodeURIComponent(filePath)}`;
         if (activeLicenseKey) {
           url += `&key=${encodeURIComponent(activeLicenseKey)}`;
         }

@@ -63,36 +63,43 @@ app.use((req, res, next) => {
 });
 
 // ── WebSocket Server Setup ───────────────────────────────────
-const wss = new WebSocketServer({ server });
+let wss = null;
 const connectedClients = new Set();
 
-wss.on('connection', (ws, req) => {
-  connectedClients.add(ws);
-  console.log(`[WS] Client connected. Active clients: ${connectedClients.size}`);
+if (require.main === module && !process.env.VERCEL) {
+  try {
+    wss = new WebSocketServer({ server });
+    wss.on('connection', (ws, req) => {
+      connectedClients.add(ws);
+      console.log(`[WS] Client connected. Active clients: ${connectedClients.size}`);
 
-  ws.send(JSON.stringify({
-    type: 'CONNECTED',
-    message: 'Connected to Smart Hub real-time gateway',
-    timestamp: new Date().toISOString()
-  }));
+      ws.send(JSON.stringify({
+        type: 'CONNECTED',
+        message: 'Connected to Smart Hub real-time gateway',
+        timestamp: new Date().toISOString()
+      }));
 
-  ws.on('message', (message) => {
-    try {
-      const data = JSON.parse(message);
-      // Broadcast to other clients
-      broadcastWs(data, ws);
-    } catch (err) {
-      console.error('[WS] Message error:', err);
-    }
-  });
+      ws.on('message', (message) => {
+        try {
+          const data = JSON.parse(message);
+          broadcastWs(data, ws);
+        } catch (err) {
+          console.error('[WS] Message error:', err);
+        }
+      });
 
-  ws.on('close', () => {
-    connectedClients.delete(ws);
-    console.log(`[WS] Client disconnected. Active clients: ${connectedClients.size}`);
-  });
-});
+      ws.on('close', () => {
+        connectedClients.delete(ws);
+        console.log(`[WS] Client disconnected. Active clients: ${connectedClients.size}`);
+      });
+    });
+  } catch (wsErr) {
+    console.warn('[WS] WebSocket initialization notice:', wsErr.message);
+  }
+}
 
 function broadcastWs(payload, senderWs = null) {
+  if (!wss || connectedClients.size === 0) return;
   const messageStr = JSON.stringify(payload);
   connectedClients.forEach(client => {
     if (client !== senderWs && client.readyState === WebSocket.OPEN) {
@@ -240,9 +247,10 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Start Server
-server.listen(PORT, () => {
-  console.log(`
+// Start Server locally if run directly and not running on Vercel
+if (require.main === module && !process.env.VERCEL) {
+  server.listen(PORT, () => {
+    console.log(`
 ═════════════════════════════════════════════════════════════════
   🚀 SMART HUB PRODUCTION SERVER ACTIVE & READY FOR DEPLOYMENT
   ✦ Local URL:       http://localhost:${PORT}
@@ -253,5 +261,9 @@ server.listen(PORT, () => {
   ✦ Clean State: All demo/fake products & accounts cleared.
   ✦ Ready for fresh user registration and creator listings.
 ═════════════════════════════════════════════════════════════════
-  `);
-});
+    `);
+  });
+}
+
+module.exports = app;
+

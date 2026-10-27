@@ -1227,8 +1227,8 @@ async function updateHomeFloatingStats(isNewSale = false) {
         usersCount = Number(stats.usersCount) || 0;
         latestSale = stats.latestSale;
       }
-    } else {
-      const API_BASE = (window.location.port === '5000' || window.location.port === '3000') ? '/api' : 'http://localhost:5000/api';
+      const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      const API_BASE = (!isLocal || window.location.port === '5000' || window.location.port === '3000') ? '/api' : 'http://localhost:5000/api';
       try {
         const res = await fetch(`${API_BASE}/stats`);
         if (res.ok) {

@@ -35,6 +35,14 @@ function decryptApiKey(payload) {
   return decrypted;
 }
 
+// ── Auth Public Configuration (Safe public credentials) ────────
+router.get('/config', (req, res) => {
+  res.json({
+    success: true,
+    githubClientId: process.env.GITHUB_CLIENT_ID || ''
+  });
+});
+
 // ── 1. Register Account ───────────────────────────────────────
 router.post('/register', async (req, res) => {
   try {

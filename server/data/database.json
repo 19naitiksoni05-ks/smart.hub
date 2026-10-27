@@ -1,12 +1,29 @@
 {
   "users": [
     {
+      "id": "u_1793133388791",
+      "name": "Naitik Soni",
+      "username": "@19naitiksoni05-ks",
+      "email": "19naitiksoni05@gmail.com",
+      "githubId": "286883392",
+      "passwordHash": "$2b$10$.OZ/TQK.5yGmVrxAUXONOezBgfAiNxTYe/Vtmq6MffcItexmnWNTO",
+      "avatar": "https://avatars.githubusercontent.com/u/286883392?v=4",
+      "walletBalance": 0,
+      "role": "admin",
+      "xp": 150,
+      "badges": 1,
+      "authProvider": "github",
+      "location": "India",
+      "headline": "Platform & Architecture · Super Admin",
+      "createdAt": "2026-10-27T20:36:28.881Z"
+    },
+    {
       "id": "u_admin_naitik",
       "name": "Naitik Soni",
       "username": "@naitik19",
       "email": "naitik19ansh@gmail.com",
       "passwordHash": "$2b$10$wE9N5t8D1n7uWl8lM9SgxeS9qF0g9hH9s7G3U8e6aG4tG6kH2XgOa",
-      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=naitik19&backgroundColor=ff5b36",
+      "avatar": "https://avatars.githubusercontent.com/u/49962142?v=4",
       "walletBalance": 50010,
       "role": "admin",
       "xp": 10299,
@@ -14,7 +31,8 @@
       "location": "India",
       "headline": "Platform & Architecture · Super Admin",
       "createdAt": "2026-01-01T00:00:00.000Z",
-      "updatedAt": "2026-10-25T14:46:33.285Z"
+      "updatedAt": "2026-10-27T20:23:33.992Z",
+      "githubId": "49962142"
     },
     {
       "id": "a9b9e238-6ec8-4622-8f22-9b6eb6939ac2",
@@ -31,7 +49,8 @@
       "headline": "Smart Hub Developer",
       "createdAt": "2026-10-25T06:31:25.671Z",
       "cover": "/uploads/images/Screenshot__1__1792920634969_373d9b62.png",
-      "updatedAt": "2026-10-25T14:49:08.599Z"
+      "updatedAt": "2026-10-27T20:23:34.318Z",
+      "githubId": "gh_336231360"
     },
     {
       "id": "b9f83b04-538c-4aab-9d88-f35a2ecb1cbe",
@@ -505,6 +524,19 @@
   "leaderboard": [],
   "reviews": [],
   "apiKeys": [
+    {
+      "id": "key_1793133388884",
+      "userId": "u_1793133388791",
+      "name": "Default GitHub OAuth Key",
+      "keyHash": "166db127f415bc5863b857f291e303d28eaa01500ac68fae664c39e2a060b183",
+      "encryptedKey": "567f8b0aab749878b37b4669ea326179:b7dcc6277e32f29531a1826c69a0859920a171d0bcc8f3d64eb03ecc4d1e14aedef84c23b9e6b55a63ed78519b8bf3467da545fe72d0bae49f333ee3a154dc84",
+      "keyPrefix": "sh_live_07ff",
+      "lastFour": "c3d8",
+      "scope": "full_access",
+      "status": "active",
+      "lastUsedAt": null,
+      "createdAt": "2026-10-27T20:36:28.927Z"
+    },
     {
       "id": "key_1792934990412",
       "userId": "5d314a82-99a3-4bd0-ae4a-e54893070a0d",
