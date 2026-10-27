@@ -114,7 +114,7 @@ function securityHeaders(req, res, next) {
 
 // ── Global Rate Limit Middleware ─────────────────────────────
 function rateLimitGlobal(req, res, next) {
-  const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1';
+  const clientIp = (req.headers && req.headers['x-forwarded-for']) || (req.socket && req.socket.remoteAddress) || req.ip || '127.0.0.1';
   const result = globalLimiter.isAllowed(clientIp);
 
   res.setHeader('X-RateLimit-Limit', '150');
@@ -133,7 +133,7 @@ function rateLimitGlobal(req, res, next) {
 
 // ── Sensitive Auth / Mutation Rate Limit Middleware ──────────
 function rateLimitAuth(req, res, next) {
-  const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1';
+  const clientIp = (req.headers && req.headers['x-forwarded-for']) || (req.socket && req.socket.remoteAddress) || req.ip || '127.0.0.1';
   const result = authLimiter.isAllowed('auth_' + clientIp);
 
   if (!result.allowed) {

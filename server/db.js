@@ -6,21 +6,17 @@ const { supabase, isConfigured } = require('./supabase');
 const IS_VERCEL = Boolean(process.env.VERCEL);
 const DATA_DIR = IS_VERCEL ? '/tmp' : path.join(__dirname, 'data');
 const DB_FILE = IS_VERCEL ? '/tmp/database.json' : path.join(DATA_DIR, 'database.json');
-const ORIGINAL_DB_FILE = path.join(__dirname, 'data', 'database.json');
+
+// Safely require bundled database JSON so Vercel bundler includes it
+let bundledDatabase = null;
+try {
+  bundledDatabase = require('./data/database.json');
+} catch (e) {}
 
 // Ensure data directory exists
 if (!fs.existsSync(DATA_DIR)) {
   try {
     fs.mkdirSync(DATA_DIR, { recursive: true });
-  } catch (e) {}
-}
-
-// On Vercel, seed /tmp/database.json from bundled database file
-if (IS_VERCEL && !fs.existsSync(DB_FILE)) {
-  try {
-    if (fs.existsSync(ORIGINAL_DB_FILE)) {
-      fs.copyFileSync(ORIGINAL_DB_FILE, DB_FILE);
-    }
   } catch (e) {}
 }
 
@@ -80,19 +76,15 @@ class Database {
       if (fs.existsSync(DB_FILE)) {
         const raw = fs.readFileSync(DB_FILE, 'utf8');
         this.data = JSON.parse(raw);
-      } else if (fs.existsSync(ORIGINAL_DB_FILE)) {
-        const raw = fs.readFileSync(ORIGINAL_DB_FILE, 'utf8');
-        this.data = JSON.parse(raw);
-        if (IS_VERCEL) {
-          try { fs.writeFileSync(DB_FILE, raw, 'utf8'); } catch (e) {}
-        }
+      } else if (bundledDatabase) {
+        this.data = JSON.parse(JSON.stringify(bundledDatabase));
+        this.save();
       } else {
         this.data = getInitialSeedData();
         this.save();
       }
     } catch (err) {
-      console.error('Database load error, resetting to seed data:', err);
-      this.data = getInitialSeedData();
+      this.data = bundledDatabase ? JSON.parse(JSON.stringify(bundledDatabase)) : getInitialSeedData();
       this.save();
     }
   }
