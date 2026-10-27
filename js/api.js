@@ -231,9 +231,9 @@
       }
     },
 
-    async loginWithGoogle(payload) {
+    async loginWithGitHub(payload) {
       try {
-        const res = await fetch(`${this.baseUrl}/auth/google`, {
+        const res = await fetch(`${this.baseUrl}/auth/github`, {
           method: 'POST',
           headers: this.getHeaders(),
           body: JSON.stringify(payload)
@@ -254,7 +254,7 @@
         const res = await fetch(`${this.baseUrl}/auth/config`);
         return await res.json();
       } catch (err) {
-        return { success: false, googleClientId: '' };
+        return { success: false };
       }
     },
 

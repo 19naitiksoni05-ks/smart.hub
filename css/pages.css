@@ -1415,7 +1415,7 @@ body.theme-light .hero-grid-overlay {
 /* Social Buttons */
 .auth-social-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 12px;
 }
 .auth-social-btn {
