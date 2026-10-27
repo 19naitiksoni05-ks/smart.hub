@@ -216,27 +216,36 @@ app.get('/api/stats', (req, res) => {
   }
 });
 
-const FRONTEND_ROOT = path.join(__dirname, '..');
-const UPLOADS_DIR = path.join(FRONTEND_ROOT, 'uploads');
-app.use('/uploads', express.static(UPLOADS_DIR, {
-  maxAge: '7d',
-  setHeaders: (res) => {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-  }
-}));
-app.use(express.static(FRONTEND_ROOT));
+if (!process.env.VERCEL) {
+  const FRONTEND_ROOT = path.join(__dirname, '..');
+  const UPLOADS_DIR = path.join(FRONTEND_ROOT, 'uploads');
+  app.use('/uploads', express.static(UPLOADS_DIR, {
+    maxAge: '7d',
+    setHeaders: (res) => {
+      res.setHeader('Access-Control-Allow-Origin', '*');
+    }
+  }));
+  app.use(express.static(FRONTEND_ROOT));
 
-// Fallback for HTML routing (Express 5 compatible)
-app.use((req, res, next) => {
-  if (req.url.startsWith('/api')) {
-    return res.status(404).json({ success: false, error: 'Endpoint not found' });
-  }
-  const file = path.join(FRONTEND_ROOT, req.url);
-  if (req.url.endsWith('.html') && path.extname(req.url)) {
-    return res.sendFile(file);
-  }
-  res.sendFile(path.join(FRONTEND_ROOT, 'index.html'));
-});
+  // Fallback for HTML routing (Express 5 compatible)
+  app.use((req, res, next) => {
+    if (req.url.startsWith('/api')) {
+      return res.status(404).json({ success: false, error: 'Endpoint not found' });
+    }
+    const file = path.join(FRONTEND_ROOT, req.url);
+    if (req.url.endsWith('.html') && path.extname(req.url)) {
+      return res.sendFile(file);
+    }
+    res.sendFile(path.join(FRONTEND_ROOT, 'index.html'));
+  });
+} else {
+  app.use((req, res) => {
+    res.status(404).json({
+      success: false,
+      error: `API route not found: ${req.method} ${req.url}`
+    });
+  });
+}
 
 // Error handling middleware
 app.use((err, req, res, next) => {
