@@ -216,10 +216,19 @@
 <script>
 
 const communityMessages = [
-  { user: 'SmartHub HQ', avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=smarthub&backgroundColor=6366f1', role: 'admin', text: 'Welcome to Smart Hub Developer Channels! Discuss tech stacks, share code launches, and connect with developers across India.', time: 'HQ', reactions: [] }
+  { user: 'SmartHub Core', avatar: 'https://api.dicebear.com/7.x/identicon/svg?seed=smarthub-core&backgroundColor=6366f1', role: 'admin', text: 'Welcome to the Smart Hub Developer Ecosystem! Discuss engineering architectures, ask questions, and share live code across India.', time: 'System', reactions: [{ emoji: '🚀', count: 8 }] },
+  { user: 'TANMAY GUPTA', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=tanmay.5987&backgroundColor=ff5b36', role: 'member', text: 'Hey developers! Testing out live project deployment and Supabase edge sync.', time: '12m ago', reactions: [{ emoji: '🔥', count: 4 }] },
+  { user: 'Muaviya', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=edf429c2-1399-4969-867c-679cc2ea0b14&backgroundColor=ff5b36', role: 'admin', text: 'Welcome @tanmay.5987! Make sure to verify your project integrity tokens before distribution.', time: '8m ago', reactions: [{ emoji: '👍', count: 3 }] },
+  { user: 'Naitik Soni', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=naitik19&backgroundColor=6366f1', role: 'admin', text: 'Direct messaging and peer groups are active across the ecosystem. Code audits are running on all repo commits.', time: 'Just now', reactions: [{ emoji: '⚡', count: 5 }] }
 ];
 
-const onlineUsers = [];
+let onlineUsers = [
+  { name: 'Naitik Soni', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=naitik19&backgroundColor=6366f1', roleColor: 'var(--accent-pink)', status: 'Platform & Super Admin' },
+  { name: 'TANMAY GUPTA', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=tanmay.5987&backgroundColor=ff5b36', roleColor: 'var(--accent-cyan)', status: 'Developer · Online' },
+  { name: 'Muaviya', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=edf429c2-1399-4969-867c-679cc2ea0b14&backgroundColor=ff5b36', roleColor: 'var(--accent-pink)', status: 'Security & Audits' },
+  { name: 'ansh', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=ansh&backgroundColor=ff5b36', roleColor: 'var(--accent-blue)', status: 'DevOps & Architecture' },
+  { name: 'Kamran', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=kammo&backgroundColor=6366f1', roleColor: 'var(--text-primary)', status: 'Full-Stack Developer' }
+];
 
 function renderMessages(msgs) {
   const area = document.getElementById('messages-area');
@@ -383,7 +392,7 @@ function sendCommunityMessage() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   const user = (window.getCurrentUser && window.getCurrentUser());
   if (user) {
     const av = document.getElementById('comm-user-avatar');
@@ -393,6 +402,26 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   renderMessages(communityMessages);
   renderOnlineMembers();
+
+  // Load registered platform members
+  if (window.SmartHubAPI && window.SmartHubAPI.getUsers) {
+    try {
+      const res = await window.SmartHubAPI.getUsers();
+      if (res && res.success && Array.isArray(res.users)) {
+        res.users.forEach(u => {
+          if (!onlineUsers.some(ou => ou.name.toLowerCase() === (u.name || '').toLowerCase() || ou.name.toLowerCase() === (u.username || '').toLowerCase())) {
+            onlineUsers.push({
+              name: u.name || u.username,
+              avatar: u.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(u.username || u.name)}&backgroundColor=6366f1`,
+              roleColor: u.role === 'admin' ? 'var(--accent-pink)' : 'var(--text-primary)',
+              status: u.headline || (u.role === 'admin' ? 'Super Admin' : 'Developer')
+            });
+          }
+        });
+        renderOnlineMembers();
+      }
+    } catch (e) {}
+  }
 });
 </script>
 </body>

@@ -756,12 +756,34 @@
     },
 
     // ── Chat & Direct Messages ────────────────────────────────
+    async getUsers() {
+      try {
+        const res = await fetch(`${this.baseUrl}/auth/users`);
+        return await res.json();
+      } catch (err) {
+        return { success: false, users: [] };
+      }
+    },
+
     async getConversations() {
       try {
         const res = await fetch(`${this.baseUrl}/chat/conversations`);
         return await res.json();
       } catch (err) {
         return { success: false, conversations: [] };
+      }
+    },
+
+    async createDirectConversation(contactName, contactAvatar, contactId) {
+      try {
+        const res = await fetch(`${this.baseUrl}/chat/new-dm`, {
+          method: 'POST',
+          headers: this.getHeaders(),
+          body: JSON.stringify({ contactName, contactAvatar, contactId })
+        });
+        return await res.json();
+      } catch (err) {
+        return { success: false, error: err.message };
       }
     },
 
@@ -774,12 +796,12 @@
       }
     },
 
-    async sendChatMessage(conversationId, text, attachment) {
+    async sendChatMessage(conversationId, text, attachment, recipientId, recipientUsername) {
       try {
         const res = await fetch(`${this.baseUrl}/chat/messages`, {
           method: 'POST',
           headers: this.getHeaders(),
-          body: JSON.stringify({ conversationId, text, attachment })
+          body: JSON.stringify({ conversationId, text, attachment, recipientId, recipientUsername })
         });
         return await res.json();
       } catch (err) {

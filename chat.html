@@ -447,6 +447,13 @@ const chatContacts = [
   // Channels
   { id: 'sh_announce', name: '📢 Smart Hub Updates', avatar: null, icon: '🔔', iconBg: 'rgba(139,92,246,0.15)', lastMsg: 'Welcome to Smart Hub! Official platform announcements will appear here.', time: 'Just now', unread: 0, online: null, type: 'channels', subscribers: 'Official', readonly: true },
   { id: 'deals_channel', name: '🏷️ Deals & Offers', avatar: null, icon: '💰', iconBg: 'rgba(16,185,129,0.15)', lastMsg: 'Welcome to Deals & Offers! Verified discount events will be posted here.', time: 'Just now', unread: 0, online: null, type: 'channels', subscribers: 'Official', readonly: true },
+
+  // Developer Ecosystem Groups
+  { id: 'grp_fullstack', name: '💻 Full-Stack Web Guild', avatar: null, icon: '🌐', iconBg: 'rgba(99,102,241,0.15)', lastMsg: 'Muaviya: Supabase edge functions and Supavisor pooling work seamlessly.', time: '10m ago', unread: 0, online: null, type: 'groups', members: 348 },
+  { id: 'grp_react', name: '⚛️ React & Next.js Architects', avatar: null, icon: '⚛️', iconBg: 'rgba(6,182,212,0.15)', lastMsg: 'TANMAY GUPTA: Server Actions with optimistic UI updates feel super snappy.', time: '25m ago', unread: 0, online: null, type: 'groups', members: 512 },
+  { id: 'grp_python_ai', name: '🐍 Python & AI Engineering', avatar: null, icon: '🤖', iconBg: 'rgba(245,158,11,0.15)', lastMsg: 'Naitik Soni: Fast AST parsing and security scanning verified.', time: '1h ago', unread: 0, online: null, type: 'groups', members: 420 },
+  { id: 'grp_cloud_devops', name: '☁️ Cloud, Docker & DevOps', avatar: null, icon: '☁️', iconBg: 'rgba(16,185,129,0.15)', lastMsg: 'ansh: Docker build pipeline with multi-stage caching deployed.', time: '2h ago', unread: 0, online: null, type: 'groups', members: 295 },
+  { id: 'grp_code_audit', name: '🛡️ Code Audits & DRM Security', avatar: null, icon: '🔒', iconBg: 'rgba(255,91,54,0.15)', lastMsg: 'Kamran: SHA-256 package verification and key encryption active.', time: '3h ago', unread: 0, online: null, type: 'groups', members: 180 },
 ];
 
 // ── Multi-Thread Messages Data Store ──────────────────────────
@@ -456,6 +463,27 @@ const chatThreads = {
   ],
   deals_channel: [
     { id: 'm_dl1', from: 'Smart Hub Deals', avatar: null, icon: '🏷️', text: '🏷️ Welcome to Deals & Offers! Verified discount opportunities will be posted here.', time: 'Just now', sent: false }
+  ],
+  grp_fullstack: [
+    { id: 'm_fs1', from: 'TANMAY GUPTA', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=tanmay.5987&backgroundColor=ff5b36', text: 'Has anyone tested full-stack SSR deployment with Supabase Postgres on Vercel?', time: '25m ago', sent: false },
+    { id: 'm_fs2', from: 'Muaviya', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=edf429c2-1399-4969-867c-679cc2ea0b14&backgroundColor=ff5b36', text: 'Yes! Supavisor transaction pooler handles connection spikes really well in production.', time: '18m ago', sent: false },
+    { id: 'm_fs3', from: 'Naitik Soni', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=naitik19&backgroundColor=6366f1', text: 'Supabase edge functions and Supavisor pooling work seamlessly with Smart Hub packages.', time: '10m ago', sent: false }
+  ],
+  grp_react: [
+    { id: 'm_rc1', from: 'ansh', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=ansh&backgroundColor=ff5b36', text: 'The React 19 useActionState and useOptimistic hooks make form states trivial to manage.', time: '40m ago', sent: false },
+    { id: 'm_rc2', from: 'TANMAY GUPTA', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=tanmay.5987&backgroundColor=ff5b36', text: 'Server Actions with optimistic UI updates feel super snappy. No need for heavy client stores.', time: '25m ago', sent: false }
+  ],
+  grp_python_ai: [
+    { id: 'm_py1', from: 'Kamran', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=kammo&backgroundColor=6366f1', text: 'We integrated the AST security scanner for Python repository uploads. Scans for CVEs and exposed secrets.', time: '2h ago', sent: false },
+    { id: 'm_py2', from: 'Naitik Soni', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=naitik19&backgroundColor=6366f1', text: 'Fast AST parsing and security scanning verified. All uploads pass automated static checks.', time: '1h ago', sent: false }
+  ],
+  grp_cloud_devops: [
+    { id: 'm_cd1', from: 'Nishant Arora', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=nishantarora630@gmail.com&backgroundColor=ff5b36', text: 'Any tips on reducing Docker container image sizes for Node microservices?', time: '3h ago', sent: false },
+    { id: 'm_cd2', from: 'ansh', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=ansh&backgroundColor=ff5b36', text: 'Docker build pipeline with multi-stage caching deployed. Uses alpine base with --production prune.', time: '2h ago', sent: false }
+  ],
+  grp_code_audit: [
+    { id: 'm_ca1', from: 'Naitik Soni', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=naitik19&backgroundColor=6366f1', text: 'Reminder: DRM code decryption keys are dispatched strictly to the buyer email address.', time: '4h ago', sent: false },
+    { id: 'm_ca2', from: 'Kamran', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=kammo&backgroundColor=6366f1', text: 'SHA-256 package verification and key encryption active. Code is locked in Studio until decrypted.', time: '3h ago', sent: false }
   ]
 };
 
@@ -1633,9 +1661,49 @@ async function initConversationsFromBackend() {
           existing.unread = c.unread || existing.unread;
         }
       });
-      renderChatList(chatContacts);
-      updateUnreadBadges();
     }
+
+    // Hydrate registered real platform developers into Direct Messages
+    try {
+      const usersRes = await window.SmartHubAPI.getUsers();
+      if (usersRes && usersRes.success && Array.isArray(usersRes.users)) {
+        const curUser = (window.SmartHubAPI && window.SmartHubAPI.getCurrentUser()) || (window.getCurrentUser && window.getCurrentUser()) || {};
+        const myEmail = (curUser.email || '').toLowerCase().trim();
+        const myUsername = (curUser.username || curUser.name || '').toLowerCase().replace('@','').trim();
+
+        usersRes.users.forEach(u => {
+          const uEmail = (u.email || '').toLowerCase().trim();
+          const rawUname = (u.username || u.name || 'developer').replace('@','').trim();
+          if ((myEmail && uEmail === myEmail) || (myUsername && rawUname.toLowerCase() === myUsername)) {
+            return; // skip current logged in user
+          }
+
+          const formattedHandle = '@' + rawUname;
+          const canonicalId = getCanonicalDmId(formattedHandle, u.id);
+          const alreadyListed = chatContacts.find(x => x.id === canonicalId || x.id === u.id || x.name === formattedHandle || x.name.includes(formattedHandle));
+
+          if (!alreadyListed) {
+            chatContacts.push({
+              id: canonicalId,
+              userId: u.id,
+              name: u.name ? `${u.name} (${formattedHandle})` : formattedHandle,
+              avatar: u.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(rawUname)}&backgroundColor=6366f1`,
+              lastMsg: 'Online platform developer · Click to chat',
+              time: 'Active',
+              unread: 0,
+              online: true,
+              type: 'dm',
+              role: u.role || 'Developer'
+            });
+          }
+        });
+      }
+    } catch (usersErr) {
+      console.warn('[Chat] Could not load peer users for DM list:', usersErr);
+    }
+
+    renderChatList(chatContacts);
+    updateUnreadBadges();
   } catch (e) {
     console.warn('[Chat] Failed to load initial conversations:', e);
   }

@@ -467,21 +467,30 @@
 
     let currentOrderTotal = 0;
 
+    let currentWalletBal = null;
+
     function updateWalletValidation(total) {
       currentOrderTotal = total;
-      const user = (window.getCurrentUser && window.getCurrentUser());
+      let user = (window.getCurrentUser && window.getCurrentUser());
+      if (!user) {
+        try {
+          user = JSON.parse(localStorage.getItem('smarthub_user') || localStorage.getItem('currentUser') || '{}');
+        } catch (e) { user = {}; }
+      }
       const banner = document.getElementById('checkout-wallet-status-banner');
       const btn = document.getElementById('complete-order-btn');
       const userLabel = document.getElementById('checkout-user-id-label');
       const walletBalEl = document.getElementById('checkout-wallet-bal');
 
-      const currentBal = Number((user && user.walletBalance) || 0);
+      const effectiveBal = currentWalletBal !== null
+        ? currentWalletBal
+        : Number((user && user.walletBalance) || 0);
 
       if (walletBalEl) {
-        walletBalEl.textContent = `₹${currentBal.toLocaleString('en-IN')}`;
+        walletBalEl.textContent = `₹${effectiveBal.toLocaleString('en-IN')}`;
       }
 
-      if (!user || (!user.isLoggedIn && !user.id)) {
+      if (!user || (!user.isLoggedIn && !user.id && !user.email)) {
         if (userLabel) userLabel.textContent = 'Account: Guest (Please sign in to access your wallet)';
         if (banner) {
           banner.innerHTML = `
@@ -511,8 +520,8 @@
         userLabel.textContent = `Account: ${user.name || user.username || user.email}`;
       }
 
-      if (currentBal < total) {
-        const shortfall = total - currentBal;
+      if (effectiveBal < total) {
+        const shortfall = total - effectiveBal;
         if (banner) {
           banner.innerHTML = `
             <div style="border:1.5px solid var(--accent-coral);border-radius:var(--radius-xs);padding:14px 16px;background:rgba(255,91,54,0.08);">
@@ -521,7 +530,7 @@
               </div>
               <div style="font-size:0.82rem;color:var(--text-secondary);line-height:1.5;">
                 Order Total: <strong style="color:var(--text-primary);">₹${total.toLocaleString('en-IN')}</strong> &nbsp;|&nbsp;
-                Your Wallet: <strong style="color:var(--text-primary);">₹${currentBal.toLocaleString('en-IN')}</strong><br>
+                Your Wallet: <strong style="color:var(--text-primary);">₹${effectiveBal.toLocaleString('en-IN')}</strong><br>
                 Required to add: <strong style="color:var(--accent-coral);font-family:var(--font-tech);font-size:0.95rem;">₹${shortfall.toLocaleString('en-IN')}</strong>
               </div>
               <div style="font-size:0.75rem;color:var(--text-muted);margin:8px 0 10px 0;">
@@ -552,7 +561,7 @@
                 <span>✅</span> Wallet Balance Sufficient
               </div>
               <div style="font-size:0.82rem;color:var(--text-secondary);line-height:1.4;">
-                ₹${total.toLocaleString('en-IN')} will be deducted from your Rupee Wallet. Remaining balance after order: <strong style="color:var(--accent-green);font-family:var(--font-tech);">₹${(currentBal - total).toLocaleString('en-IN')}</strong>.
+                ₹${total.toLocaleString('en-IN')} will be deducted from your Rupee Wallet. Remaining balance after order: <strong style="color:var(--accent-green);font-family:var(--font-tech);">₹${(effectiveBal - total).toLocaleString('en-IN')}</strong>.
               </div>
             </div>
           `;
@@ -572,10 +581,22 @@
           const res = await window.SmartHubAPI.getWallet();
           if (res && res.success && res.wallet) {
             const bal = Number(res.wallet.balance) || 0;
-            let user = (window.getCurrentUser && window.getCurrentUser()) || {};
+            currentWalletBal = bal;
+
+            let user = (window.getCurrentUser && window.getCurrentUser());
+            if (!user) {
+              try {
+                user = JSON.parse(localStorage.getItem('smarthub_user') || localStorage.getItem('currentUser') || '{}');
+              } catch(e) { user = {}; }
+            }
             user.walletBalance = bal;
-            localStorage.setItem('smarthub_user', JSON.stringify(user));
-            localStorage.setItem('currentUser', JSON.stringify(user));
+            if (!user.isLoggedIn && !user.id && !user.email) {
+              user.isLoggedIn = true;
+            }
+            try {
+              localStorage.setItem('smarthub_user', JSON.stringify(user));
+              localStorage.setItem('currentUser', JSON.stringify(user));
+            } catch(e){}
 
             const walletBal = document.getElementById('checkout-wallet-bal');
             if (walletBal) walletBal.textContent = `₹${bal.toLocaleString('en-IN')}`;
@@ -647,8 +668,9 @@
       }
 
       const total = currentOrderTotal;
-      if ((user.walletBalance || 0) < total) {
-        showToast(`Insufficient wallet balance. You have ₹${(user.walletBalance || 0).toLocaleString('en-IN')}, required ₹${total.toLocaleString('en-IN')}. Please add money to your wallet!`, 'error');
+      const userBal = currentWalletBal !== null ? currentWalletBal : Number((user && user.walletBalance) || 0);
+      if (userBal < total) {
+        showToast(`Insufficient wallet balance. You have ₹${userBal.toLocaleString('en-IN')}, required ₹${total.toLocaleString('en-IN')}. Please add money to your wallet!`, 'error');
         return;
       }
 
@@ -795,14 +817,16 @@
       }
 
       // Local Fallback simulation (wallet-only)
-      if ((user.walletBalance || 0) < total) {
-        showToast(`Insufficient wallet balance. You have ₹${user.walletBalance || 0}, required ₹${total}`, 'error');
+      const effectiveBal = currentWalletBal !== null ? currentWalletBal : Number((user && user.walletBalance) || 0);
+      if (effectiveBal < total) {
+        showToast(`Insufficient wallet balance. You have ₹${effectiveBal.toLocaleString('en-IN')}, required ₹${total.toLocaleString('en-IN')}`, 'error');
         btn.disabled = false;
         btn.textContent = `⚡ Pay with Rupee Wallet & Generate Key (₹${total.toLocaleString('en-IN')})`;
         updateWalletValidation(total);
         return;
       }
-      user.walletBalance = (user.walletBalance || 0) - total;
+      user.walletBalance = effectiveBal - total;
+      currentWalletBal = user.walletBalance;
       localStorage.setItem('smarthub_user', JSON.stringify(user));
 
       if (checkoutMode === 'cart') {
