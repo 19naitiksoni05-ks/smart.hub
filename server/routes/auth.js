@@ -465,7 +465,8 @@ router.post('/login', async (req, res) => {
 // ── 2b. GitHub Sign-In & Registration ─────────────────────────
 router.post('/github', async (req, res) => {
   try {
-    let { code, username, email, name, avatar, githubId, role } = req.body;
+    let { code, redirectUri, redirect_uri, username, email, name, avatar, githubId, role } = req.body;
+    const finalRedirectUri = redirectUri || redirect_uri;
 
     // Flow 1: If an OAuth code was provided from GitHub OAuth redirect
     if (code) {
@@ -474,20 +475,34 @@ router.post('/github', async (req, res) => {
 
       if (clientId && clientSecret) {
         try {
+          const tokenBody = {
+            client_id: clientId,
+            client_secret: clientSecret,
+            code
+          };
+          if (finalRedirectUri) {
+            tokenBody.redirect_uri = finalRedirectUri;
+          }
+
           const tokenRes = await fetch('https://github.com/login/oauth/access_token', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
               'Accept': 'application/json'
             },
-            body: JSON.stringify({
-              client_id: clientId,
-              client_secret: clientSecret,
-              code
-            }),
-            signal: AbortSignal.timeout(6000)
+            body: JSON.stringify(tokenBody),
+            signal: AbortSignal.timeout(7000)
           });
           const tokenData = await tokenRes.json();
+          if (tokenData.error) {
+            console.warn('[GitHub OAuth] Token exchange notice:', tokenData.error, tokenData.error_description);
+            if (!username && !email) {
+              return res.status(400).json({
+                success: false,
+                error: tokenData.error_description || tokenData.error || 'GitHub authorization code verification failed'
+              });
+            }
+          }
           if (tokenData.access_token) {
             const ghUserRes = await fetch('https://api.github.com/user', {
               headers: {
@@ -495,7 +510,7 @@ router.post('/github', async (req, res) => {
                 'User-Agent': 'SmartHub-App',
                 'Accept': 'application/json'
               },
-              signal: AbortSignal.timeout(5000)
+              signal: AbortSignal.timeout(6000)
             });
             if (ghUserRes.ok) {
               const ghUser = await ghUserRes.json();
@@ -568,15 +583,52 @@ router.post('/github', async (req, res) => {
     // Check if Super Admin account
     const isNaitikAdmin = cleanEmail === 'naitik19ansh@gmail.com' ||
       cleanEmail.includes('naitik19') ||
+      cleanEmail.includes('19naitiksoni05') ||
       rawHandle === 'naitik19' ||
-      rawHandle === '19naitiksoni05-ks';
+      rawHandle === '19naitiksoni05-ks' ||
+      rawHandle.includes('naitik');
 
-    // Find if user already exists
+    // Find if user already exists in local DB
     let user = db.findOne('users', u =>
       (u.githubId && String(u.githubId) === String(githubId)) ||
       (u.email && u.email.toLowerCase() === cleanEmail) ||
       (u.username && u.username.toLowerCase().replace('@', '') === rawHandle)
     );
+
+    // Fallback lookup in Supabase cloud if not in local db
+    if (!user && isSupabaseConfigured() && supabase) {
+      try {
+        const { data: cloudUsers } = await supabase
+          .from('users')
+          .select('*')
+          .or(`email.ilike.${cleanEmail},username.ilike.@${rawHandle},username.ilike.${rawHandle}`)
+          .limit(1);
+
+        if (cloudUsers && cloudUsers.length > 0) {
+          const cu = cloudUsers[0];
+          user = {
+            id: cu.id,
+            name: cu.name || name,
+            username: cu.username || cleanHandle,
+            email: cu.email || cleanEmail,
+            githubId: cu.githubId || githubId,
+            passwordHash: cu.password_hash,
+            avatar: cu.avatar || avatar,
+            walletBalance: cu.wallet_balance || 0,
+            role: cu.role || (isNaitikAdmin ? 'admin' : (role || 'buyer')),
+            xp: cu.xp || 150,
+            badges: cu.badges || 1,
+            authProvider: 'github',
+            location: cu.location || 'India',
+            headline: cu.headline || (isNaitikAdmin ? 'Platform & Architecture · Super Admin' : 'Verified GitHub Developer'),
+            createdAt: cu.created_at || new Date().toISOString()
+          };
+          db.insert('users', user);
+        }
+      } catch (sbErr) {
+        console.warn('[GitHub Auth] Supabase cloud lookup note:', sbErr.message);
+      }
+    }
 
     if (user) {
       const updates = {};

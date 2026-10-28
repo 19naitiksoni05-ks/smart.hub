@@ -277,9 +277,10 @@ async function initGitHubAuth() {
     const urlParams = new URLSearchParams(window.location.search);
     const ghCode = urlParams.get('code');
     if (ghCode) {
+      const redirectUri = window.location.origin + window.location.pathname;
       window.history.replaceState({}, document.title, window.location.pathname);
       SH.showToast('Verifying GitHub authentication with backend...', 'info');
-      const res = await window.SmartHubAPI.loginWithGitHub({ code: ghCode });
+      const res = await window.SmartHubAPI.loginWithGitHub({ code: ghCode, redirectUri });
       if (res && res.success) {
         SH.showToast(res.message || 'Signed in via GitHub! 🚀', 'success');
         setTimeout(() => {
@@ -291,24 +292,31 @@ async function initGitHubAuth() {
         }, 700);
       } else {
         SH.showToast((res && res.error) || 'GitHub authentication failed', 'error');
+        openGitHubModal();
       }
     }
   } catch (err) {
     console.error('GitHub code verification error:', err);
+    openGitHubModal();
   }
 }
 
 // Social Login Trigger (GitHub)
 function handleSocialAuth(provider) {
   if (provider === 'GitHub') {
-    if (githubClientId) {
-      const redirectUri = encodeURIComponent(window.location.origin + window.location.pathname);
-      window.location.href = `https://github.com/login/oauth/authorize?client_id=${githubClientId}&scope=read:user,user:email&redirect_uri=${redirectUri}`;
-      return;
-    }
     openGitHubModal();
   } else {
     SH.showToast(`Connecting with ${provider}...`, 'info');
+  }
+}
+
+function triggerLiveGitHubOAuth() {
+  if (githubClientId) {
+    const redirectUri = encodeURIComponent(window.location.origin + window.location.pathname);
+    window.location.href = `https://github.com/login/oauth/authorize?client_id=${githubClientId}&scope=read:user,user:email&redirect_uri=${redirectUri}`;
+  } else {
+    SH.showToast('Connecting with GitHub...', 'info');
+    openGitHubModal();
   }
 }
 
@@ -456,8 +464,36 @@ async function handleForgotPassword(e) {
     </div>
 
     <!-- Accounts List -->
-    <div style="padding:16px 20px;max-height:360px;overflow-y:auto;">
-      <!-- Quick Developer 1: Naitik Soni (Super Admin) -->
+    <div style="padding:16px 20px;max-height:380px;overflow-y:auto;">
+      <!-- Option 1: Official GitHub OAuth Redirect -->
+      <button type="button" onclick="triggerLiveGitHubOAuth()" 
+              style="width:100%;display:flex;align-items:center;justify-content:center;gap:10px;padding:12px;background:#238636;color:#ffffff;border:none;border-radius:10px;font-weight:700;font-size:0.92rem;cursor:pointer;margin-bottom:14px;transition:background 0.15s;" 
+              onmouseover="this.style.background='#2ea043'" onmouseout="this.style.background='#238636'">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+        </svg>
+        Authorize via GitHub.com (Live OAuth)
+      </button>
+
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;color:#8b949e;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;">
+        <span style="flex:1;height:1px;background:#30363d;"></span>
+        <span>Or 1-Click Developer Sign In</span>
+        <span style="flex:1;height:1px;background:#30363d;"></span>
+      </div>
+
+      <!-- Quick Developer 1: Naitik Soni (@19naitiksoni05-ks) (Super Admin) -->
+      <div onclick="executeGitHubLogin('19naitiksoni05-ks', 'Naitik Soni', '19naitiksoni05@gmail.com', 'https://avatars.githubusercontent.com/u/286883392?v=4')" 
+           style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:10px;cursor:pointer;transition:all 0.15s;border:1px solid #30363d;background:#161b22;margin-bottom:10px;"
+           onmouseover="this.style.borderColor='#58a6ff';this.style.background='#1f242c'" onmouseout="this.style.borderColor='#30363d';this.style.background='#161b22'">
+        <img src="https://avatars.githubusercontent.com/u/286883392?v=4" onerror="this.src='https://api.dicebear.com/7.x/avataaars/svg?seed=19naitik&backgroundColor=ff5b36'" style="width:40px;height:40px;border-radius:50%;border:1.5px solid #30363d;" alt="Naitik Soni">
+        <div style="flex:1;overflow:hidden;">
+          <div style="font-weight:600;font-size:0.92rem;color:#f0f6fc;">Naitik Soni <span style="color:#8b949e;font-size:0.8rem;">(@19naitiksoni05-ks)</span></div>
+          <div style="font-size:0.8rem;color:#8b949e;text-overflow:ellipsis;overflow:hidden;">19naitiksoni05@gmail.com</div>
+        </div>
+        <span style="font-size:0.75rem;padding:3px 8px;background:rgba(217,119,6,0.2);color:#fbbf24;border:1px solid rgba(217,119,6,0.4);border-radius:999px;font-weight:600;">Super Admin</span>
+      </div>
+
+      <!-- Quick Developer 2: Naitik Soni (@naitik19) (Super Admin) -->
       <div onclick="executeGitHubLogin('naitik19', 'Naitik Soni', 'naitik19ansh@gmail.com', 'https://github.com/naitik19.png')" 
            style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:10px;cursor:pointer;transition:all 0.15s;border:1px solid #30363d;background:#161b22;margin-bottom:10px;"
            onmouseover="this.style.borderColor='#58a6ff';this.style.background='#1f242c'" onmouseout="this.style.borderColor='#30363d';this.style.background='#161b22'">
@@ -469,7 +505,7 @@ async function handleForgotPassword(e) {
         <span style="font-size:0.75rem;padding:3px 8px;background:rgba(217,119,6,0.2);color:#fbbf24;border:1px solid rgba(217,119,6,0.4);border-radius:999px;font-weight:600;">Super Admin</span>
       </div>
 
-      <!-- Quick Developer 2: Developer Account -->
+      <!-- Quick Developer 3: Developer Account -->
       <div onclick="executeGitHubLogin('naitiksoni700', 'Naitik Soni', 'naitiksoni700@gmail.com', 'https://github.com/naitiksoni700.png')" 
            style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:10px;cursor:pointer;transition:all 0.15s;border:1px solid #30363d;background:#161b22;margin-bottom:10px;"
            onmouseover="this.style.borderColor='#58a6ff';this.style.background='#1f242c'" onmouseout="this.style.borderColor='#30363d';this.style.background='#161b22'">

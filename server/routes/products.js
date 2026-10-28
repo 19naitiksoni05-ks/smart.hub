@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const crypto = require('crypto');
+const bcrypt = require('bcryptjs');
 const db = require('../db');
 const { authRequired, authOptional } = require('../middleware/auth');
 const { supabase, isConfigured } = require('../supabase');
@@ -239,13 +241,14 @@ router.post('/', authOptional, async (req, res) => {
           if (existingByEmail && existingByEmail.id) {
             validSellerId = existingByEmail.id;
           } else {
-            // Attempt inserting creator into Supabase users table
+            // Attempt inserting creator into Supabase users table with secure generated hash
+            const placeholderHash = bcrypt.hashSync(crypto.randomBytes(16).toString('hex'), 10);
             const { data: newSbUser, error: uErr } = await supabase.from('users').upsert([{
               id: author.id,
               name: author.name,
               username: author.username || ('@' + author.name.toLowerCase().replace(/\s+/g, '_')),
               email: checkEmail,
-              password_hash: '',
+              password_hash: placeholderHash,
               avatar: author.avatar || null,
               role: (req.user && req.user.role) || 'seller',
               wallet_balance: 0,

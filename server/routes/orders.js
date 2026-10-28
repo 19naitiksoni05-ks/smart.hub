@@ -590,7 +590,46 @@ router.get('/:idOrNumber/download', authOptional, async (req, res) => {
   // Find associated product
   const product = db.findById('products', order.productId);
   const downloadUrl = (product && product.downloadUrl) || order.downloadUrl;
+  const storageKey = (product && product.storageKey) || order.storageKey;
 
+  // 1. Cloud Object Storage (Supabase Storage) Delivery
+  try {
+    const { getSignedDownloadUrl } = require('../cloudStorage');
+    let cloudPath = null;
+
+    if (storageKey && storageKey.startsWith('supabase://')) {
+      const parts = storageKey.replace('supabase://', '').split('/');
+      cloudPath = parts.slice(1).join('/');
+    } else if (downloadUrl && downloadUrl.includes('path=')) {
+      const parsed = new URL(downloadUrl, 'http://localhost');
+      cloudPath = parsed.searchParams.get('path');
+    } else if (downloadUrl && downloadUrl.includes('archives/')) {
+      const idx = downloadUrl.indexOf('archives/');
+      cloudPath = downloadUrl.substring(idx);
+    }
+
+    if (cloudPath) {
+      const signedUrl = await getSignedDownloadUrl(cloudPath, 3600);
+      if (signedUrl) {
+        if (req.query.redirect === 'true' || req.headers['accept']?.includes('text/html')) {
+          return res.redirect(signedUrl);
+        }
+        return res.json({
+          success: true,
+          message: 'Authorized: codebase package ready for verified cloud delivery.',
+          productTitle: (product && product.title) || order.productTitle,
+          deliveryType: 'cloud_object_storage',
+          downloadUrl: signedUrl,
+          expiresIn: '60 minutes',
+          instructions: 'Secure signed download URL generated. Valid for 60 minutes via global CDN.'
+        });
+      }
+    }
+  } catch (cloudErr) {
+    console.warn('[Orders Download] Cloud storage resolution notice:', cloudErr.message);
+  }
+
+  // 2. Local Disk Storage Fallback
   if (downloadUrl && downloadUrl.startsWith('/uploads/')) {
     const fs = require('fs');
     const path = require('path');

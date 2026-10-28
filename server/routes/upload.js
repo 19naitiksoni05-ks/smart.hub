@@ -7,6 +7,7 @@ const multer = require('multer');
 const db = require('../db');
 const { authOptional } = require('../middleware/auth');
 const { supabase, isSupabaseConfigured } = require('../supabase');
+const { uploadToCloud, getSignedDownloadUrl } = require('../cloudStorage');
 const { validatePythonCode, isPythonFile } = require('../utils/pythonValidator');
 
 const IS_VERCEL = Boolean(process.env.VERCEL);
@@ -85,7 +86,7 @@ const anySingleFile = (req, res, next) => {
 };
 
 // ── 1. Single Media / File Upload Endpoint ─────────────────────
-router.post('/single', authOptional, anySingleFile, (req, res) => {
+router.post('/single', authOptional, anySingleFile, async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ success: false, error: 'No file was uploaded in request' });
@@ -120,6 +121,30 @@ router.post('/single', authOptional, anySingleFile, (req, res) => {
       }
     }
 
+    // Persist to Cloud Storage (Supabase Storage)
+    let finalUrl = relativeUrl;
+    let storageKey = null;
+
+    let fileBuffer = req.file.buffer;
+    if (!fileBuffer && req.file.path && fs.existsSync(req.file.path)) {
+      try { fileBuffer = fs.readFileSync(req.file.path); } catch (e) {}
+    }
+
+    if (fileBuffer) {
+      const isPrivate = (category === 'archives');
+      const cloudRes = await uploadToCloud({
+        buffer: fileBuffer,
+        fileName: req.file.filename,
+        mimeType: req.file.mimetype,
+        isPrivate,
+        category
+      });
+      if (cloudRes.cloud) {
+        finalUrl = cloudRes.url;
+        storageKey = cloudRes.storageKey || null;
+      }
+    }
+
     const record = {
       id: 'up_' + Date.now() + '_' + crypto.randomBytes(3).toString('hex'),
       originalName: req.file.originalname,
@@ -129,7 +154,8 @@ router.post('/single', authOptional, anySingleFile, (req, res) => {
       mimetype: req.file.mimetype,
       size: req.file.size,
       sizeFormatted: formatBytes(req.file.size),
-      url: relativeUrl,
+      url: finalUrl,
+      storageKey,
       userId: req.user ? req.user.id : null,
       uploaderName: req.user ? req.user.name : 'Guest Developer',
       createdAt: new Date().toISOString()
@@ -141,7 +167,7 @@ router.post('/single', authOptional, anySingleFile, (req, res) => {
       success: true,
       message: `${record.type.toUpperCase()} uploaded successfully!`,
       file: record,
-      url: relativeUrl,
+      url: finalUrl,
       category
     });
   } catch (err) {
@@ -151,7 +177,7 @@ router.post('/single', authOptional, anySingleFile, (req, res) => {
 });
 
 // ── 2. Dedicated Image Upload Endpoint ────────────────────────
-router.post('/image', authOptional, anySingleFile, (req, res) => {
+router.post('/image', authOptional, anySingleFile, async (req, res) => {
   try {
     const file = req.file;
     if (!file) {
@@ -159,6 +185,26 @@ router.post('/image', authOptional, anySingleFile, (req, res) => {
     }
 
     const relativeUrl = `/uploads/images/${file.filename}`;
+    let finalUrl = relativeUrl;
+
+    let fileBuffer = file.buffer;
+    if (!fileBuffer && file.path && fs.existsSync(file.path)) {
+      try { fileBuffer = fs.readFileSync(file.path); } catch (e) {}
+    }
+
+    if (fileBuffer) {
+      const cloudRes = await uploadToCloud({
+        buffer: fileBuffer,
+        fileName: file.filename,
+        mimeType: file.mimetype,
+        isPrivate: false,
+        category: 'images'
+      });
+      if (cloudRes.cloud) {
+        finalUrl = cloudRes.url;
+      }
+    }
+
     const record = {
       id: 'img_' + Date.now() + '_' + crypto.randomBytes(3).toString('hex'),
       originalName: file.originalname,
@@ -168,7 +214,7 @@ router.post('/image', authOptional, anySingleFile, (req, res) => {
       mimetype: file.mimetype,
       size: file.size,
       sizeFormatted: formatBytes(file.size),
-      url: relativeUrl,
+      url: finalUrl,
       userId: req.user ? req.user.id : null,
       uploaderName: req.user ? req.user.name : 'Guest Developer',
       createdAt: new Date().toISOString()
@@ -181,7 +227,7 @@ router.post('/image', authOptional, anySingleFile, (req, res) => {
       message: 'Image uploaded successfully!',
       image: record,
       file: record,
-      url: relativeUrl
+      url: finalUrl
     });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
@@ -189,7 +235,7 @@ router.post('/image', authOptional, anySingleFile, (req, res) => {
 });
 
 // ── 3. Dedicated Video Upload Endpoint ────────────────────────
-router.post('/video', authOptional, anySingleFile, (req, res) => {
+router.post('/video', authOptional, anySingleFile, async (req, res) => {
   try {
     const file = req.file;
     if (!file) {
@@ -197,6 +243,26 @@ router.post('/video', authOptional, anySingleFile, (req, res) => {
     }
 
     const relativeUrl = `/uploads/videos/${file.filename}`;
+    let finalUrl = relativeUrl;
+
+    let fileBuffer = file.buffer;
+    if (!fileBuffer && file.path && fs.existsSync(file.path)) {
+      try { fileBuffer = fs.readFileSync(file.path); } catch (e) {}
+    }
+
+    if (fileBuffer) {
+      const cloudRes = await uploadToCloud({
+        buffer: fileBuffer,
+        fileName: file.filename,
+        mimeType: file.mimetype,
+        isPrivate: false,
+        category: 'videos'
+      });
+      if (cloudRes.cloud) {
+        finalUrl = cloudRes.url;
+      }
+    }
+
     const record = {
       id: 'vid_' + Date.now() + '_' + crypto.randomBytes(3).toString('hex'),
       originalName: file.originalname,
@@ -206,7 +272,7 @@ router.post('/video', authOptional, anySingleFile, (req, res) => {
       mimetype: file.mimetype,
       size: file.size,
       sizeFormatted: formatBytes(file.size),
-      url: relativeUrl,
+      url: finalUrl,
       userId: req.user ? req.user.id : null,
       uploaderName: req.user ? req.user.name : 'Guest Developer',
       createdAt: new Date().toISOString()
@@ -219,7 +285,7 @@ router.post('/video', authOptional, anySingleFile, (req, res) => {
       message: 'Video uploaded successfully!',
       video: record,
       file: record,
-      url: relativeUrl
+      url: finalUrl
     });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
@@ -354,18 +420,41 @@ router.post('/folder', authOptional, folderUpload.any(), async (req, res) => {
     // 2. Generate a downloadable ZIP archive of the uploaded folder using AdmZip
     const zipFilename = `${folderTitle}_${Date.now()}.zip`;
     const zipFilePath = path.join(DIRS.archives, zipFilename);
-    
+    let zipBuffer = null;
+    let zipSize = totalBytes;
+
     try {
       const AdmZip = require('adm-zip');
       const zip = new AdmZip();
       zip.addLocalFolder(targetFolderDir, folderTitle);
       zip.writeZip(zipFilePath);
+      zipBuffer = zip.toBuffer();
+      if (zipBuffer) zipSize = zipBuffer.length;
     } catch (zipErr) {
       console.warn('[Folder Zip] AdmZip warning:', zipErr);
     }
 
-    const archiveStats = fs.statSync(zipFilePath);
-    const zipUrl = `/uploads/archives/${zipFilename}`;
+    if (!zipBuffer && fs.existsSync(zipFilePath)) {
+      try { zipBuffer = fs.readFileSync(zipFilePath); } catch (e) {}
+    }
+
+    let finalZipUrl = `/uploads/archives/${zipFilename}`;
+    let storageKey = null;
+
+    if (zipBuffer) {
+      const cloudZipRes = await uploadToCloud({
+        buffer: zipBuffer,
+        fileName: zipFilename,
+        mimeType: 'application/zip',
+        isPrivate: true,
+        category: 'archives'
+      });
+      if (cloudZipRes.cloud) {
+        finalZipUrl = cloudZipRes.url;
+        storageKey = cloudZipRes.storageKey;
+      }
+    }
+
     const folderViewUrl = `/uploads/folders/${folderId}`;
 
     const record = {
@@ -376,9 +465,10 @@ router.post('/folder', authOptional, folderUpload.any(), async (req, res) => {
       fileCount: files.length,
       size: totalBytes,
       sizeFormatted: formatBytes(totalBytes),
-      zipSize: archiveStats.size,
-      zipSizeFormatted: formatBytes(archiveStats.size),
-      url: zipUrl, // primary link downloads the zipped bundle
+      zipSize,
+      zipSizeFormatted: formatBytes(zipSize),
+      url: finalZipUrl, // primary link downloads the zipped bundle
+      storageKey,
       folderUrl: folderViewUrl,
       files: fileManifest.slice(0, 60), // preview first 60 files in manifest
       userId: req.user ? req.user.id : null,
@@ -392,11 +482,10 @@ router.post('/folder', authOptional, folderUpload.any(), async (req, res) => {
       success: true,
       message: `Folder "${folderTitle}" uploaded and packaged into ZIP successfully! (${files.length} files)`,
       folder: record,
-      zipUrl: record.zipUrl,
-      zipFilename: record.zipFilename,
+      zipUrl: record.url,
+      zipFilename,
       fileCount: files.length,
-      totalSize: totalBytes,
-      folderPath: record.folderPath
+      totalSize: totalBytes
     });
   } catch (err) {
     console.error('[Folder Upload Error]', err);

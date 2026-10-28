@@ -1,6 +1,21 @@
 {
   "users": [
     {
+      "id": "edf429c2-1399-4969-867c-679cc2ea0b14",
+      "name": "Muaviya",
+      "username": "@umair",
+      "email": "muaviya492@gmail.com",
+      "passwordHash": "$2b$10$s8LnI6KWgg8new3Z2XWMzecgd.m/NYNGJNJMBHxao/p/DHtlexgzS",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=edf429c2-1399-4969-867c-679cc2ea0b14&backgroundColor=ff5b36",
+      "walletBalance": 0,
+      "role": "buyer",
+      "xp": 0,
+      "badges": 0,
+      "location": "India",
+      "headline": "Smart Hub Creator",
+      "createdAt": "2026-10-28T15:38:17.829Z"
+    },
+    {
       "id": "7e98609d-045f-459f-bf87-3c6bdfc63c2a",
       "name": "ansh",
       "username": "@ansh",
@@ -640,6 +655,19 @@
   "reviews": [],
   "apiKeys": [
     {
+      "id": "key_1793202770597",
+      "userId": "u_1793202770534",
+      "name": "Default GitHub OAuth Key",
+      "keyHash": "6fbb2d1643c65430bdf1ee8fe91473822c8f0c79979018e057430d6440041f8c",
+      "encryptedKey": "b9292f9b928d82af8881076de45b0997:7e64cf6bfca09cf760452424d8567b4733939facce1617bfddd3788f9041f72615affee75fc6baf8b8b233dd81590294d129df80b29971a2fb9ef743dbc66972",
+      "keyPrefix": "sh_live_0062",
+      "lastFour": "aaf8",
+      "scope": "full_access",
+      "status": "active",
+      "lastUsedAt": null,
+      "createdAt": "2026-10-28T15:52:50.624Z"
+    },
+    {
       "id": "key_1793186039810",
       "userId": "7e98609d-045f-459f-bf87-3c6bdfc63c2a",
       "name": "Default Production Key",
@@ -800,6 +828,93 @@
     }
   ],
   "uploads": [
+    {
+      "id": "up_1793201891163_b0cf7e",
+      "originalName": "cloud_codebase.zip",
+      "filename": "cloud_codebase_1793201890961_f24110cb.zip",
+      "category": "archives",
+      "type": "archive",
+      "mimetype": "application/zip",
+      "size": 22,
+      "sizeFormatted": "22 Bytes",
+      "url": "/api/orders/download-cloud?path=archives%2Fcloud_codebase_1793201890961_f24110cb.zip",
+      "storageKey": "supabase://archives/archives/cloud_codebase_1793201890961_f24110cb.zip",
+      "userId": null,
+      "uploaderName": "Guest Developer",
+      "createdAt": "2026-10-28T15:38:11.163Z"
+    },
+    {
+      "id": "img_1793201890951_654070",
+      "originalName": "cloud_test_thumb.gif",
+      "filename": "cloud_test_thumb_1793201890549_043a8c84.gif",
+      "category": "images",
+      "type": "image",
+      "mimetype": "image/gif",
+      "size": 48,
+      "sizeFormatted": "48 Bytes",
+      "url": "https://nxmaatedkgligticbzro.supabase.co/storage/v1/object/public/uploads/images/cloud_test_thumb_1793201890549_043a8c84.gif",
+      "userId": null,
+      "uploaderName": "Guest Developer",
+      "createdAt": "2026-10-28T15:38:10.951Z"
+    },
+    {
+      "id": "up_1793201876471_4015db",
+      "originalName": "cloud_codebase.zip",
+      "filename": "cloud_codebase_1793201876265_cc36b94a.zip",
+      "category": "archives",
+      "type": "archive",
+      "mimetype": "application/zip",
+      "size": 22,
+      "sizeFormatted": "22 Bytes",
+      "url": "/api/orders/download-cloud?path=archives%2Fcloud_codebase_1793201876265_cc36b94a.zip",
+      "storageKey": "supabase://archives/archives/cloud_codebase_1793201876265_cc36b94a.zip",
+      "userId": null,
+      "uploaderName": "Guest Developer",
+      "createdAt": "2026-10-28T15:37:56.471Z"
+    },
+    {
+      "id": "img_1793201876250_1e0564",
+      "originalName": "cloud_test_thumb.gif",
+      "filename": "cloud_test_thumb_1793201875892_77763318.gif",
+      "category": "images",
+      "type": "image",
+      "mimetype": "image/gif",
+      "size": 48,
+      "sizeFormatted": "48 Bytes",
+      "url": "https://nxmaatedkgligticbzro.supabase.co/storage/v1/object/public/uploads/images/cloud_test_thumb_1793201875892_77763318.gif",
+      "userId": null,
+      "uploaderName": "Guest Developer",
+      "createdAt": "2026-10-28T15:37:56.250Z"
+    },
+    {
+      "id": "up_1793201823983_3b66de",
+      "originalName": "cloud_codebase.zip",
+      "filename": "cloud_codebase_1793201823552_f6c630f0.zip",
+      "category": "archives",
+      "type": "archive",
+      "mimetype": "application/zip",
+      "size": 22,
+      "sizeFormatted": "22 Bytes",
+      "url": "/api/orders/download-cloud?path=archives%2Fcloud_codebase_1793201823552_f6c630f0.zip",
+      "storageKey": "supabase://archives/archives/cloud_codebase_1793201823552_f6c630f0.zip",
+      "userId": null,
+      "uploaderName": "Guest Developer",
+      "createdAt": "2026-10-28T15:37:03.983Z"
+    },
+    {
+      "id": "img_1793201823537_e7ebff",
+      "originalName": "cloud_test_thumb.gif",
+      "filename": "cloud_test_thumb_1793201822787_3ef3b5ec.gif",
+      "category": "images",
+      "type": "image",
+      "mimetype": "image/gif",
+      "size": 48,
+      "sizeFormatted": "48 Bytes",
+      "url": "https://nxmaatedkgligticbzro.supabase.co/storage/v1/object/public/uploads/images/cloud_test_thumb_1793201822787_3ef3b5ec.gif",
+      "userId": null,
+      "uploaderName": "Guest Developer",
+      "createdAt": "2026-10-28T15:37:03.537Z"
+    },
     {
       "id": "img_1792920691974_5b6168",
       "originalName": "profilpic - Copy.png",
