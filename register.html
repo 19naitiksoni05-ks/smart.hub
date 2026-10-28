@@ -785,7 +785,8 @@
 
     function triggerLiveGitHubRegister() {
       if (githubClientId) {
-        var redirectUri = encodeURIComponent(window.location.origin + window.location.pathname);
+        var callbackUrl = window.location.origin + '/login.html';
+        var redirectUri = encodeURIComponent(callbackUrl);
         window.location.href = 'https://github.com/login/oauth/authorize?client_id=' + githubClientId + '&scope=read:user,user:email&redirect_uri=' + redirectUri;
       } else {
         openGitHubModal();
