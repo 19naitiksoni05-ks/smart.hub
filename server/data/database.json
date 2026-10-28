@@ -22,17 +22,17 @@
       "username": "@ansh",
       "email": "ansh05ks@gmail.com",
       "mobile": "7007099722",
-      "passwordHash": "$2b$10$pziYtQ990p7U3MNEnd5b/ekBFHZZnvEX.FK/aQ0uqbIwbfsiUI03K",
+      "passwordHash": "$2b$10$5zpbyaUx5eCHHXKhLtxTn.5z3G71/PW0UakVvHD6OyW9qCXpsCBou",
       "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=ansh&backgroundColor=ff5b36",
       "walletBalance": 0,
-      "role": "buyer",
+      "role": "admin",
       "xp": 0,
       "badges": 0,
       "location": "India",
-      "headline": "Smart Hub Developer",
+      "headline": "Platform & Architecture · Super Admin",
       "emailVerified": true,
       "createdAt": "2026-10-28T11:13:59.808+00:00",
-      "updatedAt": "2026-10-28T14:17:55.781275+00:00"
+      "updatedAt": "2026-10-28T19:28:53.103Z"
     },
     {
       "id": "u_1793133388791",
