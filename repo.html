@@ -682,6 +682,10 @@
                     🔑 Enter Email Encryption Key
                   </button>
                 </div>
+                <div style="margin-top:16px;display:flex;gap:8px;justify-content:center;max-width:440px;margin-left:auto;margin-right:auto;">
+                  <input type="text" id="overlay-key-input" placeholder="Paste SH-KEY-2026-..." class="input" style="font-family:var(--font-mono);text-transform:uppercase;font-size:0.85rem;padding:8px 12px;width:240px;">
+                  <button class="btn btn-primary btn-sm" id="btn-overlay-decrypt" onclick="verifyOverlayKey()" style="font-weight:700;">🔓 Decrypt</button>
+                </div>
               </div>
             </div>
 
@@ -868,7 +872,7 @@
     document.addEventListener('DOMContentLoaded', async () => {
       const urlParams = new URLSearchParams(window.location.search);
       const projId = urlParams.get('id') || 'p_1792913427884';
-      const autoActivateKey = urlParams.get('activateKey');
+      const autoActivateKey = urlParams.get('activateKey') || urlParams.get('key');
 
       // Check stored key
       const storedKey = localStorage.getItem(`smarthub_key_${projId}`);
@@ -1045,12 +1049,30 @@
     }
 
     function focusActivationInput() {
+      const banner = document.getElementById('activation-banner');
+      if (banner) {
+        banner.style.display = 'flex';
+      }
       const input = document.getElementById('activation-key-input');
       if (input) {
         input.scrollIntoView({ behavior: 'smooth', block: 'center' });
         input.focus();
         input.style.borderColor = 'var(--accent-coral)';
+        input.style.boxShadow = '0 0 12px rgba(255, 91, 54, 0.4)';
+        setTimeout(() => { input.style.boxShadow = 'none'; }, 2000);
       }
+    }
+
+    async function verifyOverlayKey() {
+      const overlayInput = document.getElementById('overlay-key-input');
+      const val = (overlayInput ? overlayInput.value : '').trim();
+      if (!val) {
+        focusActivationInput();
+        return;
+      }
+      const actInput = document.getElementById('activation-key-input');
+      if (actInput) actInput.value = val;
+      await verifyAndActivateKey(val);
     }
 
     // ── Key Verification & Activation API Call ─────────────────
@@ -1064,28 +1086,49 @@
       }
 
       const btn = document.getElementById('btn-activate-key');
+      const overlayBtn = document.getElementById('btn-overlay-decrypt');
       if (btn) {
         btn.disabled = true;
         btn.textContent = 'Verifying Key...';
       }
+      if (overlayBtn) {
+        overlayBtn.disabled = true;
+        overlayBtn.textContent = 'Decrypting...';
+      }
 
       try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const pId = (currentRepo && currentRepo.id) || urlParams.get('id') || 'p_1792913427884';
+
         const apiBase = (window.SmartHubAPI ? window.SmartHubAPI.baseUrl : '/api');
+        const user = (window.getCurrentUser && window.getCurrentUser()) || {};
+        const authHeaders = (window.SmartHubAPI && typeof window.SmartHubAPI.getHeaders === 'function')
+          ? window.SmartHubAPI.getHeaders()
+          : {};
+
         const res = await fetch(`${apiBase}/orders/activate-key`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ productId: prodId, licenseKey: key })
+          headers: {
+            'Content-Type': 'application/json',
+            'x-license-key': key,
+            ...authHeaders
+          },
+          body: JSON.stringify({ productId: pId, licenseKey: key, email: user.email || '' })
         });
         const data = await res.json();
 
         if (data && data.success && data.activated) {
           activeLicenseKey = key;
-          localStorage.setItem(`smarthub_key_${prodId}`, key);
-          markProjectUnlocked(data.buyerEmail || 'Licensed Buyer');
+          localStorage.setItem(`smarthub_key_${pId}`, key);
+          localStorage.setItem('smarthub_active_key', key);
+          markProjectUnlocked(data.buyerEmail || user.email || 'Licensed Buyer');
 
           if (!silent) {
             showToast('🎉 Encryption Key Verified! Source code successfully decrypted & unlocked.', 'success');
           }
+
+          // Reload repository to sync access
+          await loadRepository(pId);
 
           // If a file was currently opened and locked, re-fetch it in decrypted mode!
           if (currentBlobPath) {
@@ -1103,6 +1146,10 @@
         if (btn) {
           btn.disabled = false;
           btn.textContent = '🔓 Verify & Decrypt Code';
+        }
+        if (overlayBtn) {
+          overlayBtn.disabled = false;
+          overlayBtn.textContent = '🔓 Decrypt';
         }
       }
     }
@@ -1498,10 +1545,11 @@
           url += `&key=${encodeURIComponent(activeLicenseKey)}`;
         }
 
-        const headers = {};
+        const authHeaders = (window.SmartHubAPI && typeof window.SmartHubAPI.getHeaders === 'function') ? window.SmartHubAPI.getHeaders() : {};
+        const headers = { ...authHeaders };
         if (activeLicenseKey) headers['x-license-key'] = activeLicenseKey;
-        const authToken = localStorage.getItem('smarthub_auth_token');
-        if (authToken) headers['Authorization'] = `Bearer ${authToken}`;
+        const authToken = localStorage.getItem('smarthub_token') || localStorage.getItem('smarthub_auth_token');
+        if (authToken && !headers['Authorization']) headers['Authorization'] = `Bearer ${authToken}`;
 
         const res = await fetch(url, { headers });
         const data = await res.json();

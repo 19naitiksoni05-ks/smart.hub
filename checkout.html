@@ -726,10 +726,13 @@
                   <div style="font-size:0.82rem;color:var(--text-secondary);line-height:1.5;margin-bottom:16px;">
                     This project is cryptographically protected against unauthorized screenshots and recordings. Click below to verify this key on Smart Hub and immediately decrypt the full source code.
                   </div>
-                  <div style="display:flex;gap:10px;align-items:center;">
+                  <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
                     <a href="${actUrl}" class="btn btn-primary" style="font-weight:800;font-size:0.92rem;">
                       🔓 Open Studio &amp; Activate Key Now →
                     </a>
+                    <button onclick="resendDeliveryEmail('${email}', '${res.order ? res.order.orderNumber : ''}', '${targetProdId}', '${singleKey}')" class="btn btn-outline" style="font-weight:700;font-size:0.88rem;" id="btn-resend-mail">
+                      📧 Resend to Email
+                    </button>
                   </div>
                 </div>
               `;
@@ -824,6 +827,39 @@
       btn.textContent = 'Copied ✓';
       showToast('Encryption key copied to clipboard!', 'info');
       setTimeout(() => { btn.textContent = orig; }, 2000);
+    }
+
+    async function resendDeliveryEmail(email, orderNumber, productId, encKey) {
+      const btn = document.getElementById('btn-resend-mail');
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Sending Email...';
+      }
+      try {
+        const apiBase = (window.SmartHubAPI ? window.SmartHubAPI.baseUrl : '/api');
+        const res = await fetch(`${apiBase}/orders/resend-delivery-email`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, orderNumber, productId, encKey })
+        });
+        const data = await res.json();
+        if (data && data.success) {
+          showToast('✉️ Project ZIP and encryption key sent to ' + email, 'success');
+          if (btn) btn.textContent = '✓ Dispatched to Inbox!';
+        } else {
+          showToast((data && data.error) || 'Failed to dispatch email', 'error');
+          if (btn) {
+            btn.disabled = false;
+            btn.textContent = '📧 Resend to Email';
+          }
+        }
+      } catch (err) {
+        showToast('Dispatch error: ' + err.message, 'error');
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = '📧 Resend to Email';
+        }
+      }
     }
 
     function simulateDownload() {

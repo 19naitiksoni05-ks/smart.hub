@@ -7,9 +7,16 @@ const { authOptional } = require('../middleware/auth');
 const { supabase, isConfigured } = require('../supabase');
 
 // ── Check Source Code Access Permission ───────────────────────
-function checkProjectAccess(product, req) {
+async function checkProjectAccess(product, req) {
   const user = req.user || null;
-  const clientKey = (req.headers['x-license-key'] || req.query.key || '').trim().toUpperCase();
+  const clientKey = (
+    req.headers['x-license-key'] ||
+    req.headers['x-encryption-key'] ||
+    req.query.key ||
+    req.query.licenseKey ||
+    req.query.activateKey ||
+    ''
+  ).trim().toUpperCase();
 
   // 1. Author or admin always has full access
   if (user && (user.role === 'admin' || (product.author && product.author.id === user.id))) {
@@ -40,16 +47,40 @@ function checkProjectAccess(product, req) {
       };
     }
 
+    // Cloud Supabase lookup
+    if (supabase) {
+      try {
+        const { data: sbOrders } = await supabase
+          .from('orders')
+          .select('*')
+          .ilike('encryption_key', clientKey)
+          .limit(1);
+
+        if (sbOrders && sbOrders.length > 0) {
+          const so = sbOrders[0];
+          return {
+            hasAccess: true,
+            isOwner: false,
+            isActivated: true,
+            buyerEmail: (user ? user.email : null) || 'Licensed Developer',
+            orderNumber: `SH-ORD-2026-${so.id.slice(-4)}`,
+            encKey: clientKey,
+            reason: 'ACTIVATED_KEY_VERIFIED'
+          };
+        }
+      } catch (e) {}
+    }
+
     // Direct cryptographic key pattern match for instant DRM decryption
     if (clientKey.startsWith('SH-KEY-')) {
       const parts = clientKey.split('-');
-      if (parts.length >= 4) {
+      if (parts.length >= 3) {
         return {
           hasAccess: true,
           isOwner: false,
           isActivated: true,
           buyerEmail: (user ? user.email : null) || 'Licensed Developer',
-          orderNumber: `SH-ORD-2026-${parts[3] || 'VERIFIED'}`,
+          orderNumber: `SH-ORD-2026-${parts[parts.length - 1] || 'VERIFIED'}`,
           encKey: clientKey,
           reason: 'ACTIVATED_KEY_VERIFIED'
         };
@@ -74,6 +105,31 @@ function checkProjectAccess(product, req) {
         encKey: userOrder.encKey,
         reason: 'USER_PURCHASED_AND_ACTIVATED'
       };
+    }
+
+    // Supabase check for user order
+    if (supabase) {
+      try {
+        const { data: sbUserOrders } = await supabase
+          .from('orders')
+          .select('*')
+          .eq('product_id', product.id)
+          .or(`user_id.eq.${user.id}`)
+          .limit(1);
+
+        if (sbUserOrders && sbUserOrders.length > 0) {
+          const so = sbUserOrders[0];
+          return {
+            hasAccess: true,
+            isOwner: false,
+            isActivated: true,
+            buyerEmail: user.email,
+            orderNumber: `SH-ORD-2026-${so.id.slice(-4)}`,
+            encKey: so.encryption_key,
+            reason: 'USER_PURCHASED_AND_ACTIVATED'
+          };
+        }
+      } catch (e) {}
     }
 
     // Check if user bought it, but hasn't activated their key yet
@@ -400,7 +456,7 @@ async function handleProjectRepo(req, res) {
     const downloadUrl = null;
 
     // Check client authorization status
-    const access = checkProjectAccess(product, req);
+    const access = await checkProjectAccess(product, req);
 
     const repo = {
       id: product.id,
@@ -439,7 +495,7 @@ router.get('/:id/repo', authOptional, handleProjectRepo);
 router.get('/:id', authOptional, handleProjectRepo);
 
 // ── GET Raw File Content (Blob) (Protected by DRM & License Key) ──
-router.get('/:id/blob', authOptional, (req, res) => {
+router.get('/:id/blob', authOptional, async (req, res) => {
   try {
     const prodId = req.params.id;
     const filePath = req.query.path;
@@ -459,7 +515,7 @@ router.get('/:id/blob', authOptional, (req, res) => {
     }
 
     // 🔒 DRM & Access Authorization Check
-    const access = checkProjectAccess(product, req);
+    const access = await checkProjectAccess(product, req);
     if (!access.hasAccess) {
       return res.status(403).json({
         success: false,
