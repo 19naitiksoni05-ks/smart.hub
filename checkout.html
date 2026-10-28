@@ -206,16 +206,26 @@
           style="max-width:680px;margin:0 auto 30px auto;display:flex;flex-direction:column;gap:16px;text-align:left;">
           <div
             style="border:1.5px solid var(--accent-coral);border-radius:var(--radius-xs);padding:24px;background:#060809;">
-            <div style="font-family:var(--font-tech);font-size:0.72rem;color:var(--accent-coral);margin-bottom:6px;">
-              YOUR UNIQUE ENCRYPTED TOKEN KEY:</div>
-            <div
-              style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.05);padding:10px 16px;border-radius:2px;border:1px solid var(--border-outline);">
-              <span style="font-family:var(--font-mono);font-size:1.1rem;color:var(--accent-cyan);font-weight:700;"
-                id="success-enc-key">SH-ENC-VERIFIED-TOKEN</span>
-              <button class="btn btn-outline btn-sm" onclick="copyEncKey()" id="copy-key-btn">Copy Key 📋</button>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+              <div style="font-family:var(--font-tech);font-size:0.75rem;color:var(--accent-coral);font-weight:700;">
+                🔒 ENCRYPTION KEY DISPATCHED EXCLUSIVELY VIA EMAIL
+              </div>
+              <span class="badge badge-green" style="font-size:0.68rem;">SENT TO INBOX 📧</span>
             </div>
-            <div style="font-size:0.75rem;color:var(--text-muted);margin-top:10px;">
-              Use this key to unlock and decrypt the code viewer in the Smart Hub Studio.
+            <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.05);padding:14px 18px;border-radius:6px;border:1px solid var(--border-outline);margin-bottom:14px;">
+              <span style="font-size:1.6rem;">📧</span>
+              <div style="flex:1;">
+                <div style="font-family:var(--font-mono);font-size:1.15rem;color:var(--accent-cyan);font-weight:800;letter-spacing:0.12em;">
+                  SH-KEY-••••-••••-••••
+                </div>
+                <div style="font-size:0.75rem;color:var(--text-muted);margin-top:3px;">
+                  Secret key delivered to your verified email for DRM and piracy protection.
+                </div>
+              </div>
+              <span class="badge badge-purple" style="font-size:0.7rem;font-weight:700;">CONFIDENTIAL</span>
+            </div>
+            <div style="font-size:0.82rem;color:var(--text-secondary);line-height:1.5;">
+              Check your email inbox for your unique decryption key, then use it in Smart Hub Studio to decrypt the full source code.
             </div>
           </div>
         </div>
@@ -694,7 +704,8 @@
             if (res.encKeys && res.encKeys.length > 1) {
               let keysHtml = '';
               res.encKeys.forEach((kObj, idx) => {
-                const actUrl = kObj.activationUrl || `repo.html?id=${kObj.productId || (currentProduct ? currentProduct.id : '')}&activateKey=${kObj.key}`;
+                const targetId = kObj.productId || (currentProduct ? currentProduct.id : '');
+                const studioUrl = `repo.html?id=${targetId}`;
                 keysHtml += `
                   <div style="border:1.5px solid var(--accent-coral);border-radius:var(--radius-xs);padding:20px;background:#060809;margin-bottom:14px;">
                     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
@@ -703,13 +714,16 @@
                       </div>
                       <span class="badge badge-purple" style="font-size:0.68rem;">EMAIL DISPATCHED 📧</span>
                     </div>
-                    <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.05);padding:10px 14px;border-radius:2px;border:1px solid var(--border-outline);gap:8px;">
-                      <span style="font-family:var(--font-mono);font-size:1.05rem;color:var(--accent-cyan);font-weight:700;word-break:break-all;" id="key-val-${idx}">${kObj.key}</span>
-                      <button class="btn btn-outline btn-sm" onclick="copySpecificKey('${kObj.key}', this)">Copy 📋</button>
+                    <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.05);padding:12px 16px;border-radius:4px;border:1px solid var(--border-outline);">
+                      <span style="font-size:1.4rem;">📧</span>
+                      <div style="flex:1;">
+                        <span style="font-family:var(--font-mono);font-size:1.05rem;color:var(--accent-cyan);font-weight:700;letter-spacing:0.1em;">SH-KEY-••••-••••-••••</span>
+                        <div style="font-size:0.72rem;color:var(--text-muted);margin-top:2px;">Delivered exclusively to <strong>${email}</strong></div>
+                      </div>
                     </div>
                     <div style="margin-top:12px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
-                      <span style="font-size:0.75rem;color:var(--text-muted);">Must be verified in website before code can be opened.</span>
-                      <a href="${actUrl}" class="btn btn-primary btn-sm" style="font-weight:700;">⚡ Verify &amp; Activate Key Now →</a>
+                      <span style="font-size:0.75rem;color:var(--text-muted);">Check your email inbox for your activation key.</span>
+                      <a href="${studioUrl}" class="btn btn-primary btn-sm" style="font-weight:700;">🔓 Open Studio &amp; Enter Key →</a>
                     </div>
                   </div>
                 `;
@@ -718,25 +732,33 @@
             } else {
               const singleKey = res.encKey || (res.encKeys && res.encKeys[0] && res.encKeys[0].key) || 'SH-KEY-VERIFIED';
               const targetProdId = (res.order && res.order.productId) || (currentProduct ? currentProduct.id : 'p_1792913427884');
-              const actUrl = res.activationUrl || `repo.html?id=${targetProdId}&activateKey=${singleKey}`;
+              const studioUrl = `repo.html?id=${targetProdId}`;
               keysContainer.innerHTML = `
                 <div style="border:1.5px solid var(--accent-coral);border-radius:var(--radius-xs);padding:24px;background:#060809;">
-                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
                     <div style="font-family:var(--font-tech);font-size:0.75rem;color:var(--accent-coral);font-weight:700;">
-                      🔒 YOUR UNIQUE EMAIL ENCRYPTION ACTIVATION KEY:
+                      🔒 ENCRYPTION KEY DISPATCHED EXCLUSIVELY VIA EMAIL
                     </div>
-                    <span class="badge badge-green" style="font-size:0.68rem;">DISPATCHED TO INBOX 📧</span>
+                    <span class="badge badge-green" style="font-size:0.68rem;">SENT TO INBOX 📧</span>
                   </div>
-                  <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.05);padding:12px 16px;border-radius:2px;border:1px solid var(--border-outline);margin-bottom:12px;">
-                    <span style="font-family:var(--font-mono);font-size:1.15rem;color:var(--accent-cyan);font-weight:800;" id="success-enc-key">${singleKey}</span>
-                    <button class="btn btn-outline btn-sm" onclick="copyEncKey()" id="copy-key-btn">Copy Key 📋</button>
+                  <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.05);padding:14px 18px;border-radius:6px;border:1px solid var(--border-outline);margin-bottom:14px;">
+                    <span style="font-size:1.6rem;">📧</span>
+                    <div style="flex:1;">
+                      <div style="font-family:var(--font-mono);font-size:1.15rem;color:var(--accent-cyan);font-weight:800;letter-spacing:0.12em;">
+                        SH-KEY-••••-••••-••••
+                      </div>
+                      <div style="font-size:0.75rem;color:var(--text-muted);margin-top:3px;">
+                        Dispatched exclusively to <strong>${email}</strong> for security and DRM protection.
+                      </div>
+                    </div>
+                    <span class="badge badge-purple" style="font-size:0.7rem;font-weight:700;">CONFIDENTIAL</span>
                   </div>
                   <div style="font-size:0.82rem;color:var(--text-secondary);line-height:1.5;margin-bottom:16px;">
-                    This project is cryptographically protected against unauthorized screenshots and recordings. Click below to verify this key on Smart Hub and immediately decrypt the full source code.
+                    To prevent unauthorized screenshots, copying, and piracy, your secret decryption key is not displayed on the website. Please open the confirmation email sent to <strong>${email}</strong>, copy your key, and enter it in Smart Hub Studio to decrypt the full source code.
                   </div>
                   <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-                    <a href="${actUrl}" class="btn btn-primary" style="font-weight:800;font-size:0.92rem;">
-                      🔓 Open Studio &amp; Activate Key Now →
+                    <a href="${studioUrl}" class="btn btn-primary" style="font-weight:800;font-size:0.92rem;">
+                      🔓 Open Studio &amp; Enter Key →
                     </a>
                     <button onclick="resendDeliveryEmail('${email}', '${res.order ? res.order.orderNumber : ''}', '${targetProdId}', '${singleKey}')" class="btn btn-outline" style="font-weight:700;font-size:0.88rem;" id="btn-resend-mail">
                       📧 Resend to Email
@@ -804,11 +826,30 @@
       if (keysContainer) {
         keysContainer.innerHTML = `
           <div style="border:1.5px solid var(--accent-coral);border-radius:var(--radius-xs);padding:24px;background:#060809;">
-            <div style="font-family:var(--font-tech);font-size:0.72rem;color:var(--accent-coral);margin-bottom:6px;">YOUR UNIQUE ENCRYPTED TOKEN KEY:</div>
-            <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.05);padding:10px 16px;border-radius:2px;border:1px solid var(--border-outline);">
-              <span style="font-family:var(--font-mono);font-size:1.1rem;color:var(--accent-cyan);font-weight:700;" id="success-enc-key">${dynamicKey}</span>
-              <button class="btn btn-outline btn-sm" onclick="copyEncKey()" id="copy-key-btn">Copy Key 📋</button>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+              <div style="font-family:var(--font-tech);font-size:0.75rem;color:var(--accent-coral);font-weight:700;">
+                🔒 ENCRYPTION KEY DISPATCHED EXCLUSIVELY VIA EMAIL
+              </div>
+              <span class="badge badge-green" style="font-size:0.68rem;">SENT TO INBOX 📧</span>
             </div>
+            <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.05);padding:14px 18px;border-radius:6px;border:1px solid var(--border-outline);margin-bottom:14px;">
+              <span style="font-size:1.6rem;">📧</span>
+              <div style="flex:1;">
+                <div style="font-family:var(--font-mono);font-size:1.15rem;color:var(--accent-cyan);font-weight:800;letter-spacing:0.12em;">
+                  SH-KEY-••••-••••-••••
+                </div>
+                <div style="font-size:0.75rem;color:var(--text-muted);margin-top:3px;">
+                  Dispatched exclusively to <strong>${email}</strong> for security and DRM protection.
+                </div>
+              </div>
+              <span class="badge badge-purple" style="font-size:0.7rem;font-weight:700;">CONFIDENTIAL</span>
+            </div>
+            <div style="font-size:0.82rem;color:var(--text-secondary);line-height:1.5;margin-bottom:16px;">
+              Your secret decryption key has been sent directly to your email inbox. Check your email to retrieve your key, then open Smart Hub Studio to decrypt the source code.
+            </div>
+            <a href="repo.html?id=${(currentProduct ? currentProduct.id : 'PRJ')}" class="btn btn-primary" style="font-weight:800;font-size:0.92rem;">
+              🔓 Open Studio &amp; Enter Key →
+            </a>
           </div>
         `;
       }
