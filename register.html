@@ -727,6 +727,17 @@
         if (window.SmartHubAPI) {
           var config = await window.SmartHubAPI.getAuthConfig();
           if (config && config.githubClientId) githubClientId = config.githubClientId;
+          if (config && config.googleClientId) {
+            googleClientId = config.googleClientId;
+            if (window.google && window.google.accounts && window.google.accounts.id) {
+              try {
+                window.google.accounts.id.initialize({
+                  client_id: googleClientId,
+                  callback: window.handleGoogleCredential
+                });
+              } catch (e) {}
+            }
+          }
         }
       } catch (e) { }
 
@@ -769,6 +780,14 @@
         openGitHubModal();
       } else if (provider === 'Google') {
         if (window.google && window.google.accounts && window.google.accounts.id) {
+          if (googleClientId) {
+            try {
+              window.google.accounts.id.initialize({
+                client_id: googleClientId,
+                callback: window.handleGoogleCredential
+              });
+            } catch (e) {}
+          }
           window.google.accounts.id.prompt();
         } else {
           var email = prompt('Enter your Google email address:');
