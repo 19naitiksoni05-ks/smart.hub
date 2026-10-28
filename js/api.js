@@ -351,17 +351,47 @@
       window.location.href = 'login.html';
     },
 
-    async resetPassword(emailOrIdentity, newPassword) {
+    async requestPasswordReset(email) {
+      try {
+        const res = await fetch(`${this.baseUrl}/auth/forgot-password`, {
+          method: 'POST',
+          headers: this.getHeaders(),
+          body: JSON.stringify({ email })
+        });
+        return await this.safeJson(res);
+      } catch (err) {
+        return { success: false, error: err.message };
+      }
+    },
+
+    async confirmPasswordReset(token, newPassword) {
       try {
         const res = await fetch(`${this.baseUrl}/auth/reset-password`, {
           method: 'POST',
           headers: this.getHeaders(),
-          body: JSON.stringify({ email: emailOrIdentity, newPassword })
+          body: JSON.stringify({ token, newPassword })
         });
-        return await res.json();
+        return await this.safeJson(res);
       } catch (err) {
         return { success: false, error: err.message };
       }
+    },
+
+    async subscribeNewsletter(email) {
+      try {
+        const res = await fetch(`${this.baseUrl}/newsletter/subscribe`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+        return await this.safeJson(res);
+      } catch (err) {
+        return { success: false, error: err.message };
+      }
+    },
+
+    async resetPassword(emailOrIdentity, newPassword) {
+      return this.requestPasswordReset(emailOrIdentity);
     },
 
     // ── Developer API Keys Management ─────────────────────────

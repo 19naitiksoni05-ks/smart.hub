@@ -711,16 +711,16 @@
             }, 1200);
           }
           return;
-        } else if (res && res.error) {
-          showToast(res.error, 'error');
+        } else {
+          showToast((res && res.error) || 'Failed to list asset on server', 'error');
         }
       } catch (err) {
-        console.warn('Publish error:', err);
+        console.error('Publish error:', err);
+        showToast('Error publishing asset: ' + err.message, 'error');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = '🚀 Publish Asset to Store Now →';
       }
-
-      submitBtn.disabled = false;
-      submitBtn.textContent = '🚀 Publish Asset to Store Now →';
-      showToast('Product published to catalog! Check marketplace.html', 'success');
     }
 
     async function loadSellerStats() {

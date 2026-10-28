@@ -88,6 +88,7 @@ async function sendSmsOtp(mobile, otp) {
 
 // In-memory OTP store for registration email verification
 const registrationOtps = new Map(); // key = email, value = { code, expiresAt, data }
+const passwordResetTokens = new Map(); // key = token, value = { userId, email, expiresAt }
 
 function sanitizeUser(user) {
   if (!user) return null;
@@ -334,32 +335,11 @@ router.post('/login', async (req, res) => {
       });
     }
 
-    // Explicitly promote only the verified Super Admin account
-    const isNaitikAdmin = user.email && (
-      user.email.toLowerCase() === 'naitik19ansh@gmail.com' ||
-      user.username?.toLowerCase() === '@naitik19'
-    );
-
-    if (isNaitikAdmin) {
-      if (user.role !== 'admin') {
-        user.role = 'admin';
-        db.update('users', user.id, { role: 'admin', headline: 'Platform & Architecture · Super Admin' });
-      }
-    }
-
-    // Verify password (supports bcrypt comparison and Super Admin passkeys)
+    // Verify password strictly with bcrypt
     let isMatch = false;
     try {
       isMatch = bcrypt.compareSync(password, user.passwordHash);
     } catch (e) {}
-
-    if (!isMatch) {
-      if (isNaitikAdmin && (password === '123456' || password === 'admin123' || password === 'naitik123' || password === 'naitik19')) {
-        isMatch = true;
-      } else if (password === '123456') {
-        isMatch = true;
-      }
-    }
 
     if (!isMatch) {
       recordFailedLogin(cleanIdentity);
@@ -677,18 +657,14 @@ router.post('/change-password', authRequired, (req, res) => {
   }
 });
 
-// ── 5b. Reset Password (Forgot Password Recovery) ───────────
-router.post('/reset-password', (req, res) => {
+// ── 5b. Request Password Reset (Cryptographic Single-Use Token) ──
+router.post('/forgot-password', async (req, res) => {
   try {
-    const { email, identity, newPassword, passkey } = req.body;
+    const { email, identity } = req.body;
     const target = (email || identity || '').trim().toLowerCase();
 
     if (!target) {
       return res.status(400).json({ success: false, error: 'Email address or username is required' });
-    }
-
-    if (!newPassword || newPassword.length < 6) {
-      return res.status(400).json({ success: false, error: 'New password must be at least 6 characters' });
     }
 
     const user = db.findOne('users', u => 
@@ -697,21 +673,107 @@ router.post('/reset-password', (req, res) => {
       u.username.toLowerCase() === ('@' + target)
     );
 
+    // Always respond with a generic success message to prevent user enumeration attacks
     if (!user) {
-      return res.status(404).json({ success: false, error: 'No account found with this email/username' });
+      return res.json({
+        success: true,
+        message: 'If an account exists with this email, a password reset link has been dispatched.'
+      });
+    }
+
+    // Generate single-use expiring cryptographic token (15 minutes)
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const expiresAt = Date.now() + 15 * 60 * 1000;
+    passwordResetTokens.set(resetToken, {
+      userId: user.id,
+      email: user.email,
+      expiresAt
+    });
+
+    const host = req.get('host') || 'localhost:5000';
+    const proto = req.protocol || 'http';
+    const resetUrl = `${proto}://${host}/reset-password.html?token=${resetToken}`;
+
+    // Dispatch email via SMTP if configured
+    const transporter = createTransporter();
+    if (transporter && user.email) {
+      try {
+        await transporter.sendMail({
+          from: process.env.SMTP_FROM || 'Smart Hub <noreply@smarthub.dev>',
+          to: user.email,
+          subject: 'Smart Hub — Secure Password Reset Request',
+          html: `
+            <div style="font-family:sans-serif;max-width:540px;margin:0 auto;padding:24px;border:1px solid #e2e8f0;border-radius:8px;">
+              <h2 style="color:#6366f1;margin-top:0;">Password Reset Request</h2>
+              <p>Hello ${user.name},</p>
+              <p>We received a request to reset your password for your Smart Hub account. Click the button below to set a new password. This link is single-use and expires in 15 minutes.</p>
+              <div style="margin:24px 0;">
+                <a href="${resetUrl}" style="background:#6366f1;color:#ffffff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:bold;display:inline-block;">Reset Password →</a>
+              </div>
+              <p style="font-size:0.85rem;color:#64748b;">If you did not request this, you can safely ignore this email. Your password will remain unchanged.</p>
+            </div>
+          `
+        });
+      } catch (mailErr) {
+        console.warn('[Mail] Reset dispatch notice:', mailErr.message);
+      }
+    }
+
+    res.json({
+      success: true,
+      message: 'If an account exists with this email, a password reset link has been dispatched.',
+      resetUrl: process.env.NODE_ENV !== 'production' ? resetUrl : undefined
+    });
+  } catch (err) {
+    console.error('[Auth] Forgot password error:', err);
+    res.status(500).json({ success: false, error: 'Failed to process password reset request' });
+  }
+});
+
+// ── 5c. Complete Password Reset (Token Verification) ───────────
+router.post('/reset-password', async (req, res) => {
+  try {
+    const { token, newPassword } = req.body;
+
+    if (!token) {
+      return res.status(400).json({ success: false, error: 'Password reset token is required' });
+    }
+
+    if (!newPassword || newPassword.length < 6) {
+      return res.status(400).json({ success: false, error: 'New password must be at least 6 characters long' });
+    }
+
+    const record = passwordResetTokens.get(token);
+    if (!record || record.expiresAt < Date.now()) {
+      passwordResetTokens.delete(token);
+      return res.status(400).json({ success: false, error: 'Password reset token is invalid or has expired. Please request a new one.' });
+    }
+
+    const user = db.findById('users', record.userId);
+    if (!user) {
+      passwordResetTokens.delete(token);
+      return res.status(404).json({ success: false, error: 'User account not found' });
     }
 
     const salt = bcrypt.genSaltSync(10);
     const newHash = bcrypt.hashSync(newPassword, salt);
+
     db.update('users', user.id, { passwordHash: newHash });
+    user.passwordHash = newHash;
+
+    // Invalidate the single-use token immediately
+    passwordResetTokens.delete(token);
+
+    // Sync updated password hash to Supabase cloud
+    await syncUserToSupabase(user);
 
     res.json({
       success: true,
-      message: `Password reset successfully for ${user.name}! You can now sign in with your new password.`
+      message: 'Password reset successfully! You can now sign in with your new credentials.'
     });
   } catch (err) {
-    console.error('Reset password error:', err);
-    res.status(500).json({ success: false, error: 'Failed to reset password: ' + err.message });
+    console.error('[Auth] Reset password error:', err);
+    res.status(500).json({ success: false, error: 'Failed to complete password reset' });
   }
 });
 
@@ -862,8 +924,6 @@ router.post('/api-keys/:id/reveal', authRequired, (req, res) => {
       if (storedOtp && storedOtp.expiresAt > Date.now() && storedOtp.code === verificationCode) {
         isVerified = true;
         activeOtps.delete(req.user.id);
-      } else if (verificationCode === '123456' || verificationCode === '000000' || verificationCode === '999999') {
-        isVerified = true;
       } else if (user.securityPin && user.securityPin === verificationCode) {
         isVerified = true;
       }

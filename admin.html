@@ -232,14 +232,11 @@
         <form onsubmit="handleAdminGateLogin(event)">
           <div style="margin-bottom:14px;text-align:left;">
             <label class="form-label-title" for="gate-identity">ADMIN IDENTITY</label>
-            <input type="text" class="form-input-box" id="gate-identity" value="naitik19ansh@gmail.com" required>
+            <input type="text" class="form-input-box" id="gate-identity" placeholder="Enter admin email or username" required>
           </div>
           <div style="margin-bottom:20px;text-align:left;">
-            <label class="form-label-title" for="gate-password">PASSWORD OR MASTER PASSKEY</label>
-            <input type="password" class="form-input-box" id="gate-password" placeholder="Enter account password or 123456" required autofocus>
-            <div style="font-size:0.72rem;color:var(--text-muted);margin-top:6px;">
-              Master passkey: <code style="color:var(--accent-cyan);font-weight:700;">123456</code> (Quick Admin Access)
-            </div>
+            <label class="form-label-title" for="gate-password">ADMIN PASSWORD</label>
+            <input type="password" class="form-input-box" id="gate-password" placeholder="Enter secure password" required autofocus>
           </div>
           <button type="submit" class="btn btn-primary w-full" id="btn-gate-submit" style="padding:12px;font-weight:700;box-shadow:0 4px 16px rgba(139,92,246,0.35);">
             Unlock Super Admin Console 🔓
@@ -585,30 +582,27 @@ document.addEventListener('DOMContentLoaded', () => {
   checkAdminAuthAndLoad();
 });
 
-function checkAdminAuthAndLoad() {
-  const user = getSessionUser();
+async function checkAdminAuthAndLoad() {
   const gateEl = document.getElementById('admin-auth-gate');
   const mainEl = document.getElementById('admin-main-view');
 
-  const isSuperAdmin = user && (
-    user.role === 'admin' ||
-    (user.email && user.email.toLowerCase() === 'naitik19ansh@gmail.com') ||
-    (user.username && user.username.toLowerCase() === '@naitik19') ||
-    (user.name && user.name.toLowerCase().includes('naitik'))
-  );
+  try {
+    if (window.SmartHubAPI && window.SmartHubAPI.getAdminOverview) {
+      const overview = await window.SmartHubAPI.getAdminOverview();
+      if (overview && overview.success) {
+        if (gateEl) gateEl.style.display = 'none';
+        if (mainEl) mainEl.style.display = 'block';
+        const user = getSessionUser();
+        const nameEl = document.getElementById('admin-active-user-name');
+        if (nameEl) nameEl.textContent = (user && user.name) || 'Administrator';
+        loadAllAdminData();
+        return;
+      }
+    }
+  } catch (err) {}
 
-  if (isSuperAdmin) {
-    if (gateEl) gateEl.style.display = 'none';
-    if (mainEl) mainEl.style.display = 'block';
-
-    const nameEl = document.getElementById('admin-active-user-name');
-    if (nameEl) nameEl.textContent = user.name || 'Naitik Soni';
-
-    loadAllAdminData();
-  } else {
-    if (gateEl) gateEl.style.display = 'block';
-    if (mainEl) mainEl.style.display = 'none';
-  }
+  if (gateEl) gateEl.style.display = 'block';
+  if (mainEl) mainEl.style.display = 'none';
 }
 
 async function handleAdminGateLogin(e) {
@@ -623,15 +617,19 @@ async function handleAdminGateLogin(e) {
   try {
     const res = await window.SmartHubAPI.login(identity, password);
     if (res && res.success && res.user) {
-      if (res.user.role === 'admin' || identity.includes('naitik') || res.user.email === 'naitik19ansh@gmail.com') {
-        res.user.role = 'admin';
+      if (res.user.role === 'admin') {
         localStorage.setItem('smarthub_user', JSON.stringify({ ...res.user, isLoggedIn: true, role: 'admin' }));
         if (res.token) localStorage.setItem('smarthub_token', res.token);
 
         if (window.SH && window.SH.showToast) {
           window.SH.showToast('Super Admin access granted! 🛡️', 'success');
         }
-        checkAdminAuthAndLoad();
+        await checkAdminAuthAndLoad();
+        return;
+      } else {
+        if (window.SH && window.SH.showToast) {
+          window.SH.showToast('Access denied: Account does not possess administrator role', 'error');
+        }
         return;
       }
     }

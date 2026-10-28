@@ -221,32 +221,10 @@
       </div>
       <button type="button" onclick="closeGitHubModal()" style="background:none;border:none;font-size:1.5rem;color:#8b949e;cursor:pointer;padding:4px;line-height:1;">&times;</button>
     </div>
-    <div style="padding:16px 20px;max-height:360px;overflow-y:auto;">
-      <div onclick="executeGitHubRegister('naitik19','Naitik Soni','naitik19ansh@gmail.com','https://github.com/naitik19.png')" style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:10px;cursor:pointer;border:1px solid #30363d;background:#161b22;margin-bottom:10px;transition:all .15s;" onmouseover="this.style.borderColor='#58a6ff';this.style.background='#1f242c'" onmouseout="this.style.borderColor='#30363d';this.style.background='#161b22'">
-        <img src="https://github.com/naitik19.png" onerror="this.src='https://api.dicebear.com/7.x/avataaars/svg?seed=naitik19&backgroundColor=ff5b36'" style="width:40px;height:40px;border-radius:50%;border:1.5px solid #30363d;" alt="Naitik Soni">
-        <div style="flex:1;">
-          <div style="font-weight:600;font-size:.92rem;color:#f0f6fc;">Naitik Soni <span style="color:#8b949e;font-size:.8rem;">(@naitik19)</span></div>
-          <div style="font-size:.8rem;color:#8b949e;">naitik19ansh@gmail.com</div>
-        </div>
-        <span style="font-size:.75rem;padding:3px 8px;background:rgba(217,119,6,.2);color:#fbbf24;border:1px solid rgba(217,119,6,.4);border-radius:999px;font-weight:600;">Super Admin</span>
-      </div>
-      <div onclick="executeGitHubRegister('naitiksoni700','Naitik Soni','naitiksoni700@gmail.com','https://github.com/naitiksoni700.png')" style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:10px;cursor:pointer;border:1px solid #30363d;background:#161b22;margin-bottom:10px;transition:all .15s;" onmouseover="this.style.borderColor='#58a6ff';this.style.background='#1f242c'" onmouseout="this.style.borderColor='#30363d';this.style.background='#161b22'">
-        <img src="https://github.com/naitiksoni700.png" onerror="this.src='https://api.dicebear.com/7.x/avataaars/svg?seed=naitik&backgroundColor=ff5b36'" style="width:40px;height:40px;border-radius:50%;border:1.5px solid #30363d;" alt="Developer">
-        <div style="flex:1;">
-          <div style="font-weight:600;font-size:.92rem;color:#f0f6fc;">Developer Profile <span style="color:#8b949e;font-size:.8rem;">(@naitiksoni700)</span></div>
-          <div style="font-size:.8rem;color:#8b949e;">naitiksoni700@gmail.com</div>
-        </div>
-        <span style="font-size:.75rem;padding:3px 8px;background:rgba(59,130,246,.18);color:#60a5fa;border:1px solid rgba(59,130,246,.3);border-radius:999px;font-weight:600;">Active Dev</span>
-      </div>
-      <div onclick="toggleGitHubCustomInput()" style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:10px;cursor:pointer;border:1px dashed #30363d;background:transparent;margin-bottom:10px;transition:all .15s;" onmouseover="this.style.borderColor='#58a6ff';this.style.background='#161b22'" onmouseout="this.style.borderColor='#30363d';this.style.background='transparent'">
-        <div style="width:38px;height:38px;border-radius:50%;background:#21262d;display:flex;align-items:center;justify-content:center;font-size:1.1rem;color:#8b949e;">+</div>
-        <div style="font-weight:600;font-size:.9rem;color:#58a6ff;">Register with your GitHub username</div>
-      </div>
-      <div id="github-custom-box" style="display:none;padding:14px;background:#161b22;border-radius:10px;margin-bottom:10px;border:1px solid #30363d;">
-        <label style="display:block;font-size:.76rem;font-weight:700;color:#8b949e;margin-bottom:6px;letter-spacing:.04em;">GITHUB USERNAME OR EMAIL</label>
-        <input type="text" id="github-custom-username" placeholder="e.g. your-github-handle" style="width:100%;padding:10px 12px;border:1px solid #30363d;border-radius:8px;font-size:.88rem;color:#f0f6fc;box-sizing:border-box;margin-bottom:10px;outline:none;background:#0d1117;" onfocus="this.style.borderColor='#58a6ff'" onblur="this.style.borderColor='#30363d'">
-        <button type="button" onclick="submitCustomGitHubRegister()" style="width:100%;padding:10px;background:#238636;color:#fff;border:none;border-radius:8px;font-weight:700;font-size:.88rem;cursor:pointer;" onmouseover="this.style.background='#2ea043'" onmouseout="this.style.background='#238636'">Register with GitHub &rarr;</button>
-      </div>
+    <div style="padding:20px 24px;">
+      <label style="display:block;font-size:.76rem;font-weight:700;color:#8b949e;margin-bottom:8px;letter-spacing:.04em;">GITHUB USERNAME OR EMAIL</label>
+      <input type="text" id="github-custom-username" placeholder="e.g. octocat or user@domain.com" style="width:100%;padding:11px 14px;border:1px solid #30363d;border-radius:8px;font-size:.9rem;color:#f0f6fc;box-sizing:border-box;margin-bottom:14px;outline:none;background:#161b22;" onfocus="this.style.borderColor='#58a6ff'" onblur="this.style.borderColor='#30363d'">
+      <button type="button" onclick="submitCustomGitHubRegister()" style="width:100%;padding:11px;background:#238636;color:#fff;border:none;border-radius:8px;font-weight:700;font-size:.9rem;cursor:pointer;" onmouseover="this.style.background='#2ea043'" onmouseout="this.style.background='#238636'">Register with GitHub &rarr;</button>
     </div>
     <div style="padding:14px 24px;background:#161b22;border-top:1px solid #21262d;font-size:.75rem;color:#8b949e;line-height:1.45;">
       By creating an account with GitHub, Smart Hub automatically verifies your developer credentials and links your public GitHub repositories.
@@ -445,30 +423,20 @@ async function handleFormRegister(e) {
     var res = await window.SmartHubAPI.register(name, username, email, pass, selectedAccountType, mobile);
     if (res && res.success) {
       SH.showToast(res.message || 'Account created successfully! 🚀', 'success');
-      setTimeout(function() { window.location.href = 'index.html'; }, 800); return;
-    } else if (res && res.error) {
-      var errLower = String(res.error).toLowerCase();
-      var isServerDown = errLower.includes('fetch') || errLower.includes('network') ||
-        errLower.includes('server error') || errLower.includes('unexpected token') ||
-        errLower.includes('not valid json') || errLower.includes('status 5');
-      if (!isServerDown) {
-        SH.showToast(res.error, 'error');
-        submitBtn.disabled = false; submitBtn.textContent = 'Create Free Account →'; return;
-      }
+      setTimeout(function() { window.location.href = 'index.html'; }, 800);
+      return;
+    } else {
+      SH.showToast((res && res.error) || 'Failed to create account. Please check your details.', 'error');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Create Free Account →';
+      return;
     }
-  } catch (err) { console.warn('Register API error:', err); }
-
-  setTimeout(function() {
-    var handle = username.startsWith('@') ? username : '@' + username;
-    localStorage.setItem('smarthub_user', JSON.stringify({
-      id: 'u_' + Math.floor(Math.random()*89999+10000),
-      name: name, username: handle, mobile: mobile.replace(/\D/g, ''),
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + encodeURIComponent(handle) + '&backgroundColor=ff5b36',
-      walletBalance: 0, isLoggedIn: true, role: selectedAccountType
-    }));
-    SH.showToast('Account created! (offline mode) 🚀', 'success');
-    setTimeout(function() { window.location.href = 'index.html'; }, 800);
-  }, 600);
+  } catch (err) {
+    console.error('Register API error:', err);
+    SH.showToast('Network error while connecting to server: ' + err.message, 'error');
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Create Free Account →';
+  }
 }
 
 async function initAuthProviders() {

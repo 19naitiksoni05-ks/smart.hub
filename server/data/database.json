@@ -89,6 +89,59 @@
   ],
   "products": [
     {
+      "id": "p_1793199548469",
+      "title": "Test Asset New Seller",
+      "category": "React",
+      "price": 799,
+      "oldPrice": null,
+      "rating": 5,
+      "reviews": 1,
+      "sales": 0,
+      "author": {
+        "id": "u_tester_99",
+        "name": "Verified Creator",
+        "username": "@tester_99",
+        "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Verified%20Creator&backgroundColor=ff5b36"
+      },
+      "tags": [
+        "Code"
+      ],
+      "badge": "New",
+      "thumb": "https://picsum.photos/seed/Test%20Asset%20New%20Seller/400/250",
+      "videoUrl": null,
+      "downloadUrl": null,
+      "bundleInfo": null,
+      "description": "Testing persist with creator",
+      "type": "Source Code",
+      "createdAt": "2026-10-28T14:59:08.469Z"
+    },
+    {
+      "id": "p_1793199492373",
+      "title": "Test Audit Asset",
+      "category": "React",
+      "price": 499,
+      "oldPrice": null,
+      "rating": 5,
+      "reviews": 1,
+      "sales": 0,
+      "author": {
+        "id": "dev_guest",
+        "name": "Verified Developer",
+        "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=dev&backgroundColor=6366f1"
+      },
+      "tags": [
+        "Code"
+      ],
+      "badge": "New",
+      "thumb": "https://picsum.photos/seed/Test%20Audit%20Asset/400/250",
+      "videoUrl": null,
+      "downloadUrl": null,
+      "bundleInfo": null,
+      "description": "Testing persist",
+      "type": "Source Code",
+      "createdAt": "2026-10-28T14:58:12.373Z"
+    },
+    {
       "id": "p_1793195355652",
       "title": "React E-Commerce Dashboard",
       "category": "React",
@@ -195,7 +248,7 @@
     {
       "name": "Full Stack SaaS",
       "icon": "🚀",
-      "count": 0,
+      "count": 1,
       "color": "#10b981",
       "bg": "rgba(16,185,129,0.1)"
     },
@@ -1052,6 +1105,15 @@
       "status": "delivered",
       "body": "Dear Developer,\n\nThank you for purchasing \"Python Array & Algorithm Utility Suite\" on Smart Hub India.\n\nYour source code package is cryptographically protected with AES-256 DRM. To protect developer intellectual property, unauthorized copying, screenshots, and screen recordings are strictly restricted.\n\nYOUR ENCRYPTION KEY:\n=========================================\nSH-KEY-2026-13E1-3B69-A6E1\n=========================================\n\nTO DECRYPT & OPEN THE SOURCE CODE:\n1. Open the project in Smart Hub:\n   http://localhost:5000/repo.html?id=p_1792913427884\n2. Enter your Encryption Key in the verification box, or simply click this instant activation link:\n   http://localhost:5000/repo.html?id=p_1792913427884&activateKey=SH-KEY-2026-13E1-3B69-A6E1\n3. Once verified, the source code will decrypt and unlock for viewing, copying, and download.\n\nOrder Number: SH-ORD-2026-7487\nLicensee: drm_buyer_1792924196254@smarthub.io\nDelivery Timestamp: 2026-10-25T10:29:56.271Z\n\nHappy Building!\nThe Smart Hub Engineering Team",
       "createdAt": "2026-10-25T10:29:56.271Z"
+    }
+  ],
+  "newsletter": [
+    {
+      "id": "sub_1793200481120",
+      "email": "test_newsletter_1793200481117@example.com",
+      "status": "active",
+      "token": "46839d2e63fa6e23ccc573547566bc64",
+      "createdAt": "2026-10-28T15:14:41.120Z"
     }
   ]
 }

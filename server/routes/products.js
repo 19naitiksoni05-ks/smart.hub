@@ -225,25 +225,44 @@ router.post('/', authOptional, async (req, res) => {
     }
 
     // Ensure the creator exists in Supabase users table to satisfy foreign key constraints
-    if (isConfigured() && supabase && author && author.id && author.id !== 'dev_seller') {
+    let validSellerId = null;
+    if (isConfigured() && supabase && author && author.id && author.id !== 'dev_seller' && author.id !== 'dev_guest') {
       try {
-        await supabase.from('users').upsert([{
-          id: author.id,
-          name: author.name,
-          username: author.username || ('@' + author.name.toLowerCase().replace(/\s+/g, '_')),
-          email: (req.user && req.user.email) || `${author.id}@creator.smarthub.io`,
-          password_hash: '',
-          avatar: author.avatar || null,
-          role: (req.user && req.user.role) || 'seller',
-          wallet_balance: 0,
-          xp: 0,
-          badges: 0,
-          location: 'India',
-          headline: 'Smart Hub Creator',
-          created_at: new Date().toISOString()
-        }], { onConflict: 'id' });
+        // First check if user exists by id in Supabase
+        const { data: existingById } = await supabase.from('users').select('id').eq('id', author.id).maybeSingle();
+        if (existingById && existingById.id) {
+          validSellerId = existingById.id;
+        } else {
+          // Check by email
+          const checkEmail = (req.user && req.user.email) || `${author.id}@creator.smarthub.io`;
+          const { data: existingByEmail } = await supabase.from('users').select('id').eq('email', checkEmail).maybeSingle();
+          if (existingByEmail && existingByEmail.id) {
+            validSellerId = existingByEmail.id;
+          } else {
+            // Attempt inserting creator into Supabase users table
+            const { data: newSbUser, error: uErr } = await supabase.from('users').upsert([{
+              id: author.id,
+              name: author.name,
+              username: author.username || ('@' + author.name.toLowerCase().replace(/\s+/g, '_')),
+              email: checkEmail,
+              password_hash: '',
+              avatar: author.avatar || null,
+              role: (req.user && req.user.role) || 'seller',
+              wallet_balance: 0,
+              xp: 0,
+              badges: 0,
+              location: 'India',
+              headline: 'Smart Hub Creator',
+              created_at: new Date().toISOString()
+            }], { onConflict: 'id' }).select('id').maybeSingle();
+
+            if (!uErr && newSbUser) {
+              validSellerId = newSbUser.id;
+            }
+          }
+        }
       } catch (uErr) {
-        console.warn('[Products] Creator user upsert notice:', uErr.message);
+        console.warn('[Products] Creator user resolution notice:', uErr.message);
       }
     }
 
@@ -284,7 +303,7 @@ router.post('/', authOptional, async (req, res) => {
           rating: newProduct.rating,
           reviews_count: newProduct.reviews,
           sales_count: newProduct.sales,
-          seller_id: newProduct.author.id !== 'dev_guest' ? newProduct.author.id : null,
+          seller_id: validSellerId,
           seller_name: newProduct.author.name,
           seller_avatar: newProduct.author.avatar,
           live_demo_url: newProduct.videoUrl,
@@ -295,7 +314,15 @@ router.post('/', authOptional, async (req, res) => {
           tech_stack: [newProduct.category],
           created_at: newProduct.createdAt
         };
-        const { error: insErr } = await supabase.from('products').upsert([row], { onConflict: 'id' });
+        let { error: insErr } = await supabase.from('products').upsert([row], { onConflict: 'id' });
+        // If foreign key constraint failed, retry with seller_id: null to guarantee persistence
+        if (insErr && insErr.code === '23503') {
+          console.warn('[Products] Foreign key retry with seller_id: null for product persistence');
+          row.seller_id = null;
+          const retry = await supabase.from('products').upsert([row], { onConflict: 'id' });
+          insErr = retry.error;
+        }
+
         if (insErr) {
           console.warn('[Products] Supabase insert warning:', insErr.message);
         } else {

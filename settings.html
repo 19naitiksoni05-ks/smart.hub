@@ -1491,16 +1491,13 @@ async function requestLiveOtpCode() {
         window.SH.showToast(`🔐 Live OTP: ${res.code} (auto-filled)`, 'success');
       }
     } else {
-      if (otpInput) otpInput.value = '123456';
-      if (otpValEl) otpValEl.textContent = '123456';
-      if (otpCard) otpCard.style.display = 'flex';
+      if (window.SH && window.SH.showToast) {
+        window.SH.showToast('Failed to generate verification OTP. Please try your account password.', 'error');
+      }
     }
   } catch (e) {
-    if (otpInput) otpInput.value = '123456';
-    if (otpValEl) otpValEl.textContent = '123456';
-    if (otpCard) otpCard.style.display = 'flex';
     if (window.SH && window.SH.showToast) {
-      window.SH.showToast('Developer passkey 123456 auto-filled!', 'info');
+      window.SH.showToast('OTP service unavailable. Please authenticate with account password.', 'error');
     }
   } finally {
     if (btn) {
@@ -1766,20 +1763,8 @@ window.executeKeyRevocation = executeKeyRevocation;
 
         <!-- Method 2: 6-Digit Passkey Input -->
         <div id="verify-method-passkey-wrap" style="display:none;">
-          <label class="form-label-title" for="reveal-pin-input">6-DIGIT MASTER SECURITY PASSKEY</label>
-          <input type="text" id="reveal-pin-input" class="pin-input-box" maxlength="6" placeholder="123456" autocomplete="off">
-          
-          <div style="margin-top:10px;margin-bottom:18px;">
-            <div style="font-size:0.72rem;color:var(--text-muted);font-family:var(--font-tech);margin-bottom:6px;">QUICK AUTO-FILL PASSKEYS:</div>
-            <div class="quick-code-chips">
-              <button type="button" class="quick-chip-btn" onclick="fillPasskey('123456')">
-                <span>⚡</span> Master: <strong>123456</strong>
-              </button>
-              <button type="button" class="quick-chip-btn" onclick="fillPasskey('000000')">
-                <span>⚡</span> Backup: <strong>000000</strong>
-              </button>
-            </div>
-          </div>
+          <label class="form-label-title" for="reveal-pin-input">6-DIGIT SECURITY PIN</label>
+          <input type="text" id="reveal-pin-input" class="pin-input-box" maxlength="6" placeholder="Enter your 6-digit PIN" autocomplete="off">
         </div>
 
         <!-- Method 3: One-Time Live OTP -->

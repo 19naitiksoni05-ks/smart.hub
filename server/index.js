@@ -20,6 +20,7 @@ const sellerRoutes = require('./routes/seller');
 const adminRoutes = require('./routes/admin');
 const uploadRoutes = require('./routes/upload');
 const projectsRoutes = require('./routes/projects');
+const newsletterRoutes = require('./routes/newsletter');
 
 // Security Middleware
 const {
@@ -124,6 +125,7 @@ app.use('/api/seller', sellerRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/projects', projectsRoutes);
+app.use('/api/newsletter', newsletterRoutes);
 
 // Categories endpoint
 app.get('/api/categories', (req, res) => {
@@ -219,6 +221,15 @@ app.get('/api/stats', (req, res) => {
 if (!process.env.VERCEL) {
   const FRONTEND_ROOT = path.join(__dirname, '..');
   const UPLOADS_DIR = path.join(FRONTEND_ROOT, 'uploads');
+
+  // Guard proprietary archives from direct unauthenticated static access
+  app.use('/uploads/archives', (req, res) => {
+    return res.status(403).json({
+      success: false,
+      error: 'Forbidden: Proprietary codebase archives require buyer-authenticated download via /api/orders/:id/download'
+    });
+  });
+
   app.use('/uploads', express.static(UPLOADS_DIR, {
     maxAge: '7d',
     setHeaders: (res) => {

@@ -601,8 +601,10 @@ function renderFooter() {
         <div class="footer-bottom-links">
           <a href="policies.html?tab=privacy">Privacy Policy</a>
           <a href="policies.html?tab=terms">Terms of Service</a>
+          <a href="policies.html?tab=seller">Seller Agreement</a>
           <a href="policies.html?tab=refund">Refund Policy</a>
           <a href="policies.html?tab=security">Security Guidelines</a>
+          <a href="policies.html?tab=compliance">Support &amp; Grievance</a>
         </div>
       </div>
     </div>

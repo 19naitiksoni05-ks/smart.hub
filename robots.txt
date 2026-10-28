@@ -6,11 +6,15 @@ Allow: /
 Allow: /index.html
 Allow: /policies.html
 Allow: /product-detail.html
+Allow: /marketplace.html
+Allow: /ecosystem.html
+Allow: /challenges.html
 Disallow: /api/
 Disallow: /uploads/
 Disallow: /admin.html
 Disallow: /wallet.html
-Disallow: /dashboard.html
+Disallow: /seller-dashboard.html
+Disallow: /settings.html
 
 # -------------------------------------------------------------
 # Anti-AI Model Scraper Directives (Protects Seller Source Code)
@@ -39,3 +43,4 @@ User-agent: Bytespider
 Disallow: /uploads/
 Disallow: /api/
 
+Sitemap: https://smarthub-gilt.vercel.app/sitemap.xml
