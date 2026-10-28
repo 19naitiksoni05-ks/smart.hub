@@ -322,12 +322,24 @@ function triggerLiveGitHubOAuth() {
 
 function openGitHubModal() {
   const modal = document.getElementById('modal-github-auth');
-  if (modal) modal.style.display = 'flex';
+  if (modal) {
+    modal.classList.add('active');
+    modal.style.display = 'flex';
+    modal.style.opacity = '1';
+    modal.style.visibility = 'visible';
+    modal.style.pointerEvents = 'all';
+  }
 }
 
 function closeGitHubModal() {
   const modal = document.getElementById('modal-github-auth');
-  if (modal) modal.style.display = 'none';
+  if (modal) {
+    modal.classList.remove('active');
+    modal.style.display = 'none';
+    modal.style.opacity = '0';
+    modal.style.visibility = 'hidden';
+    modal.style.pointerEvents = 'none';
+  }
 }
 
 function toggleGitHubCustomInput() {
@@ -447,7 +459,7 @@ async function handleForgotPassword(e) {
 </script>
 
 <!-- ── GitHub One-Click OAuth Modal ────────────────────────────── -->
-<div id="modal-github-auth" class="modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);backdrop-filter:blur(8px);z-index:9999;align-items:center;justify-content:center;">
+<div id="modal-github-auth" class="modal-overlay" onclick="if(event.target===this)closeGitHubModal()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);backdrop-filter:blur(8px);z-index:9999;align-items:center;justify-content:center;">
   <div style="background:#0d1117;color:#f0f6fc;border:1px solid #30363d;border-radius:16px;max-width:440px;width:92%;box-shadow:0 24px 60px rgba(0,0,0,0.85);overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;animation:scaleIn 0.25s ease;">
     <!-- GitHub Header -->
     <div style="padding:22px 24px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #21262d;background:#161b22;">

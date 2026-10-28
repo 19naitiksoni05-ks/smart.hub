@@ -460,7 +460,7 @@
   </div>
 
   <!-- GitHub Modal -->
-  <div id="modal-github-auth" class="modal-overlay"
+  <div id="modal-github-auth" class="modal-overlay" onclick="if(event.target===this)closeGitHubModal()"
     style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(8px);z-index:9999;align-items:center;justify-content:center;">
     <div
       style="background:#0d1117;color:#f0f6fc;border:1px solid #30363d;border-radius:16px;max-width:440px;width:92%;box-shadow:0 24px 60px rgba(0,0,0,.85);overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;animation:scaleIn .25s ease;">
@@ -792,8 +792,8 @@
       }
     }
 
-    function openGitHubModal() { var m = document.getElementById('modal-github-auth'); if (m) m.style.display = 'flex'; }
-    function closeGitHubModal() { var m = document.getElementById('modal-github-auth'); if (m) m.style.display = 'none'; }
+    function openGitHubModal() { var m = document.getElementById('modal-github-auth'); if (m) { m.classList.add('active'); m.style.display = 'flex'; m.style.opacity = '1'; m.style.visibility = 'visible'; m.style.pointerEvents = 'all'; } }
+    function closeGitHubModal() { var m = document.getElementById('modal-github-auth'); if (m) { m.classList.remove('active'); m.style.display = 'none'; m.style.opacity = '0'; m.style.visibility = 'hidden'; m.style.pointerEvents = 'none'; } }
     function toggleGitHubCustomInput() {
       var box = document.getElementById('github-custom-box');
       if (box) { box.style.display = box.style.display === 'none' ? 'block' : 'none'; if (box.style.display === 'block') document.getElementById('github-custom-username').focus(); }
