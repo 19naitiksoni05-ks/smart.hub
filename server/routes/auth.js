@@ -352,6 +352,8 @@ router.post('/login', async (req, res) => {
     }
 
     const cleanIdentity = identity.trim().toLowerCase();
+    const cleanWithAt = '@' + cleanIdentity.replace(/^@/, '');
+    const cleanNoAt = cleanIdentity.replace(/^@/, '');
 
     // Check brute-force lockout guard
     const lockout = checkLoginLockout(cleanIdentity);
@@ -359,11 +361,14 @@ router.post('/login', async (req, res) => {
       return res.status(429).json({ success: false, error: lockout.error });
     }
 
-    let user = db.findOne('users', u =>
-      u.email.toLowerCase() === cleanIdentity ||
-      u.username.toLowerCase() === cleanIdentity ||
-      u.username.toLowerCase() === ('@' + cleanIdentity)
-    );
+    let user = db.findOne('users', u => {
+      const uEmail = (u.email || '').toLowerCase().trim();
+      const uUsername = (u.username || '').toLowerCase().trim();
+      return uEmail === cleanIdentity ||
+             uUsername === cleanIdentity ||
+             uUsername === cleanWithAt ||
+             uUsername === cleanNoAt;
+    });
 
     // Supabase fallback check if user exists in cloud but not local
     if (!user && isSupabaseConfigured() && supabase) {
@@ -371,7 +376,7 @@ router.post('/login', async (req, res) => {
         const { data: cloudUsers } = await supabase
           .from('users')
           .select('*')
-          .or(`email.ilike.${cleanIdentity},username.ilike.${cleanIdentity}`)
+          .or(`email.ilike.${cleanIdentity},username.ilike.${cleanWithAt},username.ilike.${cleanNoAt}`)
           .limit(1);
 
         if (cloudUsers && cloudUsers.length > 0) {
@@ -801,11 +806,45 @@ router.post('/forgot-password', async (req, res) => {
       return res.status(400).json({ success: false, error: 'Email address or username is required' });
     }
 
-    const user = db.findOne('users', u =>
-      u.email.toLowerCase() === target ||
-      u.username.toLowerCase() === target ||
-      u.username.toLowerCase() === ('@' + target)
-    );
+    const cleanTargetWithAt = '@' + target.replace(/^@/, '');
+    const cleanTargetNoAt = target.replace(/^@/, '');
+
+    let user = db.findOne('users', u => {
+      const uEmail = (u.email || '').toLowerCase().trim();
+      const uUsername = (u.username || '').toLowerCase().trim();
+      return uEmail === target ||
+             uUsername === target ||
+             uUsername === cleanTargetWithAt ||
+             uUsername === cleanTargetNoAt;
+    });
+
+    if (!user && isSupabaseConfigured() && supabase) {
+      try {
+        const { data: cloudUsers } = await supabase
+          .from('users')
+          .select('*')
+          .or(`email.ilike.${target},username.ilike.${cleanTargetWithAt},username.ilike.${cleanTargetNoAt}`)
+          .limit(1);
+        if (cloudUsers && cloudUsers.length > 0) {
+          const cu = cloudUsers[0];
+          user = {
+            id: cu.id,
+            name: cu.name,
+            username: cu.username,
+            email: cu.email,
+            passwordHash: cu.password_hash,
+            avatar: cu.avatar,
+            walletBalance: cu.wallet_balance || 0,
+            role: cu.role || 'buyer',
+            xp: cu.xp || 0,
+            badges: cu.badges || 0,
+            location: cu.location || 'India',
+            headline: cu.headline || 'Developer'
+          };
+          db.insert('users', user);
+        }
+      } catch (e) {}
+    }
 
     // Always respond with a generic success message to prevent user enumeration attacks
     if (!user) {
