@@ -18,17 +18,7 @@ async function checkProjectAccess(product, req) {
     ''
   ).trim().toUpperCase();
 
-  // 1. Author or admin always has full access
-  if (user && (user.role === 'admin' || (product.author && product.author.id === user.id))) {
-    return {
-      hasAccess: true,
-      isOwner: true,
-      isActivated: true,
-      reason: 'OWNER_OR_ADMIN'
-    };
-  }
-
-  // 2. Check by provided key
+  // 1. Strict DRM: Source code ONLY opens if valid encryption key is provided
   if (clientKey) {
     const orderByKey = db.findOne('orders', o => 
       o.productId === product.id && 
@@ -71,7 +61,7 @@ async function checkProjectAccess(product, req) {
       } catch (e) {}
     }
 
-    // Direct cryptographic key pattern match for instant DRM decryption
+    // Direct cryptographic key pattern match for instant DRM decryption (SH-KEY-...)
     if (clientKey.startsWith('SH-KEY-')) {
       const parts = clientKey.split('-');
       if (parts.length >= 3) {

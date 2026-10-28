@@ -534,23 +534,22 @@
 
       <!-- ── In-Website Key Activation & Decryption Banner ────── -->
       <div id="activation-banner"
-        style="border:1.5px solid var(--accent-coral);border-radius:var(--radius-sm);background:rgba(255,91,54,0.06);padding:18px 24px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;">
-        <div style="flex:1;min-width:280px;">
+        style="border:2px solid var(--accent-coral);border-radius:var(--radius-sm);background:linear-gradient(135deg,rgba(255,91,54,0.12),rgba(99,102,241,0.08));padding:22px 26px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:18px;box-shadow:0 4px 20px rgba(255,91,54,0.15);">
+        <div style="flex:1;min-width:300px;">
           <div
-            style="display:flex;align-items:center;gap:8px;font-family:var(--font-tech);font-size:0.75rem;color:var(--accent-coral);font-weight:700;">
-            <span>🔒</span> ENCRYPTION KEY REQUIRED TO DECRYPT SOURCE CODE
+            style="display:flex;align-items:center;gap:10px;font-family:var(--font-tech);font-size:0.85rem;color:var(--accent-coral);font-weight:800;letter-spacing:0.06em;">
+            <span style="font-size:1.3rem;">🔐</span> DECRYPT SOURCE CODE (EMAIL KEY REQUIRED)
           </div>
-          <div style="font-size:0.88rem;color:var(--studio-text-muted);margin-top:4px;">
-            Purchased this project? We sent an encrypted package with an <strong>Encryption Key</strong> to your email.
-            Enter it below to verify and decrypt the code:
+          <div style="font-size:0.9rem;color:var(--studio-text);margin-top:6px;line-height:1.5;">
+            Source code is cryptographically protected with AES-256 DRM. To open and view the code, enter your <strong>Decryption Key</strong> (e.g. <code>SH-KEY-...</code>) received in your email:
           </div>
         </div>
         <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-          <input type="text" id="activation-key-input" placeholder="Enter Key (e.g. SH-KEY-2026-...)" class="input"
-            style="width:260px;font-family:var(--font-mono);text-transform:uppercase;font-size:0.85rem;padding:8px 12px;">
+          <input type="text" id="activation-key-input" placeholder="Paste SH-KEY-2026-..." class="input"
+            style="width:280px;font-family:var(--font-mono);text-transform:uppercase;font-size:0.95rem;font-weight:700;padding:12px 16px;border:2px solid var(--accent-coral);background:var(--bg-primary);">
           <button class="btn btn-primary" onclick="verifyAndActivateKey()" id="btn-activate-key"
-            style="font-weight:700;">
-            🔓 Verify &amp; Decrypt Code
+            style="font-weight:800;font-size:0.95rem;padding:12px 22px;">
+            🔓 Decrypt &amp; Open Code
           </button>
         </div>
       </div>
@@ -874,20 +873,17 @@
       const projId = urlParams.get('id') || 'p_1792913427884';
       const autoActivateKey = urlParams.get('activateKey') || urlParams.get('key');
 
-      // Check stored key
-      const storedKey = localStorage.getItem(`smarthub_key_${projId}`);
-      if (storedKey) {
-        activeLicenseKey = storedKey;
-      }
+      // STRICT DRM: Do not auto-unlock from cache; require explicit key entry
+      activeLicenseKey = null;
 
       await loadRepository(projId);
 
-      // Handle auto-activation from email link
+      // Handle auto-activation from email link ONLY if explicit key passed in URL
       if (autoActivateKey) {
         document.getElementById('activation-key-input').value = autoActivateKey;
         await verifyAndActivateKey(autoActivateKey);
-      } else if (storedKey && !isProjectUnlocked) {
-        await verifyAndActivateKey(storedKey, true);
+      } else {
+        markProjectLocked();
       }
 
       setupAntiScreenshotDRM();
@@ -977,7 +973,7 @@
         if (res && res.success && res.repo) {
           currentRepo = res.repo;
 
-          if (currentRepo.access && currentRepo.access.hasAccess) {
+          if (activeLicenseKey && currentRepo.access && currentRepo.access.hasAccess) {
             markProjectUnlocked(currentRepo.access.buyerEmail || 'Verified Owner');
           } else {
             markProjectLocked();
@@ -1133,6 +1129,9 @@
           // If a file was currently opened and locked, re-fetch it in decrypted mode!
           if (currentBlobPath) {
             openFileBlob(currentBlobPath);
+          } else if (currentRepo && currentRepo.tree && currentRepo.tree.length > 0) {
+            const firstFile = currentRepo.tree.find(t => t.type === 'file');
+            if (firstFile) openFileBlob(firstFile.path);
           }
           return;
         } else {
