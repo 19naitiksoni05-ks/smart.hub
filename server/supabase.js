@@ -55,9 +55,43 @@ async function testConnection() {
   }
 }
 
+async function syncUserToSupabase(user) {
+  if (!supabase || !isConfigured) return { success: false, error: 'Supabase not configured' };
+  try {
+    const cleanEmail = (user.email || '').toLowerCase().trim();
+    if (!cleanEmail) return { success: false, error: 'Email required' };
+    const cleanUsername = (user.username || ('@' + cleanEmail.split('@')[0])).trim();
+    const row = {
+      id: user.id || ('u_' + Date.now()),
+      name: user.name || cleanUsername.replace('@', ''),
+      username: cleanUsername.startsWith('@') ? cleanUsername : '@' + cleanUsername,
+      email: cleanEmail,
+      password_hash: user.passwordHash || user.password_hash || '',
+      avatar: user.avatar || null,
+      wallet_balance: user.walletBalance !== undefined ? user.walletBalance : 0,
+      role: user.role || 'buyer',
+      xp: user.xp || 0,
+      badges: user.badges || 0,
+      location: user.location || 'India',
+      headline: user.headline || 'Smart Hub Developer',
+      created_at: user.createdAt || new Date().toISOString()
+    };
+    const { error } = await supabase.from('users').upsert([row], { onConflict: 'email' });
+    if (error) {
+      console.warn('[Supabase] User sync warning:', error.message);
+      return { success: false, error: error.message };
+    }
+    return { success: true, user: row };
+  } catch (err) {
+    console.warn('[Supabase] User sync error:', err.message);
+    return { success: false, error: err.message };
+  }
+}
+
 module.exports = {
   supabase,
   isConfigured: () => isConfigured,
   isSupabaseConfigured: () => isConfigured,
-  testConnection
+  testConnection,
+  syncUserToSupabase
 };

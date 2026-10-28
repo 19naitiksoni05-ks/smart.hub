@@ -318,7 +318,22 @@ async function renderProfileProjects() {
     } catch (e) {}
   }
 
-  const list = (window.SmartHubData && window.SmartHubData.products) || (typeof SmartHubData !== 'undefined' ? SmartHubData.products : []) || [];
+  const allProducts = (window.SmartHubData && window.SmartHubData.products) || (typeof SmartHubData !== 'undefined' ? SmartHubData.products : []) || [];
+  const curUser = (window.getCurrentUser && window.getCurrentUser()) || (window.getSessionUser && window.getSessionUser()) || {};
+
+  let list = allProducts;
+  if (curUser && (curUser.id || curUser.name)) {
+    const userCreated = allProducts.filter(p => {
+      const aId = (p.author && p.author.id) || p.seller_id;
+      const aName = (p.author && p.author.name) || p.seller_name;
+      return (aId && aId === curUser.id) ||
+             (aName && curUser.name && aName.toLowerCase().trim() === curUser.name.toLowerCase().trim());
+    });
+    // For non-admin users, strictly show only their own creations. For admin with no creations, fallback to catalog.
+    if (userCreated.length > 0 || curUser.role !== 'admin') {
+      list = userCreated;
+    }
+  }
   
   // Update header count & sidebar stats
   const statProdEl = document.getElementById('profile-stat-products');
@@ -735,6 +750,8 @@ async function uploadProject() {
     btn.textContent = 'Publishing Project... 🚀';
   }
 
+  const curUser = (window.getCurrentUser && window.getCurrentUser()) || (window.getSessionUser && window.getSessionUser()) || {};
+
   const payload = {
     title,
     description: desc,
@@ -744,7 +761,13 @@ async function uploadProject() {
     videoUrl: modalVideoUrl || null,
     downloadUrl: modalDownloadUrl || null,
     bundleInfo: modalBundleInfo || null,
-    tags: [cat, 'FullStack', 'Audited']
+    tags: [cat, 'FullStack', 'Audited'],
+    author: curUser.name ? {
+      id: curUser.id,
+      name: curUser.name,
+      username: curUser.username,
+      avatar: curUser.avatar
+    } : null
   };
 
   try {

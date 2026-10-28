@@ -643,8 +643,8 @@ function renderProductCard(product) {
         <div class="product-card-title">${product.title}</div>
         <div class="product-card-meta">
           <div class="product-card-author">
-            <img src="${product.author.avatar}" alt="${product.author.name}">
-            ${product.author.name}
+            <img src="${(product.author && product.author.avatar) || product.seller_avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=user&backgroundColor=ff5b36'}" alt="${(product.author && product.author.name) || product.seller_name || 'Creator'}">
+            ${(product.author && product.author.name) || product.seller_name || 'Creator'}
           </div>
           <div class="product-card-stats">
             <div class="product-card-stat">★ ${product.rating}</div>

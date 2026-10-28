@@ -84,6 +84,7 @@
           const u = JSON.parse(user);
           if (u.id) headers['x-user-id'] = u.id;
           if (u.email) headers['x-user-email'] = u.email;
+          if (u.name) headers['x-user-name'] = encodeURIComponent(u.name);
         } catch (e) {}
       }
       return headers;
@@ -99,6 +100,7 @@
           const u = JSON.parse(user);
           if (u.id) headers['x-user-id'] = u.id;
           if (u.email) headers['x-user-email'] = u.email;
+          if (u.name) headers['x-user-name'] = encodeURIComponent(u.name);
         } catch (e) {}
       }
       return headers;

@@ -290,8 +290,8 @@ function renderProducts(products) {
         <div class="product-card-title">${p.title}</div>
         <div class="product-card-meta">
           <div class="product-card-author">
-            <img src="${p.author.avatar}" alt="${p.author.name}">
-            ${p.author.name}
+            <img src="${(p.author && p.author.avatar) || p.seller_avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=user&backgroundColor=ff5b36'}" alt="${(p.author && p.author.name) || p.seller_name || 'Creator'}">
+            ${(p.author && p.author.name) || p.seller_name || 'Creator'}
           </div>
           <div class="product-card-stats">
             <div class="product-card-stat">★ ${p.rating}</div>
@@ -378,11 +378,13 @@ function openProductDetail(id) {
   document.getElementById('detail-desc').textContent = product.description;
   document.getElementById('detail-badge').innerHTML = product.badge ? `<span class="badge badge-orange">${product.badge}</span>` : '';
   document.getElementById('detail-tags').innerHTML = product.tags.map(t=>`<span class="tag">${t}</span>`).join('');
+  const aName = (product.author && product.author.name) || product.seller_name || 'Verified Creator';
+  const aAvatar = (product.author && product.author.avatar) || product.seller_avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=creator&backgroundColor=6366f1';
   document.getElementById('detail-meta').innerHTML = `
-    <img src="${product.author.avatar}" class="avatar avatar-sm" alt="${product.author.name}">
-    <span style="font-weight:600;font-size:0.9rem;">${product.author.name}</span>
-    <span class="badge badge-purple">★ ${product.rating} (${product.reviews})</span>
-    <span class="badge badge-green">💾 ${formatNum(product.sales)} sales</span>
+    <img src="${aAvatar}" class="avatar avatar-sm" alt="${aName}">
+    <span style="font-weight:600;font-size:0.9rem;">${aName}</span>
+    <span class="badge badge-purple">★ ${product.rating || 5.0} (${product.reviews || 0})</span>
+    <span class="badge badge-green">💾 ${formatNum(product.sales || 0)} sales</span>
   `;
   const discount = product.oldPrice ? Math.round((1 - product.price/product.oldPrice)*100) : 0;
   let feePct = 2.0;

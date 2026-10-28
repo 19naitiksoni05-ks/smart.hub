@@ -493,10 +493,10 @@
         </div>
 
         <div class="studio-author-bar">
-          <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Naitik" class="studio-avatar" id="studio-author-avatar">
+          <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=creator&backgroundColor=6366f1" class="studio-avatar" id="studio-author-avatar">
           <div>
             <span style="font-size:0.85rem;color:var(--studio-text-muted);">Creator:</span>
-            <strong id="studio-author-name" style="color:var(--studio-text);margin-left:4px;">Naitik Soni</strong>
+            <strong id="studio-author-name" style="color:var(--studio-text);margin-left:4px;">Verified Creator</strong>
             <span class="badge badge-cyan" style="font-size:0.68rem;padding:2px 6px;margin-left:6px;">VERIFIED DEVELOPER</span>
           </div>
           <span style="color:var(--studio-border);">•</span>
@@ -926,7 +926,7 @@
         stars: 42,
         thumb: prod.thumb,
         downloadUrl: prod.downloadUrl || `/api/orders/${prod.id}/download`,
-        author: prod.author || { name: 'Naitik Soni', username: '@naitik' },
+        author: prod.author || { name: prod.seller_name || 'Verified Creator', username: '@creator' },
         fileCount: 3,
         languages: [{ name: 'Python', percent: 84.2, color: '#3572A5' }, { name: 'JSON', percent: 15.8, color: '#292929' }],
         tree: [

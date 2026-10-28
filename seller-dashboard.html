@@ -668,6 +668,8 @@
       submitBtn.disabled = true;
       submitBtn.textContent = 'Publishing to Database...';
 
+      const curUser = (window.getCurrentUser && window.getCurrentUser()) || (window.getSessionUser && window.getSessionUser()) || {};
+
       const payload = {
         title,
         category,
@@ -679,7 +681,13 @@
         thumb: pubCoverUrl || `https://picsum.photos/seed/${encodeURIComponent(title)}/400/250`,
         videoUrl: pubVideoUrl || null,
         downloadUrl: pubDownloadUrl || null,
-        bundleInfo: pubBundleInfo || null
+        bundleInfo: pubBundleInfo || null,
+        author: curUser.name ? {
+          id: curUser.id,
+          name: curUser.name,
+          username: curUser.username,
+          avatar: curUser.avatar
+        } : null
       };
 
       try {

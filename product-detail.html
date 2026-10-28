@@ -317,13 +317,15 @@
       document.getElementById('prod-bread-cat').href = `marketplace.html?cat=${encodeURIComponent(prod.category)}`;
       document.getElementById('prod-price-display').textContent = `₹${prod.price.toLocaleString('en-IN')}`;
       document.getElementById('prod-main-img').src = prod.thumb;
-      document.getElementById('prod-author-name').innerHTML = `${prod.author.name} <span style="color:var(--accent-cyan);">✓ Verified Seller</span>`;
-      document.getElementById('prod-author-avatar').src = prod.author.avatar;
+      const authorName = (prod.author && prod.author.name) || prod.seller_name || 'Verified Developer';
+      const authorAvatar = (prod.author && prod.author.avatar) || prod.seller_avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=seller&backgroundColor=6366f1';
+      document.getElementById('prod-author-name').innerHTML = `${authorName} <span style="color:var(--accent-cyan);">✓ Verified Seller</span>`;
+      document.getElementById('prod-author-avatar').src = authorAvatar;
       document.getElementById('prod-buy-now-btn').href = `checkout.html?id=${prod.id}`;
       const repoBtn = document.getElementById('prod-view-repo-btn');
       if (repoBtn) repoBtn.href = `repo.html?id=${prod.id}`;
       const chatBtn = document.getElementById('prod-chat-author-btn');
-      if (chatBtn) chatBtn.href = `chat.html?seller=${encodeURIComponent(prod.author.name)}&product=${prod.id}`;
+      if (chatBtn) chatBtn.href = `chat.html?seller=${encodeURIComponent(authorName)}&product=${prod.id}`;
       if (prod.badge) {
         document.getElementById('prod-badge-tag').textContent = `[ ${prod.badge.toUpperCase()} ]`;
       } else {

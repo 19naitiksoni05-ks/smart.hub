@@ -136,9 +136,22 @@ router.get('/featured', (req, res) => {
 });
 
 // ── Get Single Product Details ────────────────────────────────
-router.get('/:id', (req, res) => {
+router.get('/:id', async (req, res) => {
   try {
-    const product = db.findById('products', req.params.id);
+    let product = db.findById('products', req.params.id);
+
+    // If not found in local db, query Supabase cloud database
+    if (!product && isConfigured() && supabase) {
+      try {
+        const { data, error } = await supabase.from('products').select('*').eq('id', req.params.id).limit(1);
+        if (!error && data && data.length > 0) {
+          product = formatSupabaseProduct(data[0]);
+        }
+      } catch (sbErr) {
+        console.warn('[Products] Single fetch Supabase fallback:', sbErr.message);
+      }
+    }
+
     if (!product) {
       return res.status(404).json({ success: false, error: 'Product not found' });
     }
@@ -163,29 +176,74 @@ router.get('/:id', (req, res) => {
 // ── Create New Product (Seller Studio) ────────────────────────
 router.post('/', authOptional, async (req, res) => {
   try {
-    const { title, category, price, oldPrice, description, tags, thumb, type, badge, videoUrl, downloadUrl, bundleInfo } = req.body;
+    const { title, category, price, oldPrice, description, tags, thumb, type, badge, videoUrl, downloadUrl, bundleInfo, author: bodyAuthor } = req.body;
 
     if (!title || !category || price === undefined || price === null || isNaN(Number(price))) {
       return res.status(400).json({ success: false, error: 'Title, category and a valid price (>= 0) are required' });
     }
 
-    // Determine author
-    let author = {
-      id: 'dev_guest',
-      name: 'Verified Developer',
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=dev&backgroundColor=6366f1'
-    };
+    // Determine author from authenticated context, explicit payload, or headers
+    let author = null;
 
-    if (req.user) {
+    if (req.user && req.user.name) {
       author = {
         id: req.user.id,
         name: req.user.name,
-        avatar: req.user.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=user&backgroundColor=6366f1'
+        username: req.user.username || ('@' + req.user.name.toLowerCase().replace(/\s+/g, '_')),
+        avatar: req.user.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(req.user.name)}&backgroundColor=ff5b36`
       };
-    } else if (req.headers['x-user-id']) {
-      const u = db.findById('users', req.headers['x-user-id']);
+    } else if (bodyAuthor && bodyAuthor.name) {
+      author = {
+        id: bodyAuthor.id || ('u_' + Date.now()),
+        name: bodyAuthor.name,
+        username: bodyAuthor.username || ('@' + bodyAuthor.name.toLowerCase().replace(/\s+/g, '_')),
+        avatar: bodyAuthor.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(bodyAuthor.name)}&backgroundColor=ff5b36`
+      };
+    } else if (req.headers['x-user-id'] || req.headers['x-user-name']) {
+      const hName = req.headers['x-user-name'] ? decodeURIComponent(req.headers['x-user-name']) : null;
+      const hId = req.headers['x-user-id'];
+      const u = hId ? db.findById('users', hId) : null;
       if (u) {
-        author = { id: u.id, name: u.name, avatar: u.avatar };
+        author = { id: u.id, name: u.name, username: u.username, avatar: u.avatar };
+      } else if (hName) {
+        author = {
+          id: hId || ('u_' + Date.now()),
+          name: hName,
+          username: '@' + hName.toLowerCase().replace(/\s+/g, '_'),
+          avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(hName)}&backgroundColor=ff5b36`
+        };
+      }
+    }
+
+    if (!author) {
+      author = {
+        id: 'dev_seller',
+        name: 'Verified Developer',
+        username: '@dev_seller',
+        avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=dev&backgroundColor=6366f1'
+      };
+    }
+
+    // Ensure the creator exists in Supabase users table to satisfy foreign key constraints
+    if (isConfigured() && supabase && author && author.id && author.id !== 'dev_seller') {
+      try {
+        await supabase.from('users').upsert([{
+          id: author.id,
+          name: author.name,
+          username: author.username || ('@' + author.name.toLowerCase().replace(/\s+/g, '_')),
+          email: (req.user && req.user.email) || `${author.id}@creator.smarthub.io`,
+          password_hash: '',
+          avatar: author.avatar || null,
+          role: (req.user && req.user.role) || 'seller',
+          wallet_balance: 0,
+          xp: 0,
+          badges: 0,
+          location: 'India',
+          headline: 'Smart Hub Creator',
+          created_at: new Date().toISOString()
+        }], { onConflict: 'id' });
+      } catch (uErr) {
+        console.warn('[Products] Creator user upsert notice:', uErr.message);
       }
     }
 

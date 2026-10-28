@@ -49,8 +49,20 @@ function resolveAuthContext(req) {
     // Verify standard JWT token
     try {
       const decoded = jwt.verify(token, JWT_SECRET);
-      const user = db.findById('users', decoded.id);
+      let user = db.findById('users', decoded.id);
       if (user) {
+        return { user, authType: 'jwt' };
+      }
+      // If user not in local cold-start memory, use verified JWT claims directly
+      if (decoded && decoded.id) {
+        user = {
+          id: decoded.id,
+          name: decoded.name || (decoded.email ? decoded.email.split('@')[0] : 'Creator'),
+          username: decoded.username || ('@' + (decoded.email ? decoded.email.split('@')[0] : 'user')),
+          email: decoded.email || '',
+          role: decoded.role || 'buyer',
+          avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(decoded.id)}&backgroundColor=ff5b36`
+        };
         return { user, authType: 'jwt' };
       }
     } catch (err) {
@@ -60,23 +72,24 @@ function resolveAuthContext(req) {
 
   // 3. Fallback header for simulated sessions in development / local storage
   const fallbackUserId = req.headers['x-user-id'];
-  if (fallbackUserId) {
-    let user = db.findById('users', fallbackUserId);
-    if (!user) {
-      user = db.findOne('users', u => 
-        u.id === fallbackUserId || 
-        (u.email && u.email.toLowerCase() === String(fallbackUserId).toLowerCase().trim()) ||
-        (u.username && u.username.toLowerCase() === String(fallbackUserId).toLowerCase().trim())
-      );
-    }
-    if (user) {
-      return { user, authType: 'dev_header' };
-    }
-  }
-
   const fallbackUserEmail = req.headers['x-user-email'];
-  if (fallbackUserEmail) {
-    const user = db.findOne('users', u => u.email && u.email.toLowerCase() === String(fallbackUserEmail).toLowerCase().trim());
+  const fallbackUserName = req.headers['x-user-name'] ? decodeURIComponent(req.headers['x-user-name']) : null;
+
+  if (fallbackUserId || fallbackUserEmail) {
+    let user = fallbackUserId ? db.findById('users', fallbackUserId) : null;
+    if (!user && fallbackUserEmail) {
+      user = db.findOne('users', u => u.email && u.email.toLowerCase() === String(fallbackUserEmail).toLowerCase().trim());
+    }
+    if (!user && (fallbackUserId || fallbackUserName)) {
+      user = {
+        id: fallbackUserId || ('u_' + Date.now()),
+        email: fallbackUserEmail || '',
+        name: fallbackUserName || (fallbackUserEmail ? fallbackUserEmail.split('@')[0] : 'Creator'),
+        username: '@' + (fallbackUserName || (fallbackUserEmail ? fallbackUserEmail.split('@')[0] : 'user')).toLowerCase().replace(/\s+/g, '_'),
+        role: 'buyer',
+        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(fallbackUserId || 'user')}&backgroundColor=ff5b36`
+      };
+    }
     if (user) {
       return { user, authType: 'dev_header' };
     }

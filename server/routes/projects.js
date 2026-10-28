@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const db = require('../db');
 const { authOptional } = require('../middleware/auth');
+const { supabase, isConfigured } = require('../supabase');
 
 // ── Check Source Code Access Permission ───────────────────────
 function checkProjectAccess(product, req) {
@@ -267,7 +268,7 @@ function getProjectRealTreeAndFiles(product) {
 
   // Generate visual README overview showcasing the project
   const title = product.title || 'Verified Developer Project';
-  const authorName = product.author ? product.author.name : 'Naitik Soni';
+  const authorName = (product.author && product.author.name) || product.seller_name || 'Verified Creator';
   const category = product.category || 'General';
   const desc = product.description || 'Verified source code asset published on Smart Hub.';
   const previewImage = product.thumb || '';
@@ -330,15 +331,39 @@ ${runInstruction}
 }
 
 // ── GET Project Repository Details ────────────────────────────
-function handleProjectRepo(req, res) {
+async function handleProjectRepo(req, res) {
   try {
     const prodId = req.params.id;
     let product = db.findById('products', prodId);
 
-    if (!product) {
-      const allProds = db.get('products');
-      if (allProds.length > 0) {
-        product = allProds[0];
+    // If not found in local db, query Supabase cloud database
+    if (!product && isConfigured() && supabase) {
+      try {
+        const { data, error } = await supabase.from('products').select('*').eq('id', prodId).limit(1);
+        if (!error && data && data.length > 0) {
+          const p = data[0];
+          product = {
+            id: p.id,
+            title: p.title,
+            description: p.description,
+            price: Number(p.price) || 0,
+            category: p.category,
+            badge: p.badge,
+            rating: p.rating,
+            reviews: p.reviews_count || 0,
+            sales: p.sales_count || 0,
+            author: {
+              id: p.seller_id || 'dev_creator',
+              name: p.seller_name || 'Verified Creator',
+              username: '@' + (p.seller_name || 'creator').toLowerCase().replace(/\s+/g, '_'),
+              avatar: p.seller_avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=creator&backgroundColor=6366f1'
+            },
+            thumb: p.thumbnail,
+            downloadUrl: p.download_url
+          };
+        }
+      } catch (sbErr) {
+        console.warn('[Projects Repo] Supabase fetch fallback notice:', sbErr.message);
       }
     }
 
@@ -350,10 +375,10 @@ function handleProjectRepo(req, res) {
     const { tree, files, readme, languages } = getProjectRealTreeAndFiles(product);
 
     const author = product.author || {
-      id: 'dev_verified',
-      name: 'Naitik Soni',
-      username: '@naitik19',
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=naitik19&backgroundColor=ff5b36'
+      id: product.seller_id || 'dev_creator',
+      name: product.seller_name || 'Verified Creator',
+      username: '@' + (product.seller_name || 'creator').toLowerCase().replace(/\s+/g, '_'),
+      avatar: product.seller_avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=creator&backgroundColor=6366f1'
     };
 
     const downloadUrl = null;

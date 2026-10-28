@@ -5,7 +5,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 const db = require('../db');
-const { supabase, isConfigured: isSupabaseConfigured } = require('../supabase');
+const { supabase, isConfigured: isSupabaseConfigured, syncUserToSupabase } = require('../supabase');
 const { JWT_SECRET, authRequired, hashApiKey } = require('../middleware/auth');
 const { checkLoginLockout, recordFailedLogin, clearFailedLogin } = require('../middleware/security');
 
@@ -216,6 +216,7 @@ router.post('/register', async (req, res) => {
     };
 
     db.insert('users', newUser);
+    await syncUserToSupabase(newUser);
 
     // Auto-generate starter Developer API Key
     const rawApiKey = 'sh_live_' + crypto.randomBytes(20).toString('hex');
@@ -235,7 +236,7 @@ router.post('/register', async (req, res) => {
     db.insert('apiKeys', starterApiKey);
 
     const token = jwt.sign(
-      { id: newUser.id, email: newUser.email, role: newUser.role },
+      { id: newUser.id, name: newUser.name, username: newUser.username, email: newUser.email, role: newUser.role },
       JWT_SECRET,
       { expiresIn: '30d' }
     );
@@ -378,8 +379,11 @@ router.post('/login', async (req, res) => {
       } catch (sbErr) {}
     }
 
+    // Sync user state to Supabase cloud
+    syncUserToSupabase(user);
+
     const token = jwt.sign(
-      { id: user.id, email: user.email, role: user.role },
+      { id: user.id, name: user.name, username: user.username, email: user.email, role: user.role },
       JWT_SECRET,
       { expiresIn: '30d' }
     );
@@ -566,8 +570,11 @@ router.post('/github', async (req, res) => {
       db.insert('apiKeys', starterApiKey);
     }
 
+    // Sync user state to Supabase cloud
+    syncUserToSupabase(user);
+
     const token = jwt.sign(
-      { id: user.id, email: user.email, role: user.role },
+      { id: user.id, name: user.name, username: user.username, email: user.email, role: user.role },
       JWT_SECRET,
       { expiresIn: '30d' }
     );
@@ -1126,8 +1133,11 @@ router.post('/google', async (req, res) => {
       });
     }
 
+    // Sync user state to Supabase cloud
+    syncUserToSupabase(user);
+
     const token = jwt.sign(
-      { id: user.id, email: user.email, role: user.role },
+      { id: user.id, name: user.name, username: user.username, email: user.email, role: user.role },
       JWT_SECRET,
       { expiresIn: '30d' }
     );
