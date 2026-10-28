@@ -684,7 +684,7 @@ function renderMessages() {
 }
 
 // ── Switch Conversation ──────────────────────────────────────
-function selectChat(id, el) {
+async function selectChat(id, el) {
   currentChatId = id;
   const contact = chatContacts.find(c => c.id === id);
   if (!contact) return;
@@ -712,24 +712,26 @@ function selectChat(id, el) {
   if (contact.type === 'dm') {
     statusEl.textContent = contact.online ? '● Online' : '○ Offline';
     statusEl.style.color = contact.online ? 'var(--accent-green)' : 'var(--text-muted)';
-    onlineDot.style.display = contact.online ? 'block' : 'none';
+    if (onlineDot) onlineDot.style.display = contact.online ? 'block' : 'none';
     if (avatarEl) {
       avatarEl.style.display = 'block';
       avatarEl.src = contact.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=user';
+    } else if (avatarContainer) {
+      avatarContainer.innerHTML = `<img src="${contact.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=user'}" class="avatar avatar-md" style="border-radius:50%;width:40px;height:40px;" alt="${contact.name}">`;
     }
-    verifiedBadge.style.display = contact.verified ? 'inline-block' : 'none';
+    if (verifiedBadge) verifiedBadge.style.display = contact.verified ? 'inline-block' : 'none';
   } else if (contact.type === 'groups') {
     statusEl.textContent = `👥 ${contact.members || 'Active'} members · Group discussion`;
     statusEl.style.color = 'var(--accent-cyan)';
-    onlineDot.style.display = 'none';
-    verifiedBadge.style.display = 'none';
-    avatarContainer.innerHTML = `<div class="group-icon" style="background:${contact.iconBg};width:40px;height:40px;border-radius:50%;font-size:18px;">${contact.icon}</div>`;
+    if (onlineDot) onlineDot.style.display = 'none';
+    if (verifiedBadge) verifiedBadge.style.display = 'none';
+    avatarContainer.innerHTML = `<div class="group-icon" style="background:${contact.iconBg || 'rgba(139,92,246,0.15)'};width:40px;height:40px;border-radius:50%;font-size:18px;">${contact.icon || '👥'}</div>`;
   } else if (contact.type === 'channels') {
     statusEl.textContent = `📢 ${contact.subscribers || 'Official'} subscribers · Announcements`;
     statusEl.style.color = 'var(--accent-purple)';
-    onlineDot.style.display = 'none';
-    verifiedBadge.style.display = 'none';
-    avatarContainer.innerHTML = `<div class="group-icon" style="background:${contact.iconBg};width:40px;height:40px;border-radius:50%;font-size:18px;">${contact.icon}</div>`;
+    if (onlineDot) onlineDot.style.display = 'none';
+    if (verifiedBadge) verifiedBadge.style.display = 'none';
+    avatarContainer.innerHTML = `<div class="group-icon" style="background:${contact.iconBg || 'rgba(139,92,246,0.15)'};width:40px;height:40px;border-radius:50%;font-size:18px;">${contact.icon || '📢'}</div>`;
   }
 
   // Handle readonly channels
@@ -741,10 +743,42 @@ function selectChat(id, el) {
     if (inputBar) inputBar.style.display = 'flex';
   }
 
+  // Render local messages first
   renderMessages();
+
+  // Load real messages from backend
+  await fetchMessagesForActiveChat(id);
 
   // Mobile drawer switch
   toggleMobileChatView(true);
+}
+
+// ── Fetch Messages from Backend for Active Chat ───────────────
+async function fetchMessagesForActiveChat(convId) {
+  if (!convId || !window.SmartHubAPI) return;
+  const contact = chatContacts.find(c => c.id === convId);
+  try {
+    let res;
+    if (contact && contact.type === 'channels' && contact.channelId) {
+      res = await window.SmartHubAPI.getChannelMessages(contact.channelId);
+    } else {
+      res = await window.SmartHubAPI.getChatMessages(convId);
+    }
+    if (res && res.success && Array.isArray(res.messages)) {
+      chatThreads[convId] = res.messages;
+      if (currentChatId === convId) {
+        renderMessages();
+      }
+      if (res.messages.length > 0 && contact) {
+        const last = res.messages[res.messages.length - 1];
+        contact.lastMsg = (last.sent ? 'You: ' : '') + (last.text || (last.type === 'code' ? 'Code snippet' : 'Attachment'));
+        contact.time = last.time || 'Just now';
+        renderChatList(chatContacts);
+      }
+    }
+  } catch (err) {
+    console.warn('[Chat] Failed to load messages for', convId, err);
+  }
 }
 
 // ── Switch Tabs (DMs, Groups, Channels) ──────────────────────
@@ -792,8 +826,8 @@ function filterChats(query) {
   renderChatList(filtered);
 }
 
-// ── Send Message & Contextual Bot Simulator ──────────────────
-function sendMessage() {
+// ── Send Real User Message ────────────────────────────────────
+async function sendMessage() {
   const input = document.getElementById('msg-input');
   const text = input.value.trim();
   if (!text) return;
@@ -801,11 +835,25 @@ function sendMessage() {
   const currentThread = chatThreads[currentChatId] || (chatThreads[currentChatId] = []);
   const contact = chatContacts.find(c => c.id === currentChatId);
 
+  const currentUser = (window.SmartHubAPI && window.SmartHubAPI.getCurrentUser()) || null;
+  const currentUserId = currentUser ? (currentUser.id || currentUser.username) : 'me';
+  const currentUserName = currentUser ? currentUser.name : 'You';
+  const currentUserAvatar = currentUser
+    ? (currentUser.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(currentUserId)}&backgroundColor=6366f1`)
+    : 'https://api.dicebear.com/7.x/avataaars/svg?seed=user';
+
+  const timeStr = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+  const localMsgId = 'm_' + Date.now();
+
   const newMsg = {
-    id: 'm_' + Date.now(),
+    id: localMsgId,
+    conversationId: currentChatId,
+    senderId: currentUserId,
+    senderName: currentUserName,
+    avatar: currentUserAvatar,
     from: 'me',
     text: text,
-    time: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
+    time: timeStr,
     sent: true
   };
 
@@ -821,7 +869,7 @@ function sendMessage() {
   currentThread.push(newMsg);
   if (contact) {
     contact.lastMsg = 'You: ' + text;
-    contact.time = newMsg.time;
+    contact.time = timeStr;
   }
 
   renderMessages();
@@ -831,64 +879,16 @@ function sendMessage() {
   input.value = '';
   input.style.height = 'auto';
 
-  // Sync to Backend REST API & WebSocket
+  // Real Peer-to-Peer backend persistence (NO FAKE BOT REPLIES)
   if (window.SmartHubAPI) {
     try {
-      window.SmartHubAPI.sendChatMessage(currentChatId, text);
-    } catch (e) {}
-  }
-
-  // Trigger contextual smart reply
-  triggerBotReply(contact, text);
-}
-
-// ── Smart Contextual Bot Responses ────────────────────────────
-function triggerBotReply(contact, userText) {
-  if (!contact || contact.readonly) return;
-
-  const indicator = document.getElementById('typing-indicator');
-  const typingText = document.getElementById('typing-text');
-  const cid = contact.id;
-
-  setTimeout(() => {
-    if (currentChatId === cid && indicator) {
-      typingText.textContent = `${contact.name} is typing…`;
-      indicator.style.display = 'flex';
+      const recipientId = contact ? (contact.userId || contact.id) : null;
+      const recipientUsername = contact ? contact.name : null;
+      await window.SmartHubAPI.sendChatMessage(currentChatId, text, null, recipientId, recipientUsername);
+    } catch (e) {
+      console.warn('Failed to send message to backend:', e);
     }
-
-    setTimeout(() => {
-      if (indicator) indicator.style.display = 'none';
-
-      let replyMsg = '';
-      const lower = userText.toLowerCase();
-
-      replyMsg = 'Thank you for reaching out! I will review your message and reply as soon as possible.';
-
-      const thread = chatThreads[cid] || (chatThreads[cid] = []);
-      thread.push({
-        id: 'm_' + Date.now(),
-        from: contact.name,
-        avatar: contact.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + cid,
-        text: replyMsg,
-        time: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
-        sent: false,
-        reactions: { '👍': 1 }
-      });
-
-      contact.lastMsg = replyMsg;
-      contact.time = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
-
-      if (currentChatId === cid) {
-        renderMessages();
-      }
-      renderChatList(chatContacts);
-      SoundFX.playReceive();
-
-      if (window.SH && window.SH.showToast && currentChatId !== cid) {
-        window.SH.showToast(`New message from ${contact.name}`, 'info');
-      }
-    }, 1400);
-  }, 600);
+  }
 }
 
 // ── Message Reactions System ──────────────────────────────────
@@ -1305,42 +1305,109 @@ function endCall() {
   }
 }
 
-// ── New Chat Modal ────────────────────────────────────────────
-function openNewChatModal() {
+// ── Helper: Canonical DM Conversation ID ────────────────────
+function getCanonicalDmId(targetUsername, targetUserId) {
+  const currentUser = (window.SmartHubAPI && window.SmartHubAPI.getCurrentUser()) || null;
+  const myUsername = currentUser ? (currentUser.username || currentUser.id || 'me').replace('@','').toLowerCase() : 'me';
+  const target = (targetUsername || targetUserId || 'user').replace('@','').toLowerCase();
+  return 'dm_' + [myUsername, target].sort().join('_');
+}
+
+// ── New Chat Modal with Live Registered Users ─────────────────
+async function openNewChatModal() {
   const modal = document.getElementById('modal-new-chat');
   const list = document.getElementById('new-chat-users-list');
   if (!modal || !list) return;
 
+  const currentUser = (window.SmartHubAPI && window.SmartHubAPI.getCurrentUser()) || null;
+  const currentEmail = currentUser ? (currentUser.email || '').toLowerCase() : '';
+  const currentUsername = currentUser ? (currentUser.username || '').toLowerCase().replace('@','') : '';
+
   list.innerHTML = `
-    <div style="padding:16px;background:rgba(255,255,255,0.03);border:1px solid var(--border-outline);border-radius:var(--radius-sm);text-align:center;">
-      <p style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:12px;">Enter any seller or developer username to start an encrypted direct conversation:</p>
+    <div style="padding:14px;background:rgba(255,255,255,0.03);border:1px solid var(--border-outline);border-radius:var(--radius-sm);margin-bottom:12px;">
+      <p style="font-size:0.83rem;color:var(--text-secondary);margin:0 0 8px 0;">Start chat with custom username or developer name:</p>
       <div style="display:flex;gap:8px;">
-        <input class="input" type="text" id="quick-username-input" placeholder="e.g. dev_alex or seller name" style="flex:1;">
-        <button class="btn btn-primary btn-sm" onclick="startDirectFromInput()">Start Chat</button>
+        <input class="input" type="text" id="quick-username-input" placeholder="e.g. naitik19 or username" style="flex:1;">
+        <button class="btn btn-primary btn-sm" onclick="startDirectFromInput()">Chat →</button>
       </div>
     </div>
+    <div style="font-size:0.75rem;font-family:var(--font-tech);color:var(--accent-purple);margin:8px 0 6px 0;letter-spacing:0.05em;display:flex;justify-content:space-between;align-items:center;">
+      <span>REGISTERED DEVELOPERS</span>
+      <span style="font-size:0.7rem;color:var(--text-muted);">Real-time peer chat</span>
+    </div>
+    <div id="users-loading-spinner" style="text-align:center;padding:18px;color:var(--text-muted);font-size:0.85rem;">
+      <span class="pulse-dot" style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent-purple);margin-right:6px;"></span>
+      Loading registered platform members…
+    </div>
+    <div id="picker-users-container"></div>
   `;
 
   SH.openModal('modal-new-chat');
+
+  try {
+    const res = await window.SmartHubAPI.getUsers();
+    const spinner = document.getElementById('users-loading-spinner');
+    const container = document.getElementById('picker-users-container');
+    if (spinner) spinner.style.display = 'none';
+
+    if (res && res.success && Array.isArray(res.users) && res.users.length > 0 && container) {
+      // Filter out self
+      const otherUsers = res.users.filter(u => {
+        const uEmail = (u.email || '').toLowerCase();
+        const uName = (u.username || '').toLowerCase().replace('@','');
+        return uEmail !== currentEmail && uName !== currentUsername;
+      });
+
+      if (otherUsers.length === 0) {
+        container.innerHTML = `<div style="text-align:center;padding:16px;color:var(--text-muted);font-size:0.82rem;">No other members registered yet. Invite someone or type a username above!</div>`;
+      } else {
+        container.innerHTML = otherUsers.map(u => {
+          const rawUname = (u.username || u.name || 'developer').replace('@','');
+          const uname = '@' + rawUname;
+          const avatar = u.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(rawUname)}&backgroundColor=6366f1`;
+          return `
+            <div class="user-picker-row" style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:rgba(255,255,255,0.02);border:1px solid var(--border-outline);border-radius:var(--radius-sm);margin-bottom:6px;transition:var(--transition-fast);">
+              <div style="display:flex;align-items:center;gap:10px;min-width:0;">
+                <img src="${avatar}" style="width:38px;height:38px;border-radius:50%;object-fit:cover;border:1px solid rgba(255,255,255,0.1);" alt="${escapeHtml(u.name)}">
+                <div style="min-width:0;">
+                  <div style="font-weight:700;font-size:0.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(u.name)}</div>
+                  <div style="font-size:0.75rem;color:var(--accent-purple);font-family:var(--font-tech);">${escapeHtml(uname)} · ${escapeHtml(u.headline || u.role || 'Developer')}</div>
+                </div>
+              </div>
+              <button class="btn btn-outline btn-sm" onclick="startChatWithUser('${u.id}', '${uname}', '${avatar}', '${u.id}')" style="flex-shrink:0;">Chat</button>
+            </div>
+          `;
+        }).join('');
+      }
+    }
+  } catch (err) {
+    console.warn('[Chat] Could not load users list:', err);
+  }
 }
 
 function startDirectFromInput() {
   const input = document.getElementById('quick-username-input');
   const name = input ? input.value.trim() : '';
   if (!name) return;
-  const id = name.toLowerCase().replace(/[^a-z0-9_]/g, '');
-  startChatWithUser(id, name, `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(id)}`);
+  const clean = name.replace('@', '');
+  const id = clean.toLowerCase().replace(/[^a-z0-9_]/g, '');
+  startChatWithUser(id, '@' + clean, `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(clean)}&backgroundColor=6366f1`, id);
 }
 
-function startChatWithUser(id, name, avatar) {
+function startChatWithUser(id, name, avatar, userId) {
   SH.closeModal('modal-new-chat');
-  let contact = chatContacts.find(c => c.id === id);
+
+  const cleanName = (name || id || 'user').startsWith('@') ? name : '@' + name;
+  const convId = getCanonicalDmId(cleanName, userId);
+
+  let contact = chatContacts.find(c => c.id === convId);
   if (!contact) {
     contact = {
-      id: id,
-      name: name,
-      avatar: avatar,
-      lastMsg: 'Started conversation',
+      id: convId,
+      userId: userId || id,
+      name: cleanName,
+      avatar: avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(cleanName)}&backgroundColor=6366f1`,
+      lastMsg: 'Conversation ready',
       time: 'Just now',
       unread: 0,
       online: true,
@@ -1348,19 +1415,25 @@ function startChatWithUser(id, name, avatar) {
       role: 'Developer'
     };
     chatContacts.unshift(contact);
-    chatThreads[id] = [
-      { id: 'm_init', from: name, avatar: avatar, text: `Hello! Thanks for connecting on Smart Hub. How can I help you today?`, time: 'Just now', sent: false }
-    ];
+    if (!chatThreads[convId]) {
+      chatThreads[convId] = [];
+    }
   }
+
   currentTab = 'dm';
   document.querySelectorAll('.chat-type-tab').forEach((t, i) => t.classList.toggle('active', i === 0));
   renderChatList(chatContacts);
-  selectChat(id);
+  selectChat(convId);
+
+  // Notify backend to register canonical DM
+  if (window.SmartHubAPI && window.SmartHubAPI.createDirectConversation) {
+    window.SmartHubAPI.createDirectConversation(cleanName, avatar, userId).catch(() => {});
+  }
 }
 
 function filterNewChatUsers(query) {
   const q = query.toLowerCase().trim();
-  document.querySelectorAll('#new-chat-users-list > div').forEach(div => {
+  document.querySelectorAll('#picker-users-container > .user-picker-row').forEach(div => {
     const text = div.textContent.toLowerCase();
     div.style.display = text.includes(q) ? 'flex' : 'none';
   });
@@ -1472,10 +1545,110 @@ document.addEventListener('click', (e) => {
   }
 });
 
+// ── Real-Time Sync & Live Message Polling ─────────────────────
+let chatPollTimer = null;
+function setupChatRealtimeSync() {
+  // 1. WebSocket live listener
+  if (window.SmartHubAPI && window.SmartHubAPI.initWebSocket) {
+    try {
+      window.SmartHubAPI.initWebSocket((data) => {
+        if (!data) return;
+        if (data.type === 'CHAT_MESSAGE' && data.conversationId) {
+          const cid = data.conversationId;
+          const msg = data.message;
+          if (!chatThreads[cid]) chatThreads[cid] = [];
+          if (!chatThreads[cid].some(m => m.id === msg.id)) {
+            chatThreads[cid].push(msg);
+            if (currentChatId === cid) {
+              renderMessages();
+              if (!msg.sent) SoundFX.playReceive();
+            }
+          }
+          const contact = chatContacts.find(c => c.id === cid);
+          if (contact) {
+            contact.lastMsg = msg.text || 'Message';
+            contact.time = msg.time || 'Just now';
+            renderChatList(chatContacts);
+          }
+        }
+      });
+    } catch (e) {}
+  }
+
+  // 2. High-reliability polling fallback
+  if (chatPollTimer) clearInterval(chatPollTimer);
+  chatPollTimer = setInterval(async () => {
+    if (currentChatId) {
+      const contact = chatContacts.find(c => c.id === currentChatId);
+      if (contact && !contact.readonly) {
+        try {
+          const res = await window.SmartHubAPI.getChatMessages(currentChatId);
+          if (res && res.success && Array.isArray(res.messages)) {
+            const oldLen = (chatThreads[currentChatId] || []).length;
+            chatThreads[currentChatId] = res.messages;
+            if (res.messages.length !== oldLen) {
+              renderMessages();
+              if (res.messages.length > oldLen) {
+                const latest = res.messages[res.messages.length - 1];
+                if (!latest.sent) {
+                  SoundFX.playReceive();
+                }
+              }
+              if (contact && res.messages.length > 0) {
+                const last = res.messages[res.messages.length - 1];
+                contact.lastMsg = (last.sent ? 'You: ' : '') + (last.text || 'Message');
+                contact.time = last.time || 'Just now';
+                renderChatList(chatContacts);
+              }
+            }
+          }
+        } catch (e) {}
+      }
+    }
+  }, 2500);
+}
+
+// ── Initial Fetch of Conversations from Backend ───────────────
+async function initConversationsFromBackend() {
+  if (!window.SmartHubAPI) return;
+  try {
+    const res = await window.SmartHubAPI.getConversations();
+    if (res && res.success && Array.isArray(res.conversations)) {
+      res.conversations.forEach(c => {
+        const existing = chatContacts.find(x => x.id === c.id);
+        if (!existing) {
+          chatContacts.push({
+            id: c.id,
+            name: c.name,
+            avatar: c.avatar,
+            lastMsg: c.lastMsg || 'Conversation active',
+            time: c.time || 'Just now',
+            unread: c.unread || 0,
+            type: c.type || 'dm',
+            online: true
+          });
+        } else {
+          existing.lastMsg = c.lastMsg || existing.lastMsg;
+          existing.time = c.time || existing.time;
+          existing.unread = c.unread || existing.unread;
+        }
+      });
+      renderChatList(chatContacts);
+      updateUnreadBadges();
+    }
+  } catch (e) {
+    console.warn('[Chat] Failed to load initial conversations:', e);
+  }
+}
+
 // ── Init on DOM Ready ─────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   initEmojiPicker();
   updateUnreadBadges();
+  setupChatRealtimeSync();
+
+  // Load existing user conversations from backend
+  await initConversationsFromBackend();
 
   // Check URL parameters (e.g. chat.html?seller=seller_name&product=prod_id)
   const params = new URLSearchParams(window.location.search);
@@ -1497,11 +1670,13 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.chat-type-tab').forEach(t => {
       t.classList.toggle('active', t.getAttribute('onclick').includes('dm'));
     });
-    const found = chatContacts.find(c => c.id.toLowerCase() === targetUser.toLowerCase() || c.name.toLowerCase().includes(targetUser.toLowerCase()));
+    const cleanTarget = targetUser.replace('@', '');
+    const canonicalId = getCanonicalDmId(cleanTarget, cleanTarget);
+    const found = chatContacts.find(c => c.id === canonicalId || c.id.toLowerCase() === targetUser.toLowerCase() || c.name.toLowerCase().includes(targetUser.toLowerCase()));
     if (found) {
       selectChat(found.id);
     } else {
-      startChatWithUser(targetUser.toLowerCase(), targetUser, `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(targetUser)}`);
+      startChatWithUser(cleanTarget, '@' + cleanTarget, `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(cleanTarget)}&backgroundColor=6366f1`);
     }
   } else {
     const first = chatContacts.find(c => c.type === currentTab) || chatContacts[0];

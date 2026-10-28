@@ -6,7 +6,7 @@
       "username": "@ansh",
       "email": "ansh05ks@gmail.com",
       "mobile": "7007099722",
-      "passwordHash": "$2b$10$OA7rFdbQjXL4esUSVunZk.9LLq/ryZteJffE/xgMcgRQfhRXEw5QO",
+      "passwordHash": "$2b$10$pziYtQ990p7U3MNEnd5b/ekBFHZZnvEX.FK/aQ0uqbIwbfsiUI03K",
       "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=ansh&backgroundColor=ff5b36",
       "walletBalance": 0,
       "role": "buyer",
@@ -15,7 +15,8 @@
       "location": "India",
       "headline": "Smart Hub Developer",
       "emailVerified": true,
-      "createdAt": "2026-10-28T11:13:59.808Z"
+      "createdAt": "2026-10-28T11:13:59.808Z",
+      "updatedAt": "2026-10-28T15:28:01.708Z"
     },
     {
       "id": "u_1793133388791",
@@ -23,7 +24,7 @@
       "username": "@19naitiksoni05-ks",
       "email": "19naitiksoni05@gmail.com",
       "githubId": "286883392",
-      "passwordHash": "$2b$10$.OZ/TQK.5yGmVrxAUXONOezBgfAiNxTYe/Vtmq6MffcItexmnWNTO",
+      "passwordHash": "$2b$10$5xBk6BGBbZMF5l5qcF5QE.7k.50gnoA76PF6RdA4PYx5Yg/pMZg26",
       "avatar": "https://avatars.githubusercontent.com/u/286883392?v=4",
       "walletBalance": 0,
       "role": "admin",
@@ -32,31 +33,15 @@
       "authProvider": "github",
       "location": "India",
       "headline": "Platform & Architecture · Super Admin",
-      "createdAt": "2026-10-27T20:36:28.881Z"
-    },
-    {
-      "id": "u_admin_naitik",
-      "name": "Naitik Soni",
-      "username": "@naitik19",
-      "email": "naitik19ansh@gmail.com",
-      "passwordHash": "$2b$10$wE9N5t8D1n7uWl8lM9SgxeS9qF0g9hH9s7G3U8e6aG4tG6kH2XgOa",
-      "avatar": "https://avatars.githubusercontent.com/u/49962142?v=4",
-      "walletBalance": 50010,
-      "role": "admin",
-      "xp": 10299,
-      "badges": 14,
-      "location": "India",
-      "headline": "Platform & Architecture · Super Admin",
-      "createdAt": "2026-01-01T00:00:00.000Z",
-      "updatedAt": "2026-10-27T20:23:33.992Z",
-      "githubId": "49962142"
+      "createdAt": "2026-10-27T20:36:28.881Z",
+      "updatedAt": "2026-10-28T15:28:02.024Z"
     },
     {
       "id": "a9b9e238-6ec8-4622-8f22-9b6eb6939ac2",
       "name": "Naitik Soni",
       "username": "@naitik",
       "email": "naitiksoni700@gmail.com",
-      "passwordHash": "$2b$10$mMSjpm6oQLhgWCqrqdJfa.rd9c6yuXiXacNLJPqvof7QG9.t/INPq",
+      "passwordHash": "$2b$10$PAN1sY7/1vZfjhBYyXEIPuEoaRdd2DaT3fDmPgYD/1GNWbdCNTncy",
       "avatar": "/uploads/images/profilpic_-_Copy_1792920691972_ac19a138.png",
       "walletBalance": 0,
       "role": "buyer",
@@ -66,7 +51,7 @@
       "headline": "Smart Hub Developer",
       "createdAt": "2026-10-25T06:31:25.671Z",
       "cover": "/uploads/images/Screenshot__1__1792920634969_373d9b62.png",
-      "updatedAt": "2026-10-27T20:23:34.318Z",
+      "updatedAt": "2026-10-28T15:28:01.400Z",
       "githubId": "gh_336231360"
     },
     {
@@ -74,7 +59,7 @@
       "name": "Naitik Soni",
       "username": "@naitik19",
       "email": "naitik19ansh@gmail.com",
-      "passwordHash": "$2b$10$XWSvk2mpUrEwIqg8ZieCpOGRTETUN8nIonW5/KQa550HvPp1XuwfK",
+      "passwordHash": "$2b$10$JQLRNYtqUJ2yntYpwPpaAu7409.35jA1paT0ro5aLVCVOL5zsbspe",
       "avatar": "/uploads/images/avatar_test_1792913095876_c066afcd.png",
       "walletBalance": 0,
       "role": "admin",
@@ -83,7 +68,7 @@
       "location": "India",
       "headline": "Platform & Architecture Lead",
       "createdAt": "2026-10-24T19:15:56.573Z",
-      "updatedAt": "2026-10-25T07:24:55.938Z",
+      "updatedAt": "2026-10-28T15:28:01.104Z",
       "cover": "/uploads/images/avatar_test_1792913095876_c066afcd.png"
     }
   ],
@@ -518,8 +503,40 @@
     }
   ],
   "channelMessages": [],
-  "conversations": [],
-  "chatMessages": [],
+  "conversations": [
+    {
+      "id": "dm_test1_test2",
+      "type": "dm",
+      "name": "@test2",
+      "lastMessage": "Hey this is a live test message between two users!",
+      "lastMessageTime": "08:53 pm",
+      "participant_ids": [
+        "guest_1793201000502",
+        "@test2"
+      ],
+      "createdAt": "2026-10-28T15:23:20.947Z"
+    }
+  ],
+  "chatMessages": [
+    {
+      "id": "m_1793201000549_174",
+      "conversationId": "dm_test1_test2",
+      "senderId": "guest_1793201000502",
+      "senderName": "Guest User",
+      "senderAvatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=guest&backgroundColor=6366f1",
+      "text": "Hey this is a live test message between two users!",
+      "type": "text",
+      "attachment": null,
+      "code": null,
+      "lang": null,
+      "title": null,
+      "prodId": null,
+      "time": "08:53 pm",
+      "sent": true,
+      "createdAt": "2026-10-28T15:23:20.502Z",
+      "from": "Guest User"
+    }
+  ],
   "challenges": [
     {
       "id": "ms001",

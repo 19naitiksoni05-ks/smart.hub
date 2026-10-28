@@ -1,533 +1,801 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Create Account &mdash; Smart Hub | India's Developer E-Commerce Hub</title>
-  <meta name="description" content="Register for a free Smart Hub account. Both email and mobile are required. Verify with OTP, or use GitHub / Google.">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>&#x1F680;</text></svg>">
+  <meta name="description"
+    content="Register for a free Smart Hub account. Both email and mobile are required. Verify with OTP, or use GitHub / Google.">
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>&#x1F680;</text></svg>">
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/components.css">
   <link rel="stylesheet" href="css/cards.css">
   <link rel="stylesheet" href="css/pages.css">
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <style>
-    .otp-modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);backdrop-filter:blur(8px);z-index:9999;align-items:center;justify-content:center}
-    .otp-modal-overlay.open{display:flex}
-    .otp-modal-box{background:var(--bg-card,#1a1a2e);border:1px solid var(--border-outline,#2d2d40);border-radius:20px;max-width:420px;width:93%;padding:36px 32px;box-shadow:0 24px 64px rgba(0,0,0,.7);animation:scaleIn .22s ease;text-align:center}
-    .otp-modal-icon{font-size:3rem;margin-bottom:12px;display:block}
-    .otp-modal-title{font-size:1.25rem;font-weight:800;color:var(--text-primary);margin-bottom:6px}
-    .otp-modal-desc{font-size:.85rem;color:var(--text-secondary);margin-bottom:16px;line-height:1.5}
-    .otp-modal-email-badge{display:inline-block;background:rgba(109,40,217,.15);color:#a78bfa;border:1px solid rgba(109,40,217,.3);border-radius:8px;padding:4px 12px;font-size:.82rem;font-weight:700;margin-bottom:18px}
-    .otp-inputs{display:flex;gap:10px;justify-content:center;margin-bottom:18px}
-    .otp-digit{width:48px;height:58px;border:2px solid var(--border-outline,#2d2d40);border-radius:12px;background:var(--bg-surface,#12121e);color:var(--text-primary);font-size:1.6rem;font-weight:800;text-align:center;outline:none;transition:border-color .2s,box-shadow .2s}
-    .otp-digit:focus{border-color:#7c3aed;box-shadow:0 0 0 3px rgba(124,58,237,.2)}
-    .otp-digit.filled{border-color:#a78bfa}
-    .otp-digit.error{border-color:#ef4444;box-shadow:0 0 0 3px rgba(239,68,68,.2)}
-    .otp-digit.success{border-color:#22c55e;box-shadow:0 0 0 3px rgba(34,197,94,.2)}
-    .otp-resend-row{font-size:.82rem;color:var(--text-muted);margin-bottom:18px}
-    .otp-resend-btn{background:none;border:none;color:#7c3aed;font-weight:700;cursor:pointer;font-size:.82rem;text-decoration:underline;padding:0}
-    .otp-resend-btn:disabled{color:var(--text-muted);text-decoration:none;cursor:default}
-    .otp-timer{font-weight:700;color:var(--text-primary)}
-    .otp-verify-btn{width:100%;padding:13px;border-radius:10px;border:none;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;font-size:.95rem;font-weight:700;cursor:pointer;transition:all .2s;margin-bottom:12px}
-    .otp-verify-btn:hover:not(:disabled){background:linear-gradient(135deg,#8b5cf6,#7c3aed);transform:translateY(-1px)}
-    .otp-verify-btn:disabled{opacity:.5;cursor:not-allowed}
-    .otp-cancel-btn{background:none;border:none;color:var(--text-muted);font-size:.83rem;cursor:pointer;text-decoration:underline}
-    .field-verified-badge{display:none;align-items:center;gap:5px;font-size:.75rem;color:#22c55e;font-weight:700;margin-top:4px}
-    .field-verified-badge.show{display:flex}
-    .social-btn-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:6px}
-    .social-auth-btn{display:flex;align-items:center;justify-content:center;gap:9px;padding:11px 14px;border:1px solid var(--border-outline,#2d2d40);border-radius:10px;background:var(--bg-surface,#12121e);color:var(--text-primary);font-size:.85rem;font-weight:600;cursor:pointer;transition:all .18s;text-decoration:none;width:100%}
-    .social-auth-btn:hover{border-color:#7c3aed;background:rgba(124,58,237,.08);transform:translateY(-1px)}
-    .send-otp-row{display:flex;gap:10px;align-items:flex-start}
-    .send-otp-row .auth-form-group{flex:1}
-    .send-otp-btn{flex-shrink:0;padding:0 14px;height:44px;margin-top:24px;border-radius:8px;border:1px solid #7c3aed;background:rgba(124,58,237,.1);color:#a78bfa;font-size:.8rem;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap}
-    .send-otp-btn:hover:not(:disabled){background:rgba(124,58,237,.2)}
-    .send-otp-btn:disabled{opacity:.5;cursor:not-allowed}
-    @keyframes scaleIn{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+    .otp-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .82);
+      backdrop-filter: blur(8px);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center
+    }
+
+    .otp-modal-overlay.open {
+      display: flex
+    }
+
+    .otp-modal-box {
+      background: var(--bg-card, #1a1a2e);
+      border: 1px solid var(--border-outline, #2d2d40);
+      border-radius: 20px;
+      max-width: 420px;
+      width: 93%;
+      padding: 36px 32px;
+      box-shadow: 0 24px 64px rgba(0, 0, 0, .7);
+      animation: scaleIn .22s ease;
+      text-align: center
+    }
+
+    .otp-modal-icon {
+      font-size: 3rem;
+      margin-bottom: 12px;
+      display: block
+    }
+
+    .otp-modal-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 6px
+    }
+
+    .otp-modal-desc {
+      font-size: .85rem;
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+      line-height: 1.5
+    }
+
+    .otp-modal-email-badge {
+      display: inline-block;
+      background: rgba(109, 40, 217, .15);
+      color: #a78bfa;
+      border: 1px solid rgba(109, 40, 217, .3);
+      border-radius: 8px;
+      padding: 4px 12px;
+      font-size: .82rem;
+      font-weight: 700;
+      margin-bottom: 18px
+    }
+
+    .otp-inputs {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 18px
+    }
+
+    .otp-digit {
+      width: 48px;
+      height: 58px;
+      border: 2px solid var(--border-outline, #2d2d40);
+      border-radius: 12px;
+      background: var(--bg-surface, #12121e);
+      color: var(--text-primary);
+      font-size: 1.6rem;
+      font-weight: 800;
+      text-align: center;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s
+    }
+
+    .otp-digit:focus {
+      border-color: #7c3aed;
+      box-shadow: 0 0 0 3px rgba(124, 58, 237, .2)
+    }
+
+    .otp-digit.filled {
+      border-color: #a78bfa
+    }
+
+    .otp-digit.error {
+      border-color: #ef4444;
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, .2)
+    }
+
+    .otp-digit.success {
+      border-color: #22c55e;
+      box-shadow: 0 0 0 3px rgba(34, 197, 94, .2)
+    }
+
+    .otp-resend-row {
+      font-size: .82rem;
+      color: var(--text-muted);
+      margin-bottom: 18px
+    }
+
+    .otp-resend-btn {
+      background: none;
+      border: none;
+      color: #7c3aed;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: .82rem;
+      text-decoration: underline;
+      padding: 0
+    }
+
+    .otp-resend-btn:disabled {
+      color: var(--text-muted);
+      text-decoration: none;
+      cursor: default
+    }
+
+    .otp-timer {
+      font-weight: 700;
+      color: var(--text-primary)
+    }
+
+    .otp-verify-btn {
+      width: 100%;
+      padding: 13px;
+      border-radius: 10px;
+      border: none;
+      background: linear-gradient(135deg, #7c3aed, #6d28d9);
+      color: #fff;
+      font-size: .95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all .2s;
+      margin-bottom: 12px
+    }
+
+    .otp-verify-btn:hover:not(:disabled) {
+      background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+      transform: translateY(-1px)
+    }
+
+    .otp-verify-btn:disabled {
+      opacity: .5;
+      cursor: not-allowed
+    }
+
+    .otp-cancel-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: .83rem;
+      cursor: pointer;
+      text-decoration: underline
+    }
+
+    .field-verified-badge {
+      display: none;
+      align-items: center;
+      gap: 5px;
+      font-size: .75rem;
+      color: #22c55e;
+      font-weight: 700;
+      margin-top: 4px
+    }
+
+    .field-verified-badge.show {
+      display: flex
+    }
+
+    .social-btn-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 6px
+    }
+
+    .social-auth-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      padding: 11px 14px;
+      border: 1px solid var(--border-outline, #2d2d40);
+      border-radius: 10px;
+      background: var(--bg-surface, #12121e);
+      color: var(--text-primary);
+      font-size: .85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .18s;
+      text-decoration: none;
+      width: 100%
+    }
+
+    .social-auth-btn:hover {
+      border-color: #7c3aed;
+      background: rgba(124, 58, 237, .08);
+      transform: translateY(-1px)
+    }
+
+    .send-otp-row {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start
+    }
+
+    .send-otp-row .auth-form-group {
+      flex: 1
+    }
+
+    .send-otp-btn {
+      flex-shrink: 0;
+      padding: 0 14px;
+      height: 44px;
+      margin-top: 24px;
+      border-radius: 8px;
+      border: 1px solid #7c3aed;
+      background: rgba(124, 58, 237, .1);
+      color: #a78bfa;
+      font-size: .8rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all .2s;
+      white-space: nowrap
+    }
+
+    .send-otp-btn:hover:not(:disabled) {
+      background: rgba(124, 58, 237, .2)
+    }
+
+    .send-otp-btn:disabled {
+      opacity: .5;
+      cursor: not-allowed
+    }
+
+    @keyframes scaleIn {
+      from {
+        transform: scale(.9);
+        opacity: 0
+      }
+
+      to {
+        transform: scale(1);
+        opacity: 1
+      }
+    }
   </style>
 </head>
+
 <body>
-<div id="page-header"></div>
-<main class="auth-page">
-  <div class="auth-bg-grid"></div>
-  <div class="auth-card auth-card-wide animate-fadeInUp">
-    <div class="auth-header">
-      <a href="index.html" class="brand-outline-logo" title="Smart Hub &mdash; Home">
-        <span class="logo-smart">smart</span><span class="logo-dot">.</span><span class="logo-hub">hub</span>
-      </a>
-      <h1 class="auth-title">Create Your Account</h1>
-      <p class="auth-subtitle">Join Indian creators buying, selling, and building verified digital assets</p>
-    </div>
-    <div class="auth-tabs-nav">
-      <a href="login.html" class="auth-tab-btn">Sign In</a>
-      <button class="auth-tab-btn active">Create Account</button>
-    </div>
-    <div class="role-selector-grid">
-      <div class="role-card active" id="role-buyer" onclick="selectRole('buyer')">
-        <div class="role-card-icon">&#x1F468;&#x200D;&#x1F4BB;</div>
-        <div class="role-card-title">Buyer / Developer</div>
-        <div class="role-card-desc">Download apps, AI tools &amp; solve challenges</div>
+  <div id="page-header"></div>
+  <main class="auth-page">
+    <div class="auth-bg-grid"></div>
+    <div class="auth-card auth-card-wide animate-fadeInUp">
+      <div class="auth-header">
+        <a href="index.html" class="brand-outline-logo" title="Smart Hub &mdash; Home">
+          <span class="logo-smart">smart</span><span class="logo-dot">.</span><span class="logo-hub">hub</span>
+        </a>
+        <h1 class="auth-title">Create Your Account</h1>
+        <p class="auth-subtitle">Join Indian creators buying, selling, and building verified digital assets</p>
       </div>
-      <div class="role-card" id="role-seller" onclick="selectRole('seller')">
-        <div class="role-card-icon">&#x1F680;</div>
-        <div class="role-card-title">Creator / Seller</div>
-        <div class="role-card-desc">Monetize templates &amp; receive instant UPI payouts</div>
+      <div class="auth-tabs-nav">
+        <a href="login.html" class="auth-tab-btn">Sign In</a>
+        <button class="auth-tab-btn active">Create Account</button>
       </div>
-    </div>
+      <div class="role-selector-grid">
+        <div class="role-card active" id="role-buyer" onclick="selectRole('buyer')">
+          <div class="role-card-icon">&#x1F468;&#x200D;&#x1F4BB;</div>
+          <div class="role-card-title">Buyer / Developer</div>
+          <div class="role-card-desc">Download apps, AI tools &amp; solve challenges</div>
+        </div>
+        <div class="role-card" id="role-seller" onclick="selectRole('seller')">
+          <div class="role-card-icon">&#x1F680;</div>
+          <div class="role-card-title">Creator / Seller</div>
+          <div class="role-card-desc">Monetize templates &amp; receive instant UPI payouts</div>
+        </div>
+      </div>
 
-    <form id="register-form" onsubmit="handleFormRegister(event)" novalidate>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <form id="register-form" onsubmit="handleFormRegister(event)" novalidate>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="auth-form-group">
+            <label class="auth-label" for="reg-name">Full Name</label>
+            <div class="auth-input-wrapper">
+              <span class="auth-input-icon">&#x1F464;</span>
+              <input type="text" class="auth-input" id="reg-name" placeholder="e.g. Alex Morgan" required
+                autocomplete="name">
+            </div>
+          </div>
+          <div class="auth-form-group">
+            <label class="auth-label" for="reg-username">Username</label>
+            <div class="auth-input-wrapper">
+              <span class="auth-input-icon">@</span>
+              <input type="text" class="auth-input" id="reg-username" placeholder="your_username" required
+                autocomplete="username">
+            </div>
+          </div>
+        </div>
+
+        <div class="send-otp-row">
+          <div class="auth-form-group">
+            <label class="auth-label" for="reg-email">Work / Personal Email <span
+                style="color:#ef4444;">*</span></label>
+            <div class="auth-input-wrapper">
+              <span class="auth-input-icon">&#x2709;&#xFE0F;</span>
+              <input type="email" class="auth-input" id="reg-email" placeholder="yourname@domain.com" required
+                autocomplete="email">
+            </div>
+            <div class="field-verified-badge" id="email-verified-badge">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="#22c55e">
+                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+              </svg>
+              Email verified
+            </div>
+          </div>
+          <button type="button" class="send-otp-btn" id="send-otp-btn" onclick="triggerSendOtp()">Send OTP</button>
+        </div>
+
         <div class="auth-form-group">
-          <label class="auth-label" for="reg-name">Full Name</label>
+          <label class="auth-label" for="reg-mobile">Mobile Number <span style="color:#ef4444;">*</span></label>
           <div class="auth-input-wrapper">
-            <span class="auth-input-icon">&#x1F464;</span>
-            <input type="text" class="auth-input" id="reg-name" placeholder="e.g. Alex Morgan" required autocomplete="name">
+            <span class="auth-input-icon">&#x1F4F1;</span>
+            <input type="tel" class="auth-input" id="reg-mobile" placeholder="+91 98765 43210" required
+              autocomplete="tel" maxlength="15">
           </div>
+          <div style="font-size:.75rem;color:var(--text-muted);margin-top:4px;">Both email &amp; mobile are required and
+            must be unique per account.</div>
         </div>
+
         <div class="auth-form-group">
-          <label class="auth-label" for="reg-username">Username</label>
+          <label class="auth-label" for="reg-password">Create Password</label>
           <div class="auth-input-wrapper">
-            <span class="auth-input-icon">@</span>
-            <input type="text" class="auth-input" id="reg-username" placeholder="your_username" required autocomplete="username">
+            <span class="auth-input-icon">&#x1F512;</span>
+            <input type="password" class="auth-input" id="reg-password" placeholder="At least 8 characters with numbers"
+              required autocomplete="new-password">
+            <button type="button" class="password-toggle-btn" id="reg-pwd-toggle"
+              aria-label="Toggle password visibility">&#x1F441;&#xFE0F;</button>
+          </div>
+          <div class="password-strength-container">
+            <div class="password-meter-bars">
+              <div class="password-meter-bar" id="pwd-bar-1"></div>
+              <div class="password-meter-bar" id="pwd-bar-2"></div>
+              <div class="password-meter-bar" id="pwd-bar-3"></div>
+              <div class="password-meter-bar" id="pwd-bar-4"></div>
+            </div>
+            <div class="password-strength-text" id="pwd-strength-label">Password Strength: Empty</div>
           </div>
         </div>
-      </div>
 
-      <div class="send-otp-row">
         <div class="auth-form-group">
-          <label class="auth-label" for="reg-email">Work / Personal Email <span style="color:#ef4444;">*</span></label>
+          <label class="auth-label" for="reg-confirm">Confirm Password</label>
           <div class="auth-input-wrapper">
-            <span class="auth-input-icon">&#x2709;&#xFE0F;</span>
-            <input type="email" class="auth-input" id="reg-email" placeholder="yourname@domain.com" required autocomplete="email">
-          </div>
-          <div class="field-verified-badge" id="email-verified-badge">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="#22c55e"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
-            Email verified
+            <span class="auth-input-icon">&#x1F510;</span>
+            <input type="password" class="auth-input" id="reg-confirm" placeholder="Re-type your password" required
+              autocomplete="new-password">
           </div>
         </div>
-        <button type="button" class="send-otp-btn" id="send-otp-btn" onclick="triggerSendOtp()">Send OTP</button>
-      </div>
 
-      <div class="auth-form-group">
-        <label class="auth-label" for="reg-mobile">Mobile Number <span style="color:#ef4444;">*</span></label>
-        <div class="auth-input-wrapper">
-          <span class="auth-input-icon">&#x1F4F1;</span>
-          <input type="tel" class="auth-input" id="reg-mobile" placeholder="+91 98765 43210" required autocomplete="tel" maxlength="15">
+        <div class="auth-options-row">
+          <label class="auth-checkbox-label" style="align-items:flex-start;">
+            <input type="checkbox" id="reg-terms" required style="margin-top:3px;">
+            <span style="font-size:.8rem;line-height:1.5;">
+              I agree to Smart Hub <a href="policies.html?tab=terms" class="auth-link" target="_blank">Terms of
+                Service</a>,
+              <a href="policies.html?tab=security" class="auth-link" target="_blank">Seller Guidelines</a>
+              &amp; <a href="policies.html?tab=privacy" class="auth-link" target="_blank">Privacy Policy</a>
+            </span>
+          </label>
         </div>
-        <div style="font-size:.75rem;color:var(--text-muted);margin-top:4px;">Both email &amp; mobile are required and must be unique per account.</div>
-      </div>
 
-      <div class="auth-form-group">
-        <label class="auth-label" for="reg-password">Create Password</label>
-        <div class="auth-input-wrapper">
-          <span class="auth-input-icon">&#x1F512;</span>
-          <input type="password" class="auth-input" id="reg-password" placeholder="At least 8 characters with numbers" required autocomplete="new-password">
-          <button type="button" class="password-toggle-btn" id="reg-pwd-toggle" aria-label="Toggle password visibility">&#x1F441;&#xFE0F;</button>
+        <div
+          style="margin-bottom:18px;padding:10px 14px;background:rgba(255,91,54,.08);border:1px solid rgba(255,91,54,.3);border-radius:8px;display:flex;align-items:center;gap:10px;font-size:.82rem;color:var(--text-primary);">
+          <span style="font-size:1.2rem;">&#x1F4B0;</span>
+          <div><strong>Smart Hub Rupee Wallet:</strong> Purchases are conducted exclusively through your wallet. Add
+            money easily with 0% deposit fees.</div>
         </div>
-        <div class="password-strength-container">
-          <div class="password-meter-bars">
-            <div class="password-meter-bar" id="pwd-bar-1"></div>
-            <div class="password-meter-bar" id="pwd-bar-2"></div>
-            <div class="password-meter-bar" id="pwd-bar-3"></div>
-            <div class="password-meter-bar" id="pwd-bar-4"></div>
-          </div>
-          <div class="password-strength-text" id="pwd-strength-label">Password Strength: Empty</div>
-        </div>
+
+        <button type="submit" class="btn btn-outline w-full" id="btn-submit-reg">Create Free Account &rarr;</button>
+      </form>
+
+      <div class="auth-divider">Or register with</div>
+
+      <div class="social-btn-row">
+        <button type="button" class="social-auth-btn" id="btn-github-reg" onclick="handleSocialRegister('GitHub')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
+          </svg>
+          GitHub
+        </button>
+        <button type="button" class="social-auth-btn" id="btn-google-reg" onclick="handleSocialRegister('Google')">
+          <svg width="18" height="18" viewBox="0 0 24 24">
+            <path fill="#4285F4"
+              d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+            <path fill="#34A853"
+              d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+            <path fill="#FBBC05"
+              d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+            <path fill="#EA4335"
+              d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+          </svg>
+          Google
+        </button>
       </div>
 
-      <div class="auth-form-group">
-        <label class="auth-label" for="reg-confirm">Confirm Password</label>
-        <div class="auth-input-wrapper">
-          <span class="auth-input-icon">&#x1F510;</span>
-          <input type="password" class="auth-input" id="reg-confirm" placeholder="Re-type your password" required autocomplete="new-password">
-        </div>
+      <div style="text-align:center;margin-top:24px;font-size:.85rem;color:var(--text-secondary);">
+        Already have an account? <a href="login.html" class="auth-link">Sign In to Smart Hub &rarr;</a>
       </div>
-
-      <div class="auth-options-row">
-        <label class="auth-checkbox-label" style="align-items:flex-start;">
-          <input type="checkbox" id="reg-terms" required style="margin-top:3px;">
-          <span style="font-size:.8rem;line-height:1.5;">
-            I agree to Smart Hub <a href="policies.html?tab=terms" class="auth-link" target="_blank">Terms of Service</a>,
-            <a href="policies.html?tab=security" class="auth-link" target="_blank">Seller Guidelines</a>
-            &amp; <a href="policies.html?tab=privacy" class="auth-link" target="_blank">Privacy Policy</a>
-          </span>
-        </label>
-      </div>
-
-      <div style="margin-bottom:18px;padding:10px 14px;background:rgba(255,91,54,.08);border:1px solid rgba(255,91,54,.3);border-radius:8px;display:flex;align-items:center;gap:10px;font-size:.82rem;color:var(--text-primary);">
-        <span style="font-size:1.2rem;">&#x1F4B0;</span>
-        <div><strong>Smart Hub Rupee Wallet:</strong> Purchases are conducted exclusively through your wallet. Add money easily with 0% deposit fees.</div>
-      </div>
-
-      <button type="submit" class="btn btn-outline w-full" id="btn-submit-reg">Create Free Account &rarr;</button>
-    </form>
-
-    <div class="auth-divider">Or register with</div>
-
-    <div class="social-btn-row">
-      <button type="button" class="social-auth-btn" id="btn-github-reg" onclick="handleSocialRegister('GitHub')">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
-        GitHub
-      </button>
-      <button type="button" class="social-auth-btn" id="btn-google-reg" onclick="handleSocialRegister('Google')">
-        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-        Google
-      </button>
     </div>
+  </main>
+  <div id="page-footer"></div>
 
-    <div style="text-align:center;margin-top:24px;font-size:.85rem;color:var(--text-secondary);">
-      Already have an account? <a href="login.html" class="auth-link">Sign In to Smart Hub &rarr;</a>
+  <!-- OTP Modal -->
+  <div id="modal-otp" class="otp-modal-overlay">
+    <div class="otp-modal-box">
+      <span class="otp-modal-icon">&#x1F4E8;</span>
+      <div class="otp-modal-title">Verify Your Email</div>
+      <div class="otp-modal-desc">We've sent a 6-digit OTP to</div>
+      <div class="otp-modal-email-badge" id="otp-modal-email-display">&mdash;</div>
+      <div class="otp-inputs">
+        <input class="otp-digit" type="text" inputmode="numeric" maxlength="1" id="otp-d1" autocomplete="off">
+        <input class="otp-digit" type="text" inputmode="numeric" maxlength="1" id="otp-d2" autocomplete="off">
+        <input class="otp-digit" type="text" inputmode="numeric" maxlength="1" id="otp-d3" autocomplete="off">
+        <input class="otp-digit" type="text" inputmode="numeric" maxlength="1" id="otp-d4" autocomplete="off">
+        <input class="otp-digit" type="text" inputmode="numeric" maxlength="1" id="otp-d5" autocomplete="off">
+        <input class="otp-digit" type="text" inputmode="numeric" maxlength="1" id="otp-d6" autocomplete="off">
+      </div>
+      <div class="otp-resend-row">
+        Didn't receive it?
+        <button type="button" class="otp-resend-btn" id="otp-resend-btn" onclick="resendOtp()" disabled>Resend
+          OTP</button>
+        <span id="otp-timer-display" class="otp-timer"></span>
+      </div>
+      <button type="button" class="otp-verify-btn" id="otp-verify-btn" onclick="verifyOtp()">Verify Email
+        &rarr;</button>
+      <br>
+      <button type="button" class="otp-cancel-btn" onclick="closeOtpModal()">Cancel</button>
     </div>
   </div>
-</main>
-<div id="page-footer"></div>
 
-<!-- OTP Modal -->
-<div id="modal-otp" class="otp-modal-overlay">
-  <div class="otp-modal-box">
-    <span class="otp-modal-icon">&#x1F4E8;</span>
-    <div class="otp-modal-title">Verify Your Email</div>
-    <div class="otp-modal-desc">We've sent a 6-digit OTP to</div>
-    <div class="otp-modal-email-badge" id="otp-modal-email-display">&mdash;</div>
-    <div class="otp-inputs">
-      <input class="otp-digit" type="text" inputmode="numeric" maxlength="1" id="otp-d1" autocomplete="off">
-      <input class="otp-digit" type="text" inputmode="numeric" maxlength="1" id="otp-d2" autocomplete="off">
-      <input class="otp-digit" type="text" inputmode="numeric" maxlength="1" id="otp-d3" autocomplete="off">
-      <input class="otp-digit" type="text" inputmode="numeric" maxlength="1" id="otp-d4" autocomplete="off">
-      <input class="otp-digit" type="text" inputmode="numeric" maxlength="1" id="otp-d5" autocomplete="off">
-      <input class="otp-digit" type="text" inputmode="numeric" maxlength="1" id="otp-d6" autocomplete="off">
-    </div>
-    <div class="otp-resend-row">
-      Didn't receive it?
-      <button type="button" class="otp-resend-btn" id="otp-resend-btn" onclick="resendOtp()" disabled>Resend OTP</button>
-      <span id="otp-timer-display" class="otp-timer"></span>
-    </div>
-    <button type="button" class="otp-verify-btn" id="otp-verify-btn" onclick="verifyOtp()">Verify Email &rarr;</button>
-    <br>
-    <button type="button" class="otp-cancel-btn" onclick="closeOtpModal()">Cancel</button>
-  </div>
-</div>
-
-<!-- GitHub Modal -->
-<div id="modal-github-auth" class="modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(8px);z-index:9999;align-items:center;justify-content:center;">
-  <div style="background:#0d1117;color:#f0f6fc;border:1px solid #30363d;border-radius:16px;max-width:440px;width:92%;box-shadow:0 24px 60px rgba(0,0,0,.85);overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;animation:scaleIn .25s ease;">
-    <div style="padding:22px 24px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #21262d;background:#161b22;">
-      <div style="display:flex;align-items:center;gap:12px;">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="#fff"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
-        <div>
-          <div style="font-weight:700;font-size:1.05rem;color:#f0f6fc;">Register with GitHub</div>
-          <div style="font-size:.8rem;color:#8b949e;">Join Smart Hub with your verified GitHub profile</div>
+  <!-- GitHub Modal -->
+  <div id="modal-github-auth" class="modal-overlay"
+    style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(8px);z-index:9999;align-items:center;justify-content:center;">
+    <div
+      style="background:#0d1117;color:#f0f6fc;border:1px solid #30363d;border-radius:16px;max-width:440px;width:92%;box-shadow:0 24px 60px rgba(0,0,0,.85);overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;animation:scaleIn .25s ease;">
+      <div
+        style="padding:22px 24px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #21262d;background:#161b22;">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="#fff">
+            <path
+              d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
+          </svg>
+          <div>
+            <div style="font-weight:700;font-size:1.05rem;color:#f0f6fc;">Register with GitHub</div>
+            <div style="font-size:.8rem;color:#8b949e;">Join Smart Hub with your verified GitHub profile</div>
+          </div>
         </div>
+        <button type="button" onclick="closeGitHubModal()"
+          style="background:none;border:none;font-size:1.5rem;color:#8b949e;cursor:pointer;padding:4px;line-height:1;">&times;</button>
       </div>
-      <button type="button" onclick="closeGitHubModal()" style="background:none;border:none;font-size:1.5rem;color:#8b949e;cursor:pointer;padding:4px;line-height:1;">&times;</button>
-    </div>
-    <div style="padding:20px 24px;">
-      <label style="display:block;font-size:.76rem;font-weight:700;color:#8b949e;margin-bottom:8px;letter-spacing:.04em;">GITHUB USERNAME OR EMAIL</label>
-      <input type="text" id="github-custom-username" placeholder="e.g. octocat or user@domain.com" style="width:100%;padding:11px 14px;border:1px solid #30363d;border-radius:8px;font-size:.9rem;color:#f0f6fc;box-sizing:border-box;margin-bottom:14px;outline:none;background:#161b22;" onfocus="this.style.borderColor='#58a6ff'" onblur="this.style.borderColor='#30363d'">
-      <button type="button" onclick="submitCustomGitHubRegister()" style="width:100%;padding:11px;background:#238636;color:#fff;border:none;border-radius:8px;font-weight:700;font-size:.9rem;cursor:pointer;" onmouseover="this.style.background='#2ea043'" onmouseout="this.style.background='#238636'">Register with GitHub &rarr;</button>
-    </div>
-    <div style="padding:14px 24px;background:#161b22;border-top:1px solid #21262d;font-size:.75rem;color:#8b949e;line-height:1.45;">
-      By creating an account with GitHub, Smart Hub automatically verifies your developer credentials and links your public GitHub repositories.
+      <div style="padding:20px 24px;">
+        <label
+          style="display:block;font-size:.76rem;font-weight:700;color:#8b949e;margin-bottom:8px;letter-spacing:.04em;">GITHUB
+          USERNAME OR EMAIL</label>
+        <input type="text" id="github-custom-username" placeholder="e.g. octocat or user@domain.com"
+          style="width:100%;padding:11px 14px;border:1px solid #30363d;border-radius:8px;font-size:.9rem;color:#f0f6fc;box-sizing:border-box;margin-bottom:14px;outline:none;background:#161b22;"
+          onfocus="this.style.borderColor='#58a6ff'" onblur="this.style.borderColor='#30363d'">
+        <button type="button" onclick="submitCustomGitHubRegister()"
+          style="width:100%;padding:11px;background:#238636;color:#fff;border:none;border-radius:8px;font-weight:700;font-size:.9rem;cursor:pointer;"
+          onmouseover="this.style.background='#2ea043'" onmouseout="this.style.background='#238636'">Register with
+          GitHub &rarr;</button>
+      </div>
+      <div
+        style="padding:14px 24px;background:#161b22;border-top:1px solid #21262d;font-size:.75rem;color:#8b949e;line-height:1.45;">
+        By creating an account with GitHub, Smart Hub automatically verifies your developer credentials and links your
+        public GitHub repositories.
+      </div>
     </div>
   </div>
-</div>
 
-<script src="js/data.js"></script>
-<script src="js/api.js"></script>
-<script src="js/main.js"></script>
-<script src="js/layout.js"></script>
-<script>
-var selectedAccountType = 'buyer';
-var emailOtpVerified = false;
-var githubClientId = '';
-var otpTimerInterval = null;
+  <script src="js/data.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/layout.js"></script>
+  <script>
+    var selectedAccountType = 'buyer';
+    var emailOtpVerified = false;
+    var githubClientId = '';
+    var otpTimerInterval = null;
 
-function selectRole(role) {
-  selectedAccountType = role;
-  document.getElementById('role-buyer').classList.toggle('active', role === 'buyer');
-  document.getElementById('role-seller').classList.toggle('active', role === 'seller');
-}
-
-// Password toggle
-var pwdInput = document.getElementById('reg-password');
-var pwdToggle = document.getElementById('reg-pwd-toggle');
-if (pwdToggle && pwdInput) {
-  pwdToggle.addEventListener('click', function() {
-    var isPass = pwdInput.type === 'password';
-    pwdInput.type = isPass ? 'text' : 'password';
-    pwdToggle.textContent = isPass ? 'Hide' : 'Show';
-  });
-}
-
-// Password strength
-var bars = [1,2,3,4].map(function(i) { return document.getElementById('pwd-bar-' + i); });
-var strengthLabel = document.getElementById('pwd-strength-label');
-if (pwdInput) pwdInput.addEventListener('input', function() {
-  var val = pwdInput.value;
-  var score = 0;
-  if (val.length >= 6) score++;
-  if (val.length >= 8 && /[A-Z]/.test(val)) score++;
-  if (/[0-9]/.test(val)) score++;
-  if (/[^A-Za-z0-9]/.test(val)) score++;
-  var colors = ['#ef4444','#f97316','#eab308','#22c55e'];
-  var labels = ['Weak','Moderate','Good','Strong'];
-  bars.forEach(function(b, i) { b.style.background = i < score ? colors[score-1] : 'var(--border-outline)'; });
-  if (!val) { strengthLabel.textContent = 'Password Strength: Empty'; strengthLabel.style.color = 'var(--text-muted)'; }
-  else { strengthLabel.textContent = 'Password Strength: ' + (labels[score-1] || 'Weak'); strengthLabel.style.color = colors[score-1] || '#ef4444'; }
-});
-
-function setupOtpInputs() {
-  var digits = [1,2,3,4,5,6].map(function(i) { return document.getElementById('otp-d' + i); });
-  digits.forEach(function(inp, idx) {
-    inp.addEventListener('input', function(e) {
-      var val = e.target.value.replace(/\D/g, '').slice(-1);
-      e.target.value = val;
-      e.target.classList.toggle('filled', !!val);
-      if (val && idx < 5) digits[idx+1].focus();
-    });
-    inp.addEventListener('keydown', function(e) {
-      if (e.key === 'Backspace' && !inp.value && idx > 0) {
-        digits[idx-1].value = ''; digits[idx-1].classList.remove('filled'); digits[idx-1].focus();
-      }
-    });
-    inp.addEventListener('paste', function(e) {
-      e.preventDefault();
-      var pasted = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '').slice(0, 6);
-      pasted.split('').forEach(function(ch, i) { if (digits[i]) { digits[i].value = ch; digits[i].classList.add('filled'); } });
-      var nxt = digits.findIndex(function(d) { return !d.value; });
-      (nxt >= 0 ? digits[nxt] : digits[5]).focus();
-    });
-  });
-}
-
-function getOtpValue() { return [1,2,3,4,5,6].map(function(i) { var d = document.getElementById('otp-d'+i); return d ? d.value : ''; }).join(''); }
-
-function resetOtpDigits(cls) {
-  [1,2,3,4,5,6].forEach(function(i) {
-    var d = document.getElementById('otp-d'+i); if (!d) return;
-    d.value = ''; d.className = 'otp-digit' + (cls ? ' '+cls : '');
-  });
-}
-
-function startOtpTimer(secs) {
-  clearInterval(otpTimerInterval);
-  var s = secs;
-  var resendBtn = document.getElementById('otp-resend-btn');
-  var timerEl = document.getElementById('otp-timer-display');
-  resendBtn.disabled = true;
-  timerEl.textContent = '(' + s + 's)';
-  otpTimerInterval = setInterval(function() {
-    s--;
-    timerEl.textContent = '(' + s + 's)';
-    if (s <= 0) { clearInterval(otpTimerInterval); timerEl.textContent = ''; resendBtn.disabled = false; }
-  }, 1000);
-}
-
-function openOtpModal(email) {
-  document.getElementById('otp-modal-email-display').textContent = email;
-  resetOtpDigits();
-  document.getElementById('modal-otp').classList.add('open');
-  setTimeout(function() { var d = document.getElementById('otp-d1'); if (d) d.focus(); }, 100);
-  startOtpTimer(120);
-}
-
-function closeOtpModal() {
-  document.getElementById('modal-otp').classList.remove('open');
-  clearInterval(otpTimerInterval);
-}
-
-async function triggerSendOtp() {
-  var email = document.getElementById('reg-email').value.trim();
-  var mobile = document.getElementById('reg-mobile').value.trim();
-  // Accepts any valid email address from any domain (e.g., .com, .in, .io, .org, .co.in, custom domains)
-  var emailRegex = /^[^\s@]+@[^\s@]+\.[a-zA-Z0-9-]{2,}$/;
-  if (!email || !emailRegex.test(email)) {
-    SH.showToast('Please enter a valid email address first', 'error');
-    document.getElementById('reg-email').focus(); return;
-  }
-  if (!mobile || mobile.replace(/\D/g, '').length < 10) {
-    SH.showToast('Please enter a valid 10-digit mobile number first', 'error');
-    document.getElementById('reg-mobile').focus(); return;
-  }
-  var btn = document.getElementById('send-otp-btn');
-  btn.disabled = true; btn.textContent = 'Sending…';
-  try {
-    var res = await window.SmartHubAPI.sendOtp(email, mobile);
-    if (res && res.success) {
-      SH.showToast(res.message || 'OTP sent to your email! Please check your inbox.', 'success');
-      openOtpModal(email);
-    } else {
-      SH.showToast((res && res.error) || 'Failed to send OTP', 'error');
+    function selectRole(role) {
+      selectedAccountType = role;
+      document.getElementById('role-buyer').classList.toggle('active', role === 'buyer');
+      document.getElementById('role-seller').classList.toggle('active', role === 'seller');
     }
-  } catch (err) {
-    SH.showToast('Could not reach server. Is it running?', 'error');
-  }
-  btn.disabled = false; btn.textContent = 'Send OTP';
-}
 
-function resendOtp() { triggerSendOtp(); }
-
-async function verifyOtp() {
-  var email = document.getElementById('reg-email').value.trim();
-  var otp = getOtpValue();
-  if (otp.length < 6) { SH.showToast('Please enter the complete 6-digit OTP', 'error'); return; }
-  var btn = document.getElementById('otp-verify-btn');
-  btn.disabled = true; btn.textContent = 'Verifying…';
-  try {
-    var res = await window.SmartHubAPI.verifyOtp(email, otp);
-    if (res && res.success) {
-      resetOtpDigits('success');
-      setTimeout(function() {
-        closeOtpModal();
-        emailOtpVerified = true;
-        document.getElementById('email-verified-badge').classList.add('show');
-        var ob = document.getElementById('send-otp-btn');
-        ob.textContent = '✓ Verified'; ob.disabled = true;
-        ob.style.borderColor = '#22c55e'; ob.style.color = '#22c55e';
-        SH.showToast('Email verified! Now complete your registration.', 'success');
-      }, 600);
-    } else {
-      resetOtpDigits('error');
-      SH.showToast((res && res.error) || 'Incorrect OTP', 'error');
-      btn.disabled = false; btn.textContent = 'Verify Email →';
-    }
-  } catch (err) {
-    SH.showToast('Verification failed. Try again.', 'error');
-    btn.disabled = false; btn.textContent = 'Verify Email →';
-  }
-}
-
-async function handleFormRegister(e) {
-  e.preventDefault();
-  var name = document.getElementById('reg-name').value.trim();
-  var username = document.getElementById('reg-username').value.trim();
-  var email = document.getElementById('reg-email').value.trim();
-  var mobile = document.getElementById('reg-mobile').value.trim();
-  var pass = document.getElementById('reg-password').value;
-  var confirm = document.getElementById('reg-confirm').value;
-  var terms = document.getElementById('reg-terms').checked;
-  var submitBtn = document.getElementById('btn-submit-reg');
-
-  if (!name || !username || !email || !mobile || !pass) { SH.showToast('Please fill in all required fields!', 'error'); return; }
-  if (mobile.replace(/\D/g, '').length < 10) { SH.showToast('Please enter a valid 10-digit mobile number', 'error'); return; }
-  if (pass !== confirm) { SH.showToast('Passwords do not match!', 'error'); return; }
-  if (!terms) { SH.showToast('Please accept the Terms of Service to continue', 'error'); return; }
-  if (!emailOtpVerified) {
-    SH.showToast('Please verify your email with the OTP first', 'error');
-    document.getElementById('send-otp-btn').focus(); return;
-  }
-
-  submitBtn.disabled = true; submitBtn.textContent = 'Creating Account…';
-
-  try {
-    var res = await window.SmartHubAPI.register(name, username, email, pass, selectedAccountType, mobile);
-    if (res && res.success) {
-      SH.showToast(res.message || 'Account created successfully! 🚀', 'success');
-      setTimeout(function() { window.location.href = 'index.html'; }, 800);
-      return;
-    } else {
-      SH.showToast((res && res.error) || 'Failed to create account. Please check your details.', 'error');
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Create Free Account →';
-      return;
-    }
-  } catch (err) {
-    console.error('Register API error:', err);
-    SH.showToast('Network error while connecting to server: ' + err.message, 'error');
-    submitBtn.disabled = false;
-    submitBtn.textContent = 'Create Free Account →';
-  }
-}
-
-async function initAuthProviders() {
-  try {
-    if (window.SmartHubAPI) {
-      var config = await window.SmartHubAPI.getAuthConfig();
-      if (config && config.githubClientId) githubClientId = config.githubClientId;
-    }
-  } catch(e) {}
-
-  try {
-    var urlParams = new URLSearchParams(window.location.search);
-    var ghCode = urlParams.get('code');
-    if (ghCode) {
-      window.history.replaceState({}, document.title, window.location.pathname);
-      SH.showToast('Verifying GitHub credentials…', 'info');
-      var res = await window.SmartHubAPI.loginWithGitHub({ code: ghCode, role: selectedAccountType });
-      if (res && res.success) {
-        SH.showToast(res.message || 'Registered via GitHub! 🚀', 'success');
-        setTimeout(function() { window.location.href = 'index.html'; }, 700);
-      } else { SH.showToast((res && res.error) || 'GitHub registration failed', 'error'); }
-    }
-  } catch(err) { console.error('GitHub redirect error:', err); }
-
-  window.handleGoogleCredential = async function(response) {
-    if (!response || !response.credential) return;
-    SH.showToast('Authenticating with Google…', 'info');
-    try {
-      var res = await window.SmartHubAPI.loginWithGoogle({ idToken: response.credential, role: selectedAccountType });
-      if (res && res.success) {
-        SH.showToast(res.message || 'Registered via Google! 🚀', 'success');
-        setTimeout(function() { window.location.href = 'index.html'; }, 700);
-      } else { SH.showToast((res && res.error) || 'Google registration failed', 'error'); }
-    } catch(err) { SH.showToast('Google auth error: ' + err.message, 'error'); }
-  };
-}
-
-function handleSocialRegister(provider) {
-  if (provider === 'GitHub') {
-    if (githubClientId) {
-      var redirectUri = encodeURIComponent(window.location.origin + window.location.pathname);
-      window.location.href = 'https://github.com/login/oauth/authorize?client_id=' + githubClientId + '&scope=read:user,user:email&redirect_uri=' + redirectUri;
-      return;
-    }
-    openGitHubModal();
-  } else if (provider === 'Google') {
-    if (window.google && window.google.accounts && window.google.accounts.id) {
-      window.google.accounts.id.prompt();
-    } else {
-      var email = prompt('Enter your Google email address:');
-      if (!email) return;
-      var name = prompt('Your name (as on Google):') || email.split('@')[0];
-      SH.showToast('Registering with Google…', 'info');
-      window.SmartHubAPI.loginWithGoogle({ email: email, name: name, role: selectedAccountType }).then(function(res) {
-        if (res && res.success) { SH.showToast(res.message || 'Registered via Google! 🚀', 'success'); setTimeout(function() { window.location.href = 'index.html'; }, 700); }
-        else { SH.showToast((res && res.error) || 'Google registration failed', 'error'); }
+    // Password toggle
+    var pwdInput = document.getElementById('reg-password');
+    var pwdToggle = document.getElementById('reg-pwd-toggle');
+    if (pwdToggle && pwdInput) {
+      pwdToggle.addEventListener('click', function () {
+        var isPass = pwdInput.type === 'password';
+        pwdInput.type = isPass ? 'text' : 'password';
+        pwdToggle.textContent = isPass ? 'Hide' : 'Show';
       });
     }
-  }
-}
 
-function openGitHubModal() { var m = document.getElementById('modal-github-auth'); if (m) m.style.display = 'flex'; }
-function closeGitHubModal() { var m = document.getElementById('modal-github-auth'); if (m) m.style.display = 'none'; }
-function toggleGitHubCustomInput() {
-  var box = document.getElementById('github-custom-box');
-  if (box) { box.style.display = box.style.display === 'none' ? 'block' : 'none'; if (box.style.display === 'block') document.getElementById('github-custom-username').focus(); }
-}
-async function submitCustomGitHubRegister() {
-  var input = document.getElementById('github-custom-username');
-  var raw = input ? input.value.trim() : '';
-  if (!raw) { SH.showToast('Please enter your GitHub username or email', 'error'); return; }
-  var isEmail = raw.includes('@');
-  var uname = isEmail ? raw.split('@')[0] : raw.replace('@','');
-  var email = isEmail ? raw : uname + '@users.noreply.github.com';
-  await executeGitHubRegister(uname, uname, email, 'https://github.com/' + uname + '.png');
-}
-async function executeGitHubRegister(username, name, email, avatar) {
-  closeGitHubModal();
-  SH.showToast('Creating account via GitHub (@' + username.replace('@','') + ')…', 'info');
-  try {
-    var res = await window.SmartHubAPI.loginWithGitHub({ username: username.replace('@',''), name: name || username.replace('@',''), email: email || username.replace('@','') + '@users.noreply.github.com', avatar: avatar || 'https://github.com/' + username.replace('@','') + '.png', role: selectedAccountType });
-    if (res && res.success) { SH.showToast(res.message || 'Welcome! 🚀', 'success'); setTimeout(function() { window.location.href = 'index.html'; }, 700); }
-    else { SH.showToast((res && res.error) || 'GitHub registration failed', 'error'); }
-  } catch(err) { SH.showToast('GitHub registration error: ' + err.message, 'error'); }
-}
+    // Password strength
+    var bars = [1, 2, 3, 4].map(function (i) { return document.getElementById('pwd-bar-' + i); });
+    var strengthLabel = document.getElementById('pwd-strength-label');
+    if (pwdInput) pwdInput.addEventListener('input', function () {
+      var val = pwdInput.value;
+      var score = 0;
+      if (val.length >= 6) score++;
+      if (val.length >= 8 && /[A-Z]/.test(val)) score++;
+      if (/[0-9]/.test(val)) score++;
+      if (/[^A-Za-z0-9]/.test(val)) score++;
+      var colors = ['#ef4444', '#f97316', '#eab308', '#22c55e'];
+      var labels = ['Weak', 'Moderate', 'Good', 'Strong'];
+      bars.forEach(function (b, i) { b.style.background = i < score ? colors[score - 1] : 'var(--border-outline)'; });
+      if (!val) { strengthLabel.textContent = 'Password Strength: Empty'; strengthLabel.style.color = 'var(--text-muted)'; }
+      else { strengthLabel.textContent = 'Password Strength: ' + (labels[score - 1] || 'Weak'); strengthLabel.style.color = colors[score - 1] || '#ef4444'; }
+    });
 
-setupOtpInputs();
-if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initAuthProviders);
-else initAuthProviders();
+    function setupOtpInputs() {
+      var digits = [1, 2, 3, 4, 5, 6].map(function (i) { return document.getElementById('otp-d' + i); });
+      digits.forEach(function (inp, idx) {
+        inp.addEventListener('input', function (e) {
+          var val = e.target.value.replace(/\D/g, '').slice(-1);
+          e.target.value = val;
+          e.target.classList.toggle('filled', !!val);
+          if (val && idx < 5) digits[idx + 1].focus();
+        });
+        inp.addEventListener('keydown', function (e) {
+          if (e.key === 'Backspace' && !inp.value && idx > 0) {
+            digits[idx - 1].value = ''; digits[idx - 1].classList.remove('filled'); digits[idx - 1].focus();
+          }
+        });
+        inp.addEventListener('paste', function (e) {
+          e.preventDefault();
+          var pasted = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '').slice(0, 6);
+          pasted.split('').forEach(function (ch, i) { if (digits[i]) { digits[i].value = ch; digits[i].classList.add('filled'); } });
+          var nxt = digits.findIndex(function (d) { return !d.value; });
+          (nxt >= 0 ? digits[nxt] : digits[5]).focus();
+        });
+      });
+    }
 
-document.getElementById('modal-otp').addEventListener('keydown', function(e) { if (e.key === 'Enter') verifyOtp(); });
-</script>
+    function getOtpValue() { return [1, 2, 3, 4, 5, 6].map(function (i) { var d = document.getElementById('otp-d' + i); return d ? d.value : ''; }).join(''); }
+
+    function resetOtpDigits(cls) {
+      [1, 2, 3, 4, 5, 6].forEach(function (i) {
+        var d = document.getElementById('otp-d' + i); if (!d) return;
+        d.value = ''; d.className = 'otp-digit' + (cls ? ' ' + cls : '');
+      });
+    }
+
+    function startOtpTimer(secs) {
+      clearInterval(otpTimerInterval);
+      var s = secs;
+      var resendBtn = document.getElementById('otp-resend-btn');
+      var timerEl = document.getElementById('otp-timer-display');
+      resendBtn.disabled = true;
+      timerEl.textContent = '(' + s + 's)';
+      otpTimerInterval = setInterval(function () {
+        s--;
+        timerEl.textContent = '(' + s + 's)';
+        if (s <= 0) { clearInterval(otpTimerInterval); timerEl.textContent = ''; resendBtn.disabled = false; }
+      }, 1000);
+    }
+
+    function openOtpModal(email) {
+      document.getElementById('otp-modal-email-display').textContent = email;
+      resetOtpDigits();
+      document.getElementById('modal-otp').classList.add('open');
+      setTimeout(function () { var d = document.getElementById('otp-d1'); if (d) d.focus(); }, 100);
+      startOtpTimer(120);
+    }
+
+    function closeOtpModal() {
+      document.getElementById('modal-otp').classList.remove('open');
+      clearInterval(otpTimerInterval);
+    }
+
+    async function triggerSendOtp() {
+      var email = document.getElementById('reg-email').value.trim();
+      var mobile = document.getElementById('reg-mobile').value.trim();
+      // Accepts any valid email address from any domain (e.g., .com, .in, .io, .org, .co.in, custom domains)
+      var emailRegex = /^[^\s@]+@[^\s@]+\.[a-zA-Z0-9-]{2,}$/;
+      if (!email || !emailRegex.test(email)) {
+        SH.showToast('Please enter a valid email address first', 'error');
+        document.getElementById('reg-email').focus(); return;
+      }
+      if (!mobile || mobile.replace(/\D/g, '').length < 10) {
+        SH.showToast('Please enter a valid 10-digit mobile number first', 'error');
+        document.getElementById('reg-mobile').focus(); return;
+      }
+      var btn = document.getElementById('send-otp-btn');
+      btn.disabled = true; btn.textContent = 'Sending…';
+      try {
+        var res = await window.SmartHubAPI.sendOtp(email, mobile);
+        if (res && res.success) {
+          SH.showToast(res.message || 'OTP sent to your email! Please check your inbox.', 'success');
+          openOtpModal(email);
+        } else {
+          SH.showToast((res && res.error) || 'Failed to send OTP', 'error');
+        }
+      } catch (err) {
+        SH.showToast('Could not reach server. Is it running?', 'error');
+      }
+      btn.disabled = false; btn.textContent = 'Send OTP';
+    }
+
+    function resendOtp() { triggerSendOtp(); }
+
+    async function verifyOtp() {
+      var email = document.getElementById('reg-email').value.trim();
+      var otp = getOtpValue();
+      if (otp.length < 6) { SH.showToast('Please enter the complete 6-digit OTP', 'error'); return; }
+      var btn = document.getElementById('otp-verify-btn');
+      btn.disabled = true; btn.textContent = 'Verifying…';
+      try {
+        var res = await window.SmartHubAPI.verifyOtp(email, otp);
+        if (res && res.success) {
+          resetOtpDigits('success');
+          setTimeout(function () {
+            closeOtpModal();
+            emailOtpVerified = true;
+            document.getElementById('email-verified-badge').classList.add('show');
+            var ob = document.getElementById('send-otp-btn');
+            ob.textContent = '✓ Verified'; ob.disabled = true;
+            ob.style.borderColor = '#22c55e'; ob.style.color = '#22c55e';
+            SH.showToast('Email verified! Now complete your registration.', 'success');
+          }, 600);
+        } else {
+          resetOtpDigits('error');
+          SH.showToast((res && res.error) || 'Incorrect OTP', 'error');
+          btn.disabled = false; btn.textContent = 'Verify Email →';
+        }
+      } catch (err) {
+        SH.showToast('Verification failed. Try again.', 'error');
+        btn.disabled = false; btn.textContent = 'Verify Email →';
+      }
+    }
+
+    async function handleFormRegister(e) {
+      e.preventDefault();
+      var name = document.getElementById('reg-name').value.trim();
+      var username = document.getElementById('reg-username').value.trim();
+      var email = document.getElementById('reg-email').value.trim();
+      var mobile = document.getElementById('reg-mobile').value.trim();
+      var pass = document.getElementById('reg-password').value;
+      var confirm = document.getElementById('reg-confirm').value;
+      var terms = document.getElementById('reg-terms').checked;
+      var submitBtn = document.getElementById('btn-submit-reg');
+
+      if (!name || !username || !email || !mobile || !pass) { SH.showToast('Please fill in all required fields!', 'error'); return; }
+      if (mobile.replace(/\D/g, '').length < 10) { SH.showToast('Please enter a valid 10-digit mobile number', 'error'); return; }
+      if (pass !== confirm) { SH.showToast('Passwords do not match!', 'error'); return; }
+      if (!terms) { SH.showToast('Please accept the Terms of Service to continue', 'error'); return; }
+      if (!emailOtpVerified) {
+        SH.showToast('Please verify your email with the OTP first', 'error');
+        document.getElementById('send-otp-btn').focus(); return;
+      }
+
+      submitBtn.disabled = true; submitBtn.textContent = 'Creating Account…';
+
+      try {
+        var res = await window.SmartHubAPI.register(name, username, email, pass, selectedAccountType, mobile);
+        if (res && res.success) {
+          SH.showToast(res.message || 'Account created successfully! 🚀', 'success');
+          setTimeout(function () { window.location.href = 'index.html'; }, 800);
+          return;
+        } else {
+          SH.showToast((res && res.error) || 'Failed to create account. Please check your details.', 'error');
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Create Free Account →';
+          return;
+        }
+      } catch (err) {
+        console.error('Register API error:', err);
+        SH.showToast('Network error while connecting to server: ' + err.message, 'error');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Create Free Account →';
+      }
+    }
+
+    async function initAuthProviders() {
+      try {
+        if (window.SmartHubAPI) {
+          var config = await window.SmartHubAPI.getAuthConfig();
+          if (config && config.githubClientId) githubClientId = config.githubClientId;
+        }
+      } catch (e) { }
+
+      try {
+        var urlParams = new URLSearchParams(window.location.search);
+        var ghCode = urlParams.get('code');
+        if (ghCode) {
+          window.history.replaceState({}, document.title, window.location.pathname);
+          SH.showToast('Verifying GitHub credentials…', 'info');
+          var res = await window.SmartHubAPI.loginWithGitHub({ code: ghCode, role: selectedAccountType });
+          if (res && res.success) {
+            SH.showToast(res.message || 'Registered via GitHub! 🚀', 'success');
+            setTimeout(function () { window.location.href = 'index.html'; }, 700);
+          } else { SH.showToast((res && res.error) || 'GitHub registration failed', 'error'); }
+        }
+      } catch (err) { console.error('GitHub redirect error:', err); }
+
+      window.handleGoogleCredential = async function (response) {
+        if (!response || !response.credential) return;
+        SH.showToast('Authenticating with Google…', 'info');
+        try {
+          var res = await window.SmartHubAPI.loginWithGoogle({ idToken: response.credential, role: selectedAccountType });
+          if (res && res.success) {
+            SH.showToast(res.message || 'Registered via Google! 🚀', 'success');
+            setTimeout(function () { window.location.href = 'index.html'; }, 700);
+          } else { SH.showToast((res && res.error) || 'Google registration failed', 'error'); }
+        } catch (err) { SH.showToast('Google auth error: ' + err.message, 'error'); }
+      };
+    }
+
+    function handleSocialRegister(provider) {
+      if (provider === 'GitHub') {
+        if (githubClientId) {
+          var redirectUri = encodeURIComponent(window.location.origin + window.location.pathname);
+          window.location.href = 'https://github.com/login/oauth/authorize?client_id=' + githubClientId + '&scope=read:user,user:email&redirect_uri=' + redirectUri;
+          return;
+        }
+        openGitHubModal();
+      } else if (provider === 'Google') {
+        if (window.google && window.google.accounts && window.google.accounts.id) {
+          window.google.accounts.id.prompt();
+        } else {
+          var email = prompt('Enter your Google email address:');
+          if (!email) return;
+          var name = prompt('Your name (as on Google):') || email.split('@')[0];
+          SH.showToast('Registering with Google…', 'info');
+          window.SmartHubAPI.loginWithGoogle({ email: email, name: name, role: selectedAccountType }).then(function (res) {
+            if (res && res.success) { SH.showToast(res.message || 'Registered via Google! 🚀', 'success'); setTimeout(function () { window.location.href = 'index.html'; }, 700); }
+            else { SH.showToast((res && res.error) || 'Google registration failed', 'error'); }
+          });
+        }
+      }
+    }
+
+    function openGitHubModal() { var m = document.getElementById('modal-github-auth'); if (m) m.style.display = 'flex'; }
+    function closeGitHubModal() { var m = document.getElementById('modal-github-auth'); if (m) m.style.display = 'none'; }
+    function toggleGitHubCustomInput() {
+      var box = document.getElementById('github-custom-box');
+      if (box) { box.style.display = box.style.display === 'none' ? 'block' : 'none'; if (box.style.display === 'block') document.getElementById('github-custom-username').focus(); }
+    }
+    async function submitCustomGitHubRegister() {
+      var input = document.getElementById('github-custom-username');
+      var raw = input ? input.value.trim() : '';
+      if (!raw) { SH.showToast('Please enter your GitHub username or email', 'error'); return; }
+      var isEmail = raw.includes('@');
+      var uname = isEmail ? raw.split('@')[0] : raw.replace('@', '');
+      var email = isEmail ? raw : uname + '@users.noreply.github.com';
+      await executeGitHubRegister(uname, uname, email, 'https://github.com/' + uname + '.png');
+    }
+    async function executeGitHubRegister(username, name, email, avatar) {
+      closeGitHubModal();
+      SH.showToast('Creating account via GitHub (@' + username.replace('@', '') + ')…', 'info');
+      try {
+        var res = await window.SmartHubAPI.loginWithGitHub({ username: username.replace('@', ''), name: name || username.replace('@', ''), email: email || username.replace('@', '') + '@users.noreply.github.com', avatar: avatar || 'https://github.com/' + username.replace('@', '') + '.png', role: selectedAccountType });
+        if (res && res.success) { SH.showToast(res.message || 'Welcome! 🚀', 'success'); setTimeout(function () { window.location.href = 'index.html'; }, 700); }
+        else { SH.showToast((res && res.error) || 'GitHub registration failed', 'error'); }
+      } catch (err) { SH.showToast('GitHub registration error: ' + err.message, 'error'); }
+    }
+
+    setupOtpInputs();
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initAuthProviders);
+    else initAuthProviders();
+
+    document.getElementById('modal-otp').addEventListener('keydown', function (e) { if (e.key === 'Enter') verifyOtp(); });
+  </script>
 </body>
+
 </html>

@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Super Admin Central — Smart Hub | All Data Command Center</title>
-  <meta name="description" content="Super Admin Command Center for Smart Hub. Complete oversight across all users, catalog codebases, transactions, API tokens, and cloud infrastructure.">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>">
+  <meta name="description"
+    content="Super Admin Command Center for Smart Hub. Complete oversight across all users, catalog codebases, transactions, API tokens, and cloud infrastructure.">
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>">
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/components.css">
   <link rel="stylesheet" href="css/cards.css">
@@ -17,6 +20,7 @@
       min-height: 100vh;
       background: var(--bg-primary);
     }
+
     .admin-banner {
       background: linear-gradient(135deg, rgba(139, 92, 246, 0.16), rgba(6, 182, 212, 0.1), rgba(239, 68, 68, 0.08));
       border: 1.5px solid rgba(139, 92, 246, 0.4);
@@ -27,6 +31,7 @@
       overflow: hidden;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 30px rgba(139, 92, 246, 0.15);
     }
+
     .admin-banner::before {
       content: '';
       position: absolute;
@@ -36,12 +41,14 @@
       height: 2px;
       background: linear-gradient(90deg, transparent, var(--accent-purple), var(--accent-cyan), transparent);
     }
+
     .kpi-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
       gap: 16px;
       margin-bottom: 32px;
     }
+
     .kpi-card {
       background: var(--bg-card);
       border: 1.5px solid var(--border-outline);
@@ -50,11 +57,13 @@
       transition: var(--transition-fast);
       position: relative;
     }
+
     .kpi-card:hover {
       border-color: var(--accent-purple);
       transform: translateY(-2px);
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
     }
+
     .kpi-label {
       font-family: var(--font-tech);
       font-size: 0.72rem;
@@ -63,6 +72,7 @@
       text-transform: uppercase;
       margin-bottom: 6px;
     }
+
     .kpi-val {
       font-family: var(--font-tech);
       font-size: 1.85rem;
@@ -70,11 +80,13 @@
       color: var(--text-primary);
       line-height: 1.1;
     }
+
     .kpi-sub {
       font-size: 0.74rem;
       margin-top: 6px;
       color: var(--accent-cyan);
     }
+
     .admin-tabs-nav {
       display: flex;
       gap: 6px;
@@ -86,6 +98,7 @@
       overflow-x: auto;
       white-space: nowrap;
     }
+
     .admin-tab-btn {
       padding: 10px 18px;
       border-radius: var(--radius-xs);
@@ -101,16 +114,19 @@
       gap: 8px;
       transition: all 0.2s ease;
     }
+
     .admin-tab-btn:hover {
       color: var(--text-primary);
       background: rgba(255, 255, 255, 0.05);
     }
+
     .admin-tab-btn.active {
       color: #fff;
       background: linear-gradient(135deg, rgba(139, 92, 246, 0.4), rgba(6, 182, 212, 0.25));
       border-color: rgba(139, 92, 246, 0.6);
       box-shadow: 0 4px 14px rgba(139, 92, 246, 0.25);
     }
+
     .admin-card {
       background: var(--bg-card);
       border: 1.5px solid var(--border-outline);
@@ -118,12 +134,14 @@
       padding: 24px;
       margin-bottom: 24px;
     }
+
     .admin-table {
       width: 100%;
       border-collapse: collapse;
       font-size: 0.86rem;
       margin-top: 12px;
     }
+
     .admin-table th {
       text-align: left;
       padding: 12px 14px;
@@ -135,15 +153,18 @@
       color: var(--text-muted);
       text-transform: uppercase;
     }
+
     .admin-table td {
       padding: 12px 14px;
       border-bottom: 1px solid var(--border-outline);
       color: var(--text-primary);
       vertical-align: middle;
     }
+
     .admin-table tr:hover td {
       background: rgba(255, 255, 255, 0.02);
     }
+
     .role-badge {
       display: inline-flex;
       align-items: center;
@@ -155,21 +176,25 @@
       text-transform: uppercase;
       font-weight: 700;
     }
+
     .role-badge.admin {
       background: rgba(139, 92, 246, 0.15);
       color: var(--accent-purple);
       border: 1px solid rgba(139, 92, 246, 0.4);
     }
+
     .role-badge.seller {
       background: rgba(6, 182, 212, 0.15);
       color: var(--accent-cyan);
       border: 1px solid rgba(6, 182, 212, 0.4);
     }
+
     .role-badge.buyer {
       background: rgba(255, 255, 255, 0.06);
       color: var(--text-secondary);
       border: 1px solid rgba(255, 255, 255, 0.1);
     }
+
     .search-filter-box {
       width: 100%;
       max-width: 340px;
@@ -181,10 +206,12 @@
       font-size: 0.85rem;
       outline: none;
     }
+
     .search-filter-box:focus {
       border-color: var(--accent-purple);
       box-shadow: 0 0 10px rgba(139, 92, 246, 0.25);
     }
+
     .raw-json-box {
       background: #080910;
       border: 1.5px solid var(--border-outline);
@@ -198,6 +225,7 @@
       white-space: pre-wrap;
       word-break: break-all;
     }
+
     .auth-gate-card {
       max-width: 480px;
       margin: 60px auto;
@@ -210,539 +238,592 @@
     }
   </style>
 </head>
+
 <body>
 
-<!-- Header (Injected by layout.js) -->
-<div id="page-header"></div>
+  <!-- Header (Injected by layout.js) -->
+  <div id="page-header"></div>
 
-<main class="admin-page">
-  <div class="container">
+  <main class="admin-page">
+    <div class="container">
 
-    <!-- ── AUTHENTICATION GATE (Shown if not logged in as Admin) ── -->
-    <div id="admin-auth-gate" style="display:none;">
-      <div class="auth-gate-card">
-        <div style="width:58px;height:58px;border-radius:16px;background:rgba(139,92,246,0.15);border:1.5px solid var(--accent-purple);margin:0 auto 18px;display:flex;align-items:center;justify-content:center;font-size:1.85rem;">
-          🛡️
+      <!-- ── AUTHENTICATION GATE (Shown if not logged in as Admin) ── -->
+      <div id="admin-auth-gate" style="display:none;">
+        <div class="auth-gate-card">
+          <div
+            style="width:58px;height:58px;border-radius:16px;background:rgba(139,92,246,0.15);border:1.5px solid var(--accent-purple);margin:0 auto 18px;display:flex;align-items:center;justify-content:center;font-size:1.85rem;">
+            🛡️
+          </div>
+          <h2 style="font-size:1.45rem;margin-bottom:8px;">Super Admin Authentication</h2>
+          <p style="font-size:0.86rem;color:var(--text-secondary);margin-bottom:24px;line-height:1.5;">
+            This command center contains restricted platform data, user balances, API tokens, and cloud infrastructure
+            controls.
+          </p>
+
+          <form onsubmit="handleAdminGateLogin(event)">
+            <div style="margin-bottom:14px;text-align:left;">
+              <label class="form-label-title" for="gate-identity">ADMIN IDENTITY</label>
+              <input type="text" class="form-input-box" id="gate-identity" placeholder="Enter admin email or username"
+                required>
+            </div>
+            <div style="margin-bottom:20px;text-align:left;">
+              <label class="form-label-title" for="gate-password">ADMIN PASSWORD</label>
+              <input type="password" class="form-input-box" id="gate-password" placeholder="Enter secure password"
+                required autofocus>
+            </div>
+            <button type="submit" class="btn btn-primary w-full" id="btn-gate-submit"
+              style="padding:12px;font-weight:700;box-shadow:0 4px 16px rgba(139,92,246,0.35);">
+              Unlock Super Admin Console 🔓
+            </button>
+          </form>
+
+          <div style="margin-top:20px;font-size:0.8rem;color:var(--text-muted);">
+            <a href="index.html" style="color:var(--text-secondary);text-decoration:none;">← Return to Smart Hub
+              Store</a>
+          </div>
         </div>
-        <h2 style="font-size:1.45rem;margin-bottom:8px;">Super Admin Authentication</h2>
-        <p style="font-size:0.86rem;color:var(--text-secondary);margin-bottom:24px;line-height:1.5;">
-          This command center contains restricted platform data, user balances, API tokens, and cloud infrastructure controls.
-        </p>
+      </div>
 
-        <form onsubmit="handleAdminGateLogin(event)">
-          <div style="margin-bottom:14px;text-align:left;">
-            <label class="form-label-title" for="gate-identity">ADMIN IDENTITY</label>
-            <input type="text" class="form-input-box" id="gate-identity" placeholder="Enter admin email or username" required>
+      <!-- ── ADMIN CONSOLE VIEW (Shown when Admin verified) ── -->
+      <div id="admin-main-view">
+
+        <!-- Top Banner -->
+        <div class="admin-banner">
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:18px;">
+            <div>
+              <div
+                style="font-family:var(--font-tech);font-size:0.74rem;color:var(--accent-purple);font-weight:700;letter-spacing:0.12em;margin-bottom:6px;">
+                [ SMART HUB SUPER ADMIN VAULT ]
+              </div>
+              <h1 style="font-size:clamp(1.5rem, 2.5vw, 2rem);margin:0 0 6px 0;">Platform Command Center &amp; Data
+                Inspector</h1>
+              <p style="color:var(--text-secondary);margin:0;font-size:0.88rem;max-width:680px;">
+                Logged in as <strong style="color:#fff;" id="admin-active-user-name">Naitik Soni</strong> (<span
+                  style="color:var(--accent-cyan);">Platform &amp; Architecture · Super Admin</span>). Complete
+                visibility across all users, catalog codebases, transactions, API tokens, and cloud infrastructure.
+              </p>
+            </div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;">
+              <button class="btn btn-outline btn-sm" onclick="loadAllAdminData()" title="Reload all live collections">
+                🔄 Refresh Data
+              </button>
+              <button class="btn btn-outline btn-sm" onclick="triggerCloudSync()"
+                style="border-color:var(--accent-cyan);color:var(--accent-cyan);">
+                ☁️ Sync Supabase
+              </button>
+              <button class="btn btn-secondary btn-sm" onclick="exportDatabaseJson()">
+                📥 Export JSON
+              </button>
+            </div>
           </div>
-          <div style="margin-bottom:20px;text-align:left;">
-            <label class="form-label-title" for="gate-password">ADMIN PASSWORD</label>
-            <input type="password" class="form-input-box" id="gate-password" placeholder="Enter secure password" required autofocus>
+        </div>
+
+        <!-- Live KPI Metrics Strip -->
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-label">// TOTAL USERS</div>
+            <div class="kpi-val" id="metric-users">0</div>
+            <div class="kpi-sub" id="metric-users-sub">0 Admins · 0 Creators</div>
           </div>
-          <button type="submit" class="btn btn-primary w-full" id="btn-gate-submit" style="padding:12px;font-weight:700;box-shadow:0 4px 16px rgba(139,92,246,0.35);">
-            Unlock Super Admin Console 🔓
+          <div class="kpi-card">
+            <div class="kpi-label">// CATALOG ASSETS</div>
+            <div class="kpi-val" id="metric-products">0</div>
+            <div class="kpi-sub" id="metric-products-sub">Verified codebases</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">// TRANSACTIONS</div>
+            <div class="kpi-val" id="metric-transactions">0</div>
+            <div class="kpi-sub">Total Rupee ledger records</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">// ACTIVE API KEYS</div>
+            <div class="kpi-val" id="metric-apikeys">0</div>
+            <div class="kpi-sub" style="color:var(--accent-green);">Programmatic tokens</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">// CLOUD SUPABASE</div>
+            <div class="kpi-val" id="metric-supabase" style="font-size:1.35rem;color:var(--accent-green);">CONNECTED
+            </div>
+            <div class="kpi-sub">nxmaatedkgligticbzro</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">// WALLET HELD</div>
+            <div class="kpi-val" id="metric-wallet" style="color:var(--accent-green);">₹0</div>
+            <div class="kpi-sub">Total user balances</div>
+          </div>
+        </div>
+
+        <!-- Navigation Tabs (Users, Products, Transactions, API Keys, Channels, Raw JSON) -->
+        <nav class="admin-tabs-nav">
+          <button class="admin-tab-btn active" onclick="switchAdminTab('users', this)">
+            <span>👥</span> All Users Directory (<span id="tab-count-users">0</span>)
           </button>
-        </form>
+          <button class="admin-tab-btn" onclick="switchAdminTab('products', this)">
+            <span>📦</span> Catalog Products (<span id="tab-count-products">0</span>)
+          </button>
+          <button class="admin-tab-btn" onclick="switchAdminTab('transactions', this)">
+            <span>💳</span> Ledger &amp; Transactions (<span id="tab-count-transactions">0</span>)
+          </button>
+          <button class="admin-tab-btn" onclick="switchAdminTab('apikeys', this)">
+            <span>🔑</span> All Developer API Keys (<span id="tab-count-apikeys">0</span>)
+          </button>
+          <button class="admin-tab-btn" onclick="switchAdminTab('raw', this)">
+            <span>🗄️</span> Raw Database JSON Explorer
+          </button>
+          <button class="admin-tab-btn" onclick="switchAdminTab('supabase', this)">
+            <span>☁️</span> Cloud &amp; Supabase
+          </button>
+        </nav>
 
-        <div style="margin-top:20px;font-size:0.8rem;color:var(--text-muted);">
-          <a href="index.html" style="color:var(--text-secondary);text-decoration:none;">← Return to Smart Hub Store</a>
-        </div>
+        <!-- ── TAB 1: USERS DIRECTORY ── -->
+        <section class="admin-panel" id="admin-panel-users">
+          <div class="admin-card">
+            <div
+              style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;margin-bottom:18px;">
+              <div>
+                <h3 style="margin:0 0 4px 0;">Registered Developers &amp; Platform Users</h3>
+                <p style="font-size:0.82rem;color:var(--text-muted);margin:0;">Inspect account credentials, adjust roles
+                  (promote to Admin), and inspect wallet balances.</p>
+              </div>
+              <input type="text" class="search-filter-box" id="search-users-input" oninput="filterUsersTable()"
+                placeholder="🔍 Filter users by name, email, or role...">
+            </div>
+
+            <div style="overflow-x:auto;">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>User Profile</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Wallet Balance</th>
+                    <th>XP</th>
+                    <th>API Keys</th>
+                    <th>Created</th>
+                    <th style="text-align:right;">Admin Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-users-tbody">
+                  <tr>
+                    <td colspan="9" style="text-align:center;padding:30px;color:var(--text-muted);">Loading user
+                      records...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ── TAB 2: PRODUCTS CATALOG ── -->
+        <section class="admin-panel" id="admin-panel-products" style="display:none;">
+          <div class="admin-card">
+            <div
+              style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;margin-bottom:18px;">
+              <div>
+                <h3 style="margin:0 0 4px 0;">All Digital Products &amp; Verified Codebases</h3>
+                <p style="font-size:0.82rem;color:var(--text-muted);margin:0;">Inspect pricing, download counts, and
+                  moderate listings.</p>
+              </div>
+              <input type="text" class="search-filter-box" id="search-products-input" oninput="filterProductsTable()"
+                placeholder="🔍 Search products by title or category...">
+            </div>
+
+            <div style="overflow-x:auto;">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Product Title</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Seller</th>
+                    <th>Rating</th>
+                    <th>Downloads</th>
+                    <th style="text-align:right;">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-products-tbody">
+                  <tr>
+                    <td colspan="7" style="text-align:center;padding:30px;color:var(--text-muted);">Loading products...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ── TAB 3: TRANSACTIONS & LEDGER ── -->
+        <section class="admin-panel" id="admin-panel-transactions" style="display:none;">
+          <div class="admin-card">
+            <div
+              style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;margin-bottom:18px;">
+              <div>
+                <h3 style="margin:0 0 4px 0;">Platform Financial Ledger &amp; Transactions</h3>
+                <p style="font-size:0.82rem;color:var(--text-muted);margin:0;">Track all rupee purchases, creator
+                  earnings, and system grants.</p>
+              </div>
+              <input type="text" class="search-filter-box" id="search-tx-input" oninput="filterTransactionsTable()"
+                placeholder="🔍 Filter by title, user, or method...">
+            </div>
+
+            <div style="overflow-x:auto;">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Tx ID</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                    <th>User</th>
+                    <th>Amount</th>
+                    <th>Method</th>
+                    <th>Date</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-transactions-tbody">
+                  <tr>
+                    <td colspan="7" style="text-align:center;padding:30px;color:var(--text-muted);">Loading
+                      transactions...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ── TAB 4: ALL DEVELOPER API KEYS ── -->
+        <section class="admin-panel" id="admin-panel-apikeys" style="display:none;">
+          <div class="admin-card">
+            <div
+              style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;margin-bottom:18px;">
+              <div>
+                <h3 style="margin:0 0 4px 0;">Developer API Tokens (Across All Accounts)</h3>
+                <p style="font-size:0.82rem;color:var(--text-muted);margin:0;">Inspect token prefixes, owner emails,
+                  last used timestamps, and revoke compromised keys.</p>
+              </div>
+              <input type="text" class="search-filter-box" id="search-keys-input" oninput="filterApiKeysTable()"
+                placeholder="🔍 Filter by key name or owner email...">
+            </div>
+
+            <div style="overflow-x:auto;">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Key Name</th>
+                    <th>Token Prefix</th>
+                    <th>Key Owner</th>
+                    <th>Scope</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                    <th>Last Used</th>
+                    <th style="text-align:right;">Admin Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-apikeys-tbody">
+                  <tr>
+                    <td colspan="8" style="text-align:center;padding:30px;color:var(--text-muted);">Loading API keys...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ── TAB 5: RAW DATABASE JSON EXPLORER ── -->
+        <section class="admin-panel" id="admin-panel-raw" style="display:none;">
+          <div class="admin-card">
+            <div
+              style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;margin-bottom:18px;">
+              <div>
+                <h3 style="margin:0 0 4px 0;">Raw Database Collections (Live JSON Dump)</h3>
+                <p style="font-size:0.82rem;color:var(--text-muted);margin:0;">Complete data transparency. Select any
+                  collection to inspect or copy its raw JSON structure.</p>
+              </div>
+              <div style="display:flex;gap:10px;">
+                <select class="form-input-box" id="raw-collection-select" onchange="renderSelectedCollection()"
+                  style="padding:6px 12px;font-size:0.85rem;">
+                  <option value="ALL">Entire Database (All Collections)</option>
+                  <option value="users">Collection: users</option>
+                  <option value="products">Collection: products</option>
+                  <option value="orders">Collection: orders</option>
+                  <option value="transactions">Collection: transactions</option>
+                  <option value="apiKeys">Collection: apiKeys</option>
+                  <option value="categories">Collection: categories</option>
+                  <option value="channels">Collection: channels</option>
+                  <option value="challenges">Collection: challenges</option>
+                </select>
+                <button class="btn btn-outline btn-sm" onclick="copyRawJson()" id="btn-copy-raw">📋 Copy JSON</button>
+              </div>
+            </div>
+
+            <pre class="raw-json-box" id="raw-json-display">// Loading raw database collections...</pre>
+          </div>
+        </section>
+
+        <!-- ── TAB 6: CLOUD & SUPABASE ── -->
+        <section class="admin-panel" id="admin-panel-supabase" style="display:none;">
+          <div class="admin-card">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;">
+              <div
+                style="width:44px;height:44px;border-radius:12px;background:rgba(16,185,129,0.15);border:1px solid var(--accent-green);display:flex;align-items:center;justify-content:center;font-size:1.4rem;">
+                ☁️
+              </div>
+              <div>
+                <h3 style="margin:0 0 2px 0;">Supabase Cloud Infrastructure</h3>
+                <p style="font-size:0.82rem;color:var(--text-muted);margin:0;">Project: <code
+                    style="color:var(--accent-cyan);">https://nxmaatedkgligticbzro.supabase.co</code></p>
+              </div>
+            </div>
+
+            <div
+              style="background:rgba(255,255,255,0.02);border:1px solid var(--border-outline);border-radius:var(--radius-xs);padding:20px;margin-bottom:20px;">
+              <div style="font-weight:700;margin-bottom:8px;">Cloud Synchronization Actions</div>
+              <p style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:16px;">
+                Trigger instantaneous synchronization from the local database into Supabase PostgreSQL tables (<code
+                  style="color:var(--accent-purple);">categories</code>, <code
+                  style="color:var(--accent-purple);">channels</code>, <code
+                  style="color:var(--accent-purple);">challenges</code>).
+              </p>
+              <button class="btn btn-primary btn-sm" onclick="triggerCloudSync()" id="btn-sync-supabase">
+                ⚡ Trigger Instant Supabase Sync Now
+              </button>
+            </div>
+
+            <div style="font-family:var(--font-tech);font-size:0.75rem;color:var(--text-muted);margin-bottom:6px;">CLOUD
+              SYNC LOGS &amp; STATUS:</div>
+            <pre class="raw-json-box" id="supabase-sync-log"
+              style="max-height:220px;color:var(--accent-green);">Ready. Click button above to initiate sync.</pre>
+          </div>
+        </section>
+
       </div>
     </div>
+  </main>
 
-    <!-- ── ADMIN CONSOLE VIEW (Shown when Admin verified) ── -->
-    <div id="admin-main-view">
-
-      <!-- Top Banner -->
-      <div class="admin-banner">
-        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:18px;">
-          <div>
-            <div style="font-family:var(--font-tech);font-size:0.74rem;color:var(--accent-purple);font-weight:700;letter-spacing:0.12em;margin-bottom:6px;">
-              [ SMART HUB SUPER ADMIN VAULT ]
-            </div>
-            <h1 style="font-size:clamp(1.5rem, 2.5vw, 2rem);margin:0 0 6px 0;">Platform Command Center &amp; Data Inspector</h1>
-            <p style="color:var(--text-secondary);margin:0;font-size:0.88rem;max-width:680px;">
-              Logged in as <strong style="color:#fff;" id="admin-active-user-name">Naitik Soni</strong> (<span style="color:var(--accent-cyan);">Platform &amp; Architecture · Super Admin</span>). Complete visibility across all users, catalog codebases, transactions, API tokens, and cloud infrastructure.
-            </p>
-          </div>
-          <div style="display:flex;gap:10px;flex-wrap:wrap;">
-            <button class="btn btn-outline btn-sm" onclick="loadAllAdminData()" title="Reload all live collections">
-              🔄 Refresh Data
-            </button>
-            <button class="btn btn-outline btn-sm" onclick="triggerCloudSync()" style="border-color:var(--accent-cyan);color:var(--accent-cyan);">
-              ☁️ Sync Supabase
-            </button>
-            <button class="btn btn-secondary btn-sm" onclick="exportDatabaseJson()">
-              📥 Export JSON
-            </button>
-          </div>
+  <!-- ── Quick Modal: Wallet Adjustment ── -->
+  <div id="admin-wallet-modal" class="custom-modal-overlay">
+    <div class="custom-modal-card">
+      <div
+        style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border-outline);">
+        <div style="font-weight:800;font-size:1.1rem;display:flex;align-items:center;gap:8px;">
+          <span>💎</span> Grant / Adjust Rupee Wallet
         </div>
+        <button class="btn btn-outline btn-xs" onclick="closeWalletModal()">✕</button>
       </div>
 
-      <!-- Live KPI Metrics Strip -->
-      <div class="kpi-grid">
-        <div class="kpi-card">
-          <div class="kpi-label">// TOTAL USERS</div>
-          <div class="kpi-val" id="metric-users">0</div>
-          <div class="kpi-sub" id="metric-users-sub">0 Admins · 0 Creators</div>
+      <form onsubmit="submitWalletAdjustment(event)">
+        <div style="margin-bottom:12px;">
+          <label class="form-label-title">RECIPIENT USER</label>
+          <input type="text" readonly id="adj-user-name" class="form-input-box"
+            style="background:rgba(0,0,0,0.4);color:var(--accent-cyan);font-weight:700;">
         </div>
-        <div class="kpi-card">
-          <div class="kpi-label">// CATALOG ASSETS</div>
-          <div class="kpi-val" id="metric-products">0</div>
-          <div class="kpi-sub" id="metric-products-sub">Verified codebases</div>
+        <div style="margin-bottom:12px;">
+          <label class="form-label-title" for="adj-amount">AMOUNT (RUPEES ₹)</label>
+          <input type="number" id="adj-amount" class="form-input-box" placeholder="e.g. 500 or -200" required>
+          <div style="font-size:0.72rem;color:var(--text-muted);margin-top:4px;">Use positive value to credit, negative
+            to deduct.</div>
         </div>
-        <div class="kpi-card">
-          <div class="kpi-label">// TRANSACTIONS</div>
-          <div class="kpi-val" id="metric-transactions">0</div>
-          <div class="kpi-sub">Total Rupee ledger records</div>
+        <div style="margin-bottom:20px;">
+          <label class="form-label-title" for="adj-reason">REASON / AUDIT NOTE</label>
+          <input type="text" id="adj-reason" class="form-input-box"
+            placeholder="e.g. Creator Bonus, Bug Bounty Reward, Escrow Refund">
         </div>
-        <div class="kpi-card">
-          <div class="kpi-label">// ACTIVE API KEYS</div>
-          <div class="kpi-val" id="metric-apikeys">0</div>
-          <div class="kpi-sub" style="color:var(--accent-green);">Programmatic tokens</div>
+        <div style="display:flex;gap:10px;justify-content:flex-end;">
+          <button type="button" class="btn btn-secondary btn-sm" onclick="closeWalletModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary btn-sm" id="btn-submit-adj" style="font-weight:700;">Update
+            Wallet 💸</button>
         </div>
-        <div class="kpi-card">
-          <div class="kpi-label">// CLOUD SUPABASE</div>
-          <div class="kpi-val" id="metric-supabase" style="font-size:1.35rem;color:var(--accent-green);">CONNECTED</div>
-          <div class="kpi-sub">nxmaatedkgligticbzro</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">// WALLET HELD</div>
-          <div class="kpi-val" id="metric-wallet" style="color:var(--accent-green);">₹0</div>
-          <div class="kpi-sub">Total user balances</div>
-        </div>
-      </div>
-
-      <!-- Navigation Tabs (Users, Products, Transactions, API Keys, Channels, Raw JSON) -->
-      <nav class="admin-tabs-nav">
-        <button class="admin-tab-btn active" onclick="switchAdminTab('users', this)">
-          <span>👥</span> All Users Directory (<span id="tab-count-users">0</span>)
-        </button>
-        <button class="admin-tab-btn" onclick="switchAdminTab('products', this)">
-          <span>📦</span> Catalog Products (<span id="tab-count-products">0</span>)
-        </button>
-        <button class="admin-tab-btn" onclick="switchAdminTab('transactions', this)">
-          <span>💳</span> Ledger &amp; Transactions (<span id="tab-count-transactions">0</span>)
-        </button>
-        <button class="admin-tab-btn" onclick="switchAdminTab('apikeys', this)">
-          <span>🔑</span> All Developer API Keys (<span id="tab-count-apikeys">0</span>)
-        </button>
-        <button class="admin-tab-btn" onclick="switchAdminTab('raw', this)">
-          <span>🗄️</span> Raw Database JSON Explorer
-        </button>
-        <button class="admin-tab-btn" onclick="switchAdminTab('supabase', this)">
-          <span>☁️</span> Cloud &amp; Supabase
-        </button>
-      </nav>
-
-      <!-- ── TAB 1: USERS DIRECTORY ── -->
-      <section class="admin-panel" id="admin-panel-users">
-        <div class="admin-card">
-          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;margin-bottom:18px;">
-            <div>
-              <h3 style="margin:0 0 4px 0;">Registered Developers &amp; Platform Users</h3>
-              <p style="font-size:0.82rem;color:var(--text-muted);margin:0;">Inspect account credentials, adjust roles (promote to Admin), and inspect wallet balances.</p>
-            </div>
-            <input type="text" class="search-filter-box" id="search-users-input" oninput="filterUsersTable()" placeholder="🔍 Filter users by name, email, or role...">
-          </div>
-
-          <div style="overflow-x:auto;">
-            <table class="admin-table">
-              <thead>
-                <tr>
-                  <th>User Profile</th>
-                  <th>Username</th>
-                  <th>Email</th>
-                  <th>Role</th>
-                  <th>Wallet Balance</th>
-                  <th>XP</th>
-                  <th>API Keys</th>
-                  <th>Created</th>
-                  <th style="text-align:right;">Admin Actions</th>
-                </tr>
-              </thead>
-              <tbody id="admin-users-tbody">
-                <tr><td colspan="9" style="text-align:center;padding:30px;color:var(--text-muted);">Loading user records...</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
-      <!-- ── TAB 2: PRODUCTS CATALOG ── -->
-      <section class="admin-panel" id="admin-panel-products" style="display:none;">
-        <div class="admin-card">
-          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;margin-bottom:18px;">
-            <div>
-              <h3 style="margin:0 0 4px 0;">All Digital Products &amp; Verified Codebases</h3>
-              <p style="font-size:0.82rem;color:var(--text-muted);margin:0;">Inspect pricing, download counts, and moderate listings.</p>
-            </div>
-            <input type="text" class="search-filter-box" id="search-products-input" oninput="filterProductsTable()" placeholder="🔍 Search products by title or category...">
-          </div>
-
-          <div style="overflow-x:auto;">
-            <table class="admin-table">
-              <thead>
-                <tr>
-                  <th>Product Title</th>
-                  <th>Category</th>
-                  <th>Price</th>
-                  <th>Seller</th>
-                  <th>Rating</th>
-                  <th>Downloads</th>
-                  <th style="text-align:right;">Actions</th>
-                </tr>
-              </thead>
-              <tbody id="admin-products-tbody">
-                <tr><td colspan="7" style="text-align:center;padding:30px;color:var(--text-muted);">Loading products...</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
-      <!-- ── TAB 3: TRANSACTIONS & LEDGER ── -->
-      <section class="admin-panel" id="admin-panel-transactions" style="display:none;">
-        <div class="admin-card">
-          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;margin-bottom:18px;">
-            <div>
-              <h3 style="margin:0 0 4px 0;">Platform Financial Ledger &amp; Transactions</h3>
-              <p style="font-size:0.82rem;color:var(--text-muted);margin:0;">Track all rupee purchases, creator earnings, and system grants.</p>
-            </div>
-            <input type="text" class="search-filter-box" id="search-tx-input" oninput="filterTransactionsTable()" placeholder="🔍 Filter by title, user, or method...">
-          </div>
-
-          <div style="overflow-x:auto;">
-            <table class="admin-table">
-              <thead>
-                <tr>
-                  <th>Tx ID</th>
-                  <th>Type</th>
-                  <th>Description</th>
-                  <th>User</th>
-                  <th>Amount</th>
-                  <th>Method</th>
-                  <th>Date</th>
-                </tr>
-              </thead>
-              <tbody id="admin-transactions-tbody">
-                <tr><td colspan="7" style="text-align:center;padding:30px;color:var(--text-muted);">Loading transactions...</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
-      <!-- ── TAB 4: ALL DEVELOPER API KEYS ── -->
-      <section class="admin-panel" id="admin-panel-apikeys" style="display:none;">
-        <div class="admin-card">
-          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;margin-bottom:18px;">
-            <div>
-              <h3 style="margin:0 0 4px 0;">Developer API Tokens (Across All Accounts)</h3>
-              <p style="font-size:0.82rem;color:var(--text-muted);margin:0;">Inspect token prefixes, owner emails, last used timestamps, and revoke compromised keys.</p>
-            </div>
-            <input type="text" class="search-filter-box" id="search-keys-input" oninput="filterApiKeysTable()" placeholder="🔍 Filter by key name or owner email...">
-          </div>
-
-          <div style="overflow-x:auto;">
-            <table class="admin-table">
-              <thead>
-                <tr>
-                  <th>Key Name</th>
-                  <th>Token Prefix</th>
-                  <th>Key Owner</th>
-                  <th>Scope</th>
-                  <th>Status</th>
-                  <th>Created</th>
-                  <th>Last Used</th>
-                  <th style="text-align:right;">Admin Actions</th>
-                </tr>
-              </thead>
-              <tbody id="admin-apikeys-tbody">
-                <tr><td colspan="8" style="text-align:center;padding:30px;color:var(--text-muted);">Loading API keys...</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
-      <!-- ── TAB 5: RAW DATABASE JSON EXPLORER ── -->
-      <section class="admin-panel" id="admin-panel-raw" style="display:none;">
-        <div class="admin-card">
-          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;margin-bottom:18px;">
-            <div>
-              <h3 style="margin:0 0 4px 0;">Raw Database Collections (Live JSON Dump)</h3>
-              <p style="font-size:0.82rem;color:var(--text-muted);margin:0;">Complete data transparency. Select any collection to inspect or copy its raw JSON structure.</p>
-            </div>
-            <div style="display:flex;gap:10px;">
-              <select class="form-input-box" id="raw-collection-select" onchange="renderSelectedCollection()" style="padding:6px 12px;font-size:0.85rem;">
-                <option value="ALL">Entire Database (All Collections)</option>
-                <option value="users">Collection: users</option>
-                <option value="products">Collection: products</option>
-                <option value="orders">Collection: orders</option>
-                <option value="transactions">Collection: transactions</option>
-                <option value="apiKeys">Collection: apiKeys</option>
-                <option value="categories">Collection: categories</option>
-                <option value="channels">Collection: channels</option>
-                <option value="challenges">Collection: challenges</option>
-              </select>
-              <button class="btn btn-outline btn-sm" onclick="copyRawJson()" id="btn-copy-raw">📋 Copy JSON</button>
-            </div>
-          </div>
-
-          <pre class="raw-json-box" id="raw-json-display">// Loading raw database collections...</pre>
-        </div>
-      </section>
-
-      <!-- ── TAB 6: CLOUD & SUPABASE ── -->
-      <section class="admin-panel" id="admin-panel-supabase" style="display:none;">
-        <div class="admin-card">
-          <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;">
-            <div style="width:44px;height:44px;border-radius:12px;background:rgba(16,185,129,0.15);border:1px solid var(--accent-green);display:flex;align-items:center;justify-content:center;font-size:1.4rem;">
-              ☁️
-            </div>
-            <div>
-              <h3 style="margin:0 0 2px 0;">Supabase Cloud Infrastructure</h3>
-              <p style="font-size:0.82rem;color:var(--text-muted);margin:0;">Project: <code style="color:var(--accent-cyan);">https://nxmaatedkgligticbzro.supabase.co</code></p>
-            </div>
-          </div>
-
-          <div style="background:rgba(255,255,255,0.02);border:1px solid var(--border-outline);border-radius:var(--radius-xs);padding:20px;margin-bottom:20px;">
-            <div style="font-weight:700;margin-bottom:8px;">Cloud Synchronization Actions</div>
-            <p style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:16px;">
-              Trigger instantaneous synchronization from the local database into Supabase PostgreSQL tables (<code style="color:var(--accent-purple);">categories</code>, <code style="color:var(--accent-purple);">channels</code>, <code style="color:var(--accent-purple);">challenges</code>).
-            </p>
-            <button class="btn btn-primary btn-sm" onclick="triggerCloudSync()" id="btn-sync-supabase">
-              ⚡ Trigger Instant Supabase Sync Now
-            </button>
-          </div>
-
-          <div style="font-family:var(--font-tech);font-size:0.75rem;color:var(--text-muted);margin-bottom:6px;">CLOUD SYNC LOGS &amp; STATUS:</div>
-          <pre class="raw-json-box" id="supabase-sync-log" style="max-height:220px;color:var(--accent-green);">Ready. Click button above to initiate sync.</pre>
-        </div>
-      </section>
-
+      </form>
     </div>
   </div>
-</main>
 
-<!-- ── Quick Modal: Wallet Adjustment ── -->
-<div id="admin-wallet-modal" class="custom-modal-overlay">
-  <div class="custom-modal-card">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border-outline);">
-      <div style="font-weight:800;font-size:1.1rem;display:flex;align-items:center;gap:8px;">
-        <span>💎</span> Grant / Adjust Rupee Wallet
-      </div>
-      <button class="btn btn-outline btn-xs" onclick="closeWalletModal()">✕</button>
-    </div>
+  <!-- Footer (Injected by layout.js) -->
+  <div id="page-footer"></div>
 
-    <form onsubmit="submitWalletAdjustment(event)">
-      <div style="margin-bottom:12px;">
-        <label class="form-label-title">RECIPIENT USER</label>
-        <input type="text" readonly id="adj-user-name" class="form-input-box" style="background:rgba(0,0,0,0.4);color:var(--accent-cyan);font-weight:700;">
-      </div>
-      <div style="margin-bottom:12px;">
-        <label class="form-label-title" for="adj-amount">AMOUNT (RUPEES ₹)</label>
-        <input type="number" id="adj-amount" class="form-input-box" placeholder="e.g. 500 or -200" required>
-        <div style="font-size:0.72rem;color:var(--text-muted);margin-top:4px;">Use positive value to credit, negative to deduct.</div>
-      </div>
-      <div style="margin-bottom:20px;">
-        <label class="form-label-title" for="adj-reason">REASON / AUDIT NOTE</label>
-        <input type="text" id="adj-reason" class="form-input-box" placeholder="e.g. Creator Bonus, Bug Bounty Reward, Escrow Refund">
-      </div>
-      <div style="display:flex;gap:10px;justify-content:flex-end;">
-        <button type="button" class="btn btn-secondary btn-sm" onclick="closeWalletModal()">Cancel</button>
-        <button type="submit" class="btn btn-primary btn-sm" id="btn-submit-adj" style="font-weight:700;">Update Wallet 💸</button>
-      </div>
-    </form>
-  </div>
-</div>
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/layout.js"></script>
+  <script>
+    let adminCachedData = {
+      overview: null,
+      users: [],
+      products: [],
+      transactions: [],
+      apiKeys: [],
+      rawDb: null
+    };
 
-<!-- Footer (Injected by layout.js) -->
-<div id="page-footer"></div>
+    let activeWalletUserId = null;
 
-<!-- Scripts -->
-<script src="js/data.js"></script>
-<script src="js/api.js"></script>
-<script src="js/main.js"></script>
-<script src="js/layout.js"></script>
-<script>
-let adminCachedData = {
-  overview: null,
-  users: [],
-  products: [],
-  transactions: [],
-  apiKeys: [],
-  rawDb: null
-};
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      checkAdminAuthAndLoad();
+    });
 
-let activeWalletUserId = null;
+    async function checkAdminAuthAndLoad() {
+      const gateEl = document.getElementById('admin-auth-gate');
+      const mainEl = document.getElementById('admin-main-view');
 
-// Initialize on page load
-document.addEventListener('DOMContentLoaded', () => {
-  checkAdminAuthAndLoad();
-});
+      try {
+        if (window.SmartHubAPI && window.SmartHubAPI.getAdminOverview) {
+          const overview = await window.SmartHubAPI.getAdminOverview();
+          if (overview && overview.success) {
+            if (gateEl) gateEl.style.display = 'none';
+            if (mainEl) mainEl.style.display = 'block';
+            const user = getSessionUser();
+            const nameEl = document.getElementById('admin-active-user-name');
+            if (nameEl) nameEl.textContent = (user && user.name) || 'Administrator';
+            loadAllAdminData();
+            return;
+          }
+        }
+      } catch (err) { }
 
-async function checkAdminAuthAndLoad() {
-  const gateEl = document.getElementById('admin-auth-gate');
-  const mainEl = document.getElementById('admin-main-view');
+      if (gateEl) gateEl.style.display = 'block';
+      if (mainEl) mainEl.style.display = 'none';
+    }
 
-  try {
-    if (window.SmartHubAPI && window.SmartHubAPI.getAdminOverview) {
-      const overview = await window.SmartHubAPI.getAdminOverview();
-      if (overview && overview.success) {
-        if (gateEl) gateEl.style.display = 'none';
-        if (mainEl) mainEl.style.display = 'block';
-        const user = getSessionUser();
-        const nameEl = document.getElementById('admin-active-user-name');
-        if (nameEl) nameEl.textContent = (user && user.name) || 'Administrator';
-        loadAllAdminData();
-        return;
+    async function handleAdminGateLogin(e) {
+      e.preventDefault();
+      const identity = document.getElementById('gate-identity').value.trim();
+      const password = document.getElementById('gate-password').value;
+      const submitBtn = document.getElementById('btn-gate-submit');
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Verifying Admin Access...';
+
+      try {
+        const res = await window.SmartHubAPI.login(identity, password);
+        if (res && res.success && res.user) {
+          if (res.user.role === 'admin') {
+            localStorage.setItem('smarthub_user', JSON.stringify({ ...res.user, isLoggedIn: true, role: 'admin' }));
+            if (res.token) localStorage.setItem('smarthub_token', res.token);
+
+            if (window.SH && window.SH.showToast) {
+              window.SH.showToast('Super Admin access granted! 🛡️', 'success');
+            }
+            await checkAdminAuthAndLoad();
+            return;
+          } else {
+            if (window.SH && window.SH.showToast) {
+              window.SH.showToast('Access denied: Account does not possess administrator role', 'error');
+            }
+            return;
+          }
+        }
+        if (window.SH && window.SH.showToast) {
+          window.SH.showToast((res && res.error) || 'Invalid admin credentials', 'error');
+        }
+      } catch (err) {
+        if (window.SH && window.SH.showToast) {
+          window.SH.showToast('Authentication error: ' + err.message, 'error');
+        }
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Unlock Super Admin Console 🔓';
       }
     }
-  } catch (err) {}
 
-  if (gateEl) gateEl.style.display = 'block';
-  if (mainEl) mainEl.style.display = 'none';
-}
+    async function loadAllAdminData() {
+      if (!window.SmartHubAPI) return;
 
-async function handleAdminGateLogin(e) {
-  e.preventDefault();
-  const identity = document.getElementById('gate-identity').value.trim();
-  const password = document.getElementById('gate-password').value;
-  const submitBtn = document.getElementById('btn-gate-submit');
-
-  submitBtn.disabled = true;
-  submitBtn.textContent = 'Verifying Admin Access...';
-
-  try {
-    const res = await window.SmartHubAPI.login(identity, password);
-    if (res && res.success && res.user) {
-      if (res.user.role === 'admin') {
-        localStorage.setItem('smarthub_user', JSON.stringify({ ...res.user, isLoggedIn: true, role: 'admin' }));
-        if (res.token) localStorage.setItem('smarthub_token', res.token);
-
-        if (window.SH && window.SH.showToast) {
-          window.SH.showToast('Super Admin access granted! 🛡️', 'success');
+      // 1. Overview Metrics
+      try {
+        const ov = await window.SmartHubAPI.getAdminOverview();
+        if (ov && ov.success && ov.metrics) {
+          adminCachedData.overview = ov.metrics;
+          renderMetrics(ov.metrics);
         }
-        await checkAdminAuthAndLoad();
-        return;
-      } else {
-        if (window.SH && window.SH.showToast) {
-          window.SH.showToast('Access denied: Account does not possess administrator role', 'error');
+      } catch (e) { }
+
+      // 2. Users
+      try {
+        const uRes = await window.SmartHubAPI.getAdminUsers();
+        if (uRes && uRes.success && Array.isArray(uRes.users)) {
+          adminCachedData.users = uRes.users;
+          document.getElementById('tab-count-users').textContent = uRes.users.length;
+          renderUsersTable(uRes.users);
         }
-        return;
+      } catch (e) { }
+
+      // 3. Products
+      try {
+        const pRes = await window.SmartHubAPI.getAdminProducts();
+        if (pRes && pRes.success && Array.isArray(pRes.products)) {
+          adminCachedData.products = pRes.products;
+          document.getElementById('tab-count-products').textContent = pRes.products.length;
+          renderProductsTable(pRes.products);
+        }
+      } catch (e) { }
+
+      // 4. Transactions
+      try {
+        const tRes = await window.SmartHubAPI.getAdminTransactions();
+        if (tRes && tRes.success && Array.isArray(tRes.transactions)) {
+          adminCachedData.transactions = tRes.transactions;
+          document.getElementById('tab-count-transactions').textContent = tRes.transactions.length;
+          renderTransactionsTable(tRes.transactions);
+        }
+      } catch (e) { }
+
+      // 5. API Keys
+      try {
+        const kRes = await window.SmartHubAPI.getAdminApiKeys();
+        if (kRes && kRes.success && Array.isArray(kRes.apiKeys)) {
+          adminCachedData.apiKeys = kRes.apiKeys;
+          document.getElementById('tab-count-apikeys').textContent = kRes.apiKeys.length;
+          renderApiKeysTable(kRes.apiKeys);
+        }
+      } catch (e) { }
+
+      // 6. Raw Database
+      try {
+        const rawRes = await window.SmartHubAPI.getAdminRawDatabase();
+        if (rawRes && rawRes.success && rawRes.data) {
+          adminCachedData.rawDb = rawRes.data;
+          renderSelectedCollection();
+        }
+      } catch (e) { }
+    }
+
+    function renderMetrics(m) {
+      document.getElementById('metric-users').textContent = m.totalUsers || 0;
+      document.getElementById('metric-users-sub').textContent = `${m.adminCount || 0} Admins · ${m.sellerCount || 0} Creators`;
+      document.getElementById('metric-products').textContent = m.totalProducts || 0;
+      document.getElementById('metric-transactions').textContent = m.totalTransactions || 0;
+      document.getElementById('metric-apikeys').textContent = m.activeApiKeys || 0;
+      document.getElementById('metric-wallet').textContent = `₹${(m.totalWalletHeldRupees || 0).toLocaleString('en-IN')}`;
+    }
+
+    // ── Tab Navigation ──────────────────────────────────────────
+    function switchAdminTab(tabName, btnEl) {
+      document.querySelectorAll('.admin-tab-btn').forEach(b => b.classList.remove('active'));
+      if (btnEl) btnEl.classList.add('active');
+
+      document.querySelectorAll('.admin-panel').forEach(p => p.style.display = 'none');
+      const target = document.getElementById(`admin-panel-${tabName}`);
+      if (target) {
+        target.style.display = 'block';
+      }
+      if (tabName === 'raw') {
+        renderSelectedCollection();
       }
     }
-    if (window.SH && window.SH.showToast) {
-      window.SH.showToast((res && res.error) || 'Invalid admin credentials', 'error');
-    }
-  } catch (err) {
-    if (window.SH && window.SH.showToast) {
-      window.SH.showToast('Authentication error: ' + err.message, 'error');
-    }
-  } finally {
-    submitBtn.disabled = false;
-    submitBtn.textContent = 'Unlock Super Admin Console 🔓';
-  }
-}
 
-async function loadAllAdminData() {
-  if (!window.SmartHubAPI) return;
+    // ── Users Table Rendering ───────────────────────────────────
+    function renderUsersTable(users) {
+      const tbody = document.getElementById('admin-users-tbody');
+      if (!tbody) return;
 
-  // 1. Overview Metrics
-  try {
-    const ov = await window.SmartHubAPI.getAdminOverview();
-    if (ov && ov.success && ov.metrics) {
-      adminCachedData.overview = ov.metrics;
-      renderMetrics(ov.metrics);
-    }
-  } catch (e) {}
+      if (!users || users.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:30px;color:var(--text-muted);">No users found.</td></tr>';
+        return;
+      }
 
-  // 2. Users
-  try {
-    const uRes = await window.SmartHubAPI.getAdminUsers();
-    if (uRes && uRes.success && Array.isArray(uRes.users)) {
-      adminCachedData.users = uRes.users;
-      document.getElementById('tab-count-users').textContent = uRes.users.length;
-      renderUsersTable(uRes.users);
-    }
-  } catch (e) {}
-
-  // 3. Products
-  try {
-    const pRes = await window.SmartHubAPI.getAdminProducts();
-    if (pRes && pRes.success && Array.isArray(pRes.products)) {
-      adminCachedData.products = pRes.products;
-      document.getElementById('tab-count-products').textContent = pRes.products.length;
-      renderProductsTable(pRes.products);
-    }
-  } catch (e) {}
-
-  // 4. Transactions
-  try {
-    const tRes = await window.SmartHubAPI.getAdminTransactions();
-    if (tRes && tRes.success && Array.isArray(tRes.transactions)) {
-      adminCachedData.transactions = tRes.transactions;
-      document.getElementById('tab-count-transactions').textContent = tRes.transactions.length;
-      renderTransactionsTable(tRes.transactions);
-    }
-  } catch (e) {}
-
-  // 5. API Keys
-  try {
-    const kRes = await window.SmartHubAPI.getAdminApiKeys();
-    if (kRes && kRes.success && Array.isArray(kRes.apiKeys)) {
-      adminCachedData.apiKeys = kRes.apiKeys;
-      document.getElementById('tab-count-apikeys').textContent = kRes.apiKeys.length;
-      renderApiKeysTable(kRes.apiKeys);
-    }
-  } catch (e) {}
-
-  // 6. Raw Database
-  try {
-    const rawRes = await window.SmartHubAPI.getAdminRawDatabase();
-    if (rawRes && rawRes.success && rawRes.data) {
-      adminCachedData.rawDb = rawRes.data;
-      renderSelectedCollection();
-    }
-  } catch (e) {}
-}
-
-function renderMetrics(m) {
-  document.getElementById('metric-users').textContent = m.totalUsers || 0;
-  document.getElementById('metric-users-sub').textContent = `${m.adminCount || 0} Admins · ${m.sellerCount || 0} Creators`;
-  document.getElementById('metric-products').textContent = m.totalProducts || 0;
-  document.getElementById('metric-transactions').textContent = m.totalTransactions || 0;
-  document.getElementById('metric-apikeys').textContent = m.activeApiKeys || 0;
-  document.getElementById('metric-wallet').textContent = `₹${(m.totalWalletHeldRupees || 0).toLocaleString('en-IN')}`;
-}
-
-// ── Tab Navigation ──────────────────────────────────────────
-function switchAdminTab(tabName, btnEl) {
-  document.querySelectorAll('.admin-tab-btn').forEach(b => b.classList.remove('active'));
-  if (btnEl) btnEl.classList.add('active');
-
-  document.querySelectorAll('.admin-panel').forEach(p => p.style.display = 'none');
-  const target = document.getElementById(`admin-panel-${tabName}`);
-  if (target) {
-    target.style.display = 'block';
-  }
-  if (tabName === 'raw') {
-    renderSelectedCollection();
-  }
-}
-
-// ── Users Table Rendering ───────────────────────────────────
-function renderUsersTable(users) {
-  const tbody = document.getElementById('admin-users-tbody');
-  if (!tbody) return;
-
-  if (!users || users.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:30px;color:var(--text-muted);">No users found.</td></tr>';
-    return;
-  }
-
-  tbody.innerHTML = users.map(u => `
+      tbody.innerHTML = users.map(u => `
     <tr>
       <td>
         <div style="display:flex;align-items:center;gap:10px;">
@@ -778,44 +859,44 @@ function renderUsersTable(users) {
       </td>
     </tr>
   `).join('');
-}
-
-function filterUsersTable() {
-  const query = (document.getElementById('search-users-input').value || '').toLowerCase();
-  const filtered = (adminCachedData.users || []).filter(u => 
-    (u.name && u.name.toLowerCase().includes(query)) ||
-    (u.email && u.email.toLowerCase().includes(query)) ||
-    (u.username && u.username.toLowerCase().includes(query)) ||
-    (u.role && u.role.toLowerCase().includes(query))
-  );
-  renderUsersTable(filtered);
-}
-
-async function changeUserRole(userId, newRole) {
-  try {
-    const res = await window.SmartHubAPI.updateAdminUserRole(userId, newRole);
-    if (res && res.success) {
-      if (window.SH && window.SH.showToast) window.SH.showToast(res.message, 'success');
-      loadAllAdminData();
-    } else {
-      if (window.SH && window.SH.showToast) window.SH.showToast((res && res.error) || 'Failed to update role', 'error');
     }
-  } catch (err) {
-    if (window.SH && window.SH.showToast) window.SH.showToast(err.message, 'error');
-  }
-}
 
-// ── Products Table Rendering ────────────────────────────────
-function renderProductsTable(products) {
-  const tbody = document.getElementById('admin-products-tbody');
-  if (!tbody) return;
+    function filterUsersTable() {
+      const query = (document.getElementById('search-users-input').value || '').toLowerCase();
+      const filtered = (adminCachedData.users || []).filter(u =>
+        (u.name && u.name.toLowerCase().includes(query)) ||
+        (u.email && u.email.toLowerCase().includes(query)) ||
+        (u.username && u.username.toLowerCase().includes(query)) ||
+        (u.role && u.role.toLowerCase().includes(query))
+      );
+      renderUsersTable(filtered);
+    }
 
-  if (!products || products.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--text-muted);">No products currently published.</td></tr>';
-    return;
-  }
+    async function changeUserRole(userId, newRole) {
+      try {
+        const res = await window.SmartHubAPI.updateAdminUserRole(userId, newRole);
+        if (res && res.success) {
+          if (window.SH && window.SH.showToast) window.SH.showToast(res.message, 'success');
+          loadAllAdminData();
+        } else {
+          if (window.SH && window.SH.showToast) window.SH.showToast((res && res.error) || 'Failed to update role', 'error');
+        }
+      } catch (err) {
+        if (window.SH && window.SH.showToast) window.SH.showToast(err.message, 'error');
+      }
+    }
 
-  tbody.innerHTML = products.map(p => `
+    // ── Products Table Rendering ────────────────────────────────
+    function renderProductsTable(products) {
+      const tbody = document.getElementById('admin-products-tbody');
+      if (!tbody) return;
+
+      if (!products || products.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--text-muted);">No products currently published.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = products.map(p => `
     <tr>
       <td>
         <div style="font-weight:700;color:#fff;">${escapeHtml(p.title)}</div>
@@ -833,41 +914,41 @@ function renderProductsTable(products) {
       </td>
     </tr>
   `).join('');
-}
-
-function filterProductsTable() {
-  const query = (document.getElementById('search-products-input').value || '').toLowerCase();
-  const filtered = (adminCachedData.products || []).filter(p => 
-    (p.title && p.title.toLowerCase().includes(query)) ||
-    (p.category && p.category.toLowerCase().includes(query))
-  );
-  renderProductsTable(filtered);
-}
-
-async function deleteProduct(productId) {
-  if (!confirm('Are you sure you want to remove this product as admin?')) return;
-  try {
-    const res = await window.SmartHubAPI.deleteAdminProduct(productId);
-    if (res && res.success) {
-      if (window.SH && window.SH.showToast) window.SH.showToast(res.message, 'success');
-      loadAllAdminData();
     }
-  } catch (err) {
-    if (window.SH && window.SH.showToast) window.SH.showToast(err.message, 'error');
-  }
-}
 
-// ── Transactions Table Rendering ────────────────────────────
-function renderTransactionsTable(transactions) {
-  const tbody = document.getElementById('admin-transactions-tbody');
-  if (!tbody) return;
+    function filterProductsTable() {
+      const query = (document.getElementById('search-products-input').value || '').toLowerCase();
+      const filtered = (adminCachedData.products || []).filter(p =>
+        (p.title && p.title.toLowerCase().includes(query)) ||
+        (p.category && p.category.toLowerCase().includes(query))
+      );
+      renderProductsTable(filtered);
+    }
 
-  if (!transactions || transactions.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--text-muted);">No transactions recorded.</td></tr>';
-    return;
-  }
+    async function deleteProduct(productId) {
+      if (!confirm('Are you sure you want to remove this product as admin?')) return;
+      try {
+        const res = await window.SmartHubAPI.deleteAdminProduct(productId);
+        if (res && res.success) {
+          if (window.SH && window.SH.showToast) window.SH.showToast(res.message, 'success');
+          loadAllAdminData();
+        }
+      } catch (err) {
+        if (window.SH && window.SH.showToast) window.SH.showToast(err.message, 'error');
+      }
+    }
 
-  tbody.innerHTML = transactions.map(t => `
+    // ── Transactions Table Rendering ────────────────────────────
+    function renderTransactionsTable(transactions) {
+      const tbody = document.getElementById('admin-transactions-tbody');
+      if (!tbody) return;
+
+      if (!transactions || transactions.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--text-muted);">No transactions recorded.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = transactions.map(t => `
     <tr>
       <td style="font-family:var(--font-mono);font-size:0.75rem;color:var(--text-muted);">${escapeHtml(t.id)}</td>
       <td>
@@ -886,29 +967,29 @@ function renderTransactionsTable(transactions) {
       <td style="font-size:0.78rem;color:var(--text-muted);">${escapeHtml(t.date || 'Today')}</td>
     </tr>
   `).join('');
-}
+    }
 
-function filterTransactionsTable() {
-  const query = (document.getElementById('search-tx-input').value || '').toLowerCase();
-  const filtered = (adminCachedData.transactions || []).filter(t => 
-    (t.title && t.title.toLowerCase().includes(query)) ||
-    (t.userName && t.userName.toLowerCase().includes(query)) ||
-    (t.method && t.method.toLowerCase().includes(query))
-  );
-  renderTransactionsTable(filtered);
-}
+    function filterTransactionsTable() {
+      const query = (document.getElementById('search-tx-input').value || '').toLowerCase();
+      const filtered = (adminCachedData.transactions || []).filter(t =>
+        (t.title && t.title.toLowerCase().includes(query)) ||
+        (t.userName && t.userName.toLowerCase().includes(query)) ||
+        (t.method && t.method.toLowerCase().includes(query))
+      );
+      renderTransactionsTable(filtered);
+    }
 
-// ── API Keys Table Rendering ────────────────────────────────
-function renderApiKeysTable(apiKeys) {
-  const tbody = document.getElementById('admin-apikeys-tbody');
-  if (!tbody) return;
+    // ── API Keys Table Rendering ────────────────────────────────
+    function renderApiKeysTable(apiKeys) {
+      const tbody = document.getElementById('admin-apikeys-tbody');
+      if (!tbody) return;
 
-  if (!apiKeys || apiKeys.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:30px;color:var(--text-muted);">No API keys found.</td></tr>';
-    return;
-  }
+      if (!apiKeys || apiKeys.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:30px;color:var(--text-muted);">No API keys found.</td></tr>';
+        return;
+      }
 
-  tbody.innerHTML = apiKeys.map(k => `
+      tbody.innerHTML = apiKeys.map(k => `
     <tr>
       <td>
         <div style="font-weight:700;color:#fff;">🔑 ${escapeHtml(k.name || 'API Key')}</div>
@@ -942,178 +1023,179 @@ function renderApiKeysTable(apiKeys) {
       </td>
     </tr>
   `).join('');
-}
-
-function filterApiKeysTable() {
-  const query = (document.getElementById('search-keys-input').value || '').toLowerCase();
-  const filtered = (adminCachedData.apiKeys || []).filter(k => 
-    (k.name && k.name.toLowerCase().includes(query)) ||
-    (k.ownerEmail && k.ownerEmail.toLowerCase().includes(query)) ||
-    (k.ownerName && k.ownerName.toLowerCase().includes(query))
-  );
-  renderApiKeysTable(filtered);
-}
-
-async function revokeKeyAdmin(keyId) {
-  if (!confirm('Are you sure you want to revoke this developer API key across the system?')) return;
-  try {
-    const res = await window.SmartHubAPI.revokeAdminApiKey(keyId);
-    if (res && res.success) {
-      if (window.SH && window.SH.showToast) window.SH.showToast(res.message, 'success');
-      loadAllAdminData();
     }
-  } catch (err) {
-    if (window.SH && window.SH.showToast) window.SH.showToast(err.message, 'error');
-  }
-}
 
-// ── Raw Database JSON Viewer ────────────────────────────────
-function renderSelectedCollection() {
-  const select = document.getElementById('raw-collection-select');
-  const display = document.getElementById('raw-json-display');
-  if (!display || !adminCachedData.rawDb) return;
+    function filterApiKeysTable() {
+      const query = (document.getElementById('search-keys-input').value || '').toLowerCase();
+      const filtered = (adminCachedData.apiKeys || []).filter(k =>
+        (k.name && k.name.toLowerCase().includes(query)) ||
+        (k.ownerEmail && k.ownerEmail.toLowerCase().includes(query)) ||
+        (k.ownerName && k.ownerName.toLowerCase().includes(query))
+      );
+      renderApiKeysTable(filtered);
+    }
 
-  const coll = select ? select.value : 'ALL';
-  let targetData = adminCachedData.rawDb;
+    async function revokeKeyAdmin(keyId) {
+      if (!confirm('Are you sure you want to revoke this developer API key across the system?')) return;
+      try {
+        const res = await window.SmartHubAPI.revokeAdminApiKey(keyId);
+        if (res && res.success) {
+          if (window.SH && window.SH.showToast) window.SH.showToast(res.message, 'success');
+          loadAllAdminData();
+        }
+      } catch (err) {
+        if (window.SH && window.SH.showToast) window.SH.showToast(err.message, 'error');
+      }
+    }
 
-  if (coll !== 'ALL' && adminCachedData.rawDb[coll]) {
-    targetData = adminCachedData.rawDb[coll];
-  }
+    // ── Raw Database JSON Viewer ────────────────────────────────
+    function renderSelectedCollection() {
+      const select = document.getElementById('raw-collection-select');
+      const display = document.getElementById('raw-json-display');
+      if (!display || !adminCachedData.rawDb) return;
 
-  display.textContent = JSON.stringify(targetData, null, 2);
-}
+      const coll = select ? select.value : 'ALL';
+      let targetData = adminCachedData.rawDb;
 
-function copyRawJson() {
-  const display = document.getElementById('raw-json-display');
-  const btn = document.getElementById('btn-copy-raw');
-  if (!display) return;
+      if (coll !== 'ALL' && adminCachedData.rawDb[coll]) {
+        targetData = adminCachedData.rawDb[coll];
+      }
 
-  navigator.clipboard.writeText(display.textContent);
-  if (btn) {
-    const orig = btn.innerHTML;
-    btn.innerHTML = '✓ Copied!';
-    setTimeout(() => { btn.innerHTML = orig; }, 2000);
-  }
-  if (window.SH && window.SH.showToast) {
-    window.SH.showToast('JSON collection copied to clipboard! 📋', 'success');
-  }
-}
+      display.textContent = JSON.stringify(targetData, null, 2);
+    }
 
-function exportDatabaseJson() {
-  if (!adminCachedData.rawDb) return;
-  const jsonStr = JSON.stringify(adminCachedData.rawDb, null, 2);
-  const blob = new Blob([jsonStr], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `smarthub_database_dump_${new Date().toISOString().split('T')[0]}.json`;
-  a.click();
-  URL.revokeObjectURL(url);
-  if (window.SH && window.SH.showToast) {
-    window.SH.showToast('Full database dump exported as JSON file! 📥', 'success');
-  }
-}
+    function copyRawJson() {
+      const display = document.getElementById('raw-json-display');
+      const btn = document.getElementById('btn-copy-raw');
+      if (!display) return;
 
-// ── Supabase Cloud Sync ─────────────────────────────────────
-async function triggerCloudSync() {
-  const btn = document.getElementById('btn-sync-supabase');
-  const logEl = document.getElementById('supabase-sync-log');
+      navigator.clipboard.writeText(display.textContent);
+      if (btn) {
+        const orig = btn.innerHTML;
+        btn.innerHTML = '✓ Copied!';
+        setTimeout(() => { btn.innerHTML = orig; }, 2000);
+      }
+      if (window.SH && window.SH.showToast) {
+        window.SH.showToast('JSON collection copied to clipboard! 📋', 'success');
+      }
+    }
 
-  if (btn) {
-    btn.disabled = true;
-    btn.textContent = 'Synchronizing with Supabase...';
-  }
-  if (logEl) {
-    logEl.textContent = `[${new Date().toLocaleTimeString()}] Initiating cloud sync to Supabase project https://nxmaatedkgligticbzro.supabase.co ...\n`;
-  }
+    function exportDatabaseJson() {
+      if (!adminCachedData.rawDb) return;
+      const jsonStr = JSON.stringify(adminCachedData.rawDb, null, 2);
+      const blob = new Blob([jsonStr], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `smarthub_database_dump_${new Date().toISOString().split('T')[0]}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      if (window.SH && window.SH.showToast) {
+        window.SH.showToast('Full database dump exported as JSON file! 📥', 'success');
+      }
+    }
 
-  try {
-    const res = await window.SmartHubAPI.syncAdminSupabase();
-    if (res && res.success) {
+    // ── Supabase Cloud Sync ─────────────────────────────────────
+    async function triggerCloudSync() {
+      const btn = document.getElementById('btn-sync-supabase');
+      const logEl = document.getElementById('supabase-sync-log');
+
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Synchronizing with Supabase...';
+      }
       if (logEl) {
-        logEl.textContent += `[${new Date().toLocaleTimeString()}] SUCCESS: ${res.message}\n` +
-          `[${new Date().toLocaleTimeString()}] Upserted categories: ${res.synced.categories}, channels: ${res.synced.channels}\n` +
-          `[${new Date().toLocaleTimeString()}] Cloud synchronization status: 100% HEALTHY`;
+        logEl.textContent = `[${new Date().toLocaleTimeString()}] Initiating cloud sync to Supabase project https://nxmaatedkgligticbzro.supabase.co ...\n`;
       }
-      if (window.SH && window.SH.showToast) {
-        window.SH.showToast('Cloud sync to Supabase completed! ☁️', 'success');
-      }
-    } else {
-      if (logEl) {
-        logEl.textContent += `[${new Date().toLocaleTimeString()}] NOTICE: ${(res && res.error) || 'Failed to sync'}`;
-      }
-    }
-  } catch (err) {
-    if (logEl) {
-      logEl.textContent += `[${new Date().toLocaleTimeString()}] ERROR: ${err.message}`;
-    }
-  } finally {
-    if (btn) {
-      btn.disabled = false;
-      btn.textContent = '⚡ Trigger Instant Supabase Sync Now';
-    }
-  }
-}
 
-// ── Wallet Adjustment Modal ─────────────────────────────────
-function openWalletModal(userId, userName) {
-  activeWalletUserId = userId;
-  document.getElementById('adj-user-name').value = userName;
-  document.getElementById('adj-amount').value = '';
-  document.getElementById('adj-reason').value = '';
-  const modal = document.getElementById('admin-wallet-modal');
-  if (modal) modal.classList.add('active');
-}
-
-function closeWalletModal() {
-  const modal = document.getElementById('admin-wallet-modal');
-  if (modal) modal.classList.remove('active');
-  activeWalletUserId = null;
-}
-
-async function submitWalletAdjustment(e) {
-  e.preventDefault();
-  if (!activeWalletUserId) return;
-
-  const amount = document.getElementById('adj-amount').value;
-  const reason = document.getElementById('adj-reason').value.trim();
-  const btn = document.getElementById('btn-submit-adj');
-
-  btn.disabled = true;
-  btn.textContent = 'Processing...';
-
-  try {
-    const res = await window.SmartHubAPI.adjustAdminUserWallet(activeWalletUserId, amount, reason);
-    if (res && res.success) {
-      if (window.SH && window.SH.showToast) {
-        window.SH.showToast(res.message, 'success');
-      }
-      closeWalletModal();
-      loadAllAdminData();
-    } else {
-      if (window.SH && window.SH.showToast) {
-        window.SH.showToast((res && res.error) || 'Failed to update wallet', 'error');
+      try {
+        const res = await window.SmartHubAPI.syncAdminSupabase();
+        if (res && res.success) {
+          if (logEl) {
+            logEl.textContent += `[${new Date().toLocaleTimeString()}] SUCCESS: ${res.message}\n` +
+              `[${new Date().toLocaleTimeString()}] Upserted categories: ${res.synced.categories}, channels: ${res.synced.channels}\n` +
+              `[${new Date().toLocaleTimeString()}] Cloud synchronization status: 100% HEALTHY`;
+          }
+          if (window.SH && window.SH.showToast) {
+            window.SH.showToast('Cloud sync to Supabase completed! ☁️', 'success');
+          }
+        } else {
+          if (logEl) {
+            logEl.textContent += `[${new Date().toLocaleTimeString()}] NOTICE: ${(res && res.error) || 'Failed to sync'}`;
+          }
+        }
+      } catch (err) {
+        if (logEl) {
+          logEl.textContent += `[${new Date().toLocaleTimeString()}] ERROR: ${err.message}`;
+        }
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = '⚡ Trigger Instant Supabase Sync Now';
+        }
       }
     }
-  } catch (err) {
-    if (window.SH && window.SH.showToast) {
-      window.SH.showToast('Wallet update error: ' + err.message, 'error');
-    }
-  } finally {
-    btn.disabled = false;
-    btn.textContent = 'Update Wallet 💸';
-  }
-}
 
-function escapeHtml(str) {
-  if (!str) return '';
-  return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-}
-</script>
+    // ── Wallet Adjustment Modal ─────────────────────────────────
+    function openWalletModal(userId, userName) {
+      activeWalletUserId = userId;
+      document.getElementById('adj-user-name').value = userName;
+      document.getElementById('adj-amount').value = '';
+      document.getElementById('adj-reason').value = '';
+      const modal = document.getElementById('admin-wallet-modal');
+      if (modal) modal.classList.add('active');
+    }
+
+    function closeWalletModal() {
+      const modal = document.getElementById('admin-wallet-modal');
+      if (modal) modal.classList.remove('active');
+      activeWalletUserId = null;
+    }
+
+    async function submitWalletAdjustment(e) {
+      e.preventDefault();
+      if (!activeWalletUserId) return;
+
+      const amount = document.getElementById('adj-amount').value;
+      const reason = document.getElementById('adj-reason').value.trim();
+      const btn = document.getElementById('btn-submit-adj');
+
+      btn.disabled = true;
+      btn.textContent = 'Processing...';
+
+      try {
+        const res = await window.SmartHubAPI.adjustAdminUserWallet(activeWalletUserId, amount, reason);
+        if (res && res.success) {
+          if (window.SH && window.SH.showToast) {
+            window.SH.showToast(res.message, 'success');
+          }
+          closeWalletModal();
+          loadAllAdminData();
+        } else {
+          if (window.SH && window.SH.showToast) {
+            window.SH.showToast((res && res.error) || 'Failed to update wallet', 'error');
+          }
+        }
+      } catch (err) {
+        if (window.SH && window.SH.showToast) {
+          window.SH.showToast('Wallet update error: ' + err.message, 'error');
+        }
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Update Wallet 💸';
+      }
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+  </script>
 </body>
+
 </html>

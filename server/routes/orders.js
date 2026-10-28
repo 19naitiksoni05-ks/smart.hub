@@ -359,7 +359,7 @@ router.post(['/activate-key', '/verify-key'], authOptional, (req, res) => {
     const orders = db.get('orders') || [];
 
     // Match order by encKey (case-insensitive) and optionally productId
-    const order = orders.find(o => 
+    const order = orders.find(o =>
       o.encKey && o.encKey.toUpperCase() === cleanKey &&
       (!productId || o.productId === productId)
     );
@@ -427,9 +427,9 @@ router.get(['/check-access/:productId', '/access-check/:productId'], authOptiona
 
     // 2. Check if key provided matches an activated order
     if (clientKey) {
-      const orderByKey = db.findOne('orders', o => 
-        o.productId === prodId && 
-        o.encKey && o.encKey.toUpperCase() === clientKey && 
+      const orderByKey = db.findOne('orders', o =>
+        o.productId === prodId &&
+        o.encKey && o.encKey.toUpperCase() === clientKey &&
         o.keyActivated === true
       );
       if (orderByKey) {
@@ -576,9 +576,9 @@ router.get('/:idOrNumber/download', authOptional, async (req, res) => {
   }
 
   const isOwner = (order.userId && order.userId === req.user.id) ||
-                  (order.buyer && order.buyer.id === req.user.id) ||
-                  (order.buyerEmail && req.user.email && order.buyerEmail.toLowerCase() === req.user.email.toLowerCase()) ||
-                  req.user.role === 'admin';
+    (order.buyer && order.buyer.id === req.user.id) ||
+    (order.buyerEmail && req.user.email && order.buyerEmail.toLowerCase() === req.user.email.toLowerCase()) ||
+    req.user.role === 'admin';
 
   if (!isOwner) {
     return res.status(403).json({

@@ -100,7 +100,7 @@ function resolveAuthContext(req) {
 
 // Scope-based Authorization Middleware
 function requireScope(requiredScope) {
-  return function(req, res, next) {
+  return function (req, res, next) {
     // If authenticated via API Key, enforce scope checks
     if (req.apiKey) {
       const keyScope = req.apiKey.scope || 'full_access';

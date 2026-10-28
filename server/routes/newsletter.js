@@ -97,3 +97,4 @@ router.get('/unsubscribe', (req, res) => {
 });
 
 module.exports = router;
+

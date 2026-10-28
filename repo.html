@@ -1,18 +1,26 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Project &amp; Code Studio | Smart Hub</title>
-  <meta name="description" content="Explore verified developer projects, source code packages, visuals, and architecture on Smart Hub.">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
+  <meta name="description"
+    content="Explore verified developer projects, source code packages, visuals, and architecture on Smart Hub.">
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/components.css">
   <link rel="stylesheet" href="css/cards.css">
   <link rel="stylesheet" href="css/pages.css">
   <style>
     /* ── Anti-Screenshot, Anti-Copy & DRM Protection Styles ── */
-    body, pre, code, .file-table, .blob-viewer, .studio-box {
+    body,
+    pre,
+    code,
+    .file-table,
+    .blob-viewer,
+    .studio-box {
       -webkit-user-select: none;
       -moz-user-select: none;
       -ms-user-select: none;
@@ -328,13 +336,11 @@
       width: 100%;
       height: 100%;
       pointer-events: none;
-      background: repeating-linear-gradient(
-        -45deg,
-        rgba(255, 91, 54, 0.02),
-        rgba(255, 91, 54, 0.02) 80px,
-        rgba(255, 255, 255, 0.01) 80px,
-        rgba(255, 255, 255, 0.01) 160px
-      );
+      background: repeating-linear-gradient(-45deg,
+          rgba(255, 91, 54, 0.02),
+          rgba(255, 91, 54, 0.02) 80px,
+          rgba(255, 255, 255, 0.01) 80px,
+          rgba(255, 255, 255, 0.01) 160px);
       z-index: 5;
     }
 
@@ -365,7 +371,9 @@
       color: var(--studio-text);
     }
 
-    .readme-content h1, .readme-content h2, .readme-content h3 {
+    .readme-content h1,
+    .readme-content h2,
+    .readme-content h3 {
       color: var(--studio-text);
       margin-top: 24px;
       margin-bottom: 12px;
@@ -409,18 +417,24 @@
       background: var(--studio-card-header);
       border: 1px solid var(--studio-border);
     }
-    .lang-bar-segment { height: 100%; }
+
+    .lang-bar-segment {
+      height: 100%;
+    }
+
     .lang-legend {
       display: flex;
       flex-wrap: wrap;
       gap: 12px;
       font-size: 0.8rem;
     }
+
     .lang-legend-item {
       display: flex;
       align-items: center;
       gap: 6px;
     }
+
     .lang-legend-dot {
       width: 10px;
       height: 10px;
@@ -428,25 +442,29 @@
     }
   </style>
   <script>
-    (function() {
+    (function () {
       const savedTheme = localStorage.getItem('smarthub_theme') || 'dark';
       document.documentElement.setAttribute('data-theme', savedTheme);
       if (savedTheme === 'light') document.body && document.body.classList.add('theme-light');
     })();
   </script>
 </head>
+
 <body>
 
   <!-- Injected Shared Header -->
   <div id="page-header"></div>
 
   <!-- ── Dynamic DRM Screen-Recording & Screenshot Privacy Shield ── -->
-  <div id="drm-privacy-shield" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(8,10,14,0.98);z-index:999999;backdrop-filter:blur(24px);align-items:center;justify-content:center;text-align:center;padding:24px;">
+  <div id="drm-privacy-shield"
+    style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(8,10,14,0.98);z-index:999999;backdrop-filter:blur(24px);align-items:center;justify-content:center;text-align:center;padding:24px;">
     <div>
       <div style="font-size:3.5rem;margin-bottom:12px;">🔒</div>
       <h2 style="color:var(--accent-coral);margin-bottom:8px;font-size:1.6rem;">DRM Screen Capture Shield Active</h2>
-      <p style="color:var(--studio-text-muted);max-width:520px;margin:0 auto 18px auto;font-size:0.92rem;line-height:1.6;">
-        Smart Hub protects developer intellectual property. Source code is masked when the window blurs or loses focus to prevent background screen recording and screenshot captures.
+      <p
+        style="color:var(--studio-text-muted);max-width:520px;margin:0 auto 18px auto;font-size:0.92rem;line-height:1.6;">
+        Smart Hub protects developer intellectual property. Source code is masked when the window blurs or loses focus
+        to prevent background screen recording and screenshot captures.
       </p>
       <div class="badge badge-orange" style="font-size:0.8rem;padding:6px 16px;">
         CLICK ANYWHERE TO REFOCUS &amp; RESUME
@@ -468,36 +486,44 @@
               <span class="badge badge-cyan" id="studio-drm-badge">🔒 LICENSED CODEBASE</span>
             </div>
             <h1 class="studio-title" id="studio-project-title">Python Array &amp; Algorithm Utility Suite</h1>
-            <p id="studio-short-desc" style="color:var(--studio-text-muted);margin:8px 0 0 0;font-size:0.95rem;max-width:780px;">
-              Audited digital asset uploaded directly by the verified creator. Full source code and downloads unlocked upon verified purchase.
+            <p id="studio-short-desc"
+              style="color:var(--studio-text-muted);margin:8px 0 0 0;font-size:0.95rem;max-width:780px;">
+              Audited digital asset uploaded directly by the verified creator. Full source code and downloads unlocked
+              upon verified purchase.
             </p>
           </div>
 
           <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
-            <button class="btn btn-outline" onclick="toggleStudioStar()" id="btn-studio-star" style="color:var(--accent-orange);">
+            <button class="btn btn-outline" onclick="toggleStudioStar()" id="btn-studio-star"
+              style="color:var(--accent-orange);">
               ★ Star <span id="studio-star-count">42</span>
             </button>
-            <div class="badge badge-coral" id="studio-delivery-badge" style="display:inline-flex;align-items:center;gap:6px;font-size:0.78rem;padding:7px 12px;border-radius:var(--radius-xs);border:1px solid rgba(255,91,54,0.3);background:rgba(255,91,54,0.08);color:var(--accent-coral);">
+            <div class="badge badge-coral" id="studio-delivery-badge"
+              style="display:inline-flex;align-items:center;gap:6px;font-size:0.78rem;padding:7px 12px;border-radius:var(--radius-xs);border:1px solid rgba(255,91,54,0.3);background:rgba(255,91,54,0.08);color:var(--accent-coral);">
               <span>📧</span> File Sent via Email Only
             </div>
-            <button class="btn btn-secondary" onclick="addToCartCurrentProject()" id="btn-studio-cart" style="font-weight:700;">
+            <button class="btn btn-secondary" onclick="addToCartCurrentProject()" id="btn-studio-cart"
+              style="font-weight:700;">
               🛒 Add to Cart
             </button>
             <a href="checkout.html" class="btn btn-primary" id="btn-studio-buy" style="font-weight:700;">
               ⚡ Buy Commercial License (<span id="studio-price-tag">₹1,999</span>)
             </a>
-            <span id="header-unlocked-badge" class="badge badge-green" style="display:none;font-size:0.78rem;padding:6px 12px;">
+            <span id="header-unlocked-badge" class="badge badge-green"
+              style="display:none;font-size:0.78rem;padding:6px 12px;">
               ✓ LICENSE ACTIVE
             </span>
           </div>
         </div>
 
         <div class="studio-author-bar">
-          <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=creator&backgroundColor=6366f1" class="studio-avatar" id="studio-author-avatar">
+          <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=creator&backgroundColor=6366f1"
+            class="studio-avatar" id="studio-author-avatar">
           <div>
             <span style="font-size:0.85rem;color:var(--studio-text-muted);">Creator:</span>
             <strong id="studio-author-name" style="color:var(--studio-text);margin-left:4px;">Verified Creator</strong>
-            <span class="badge badge-cyan" style="font-size:0.68rem;padding:2px 6px;margin-left:6px;">VERIFIED DEVELOPER</span>
+            <span class="badge badge-cyan" style="font-size:0.68rem;padding:2px 6px;margin-left:6px;">VERIFIED
+              DEVELOPER</span>
           </div>
           <span style="color:var(--studio-border);">•</span>
           <div style="font-size:0.82rem;color:var(--studio-text-muted);" id="studio-published-date">
@@ -507,30 +533,38 @@
       </header>
 
       <!-- ── In-Website Key Activation & Decryption Banner ────── -->
-      <div id="activation-banner" style="border:1.5px solid var(--accent-coral);border-radius:var(--radius-sm);background:rgba(255,91,54,0.06);padding:18px 24px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;">
+      <div id="activation-banner"
+        style="border:1.5px solid var(--accent-coral);border-radius:var(--radius-sm);background:rgba(255,91,54,0.06);padding:18px 24px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;">
         <div style="flex:1;min-width:280px;">
-          <div style="display:flex;align-items:center;gap:8px;font-family:var(--font-tech);font-size:0.75rem;color:var(--accent-coral);font-weight:700;">
+          <div
+            style="display:flex;align-items:center;gap:8px;font-family:var(--font-tech);font-size:0.75rem;color:var(--accent-coral);font-weight:700;">
             <span>🔒</span> ENCRYPTION KEY REQUIRED TO DECRYPT SOURCE CODE
           </div>
           <div style="font-size:0.88rem;color:var(--studio-text-muted);margin-top:4px;">
-            Purchased this project? We sent an encrypted package with an <strong>Encryption Key</strong> to your email. Enter it below to verify and decrypt the code:
+            Purchased this project? We sent an encrypted package with an <strong>Encryption Key</strong> to your email.
+            Enter it below to verify and decrypt the code:
           </div>
         </div>
         <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-          <input type="text" id="activation-key-input" placeholder="Enter Key (e.g. SH-KEY-2026-...)" class="input" style="width:260px;font-family:var(--font-mono);text-transform:uppercase;font-size:0.85rem;padding:8px 12px;">
-          <button class="btn btn-primary" onclick="verifyAndActivateKey()" id="btn-activate-key" style="font-weight:700;">
+          <input type="text" id="activation-key-input" placeholder="Enter Key (e.g. SH-KEY-2026-...)" class="input"
+            style="width:260px;font-family:var(--font-mono);text-transform:uppercase;font-size:0.85rem;padding:8px 12px;">
+          <button class="btn btn-primary" onclick="verifyAndActivateKey()" id="btn-activate-key"
+            style="font-weight:700;">
             🔓 Verify &amp; Decrypt Code
           </button>
         </div>
       </div>
 
       <!-- ── Decrypted License Active Badge (Shown when unlocked) ── -->
-      <div id="license-active-badge" style="display:none;border:1.5px solid rgba(16,185,129,0.3);border-radius:var(--radius-sm);background:rgba(16,185,129,0.08);padding:14px 20px;margin-bottom:24px;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+      <div id="license-active-badge"
+        style="display:none;border:1.5px solid rgba(16,185,129,0.3);border-radius:var(--radius-sm);background:rgba(16,185,129,0.08);padding:14px 20px;margin-bottom:24px;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
         <div style="display:flex;align-items:center;gap:10px;">
           <span style="font-size:1.4rem;">🔓</span>
           <div>
-            <div style="font-weight:700;color:var(--accent-green);font-size:0.9rem;">Source Code Decrypted &amp; Activated</div>
-            <div style="font-size:0.78rem;color:var(--studio-text-muted);" id="licensed-buyer-info">Licensed Commercial Developer Access · Code Decrypted &amp; Active · Source Archive Dispatched to Email</div>
+            <div style="font-weight:700;color:var(--accent-green);font-size:0.9rem;">Source Code Decrypted &amp;
+              Activated</div>
+            <div style="font-size:0.78rem;color:var(--studio-text-muted);" id="licensed-buyer-info">Licensed Commercial
+              Developer Access · Code Decrypted &amp; Active · Source Archive Dispatched to Email</div>
           </div>
         </div>
         <span class="badge badge-green">✓ KEY VERIFIED &amp; UNLOCKED</span>
@@ -557,25 +591,30 @@
 
           <!-- ── PANE 1: PROJECT OVERVIEW & VISUALS ─────────────── -->
           <div id="pane-overview">
-            
+
             <!-- Visual Showcase Card -->
             <div class="visual-showcase-card" id="studio-visual-card">
-              <div style="padding:14px 20px;background:var(--studio-card-header);border-bottom:1px solid var(--studio-border);display:flex;justify-content:space-between;align-items:center;">
+              <div
+                style="padding:14px 20px;background:var(--studio-card-header);border-bottom:1px solid var(--studio-border);display:flex;justify-content:space-between;align-items:center;">
                 <div style="font-family:var(--font-tech);font-size:0.8rem;color:var(--accent-coral);font-weight:700;">
                   📸 VERIFIED PROJECT ARTWORK &amp; SCREENSHOTS
                 </div>
                 <span class="badge badge-green" style="font-size:0.7rem;">Active Visual Asset</span>
               </div>
-              <img id="studio-preview-img" src="" alt="Project Preview Artwork" class="visual-preview-img" onerror="this.style.display='none'">
+              <img id="studio-preview-img" src="" alt="Project Preview Artwork" class="visual-preview-img"
+                onerror="this.style.display='none'">
               <div class="visual-showcase-body">
                 <h3 style="margin:0 0 8px 0;font-size:1.25rem;">How the Project Works &amp; Looks</h3>
-                <p id="studio-full-description" style="color:var(--studio-text-muted);font-size:0.92rem;line-height:1.6;margin:0 0 16px 0;">
+                <p id="studio-full-description"
+                  style="color:var(--studio-text-muted);font-size:0.92rem;line-height:1.6;margin:0 0 16px 0;">
                   Description of features and architecture.
                 </p>
 
                 <!-- Exact Upload Manifest Box -->
-                <div style="border:1.5px solid var(--studio-border);border-radius:var(--radius-xs);padding:16px;background:var(--bg-secondary);margin-top:16px;">
-                  <div style="font-family:var(--font-tech);font-size:0.75rem;color:var(--accent-cyan);font-weight:700;margin-bottom:8px;">
+                <div
+                  style="border:1.5px solid var(--studio-border);border-radius:var(--radius-xs);padding:16px;background:var(--bg-secondary);margin-top:16px;">
+                  <div
+                    style="font-family:var(--font-tech);font-size:0.75rem;color:var(--accent-cyan);font-weight:700;margin-bottom:8px;">
                     // EXACT DEVELOPER PACKAGE MANIFEST
                   </div>
                   <div id="studio-manifest-list" style="display:flex;flex-direction:column;gap:8px;">
@@ -606,11 +645,15 @@
               <div class="drm-watermark-overlay" id="blob-watermark"></div>
               <div class="blob-header">
                 <div style="display:flex;align-items:center;gap:10px;">
-                  <span id="blob-file-path" style="font-weight:700;color:var(--studio-text);font-family:var(--font-mono);">filename.py</span>
-                  <span id="blob-file-meta" style="font-size:0.8rem;color:var(--studio-text-muted);font-family:var(--font-mono);">0 lines · 0 Bytes</span>
+                  <span id="blob-file-path"
+                    style="font-weight:700;color:var(--studio-text);font-family:var(--font-mono);">filename.py</span>
+                  <span id="blob-file-meta"
+                    style="font-size:0.8rem;color:var(--studio-text-muted);font-family:var(--font-mono);">0 lines · 0
+                    Bytes</span>
                 </div>
                 <div style="display:flex;gap:8px;">
-                  <button class="btn btn-outline btn-sm" onclick="copyBlobContent()" id="btn-copy-blob">📋 Copy Code</button>
+                  <button class="btn btn-outline btn-sm" onclick="copyBlobContent()" id="btn-copy-blob">📋 Copy
+                    Code</button>
                   <button class="btn btn-outline btn-sm" onclick="toggleRawView()" id="btn-raw-view">Raw View</button>
                   <button class="btn btn-outline btn-sm" onclick="closeBlobViewer()">✕ Close</button>
                 </div>
@@ -621,11 +664,15 @@
               </div>
 
               <!-- Locked Code Overlay (Displayed inside viewer when unpurchased/unactivated) -->
-              <div id="blob-locked-overlay" style="display:none;padding:40px 24px;text-align:center;background:var(--studio-code-bg);">
+              <div id="blob-locked-overlay"
+                style="display:none;padding:40px 24px;text-align:center;background:var(--studio-code-bg);">
                 <div style="font-size:3rem;margin-bottom:12px;">🔒</div>
-                <h3 style="color:var(--accent-coral);margin-bottom:8px;font-size:1.3rem;">Source Code Locked (Commercial License Required)</h3>
-                <p style="color:var(--studio-text-muted);max-width:480px;margin:0 auto 20px auto;font-size:0.9rem;line-height:1.6;">
-                  This proprietary project source code is available under a verified commercial license. Purchase the project or enter your activation key to unlock full code files and authorized downloads.
+                <h3 style="color:var(--accent-coral);margin-bottom:8px;font-size:1.3rem;">Source Code Locked (Commercial
+                  License Required)</h3>
+                <p
+                  style="color:var(--studio-text-muted);max-width:480px;margin:0 auto 20px auto;font-size:0.9rem;line-height:1.6;">
+                  This proprietary project source code is available under a verified commercial license. Purchase the
+                  project or enter your activation key to unlock full code files and authorized downloads.
                 </p>
                 <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
                   <a href="checkout.html" class="btn btn-primary" id="btn-locked-overlay-buy">
@@ -642,13 +689,17 @@
             <div class="studio-box">
               <div class="studio-box-header">
                 <div style="display:flex;align-items:center;gap:10px;">
-                  <span style="font-family:var(--font-tech);font-weight:700;color:var(--accent-coral);">📁 EXPLORER:</span>
-                  <div id="studio-path-crumbs" style="display:flex;gap:6px;align-items:center;font-family:var(--font-mono);font-size:0.84rem;">
-                    <a href="javascript:void(0)" onclick="navigateToDir('')" style="color:var(--accent-coral);text-decoration:none;">root</a>
+                  <span style="font-family:var(--font-tech);font-weight:700;color:var(--accent-coral);">📁
+                    EXPLORER:</span>
+                  <div id="studio-path-crumbs"
+                    style="display:flex;gap:6px;align-items:center;font-family:var(--font-mono);font-size:0.84rem;">
+                    <a href="javascript:void(0)" onclick="navigateToDir('')"
+                      style="color:var(--accent-coral);text-decoration:none;">root</a>
                   </div>
                 </div>
                 <div style="display:flex;align-items:center;gap:12px;">
-                  <button class="btn btn-outline btn-xs" id="btn-toggle-flat" onclick="toggleFlatView()" style="font-size:0.75rem;padding:3px 10px;font-family:var(--font-tech);">
+                  <button class="btn btn-outline btn-xs" id="btn-toggle-flat" onclick="toggleFlatView()"
+                    style="font-size:0.75rem;padding:3px 10px;font-family:var(--font-tech);">
                     📄 Flat Files View
                   </button>
                   <div style="font-family:var(--font-tech);font-size:0.75rem;color:var(--studio-text-muted);">
@@ -659,7 +710,8 @@
 
               <table class="file-table">
                 <thead>
-                  <tr style="border-bottom:1.5px solid var(--studio-border);background:var(--bg-secondary);font-family:var(--font-tech);font-size:0.75rem;color:var(--studio-text-muted);">
+                  <tr
+                    style="border-bottom:1.5px solid var(--studio-border);background:var(--bg-secondary);font-family:var(--font-tech);font-size:0.75rem;color:var(--studio-text-muted);">
                     <th style="padding:10px 20px;text-align:left;">FILE / FOLDER NAME</th>
                     <th style="padding:10px 20px;text-align:left;">TYPE</th>
                     <th style="padding:10px 20px;text-align:right;">SIZE</th>
@@ -688,25 +740,35 @@
               </div>
 
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:24px 0;">
-                <div style="border:1px solid var(--studio-border);border-radius:var(--radius-xs);padding:16px;background:var(--bg-secondary);">
-                  <div style="font-family:var(--font-tech);font-size:0.75rem;color:var(--studio-text-muted);">// ANTI-SCREENSHOT &amp; RECORDING DRM</div>
-                  <div style="font-size:1.1rem;font-weight:700;color:var(--accent-green);margin-top:4px;">Hardware &amp; Blur Shield Active</div>
+                <div
+                  style="border:1px solid var(--studio-border);border-radius:var(--radius-xs);padding:16px;background:var(--bg-secondary);">
+                  <div style="font-family:var(--font-tech);font-size:0.75rem;color:var(--studio-text-muted);">//
+                    ANTI-SCREENSHOT &amp; RECORDING DRM</div>
+                  <div style="font-size:1.1rem;font-weight:700;color:var(--accent-green);margin-top:4px;">Hardware &amp;
+                    Blur Shield Active</div>
                   <p style="font-size:0.8rem;color:var(--studio-text-muted);margin:6px 0 0 0;">
-                    Screen recording apps, screen switch capture, right-click copying, and PrintScreen keys are automatically intercepted and obscured.
+                    Screen recording apps, screen switch capture, right-click copying, and PrintScreen keys are
+                    automatically intercepted and obscured.
                   </p>
                 </div>
 
-                <div style="border:1px solid var(--studio-border);border-radius:var(--radius-xs);padding:16px;background:var(--bg-secondary);">
-                  <div style="font-family:var(--font-tech);font-size:0.75rem;color:var(--studio-text-muted);">// EMAIL ENCRYPTED DISPATCH</div>
-                  <div style="font-size:1.1rem;font-weight:700;color:var(--accent-cyan);margin-top:4px;">Multi-Factor Key Verification</div>
+                <div
+                  style="border:1px solid var(--studio-border);border-radius:var(--radius-xs);padding:16px;background:var(--bg-secondary);">
+                  <div style="font-family:var(--font-tech);font-size:0.75rem;color:var(--studio-text-muted);">// EMAIL
+                    ENCRYPTED DISPATCH</div>
+                  <div style="font-size:1.1rem;font-weight:700;color:var(--accent-cyan);margin-top:4px;">Multi-Factor
+                    Key Verification</div>
                   <p style="font-size:0.8rem;color:var(--studio-text-muted);margin:6px 0 0 0;">
-                    Each purchase dispatches a unique HMAC-SHA256 encrypted key to the buyer's email that must be verified in-browser before access is granted.
+                    Each purchase dispatches a unique HMAC-SHA256 encrypted key to the buyer's email that must be
+                    verified in-browser before access is granted.
                   </p>
                 </div>
               </div>
 
-              <div style="border-top:1px solid var(--studio-border);padding-top:16px;font-size:0.85rem;color:var(--studio-text-muted);">
-                Smart Hub protects software creators against leaks, plagiarism, and unauthenticated distribution. All code packages require verified buyer authentication.
+              <div
+                style="border-top:1px solid var(--studio-border);padding-top:16px;font-size:0.85rem;color:var(--studio-text-muted);">
+                Smart Hub protects software creators against leaks, plagiarism, and unauthenticated distribution. All
+                code packages require verified buyer authentication.
               </div>
             </div>
           </div>
@@ -717,7 +779,8 @@
         <aside>
           <!-- Languages Breakdown -->
           <div class="studio-box" style="padding:20px;margin-bottom:20px;">
-            <div style="font-family:var(--font-tech);font-size:0.75rem;color:var(--studio-text-muted);letter-spacing:0.05em;margin-bottom:10px;">
+            <div
+              style="font-family:var(--font-tech);font-size:0.75rem;color:var(--studio-text-muted);letter-spacing:0.05em;margin-bottom:10px;">
               // GENUINE LANGUAGE BREAKDOWN
             </div>
             <div class="lang-bar" id="lang-bar-container"></div>
@@ -726,42 +789,53 @@
 
           <!-- Quick Action Card -->
           <div class="studio-box" style="padding:20px;margin-bottom:20px;background:var(--bg-secondary);">
-            <div style="font-family:var(--font-tech);font-size:0.75rem;color:var(--accent-coral);font-weight:700;margin-bottom:8px;">
+            <div
+              style="font-family:var(--font-tech);font-size:0.75rem;color:var(--accent-coral);font-weight:700;margin-bottom:8px;">
               // ASSET PURCHASE &amp; KEY ACTIVATION
             </div>
-            <div style="font-size:1.6rem;font-weight:800;color:var(--studio-text);" id="sidebar-price-label">₹1,999</div>
+            <div style="font-size:1.6rem;font-weight:800;color:var(--studio-text);" id="sidebar-price-label">₹1,999
+            </div>
             <div style="font-size:0.78rem;color:var(--studio-text-muted);margin-bottom:16px;">
               Single Commercial License · Instant Email Key Dispatch
             </div>
 
             <div id="sidebar-action-wrap">
-              <a href="checkout.html" id="link-checkout-sidebar" class="btn btn-primary" style="width:100%;text-align:center;display:block;margin-bottom:10px;font-weight:700;font-size:0.95rem;">
+              <a href="checkout.html" id="link-checkout-sidebar" class="btn btn-primary"
+                style="width:100%;text-align:center;display:block;margin-bottom:10px;font-weight:700;font-size:0.95rem;">
                 ⚡ Buy Commercial License
               </a>
-              <button class="btn btn-secondary" onclick="addToCartCurrentProject()" id="btn-sidebar-cart" style="width:100%;font-weight:700;margin-bottom:10px;font-size:0.95rem;">
+              <button class="btn btn-secondary" onclick="addToCartCurrentProject()" id="btn-sidebar-cart"
+                style="width:100%;font-weight:700;margin-bottom:10px;font-size:0.95rem;">
                 🛒 Add to Cart
               </button>
-              <div id="sidebar-unlocked-badge" class="badge badge-green" style="display:none;width:100%;justify-content:center;padding:8px;font-size:0.78rem;margin-bottom:10px;">
+              <div id="sidebar-unlocked-badge" class="badge badge-green"
+                style="display:none;width:100%;justify-content:center;padding:8px;font-size:0.78rem;margin-bottom:10px;">
                 ✓ PURCHASED &amp; DECRYPTED
               </div>
-              <div style="background:rgba(255,91,54,0.06);border:1px dashed var(--accent-coral);border-radius:var(--radius-xs);padding:12px;text-align:center;">
-                <div style="font-size:0.82rem;font-weight:700;color:var(--accent-coral);display:flex;align-items:center;justify-content:center;gap:6px;">
+              <div
+                style="background:rgba(255,91,54,0.06);border:1px dashed var(--accent-coral);border-radius:var(--radius-xs);padding:12px;text-align:center;">
+                <div
+                  style="font-size:0.82rem;font-weight:700;color:var(--accent-coral);display:flex;align-items:center;justify-content:center;gap:6px;">
                   <span>📧</span> File Sent Directly to Email Only
                 </div>
                 <div style="font-size:0.75rem;color:var(--studio-text-muted);margin-top:4px;line-height:1.4;">
-                  The complete source code archive (.zip) and encryption key are dispatched exclusively to your verified email. Direct website downloads are disabled for security.
+                  The complete source code archive (.zip) and encryption key are dispatched exclusively to your verified
+                  email. Direct website downloads are disabled for security.
                 </div>
               </div>
             </div>
           </div>
 
           <!-- Security Stamp -->
-          <div style="border:1.5px solid rgba(16,185,129,0.3);border-radius:var(--radius-xs);padding:18px;background:rgba(16,185,129,0.06);">
-            <div style="display:flex;align-items:center;gap:8px;font-weight:700;color:var(--accent-green);font-size:0.88rem;margin-bottom:6px;">
+          <div
+            style="border:1.5px solid rgba(16,185,129,0.3);border-radius:var(--radius-xs);padding:18px;background:rgba(16,185,129,0.06);">
+            <div
+              style="display:flex;align-items:center;gap:8px;font-weight:700;color:var(--accent-green);font-size:0.88rem;margin-bottom:6px;">
               <span>🛡️</span> Anti-Screenshot Protected
             </div>
             <div style="font-size:0.78rem;color:var(--studio-text-muted);line-height:1.5;">
-              Copying, screenshots, and screen recordings are cryptographically blocked. Only verified buyers with an activated email key can access source files.
+              Copying, screenshots, and screen recordings are cryptographically blocked. Only verified buyers with an
+              activated email key can access source files.
             </div>
           </div>
         </aside>
@@ -898,7 +972,7 @@
         const res = await window.SmartHubAPI.getProjectRepo(projId, headers);
         if (res && res.success && res.repo) {
           currentRepo = res.repo;
-          
+
           if (currentRepo.access && currentRepo.access.hasAccess) {
             markProjectUnlocked(currentRepo.access.buyerEmail || 'Verified Owner');
           } else {
@@ -913,7 +987,7 @@
       }
 
       // Local fallback
-      const prod = (window.SmartHubData && window.SmartHubData.products) 
+      const prod = (window.SmartHubData && window.SmartHubData.products)
         ? window.SmartHubData.products.find(p => p.id === projId) || window.SmartHubData.products[0]
         : { id: projId, title: 'Python Array & Algorithm Suite', price: 1999, category: 'Python', description: 'Genuine Python algorithm and array manipulation suite' };
 
@@ -1168,7 +1242,7 @@
           }
           localStorage.setItem('smarthub_cart', JSON.stringify(current));
           window.dispatchEvent(new CustomEvent('cart-updated', { detail: current }));
-        } catch (e) {}
+        } catch (e) { }
         showToast(`Added "${product.title}" to cart! 🛒`, 'success');
       }
       setTimeout(() => {
@@ -1407,7 +1481,7 @@
 
       document.getElementById('blob-file-path').textContent = filePath;
       document.getElementById('blob-file-meta').textContent = 'Authenticating cryptographic access...';
-      
+
       const bodyContainer = document.getElementById('blob-body-container');
       const lockedOverlay = document.getElementById('blob-locked-overlay');
       const copyBtn = document.getElementById('btn-copy-blob');
@@ -1561,11 +1635,12 @@
           showToast(`Starred ${currentRepo.title}! ★`, 'success');
           return;
         }
-      } catch (e) {}
+      } catch (e) { }
       currentRepo.stars = (currentRepo.stars || 42) + 1;
       document.getElementById('studio-star-count').textContent = currentRepo.stars;
       showToast(`Starred ${currentRepo.title}! ★`, 'success');
     }
   </script>
 </body>
+
 </html>

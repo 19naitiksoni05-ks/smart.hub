@@ -13,8 +13,8 @@
   // On Vercel or live domain, always use relative '/api'
   // Only use 'http://localhost:5000/api' if opened from a local secondary server (like Live Server port 5500)
   const API_BASE = (!isLocalhost || isLocalExpressPort) ? '/api' : 'http://localhost:5000/api';
-  const WS_URL = !isLocalhost 
-    ? (window.location.protocol === 'https:' ? 'wss://' : 'ws://') + window.location.host 
+  const WS_URL = !isLocalhost
+    ? (window.location.protocol === 'https:' ? 'wss://' : 'ws://') + window.location.host
     : (isLocalExpressPort ? (window.location.protocol === 'https:' ? 'wss://' : 'ws://') + window.location.host : 'ws://localhost:5000');
 
   const SmartHubAPI = {
@@ -68,7 +68,7 @@
         if (res.ok) {
           return await res.json();
         }
-      } catch (e) {}
+      } catch (e) { }
       return null;
     },
 
@@ -85,7 +85,7 @@
           if (u.id) headers['x-user-id'] = u.id;
           if (u.email) headers['x-user-email'] = u.email;
           if (u.name) headers['x-user-name'] = encodeURIComponent(u.name);
-        } catch (e) {}
+        } catch (e) { }
       }
       return headers;
     },
@@ -101,7 +101,7 @@
           if (u.id) headers['x-user-id'] = u.id;
           if (u.email) headers['x-user-email'] = u.email;
           if (u.name) headers['x-user-name'] = encodeURIComponent(u.name);
-        } catch (e) {}
+        } catch (e) { }
       }
       return headers;
     },
@@ -510,7 +510,7 @@
         const res = await fetch(`${this.baseUrl}/products/${id}`);
         const data = await res.json();
         if (data.success) return data;
-      } catch (err) {}
+      } catch (err) { }
       if (window.SmartHubData && window.SmartHubData.products) {
         const p = window.SmartHubData.products.find(item => item.id === id);
         return { success: true, product: p, reviews: [], related: [] };
@@ -651,7 +651,7 @@
           }
           return data;
         }
-      } catch (err) {}
+      } catch (err) { }
       return null;
     },
 
@@ -890,12 +890,12 @@
               onMessageCallback(data);
             }
             window.dispatchEvent(new CustomEvent('smarthub-ws-message', { detail: data }));
-          } catch (e) {}
+          } catch (e) { }
         };
         this.ws.onerror = () => {
           // Silent fallback
         };
-      } catch (e) {}
+      } catch (e) { }
     },
 
     // ── Super Admin Control Center API ────────────────────────
@@ -1039,14 +1039,14 @@
             try {
               await this.getMe();
               await this.getWallet();
-            } catch (uErr) {}
+            } catch (uErr) { }
           }
           // Init WS
           this.initWebSocket();
         } else {
           console.log('%c[SmartHub Backend] Running in Local Storage Mode (Offline)', 'color:#f59e0b;');
         }
-      } catch (e) {}
+      } catch (e) { }
     }
   };
 

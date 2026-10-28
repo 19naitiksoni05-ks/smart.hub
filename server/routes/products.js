@@ -378,7 +378,7 @@ router.put('/:id', authRequired, async (req, res) => {
         if (req.body.thumb) updateRow.thumbnail = req.body.thumb;
         updateRow.updated_at = new Date().toISOString();
         await supabase.from('products').update(updateRow).eq('id', req.params.id);
-      } catch (e) {}
+      } catch (e) { }
     }
 
     res.json({
@@ -402,7 +402,7 @@ router.delete('/:id', authRequired, async (req, res) => {
     if (isConfigured() && supabase) {
       try {
         await supabase.from('products').delete().eq('id', req.params.id);
-      } catch (e) {}
+      } catch (e) { }
     }
 
     res.json({ success: true, message: 'Product removed from marketplace' });
