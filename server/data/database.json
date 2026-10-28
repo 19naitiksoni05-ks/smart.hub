@@ -1,6 +1,23 @@
 {
   "users": [
     {
+      "id": "7e98609d-045f-459f-bf87-3c6bdfc63c2a",
+      "name": "ansh",
+      "username": "@ansh",
+      "email": "ansh05ks@gmail.com",
+      "mobile": "7007099722",
+      "passwordHash": "$2b$10$OA7rFdbQjXL4esUSVunZk.9LLq/ryZteJffE/xgMcgRQfhRXEw5QO",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=ansh&backgroundColor=ff5b36",
+      "walletBalance": 0,
+      "role": "buyer",
+      "xp": 0,
+      "badges": 0,
+      "location": "India",
+      "headline": "Smart Hub Developer",
+      "emailVerified": true,
+      "createdAt": "2026-10-28T11:13:59.808Z"
+    },
+    {
       "id": "u_1793133388791",
       "name": "Naitik Soni",
       "username": "@19naitiksoni05-ks",
@@ -524,6 +541,19 @@
   "leaderboard": [],
   "reviews": [],
   "apiKeys": [
+    {
+      "id": "key_1793186039810",
+      "userId": "7e98609d-045f-459f-bf87-3c6bdfc63c2a",
+      "name": "Default Production Key",
+      "keyHash": "81b00394c5b80f3bcc5b8153b6c6d8b4b806d609a4a629d162c9714e7886046b",
+      "encryptedKey": "d47d359819bbd1a9a0381506ef48a3e9:096df99c4d1f9c0ae5b3a592e31e614fc3f777a29f45f3b1afe949d59f776a5806ee8a6b1574b0da4fb4d89fdd166f65c0259fcbf3863a99f1d031b9277a8d51",
+      "keyPrefix": "sh_live_06af",
+      "lastFour": "2322",
+      "scope": "full_access",
+      "status": "active",
+      "lastUsedAt": null,
+      "createdAt": "2026-10-28T11:13:59.844Z"
+    },
     {
       "id": "key_1793133388884",
       "userId": "u_1793133388791",

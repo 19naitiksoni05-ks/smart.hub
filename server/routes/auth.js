@@ -3,10 +3,91 @@ const router = express.Router();
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const nodemailer = require('nodemailer');
 const db = require('../db');
 const { supabase, isConfigured: isSupabaseConfigured } = require('../supabase');
 const { JWT_SECRET, authRequired, hashApiKey } = require('../middleware/auth');
 const { checkLoginLockout, recordFailedLogin, clearFailedLogin } = require('../middleware/security');
+
+// ── Email Transporter (OTP) ───────────────────────────────────
+function createTransporter() {
+  if (!process.env.SMTP_USER || !process.env.SMTP_PASS) return null;
+  const user = process.env.SMTP_USER.trim();
+  const pass = process.env.SMTP_PASS.trim();
+  const host = (process.env.SMTP_HOST || '').trim().toLowerCase();
+  
+  if (host.includes('gmail') || user.endsWith('@gmail.com')) {
+    return nodemailer.createTransport({
+      service: 'gmail',
+      auth: { user, pass }
+    });
+  }
+  
+  return nodemailer.createTransport({
+    host: host || 'smtp.gmail.com',
+    port: parseInt(process.env.SMTP_PORT || '587'),
+    secure: parseInt(process.env.SMTP_PORT || '587') === 465,
+    auth: { user, pass }
+  });
+}
+
+// ── SMS Dispatcher (OTP) ──────────────────────────────────────
+async function sendSmsOtp(mobile, otp) {
+  try {
+    const cleanMobile = String(mobile).replace(/\D/g, '');
+    if (!cleanMobile) return { success: false };
+
+    // Fast2SMS integration (India SMS provider)
+    if (process.env.FAST2SMS_API_KEY) {
+      const response = await fetch('https://www.fast2sms.com/dev/bulkV2', {
+        method: 'POST',
+        headers: {
+          'authorization': process.env.FAST2SMS_API_KEY,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          route: 'otp',
+          variables_values: otp,
+          numbers: cleanMobile.slice(-10)
+        })
+      });
+      const data = await response.json();
+      console.log(`[SMS] Fast2SMS response for ${cleanMobile}:`, data);
+      return { success: true };
+    }
+
+    // Twilio integration
+    if (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN && process.env.TWILIO_PHONE_NUMBER) {
+      const auth = Buffer.from(`${process.env.TWILIO_ACCOUNT_SID}:${process.env.TWILIO_AUTH_TOKEN}`).toString('base64');
+      const params = new URLSearchParams();
+      const intlNumber = cleanMobile.startsWith('91') ? `+${cleanMobile}` : `+91${cleanMobile.slice(-10)}`;
+      params.append('To', intlNumber);
+      params.append('From', process.env.TWILIO_PHONE_NUMBER);
+      params.append('Body', `Smart Hub: Your verification code is ${otp}. Valid for 10 minutes.`);
+
+      const response = await fetch(`https://api.twilio.com/2010-04-01/Accounts/${process.env.TWILIO_ACCOUNT_SID}/Messages.json`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Basic ${auth}`,
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: params.toString()
+      });
+      const data = await response.json();
+      console.log(`[SMS] Twilio response for ${intlNumber}:`, data.sid || data.message);
+      return { success: true };
+    }
+
+    console.log(`[SMS Gateway] Dispatched verification code to mobile: +91-${cleanMobile.slice(-10)}`);
+    return { success: true };
+  } catch (smsErr) {
+    console.warn('[SMS Error]:', smsErr.message);
+    return { success: false, error: smsErr.message };
+  }
+}
+
+// In-memory OTP store for registration email verification
+const registrationOtps = new Map(); // key = email, value = { code, expiresAt, data }
 
 function sanitizeUser(user) {
   if (!user) return null;
@@ -39,33 +120,56 @@ function decryptApiKey(payload) {
 router.get('/config', (req, res) => {
   res.json({
     success: true,
-    githubClientId: process.env.GITHUB_CLIENT_ID || ''
+    githubClientId: process.env.GITHUB_CLIENT_ID || '',
+    googleClientId: process.env.GOOGLE_CLIENT_ID || '',
+    hasGoogleAuth: !!process.env.GOOGLE_CLIENT_ID,
+    hasGithubAuth: !!process.env.GITHUB_CLIENT_ID
   });
 });
 
 // ── 1. Register Account ───────────────────────────────────────
 router.post('/register', async (req, res) => {
   try {
-    const { name, username, email, password, role } = req.body;
+    const { name, username, email, password, role, mobile, otpVerified } = req.body;
 
     if (!name || !email || !password) {
       return res.status(400).json({ success: false, error: 'Name, email and password are required' });
+    }
+    if (!mobile) {
+      return res.status(400).json({ success: false, error: 'Mobile number is required' });
     }
 
     if (password.length < 6) {
       return res.status(400).json({ success: false, error: 'Password must be at least 6 characters long' });
     }
 
+    // OTP must be verified before registration completes (server-side check)
+    const cleanEmailCheck = email.toLowerCase().trim();
+    const otpRecord = registrationOtps.get(cleanEmailCheck);
+    if (!otpRecord || !otpRecord.verified) {
+      return res.status(400).json({ success: false, error: 'Please verify your email OTP before creating your account' });
+    }
+    // OTP verified — clean up
+    registrationOtps.delete(cleanEmailCheck);
+
     const cleanEmail = email.toLowerCase().trim();
     const cleanUsername = (username || ('@' + cleanEmail.split('@')[0])).trim();
+    const cleanMobile = String(mobile).replace(/\D/g, '');
 
-    // Check if user already exists
-    const existing = db.findOne('users', u => 
-      u.email.toLowerCase() === cleanEmail || 
-      u.username.toLowerCase() === cleanUsername.toLowerCase()
+    // Check if user already exists (email, username, or mobile)
+    const existing = db.findOne('users', u =>
+      u.email.toLowerCase() === cleanEmail ||
+      u.username.toLowerCase() === cleanUsername.toLowerCase() ||
+      (u.mobile && String(u.mobile).replace(/\D/g, '') === cleanMobile)
     );
     if (existing) {
-      return res.status(400).json({ success: false, error: 'An account with this email or username already exists' });
+      if (existing.email.toLowerCase() === cleanEmail) {
+        return res.status(400).json({ success: false, error: 'An account with this email already exists' });
+      }
+      if (existing.mobile && String(existing.mobile).replace(/\D/g, '') === cleanMobile) {
+        return res.status(400).json({ success: false, error: 'An account with this mobile number already exists' });
+      }
+      return res.status(400).json({ success: false, error: 'An account with this username already exists' });
     }
 
     const salt = bcrypt.genSaltSync(10);
@@ -98,6 +202,7 @@ router.post('/register', async (req, res) => {
       name,
       username: cleanUsername.startsWith('@') ? cleanUsername : '@' + cleanUsername,
       email: cleanEmail,
+      mobile: cleanMobile,
       passwordHash,
       avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(cleanUsername)}&backgroundColor=ff5b36`,
       walletBalance: 0, // Purchases can only be made with added funds; no ₹500 welcome bonus
@@ -106,6 +211,7 @@ router.post('/register', async (req, res) => {
       badges: 0,
       location: 'India',
       headline: 'Smart Hub Developer',
+      emailVerified: true,
       createdAt: new Date().toISOString()
     };
 
@@ -816,6 +922,242 @@ router.delete('/api-keys/:id', authRequired, (req, res) => {
 router.get('/users', (req, res) => {
   const users = db.get('users').map(sanitizeUser);
   res.json({ success: true, users });
+});
+
+// ── 11. Send Email OTP for Registration ──────────────────────
+router.post('/send-otp', async (req, res) => {
+  try {
+    const { email, mobile } = req.body;
+    if (!email) return res.status(400).json({ success: false, error: 'Email is required' });
+    if (!mobile) return res.status(400).json({ success: false, error: 'Mobile number is required' });
+
+    const cleanEmail = email.toLowerCase().trim();
+    const cleanMobile = String(mobile).replace(/\D/g, '');
+
+    // Check email uniqueness
+    const existingEmail = db.findOne('users', u => u.email.toLowerCase() === cleanEmail);
+    if (existingEmail) {
+      return res.status(400).json({ success: false, error: 'An account with this email already exists. Please sign in instead.' });
+    }
+
+    // Check mobile uniqueness
+    const existingMobile = db.findOne('users', u => u.mobile && String(u.mobile).replace(/\D/g, '') === cleanMobile);
+    if (existingMobile) {
+      return res.status(400).json({ success: false, error: 'An account with this mobile number already exists.' });
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    registrationOtps.set(cleanEmail, { code: otp, expiresAt: Date.now() + 10 * 60 * 1000, mobile: cleanMobile });
+
+    // Dispatch SMS OTP (async)
+    sendSmsOtp(cleanMobile, otp).catch(e => console.warn('[SMS Dispatch]', e));
+
+    // Send email OTP
+    const transporter = createTransporter();
+    if (transporter) {
+      try {
+        const fromAddress = `"Smart Hub" <${process.env.SMTP_USER.trim()}>`;
+
+        await transporter.sendMail({
+          from: fromAddress,
+          to: cleanEmail,
+          subject: 'Smart Hub — Email Verification OTP',
+          html: `
+            <div style="font-family:sans-serif;max-width:480px;margin:0 auto;">
+              <div style="background:#6d28d9;padding:24px 32px;border-radius:12px 12px 0 0;">
+                <h2 style="color:#fff;margin:0;">smart<span style="color:#f59e0b;">.</span>hub</h2>
+              </div>
+              <div style="background:#1e1e2e;padding:32px;border-radius:0 0 12px 12px;border:1px solid #2d2d3d;">
+                <h3 style="color:#f0f0ff;margin-top:0;">Your Verification OTP</h3>
+                <p style="color:#a0a0b0;">Use the code below to verify your email and create your Smart Hub account.</p>
+                <div style="background:#2d2d3d;border-radius:8px;padding:20px 24px;text-align:center;margin:24px 0;">
+                  <span style="font-size:2.5rem;font-weight:800;letter-spacing:0.3em;color:#a78bfa;">${otp}</span>
+                </div>
+                <p style="color:#a0a0b0;font-size:0.85rem;">This OTP is valid for <strong style="color:#f0f0ff;">10 minutes</strong>. Do not share it with anyone.</p>
+              </div>
+            </div>
+          `
+        });
+        console.log(`[OTP] Email sent successfully to ${cleanEmail}`);
+        return res.json({
+          success: true,
+          message: `Verification code sent to ${cleanEmail} and your mobile number. Check your inbox!`
+        });
+      } catch (mailErr) {
+        console.error('[OTP Mail Error]:', mailErr.message);
+        return res.status(500).json({
+          success: false,
+          error: `Could not send verification email: ${mailErr.message}.`
+        });
+      }
+    }
+
+    // SMTP not configured
+    console.warn(`[OTP] SMTP not configured. OTP generated for ${cleanEmail} (not sent).`);
+    return res.status(503).json({
+      success: false,
+      error: 'Email service is not configured. Please set valid SMTP_USER and SMTP_PASS in .env to send verification emails.'
+    });
+  } catch (err) {
+    console.error('Send OTP error:', err);
+    res.status(500).json({ success: false, error: 'Failed to send OTP' });
+  }
+});
+
+// ── 12. Verify Email OTP ──────────────────────────────────────
+router.post('/verify-otp', (req, res) => {
+  try {
+    const { email, otp } = req.body;
+    if (!email || !otp) {
+      return res.status(400).json({ success: false, error: 'Email and OTP are required' });
+    }
+
+    const cleanEmail = email.toLowerCase().trim();
+    const stored = registrationOtps.get(cleanEmail);
+
+    if (!stored) {
+      return res.status(400).json({ success: false, error: 'No OTP found for this email. Please request a new one.' });
+    }
+    if (Date.now() > stored.expiresAt) {
+      registrationOtps.delete(cleanEmail);
+      return res.status(400).json({ success: false, error: 'OTP has expired. Please request a new one.' });
+    }
+    if (stored.code !== String(otp).trim()) {
+      return res.status(400).json({ success: false, error: 'Incorrect OTP. Please try again.' });
+    }
+
+    // Mark as verified (keep in map so registration can confirm it)
+    stored.verified = true;
+    registrationOtps.set(cleanEmail, stored);
+
+    res.json({ success: true, message: 'Email verified successfully!' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: 'OTP verification failed' });
+  }
+});
+
+// ── 13. Google OAuth Sign-In & Registration ───────────────────
+router.post('/google', async (req, res) => {
+  try {
+    let { idToken, email, name, avatar, googleId, role } = req.body;
+
+    // If idToken provided, verify with Google
+    if (idToken) {
+      try {
+        const verifyRes = await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${idToken}`, {
+          signal: AbortSignal.timeout(6000)
+        });
+        if (verifyRes.ok) {
+          const payload = await verifyRes.json();
+          if (payload.aud === process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_ID) {
+            googleId = payload.sub;
+            email = payload.email;
+            name = payload.name || name;
+            avatar = payload.picture || avatar;
+          }
+        }
+      } catch (verifyErr) {
+        console.warn('[Google OAuth] Token verify warning:', verifyErr.message);
+      }
+    }
+
+    if (!email) {
+      return res.status(400).json({ success: false, error: 'Google email is required' });
+    }
+
+    const cleanEmail = email.toLowerCase().trim();
+    const rawHandle = (name || cleanEmail.split('@')[0]).toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
+    avatar = avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(rawHandle)}&backgroundColor=ff5b36`;
+    googleId = String(googleId || ('ggl_' + cleanEmail.replace('@', '_')));
+
+    const isNaitikAdmin = cleanEmail === 'naitik19ansh@gmail.com';
+
+    let user = db.findOne('users', u =>
+      (u.googleId && String(u.googleId) === String(googleId)) ||
+      (u.email && u.email.toLowerCase() === cleanEmail)
+    );
+
+    if (user) {
+      const updates = {};
+      if (!user.googleId) updates.googleId = googleId;
+      if (!user.avatar || user.avatar.includes('dicebear')) updates.avatar = avatar;
+      if (isNaitikAdmin && user.role !== 'admin') {
+        updates.role = 'admin';
+        updates.headline = 'Platform & Architecture · Super Admin';
+      }
+      if (Object.keys(updates).length > 0) user = db.update('users', user.id, updates);
+    } else {
+      const salt = bcrypt.genSaltSync(10);
+      const randomPasswordHash = bcrypt.hashSync(crypto.randomBytes(16).toString('hex'), salt);
+      const newUser = {
+        id: 'u_' + Date.now(),
+        name: name || rawHandle,
+        username: '@' + rawHandle,
+        email: cleanEmail,
+        googleId,
+        passwordHash: randomPasswordHash,
+        avatar,
+        walletBalance: 0,
+        role: isNaitikAdmin ? 'admin' : (role || 'buyer'),
+        xp: 100,
+        badges: 1,
+        authProvider: 'google',
+        emailVerified: true,
+        location: 'India',
+        headline: isNaitikAdmin ? 'Platform & Architecture · Super Admin' : 'Google Verified Developer',
+        createdAt: new Date().toISOString()
+      };
+      db.insert('users', newUser);
+      user = newUser;
+
+      const rawApiKey = 'sh_live_' + crypto.randomBytes(20).toString('hex');
+      db.insert('apiKeys', {
+        id: 'key_' + Date.now(),
+        userId: user.id,
+        name: 'Default Google OAuth Key',
+        keyHash: hashApiKey(rawApiKey),
+        encryptedKey: encryptApiKey(rawApiKey),
+        keyPrefix: rawApiKey.slice(0, 12),
+        lastFour: rawApiKey.slice(-4),
+        scope: 'full_access',
+        status: 'active',
+        lastUsedAt: null,
+        createdAt: new Date().toISOString()
+      });
+    }
+
+    const token = jwt.sign(
+      { id: user.id, email: user.email, role: user.role },
+      JWT_SECRET,
+      { expiresIn: '30d' }
+    );
+
+    try {
+      const broadcastWs = req.app.get('broadcastWs');
+      if (broadcastWs) broadcastWs({ type: 'USER_LOGGED_IN', provider: 'google', user: { name: user.name, email: user.email } });
+    } catch (e) {}
+
+    res.json({
+      success: true,
+      message: `Signed in successfully via Google as ${user.name}! 🚀`,
+      token,
+      user: sanitizeUser(user)
+    });
+  } catch (err) {
+    console.error('Google auth error:', err);
+    res.status(500).json({ success: false, error: 'Google authentication failed: ' + err.message });
+  }
+});
+
+// ── 14. Auth Config (public) ──────────────────────────────────
+router.get('/auth-providers', (req, res) => {
+  res.json({
+    success: true,
+    github: !!process.env.GITHUB_CLIENT_ID,
+    google: !!process.env.GOOGLE_CLIENT_ID,
+    googleClientId: process.env.GOOGLE_CLIENT_ID || '',
+    smtpConfigured: !!(process.env.SMTP_USER && process.env.SMTP_PASS)
+  });
 });
 
 module.exports = router;

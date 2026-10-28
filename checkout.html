@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Encrypted Checkout &amp; Instant Key Delivery | Smart Hub</title>
-  <meta name="description" content="Secure instant UPI and Wallet checkout for Indian developers. Receive your cryptographic source code unlock key directly to verified email.">
+  <meta name="description"
+    content="Secure instant UPI and Wallet checkout for Indian developers. Receive your cryptographic source code unlock key directly to verified email.">
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/components.css">
   <link rel="stylesheet" href="css/cards.css">
   <link rel="stylesheet" href="css/pages.css">
 </head>
+
 <body>
 
   <!-- Injected Shared Header -->
@@ -21,12 +24,14 @@
 
       <!-- Checkout Header -->
       <div style="text-align:center;margin-bottom:36px;">
-        <div style="font-family:var(--font-tech);font-size:0.75rem;color:var(--accent-coral);font-weight:700;letter-spacing:0.12em;margin-bottom:8px;">
+        <div
+          style="font-family:var(--font-tech);font-size:0.75rem;color:var(--accent-coral);font-weight:700;letter-spacing:0.12em;margin-bottom:8px;">
           [ END-TO-END ENCRYPTED TRANSACTION ]
         </div>
         <h1 style="font-size:clamp(1.6rem, 2.8vw, 2.2rem);margin:0;">Instant Digital Product Checkout</h1>
         <p style="color:var(--text-secondary);margin-top:6px;font-size:0.9rem;">
-          Purchases are processed exclusively through your Smart Hub Rupee Wallet. Add money to your wallet to complete purchase and receive your encryption key.
+          Purchases are processed exclusively through your Smart Hub Rupee Wallet. Add money to your wallet to complete
+          purchase and receive your encryption key.
         </p>
       </div>
 
@@ -34,33 +39,43 @@
       <div style="display:grid;grid-template-columns:1.1fr 0.9fr;gap:36px;align-items:start;" id="checkout-main-grid">
 
         <!-- Left Column: Payment Method Selection -->
-        <div style="border:1.5px solid var(--border-outline);border-radius:var(--radius-xs);padding:30px;background:var(--bg-secondary);">
+        <div
+          style="border:1.5px solid var(--border-outline);border-radius:var(--radius-xs);padding:30px;background:var(--bg-secondary);">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
             <h3 style="margin:0;font-size:1.15rem;">Payment Method</h3>
-            <span class="badge badge-purple" style="font-family:var(--font-tech);letter-spacing:0.04em;">WALLET PAYMENT ONLY</span>
+            <span class="badge badge-purple" style="font-family:var(--font-tech);letter-spacing:0.04em;">WALLET PAYMENT
+              ONLY</span>
           </div>
-          
+
           <!-- Exclusive Method: Smart Hub Rupee Wallet -->
-          <div style="border:1.5px solid var(--accent-green);border-radius:var(--radius-xs);background:rgba(34,197,94,0.04);padding:18px;margin-bottom:18px;">
+          <div
+            style="border:1.5px solid var(--accent-green);border-radius:var(--radius-xs);background:rgba(34,197,94,0.04);padding:18px;margin-bottom:18px;">
             <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
               <div style="display:flex;align-items:center;gap:10px;">
                 <span style="font-size:1.6rem;">⚡</span>
                 <div>
                   <div style="font-weight:800;color:var(--text-primary);font-size:1.02rem;">Smart Hub Rupee Wallet</div>
-                  <div style="font-size:0.75rem;color:var(--text-muted);" id="checkout-user-id-label">Exclusive payment method for all digital licenses</div>
+                  <div style="font-size:0.75rem;color:var(--text-muted);" id="checkout-user-id-label">Exclusive payment
+                    method for all digital licenses</div>
                 </div>
               </div>
               <span class="badge badge-green">DEFAULT</span>
             </div>
 
             <!-- Balance Card -->
-            <div style="background:rgba(0,0,0,0.35);border:1px solid var(--border-outline);border-radius:var(--radius-xs);padding:14px 18px;display:flex;justify-content:space-between;align-items:center;">
+            <div
+              style="background:rgba(0,0,0,0.35);border:1px solid var(--border-outline);border-radius:var(--radius-xs);padding:14px 18px;display:flex;justify-content:space-between;align-items:center;">
               <div>
-                <div style="font-size:0.72rem;color:var(--text-muted);font-family:var(--font-tech);letter-spacing:0.05em;">YOUR AVAILABLE BALANCE</div>
-                <div style="font-family:var(--font-tech);font-size:1.5rem;font-weight:800;color:var(--accent-green);margin-top:2px;" id="checkout-wallet-bal">₹0</div>
+                <div
+                  style="font-size:0.72rem;color:var(--text-muted);font-family:var(--font-tech);letter-spacing:0.05em;">
+                  YOUR AVAILABLE BALANCE</div>
+                <div
+                  style="font-family:var(--font-tech);font-size:1.5rem;font-weight:800;color:var(--accent-green);margin-top:2px;"
+                  id="checkout-wallet-bal">₹0</div>
               </div>
               <div style="display:flex;gap:8px;">
-                <button type="button" class="btn btn-outline btn-xs" onclick="syncWalletState(true)" title="Refresh wallet balance">
+                <button type="button" class="btn btn-outline btn-xs" onclick="syncWalletState(true)"
+                  title="Refresh wallet balance">
                   🔄 Refresh
                 </button>
                 <a href="wallet.html" target="_blank" class="btn btn-primary btn-xs" style="font-weight:700;">
@@ -78,48 +93,66 @@
             <label class="input-label">Verified Email for Encrypted Token Delivery</label>
             <input type="email" class="input" id="checkout-email" placeholder="Enter your email address" required>
             <span style="font-size:0.72rem;color:var(--text-muted);margin-top:4px;">
-              Your encrypted source code package (.zip) + unique encryption key will be dispatched here within 10 seconds.
+              Your encrypted source code package (.zip) + unique encryption key will be dispatched here within 10
+              seconds.
             </span>
           </div>
 
-          <button class="btn btn-primary btn-lg w-full" id="complete-order-btn" onclick="executeOrderPayment()" style="width:100%;justify-content:center;font-weight:800;font-size:1rem;">
+          <button class="btn btn-primary btn-lg w-full" id="complete-order-btn" onclick="executeOrderPayment()"
+            style="width:100%;justify-content:center;font-weight:800;font-size:1rem;">
             ⚡ Pay with Rupee Wallet &amp; Generate Key (<span id="pay-button-amount">₹0</span>)
           </button>
 
-          <div style="margin-top:14px;padding:12px 14px;background:rgba(255,255,255,0.03);border:1px solid var(--border-outline);border-radius:2px;font-size:0.75rem;color:var(--text-muted);line-height:1.5;">
-            🔒 <strong>Wallet-Only Policy:</strong> Purchases can only be made using your Smart Hub Rupee Wallet account. Zero fees when adding money to your wallet. You can top up anytime via UPI, Net Banking, or Cards in the <a href="wallet.html" target="_blank" style="color:var(--accent-coral);text-decoration:underline;font-weight:700;">Wallet Center</a>.
+          <div
+            style="margin-top:14px;padding:12px 14px;background:rgba(255,255,255,0.03);border:1px solid var(--border-outline);border-radius:2px;font-size:0.75rem;color:var(--text-muted);line-height:1.5;">
+            🔒 <strong>Wallet-Only Policy:</strong> Purchases can only be made using your Smart Hub Rupee Wallet
+            account. Zero fees when adding money to your wallet. You can top up anytime via UPI, Net Banking, or Cards
+            in the <a href="wallet.html" target="_blank"
+              style="color:var(--accent-coral);text-decoration:underline;font-weight:700;">Wallet Center</a>.
           </div>
         </div>
 
         <!-- Right Column: Order Summary Card -->
-        <div style="border:1.5px solid var(--border-outline-strong);border-radius:var(--radius-xs);padding:28px;background:var(--bg-card);">
-          <div style="font-family:var(--font-tech);font-size:0.75rem;color:var(--accent-coral);font-weight:700;margin-bottom:12px;">// ORDER SUMMARY</div>
+        <div
+          style="border:1.5px solid var(--border-outline-strong);border-radius:var(--radius-xs);padding:28px;background:var(--bg-card);">
+          <div
+            style="font-family:var(--font-tech);font-size:0.75rem;color:var(--accent-coral);font-weight:700;margin-bottom:12px;">
+            // ORDER SUMMARY</div>
 
           <!-- Product Items List Preview -->
-          <div id="order-items-container" style="max-height:280px;overflow-y:auto;padding-right:4px;margin-bottom:16px;">
-            <div style="display:flex;gap:14px;padding-bottom:16px;border-bottom:1.5px solid var(--border-outline);margin-bottom:16px;" id="order-single-preview">
-              <img src="https://picsum.photos/seed/code/160/100" id="order-img" style="width:84px;height:60px;object-fit:cover;border-radius:2px;border:1px solid var(--border-outline);">
+          <div id="order-items-container"
+            style="max-height:280px;overflow-y:auto;padding-right:4px;margin-bottom:16px;">
+            <div
+              style="display:flex;gap:14px;padding-bottom:16px;border-bottom:1.5px solid var(--border-outline);margin-bottom:16px;"
+              id="order-single-preview">
+              <img src="https://picsum.photos/seed/code/160/100" id="order-img"
+                style="width:84px;height:60px;object-fit:cover;border-radius:2px;border:1px solid var(--border-outline);">
               <div style="flex:1;">
-                <div style="font-family:var(--font-tech);font-size:0.68rem;color:var(--accent-coral);" id="order-cat">[ CODE PACKAGE ]</div>
+                <div style="font-family:var(--font-tech);font-size:0.68rem;color:var(--accent-coral);" id="order-cat">[
+                  CODE PACKAGE ]</div>
                 <div style="font-weight:700;font-size:0.92rem;line-height:1.3;" id="order-title">Digital Product</div>
-                <div style="font-size:0.78rem;color:var(--text-muted);margin-top:4px;" id="order-license-label">License: Commercial Developer</div>
+                <div style="font-size:0.78rem;color:var(--text-muted);margin-top:4px;" id="order-license-label">License:
+                  Commercial Developer</div>
               </div>
             </div>
           </div>
 
           <!-- Promo Code Box -->
           <div style="display:flex;gap:8px;margin-bottom:20px;">
-            <input type="text" placeholder="Promo code (OUTLINE10)" id="order-coupon-input" class="input font-mono" style="text-transform:uppercase;">
+            <input type="text" placeholder="Promo code (OUTLINE10)" id="order-coupon-input" class="input font-mono"
+              style="text-transform:uppercase;">
             <button class="btn btn-outline btn-sm" onclick="applyCheckoutCoupon()">Apply</button>
           </div>
 
           <!-- Price Calculation Lines -->
-          <div style="display:flex;flex-direction:column;gap:10px;font-size:0.88rem;padding-bottom:18px;border-bottom:1px solid var(--border-outline);">
+          <div
+            style="display:flex;flex-direction:column;gap:10px;font-size:0.88rem;padding-bottom:18px;border-bottom:1px solid var(--border-outline);">
             <div style="display:flex;justify-content:space-between;">
               <span style="color:var(--text-secondary);">Subtotal:</span>
               <span class="font-mono" id="order-subtotal">₹0</span>
             </div>
-            <div style="display:flex;justify-content:space-between;color:var(--accent-green);" id="order-discount-row" style="display:none;">
+            <div style="display:flex;justify-content:space-between;color:var(--accent-green);" id="order-discount-row"
+              style="display:none;">
               <span>Discount (OUTLINE10):</span>
               <span class="font-mono" id="order-discount">-₹0</span>
             </div>
@@ -128,44 +161,57 @@
               <span style="color:var(--accent-green);font-weight:700;">FREE</span>
             </div>
             <div style="display:flex;justify-content:space-between;">
-              <span style="color:var(--text-secondary);">Buyer Transaction Fee:</span>
-              <span style="color:var(--accent-green);font-weight:700;">₹0 (ZERO FEE)</span>
+              <span style="color:var(--text-secondary);">Platform Fee (<span id="order-fee-percent">1.5%</span>):</span>
+              <span class="font-mono" id="order-platform-fee">₹0</span>
             </div>
-            <div style="display:flex;justify-content:space-between;font-size:0.82rem;color:var(--text-muted);">
-              <span>Platform Service &amp; GST:</span>
-              <span style="color:var(--accent-green);">Absorbed by Platform (0%)</span>
+            <div style="display:flex;justify-content:space-between;">
+              <span style="color:var(--text-secondary);">Statutory Tax (18% GST):</span>
+              <span class="font-mono" id="order-tax">₹0</span>
             </div>
           </div>
 
           <!-- Total Due -->
-          <div style="display:flex;justify-content:space-between;align-items:baseline;padding-top:18px;margin-bottom:20px;">
+          <div
+            style="display:flex;justify-content:space-between;align-items:baseline;padding-top:18px;margin-bottom:20px;">
             <div style="font-size:1.1rem;font-weight:800;">Total Amount:</div>
-            <div style="font-family:var(--font-tech);font-size:1.8rem;font-weight:800;color:var(--accent-coral);" id="order-total">₹0</div>
+            <div style="font-family:var(--font-tech);font-size:1.8rem;font-weight:800;color:var(--accent-coral);"
+              id="order-total">₹0</div>
           </div>
 
           <!-- Guarantees -->
-          <div style="border:1px solid var(--border-outline);padding:14px;border-radius:2px;background:var(--bg-secondary);font-size:0.75rem;line-height:1.5;color:var(--text-muted);">
-            🔐 <strong>Smart Hub Encrypted Guarantee:</strong> Your license token is cryptographically bound to your email. If you ever lose it, retrieve it anytime via your developer profile.
+          <div
+            style="border:1px solid var(--border-outline);padding:14px;border-radius:2px;background:var(--bg-secondary);font-size:0.75rem;line-height:1.5;color:var(--text-muted);">
+            🔐 <strong>Smart Hub Encrypted Guarantee:</strong> Your license token is cryptographically bound to your
+            email. If you ever lose it, retrieve it anytime via your developer profile.
           </div>
         </div>
 
       </div>
 
       <!-- ── Success State Screen (Revealed on Payment) ────────── -->
-      <div id="checkout-success-view" style="display:none;border:1.5px solid var(--accent-green);border-radius:var(--radius-xs);padding:40px;background:var(--bg-secondary);text-align:center;">
+      <div id="checkout-success-view"
+        style="display:none;border:1.5px solid var(--accent-green);border-radius:var(--radius-xs);padding:40px;background:var(--bg-secondary);text-align:center;">
         <div style="font-size:3.5rem;margin-bottom:12px;">🎉</div>
-        <div style="font-family:var(--font-tech);font-size:0.8rem;color:var(--accent-green);font-weight:700;letter-spacing:0.14em;margin-bottom:8px;">[ PAYMENT VERIFIED &amp; SOURCE CODE DELIVERED ]</div>
+        <div
+          style="font-family:var(--font-tech);font-size:0.8rem;color:var(--accent-green);font-weight:700;letter-spacing:0.14em;margin-bottom:8px;">
+          [ PAYMENT VERIFIED &amp; SOURCE CODE DELIVERED ]</div>
         <h2 style="font-size:2rem;margin-bottom:12px;">Transaction Completed Successfully!</h2>
         <p style="color:var(--text-secondary);max-width:540px;margin:0 auto 28px auto;">
-          The encrypted source code package (.zip) and unlock encryption key have been dispatched exclusively to <strong id="success-email">your email address</strong>.
+          The encrypted source code package (.zip) and unlock encryption key have been dispatched exclusively to <strong
+            id="success-email">your email address</strong>.
         </p>
 
         <!-- Cryptographic Token Container -->
-        <div id="success-keys-container" style="max-width:680px;margin:0 auto 30px auto;display:flex;flex-direction:column;gap:16px;text-align:left;">
-          <div style="border:1.5px solid var(--accent-coral);border-radius:var(--radius-xs);padding:24px;background:#060809;">
-            <div style="font-family:var(--font-tech);font-size:0.72rem;color:var(--accent-coral);margin-bottom:6px;">YOUR UNIQUE ENCRYPTED TOKEN KEY:</div>
-            <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.05);padding:10px 16px;border-radius:2px;border:1px solid var(--border-outline);">
-              <span style="font-family:var(--font-mono);font-size:1.1rem;color:var(--accent-cyan);font-weight:700;" id="success-enc-key">SH-ENC-VERIFIED-TOKEN</span>
+        <div id="success-keys-container"
+          style="max-width:680px;margin:0 auto 30px auto;display:flex;flex-direction:column;gap:16px;text-align:left;">
+          <div
+            style="border:1.5px solid var(--accent-coral);border-radius:var(--radius-xs);padding:24px;background:#060809;">
+            <div style="font-family:var(--font-tech);font-size:0.72rem;color:var(--accent-coral);margin-bottom:6px;">
+              YOUR UNIQUE ENCRYPTED TOKEN KEY:</div>
+            <div
+              style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.05);padding:10px 16px;border-radius:2px;border:1px solid var(--border-outline);">
+              <span style="font-family:var(--font-mono);font-size:1.1rem;color:var(--accent-cyan);font-weight:700;"
+                id="success-enc-key">SH-ENC-VERIFIED-TOKEN</span>
               <button class="btn btn-outline btn-sm" onclick="copyEncKey()" id="copy-key-btn">Copy Key 📋</button>
             </div>
             <div style="font-size:0.75rem;color:var(--text-muted);margin-top:10px;">
@@ -174,12 +220,15 @@
           </div>
         </div>
 
-        <div style="background:rgba(255,91,54,0.08);border:1.5px solid var(--accent-coral);border-radius:var(--radius-xs);padding:16px 20px;max-width:680px;margin:0 auto 24px auto;text-align:left;">
-          <div style="font-weight:700;color:var(--accent-coral);font-size:0.9rem;display:flex;align-items:center;gap:8px;">
+        <div
+          style="background:rgba(255,91,54,0.08);border:1.5px solid var(--accent-coral);border-radius:var(--radius-xs);padding:16px 20px;max-width:680px;margin:0 auto 24px auto;text-align:left;">
+          <div
+            style="font-weight:700;color:var(--accent-coral);font-size:0.9rem;display:flex;align-items:center;gap:8px;">
             <span>📧</span> Source Code File Dispatched Exclusively via Email
           </div>
           <div style="font-size:0.82rem;color:var(--text-muted);margin-top:6px;line-height:1.5;">
-            Direct website downloads are disabled for intellectual property and security protection. Your complete project archive (.zip) was sent directly to your verified email with your unique encryption key.
+            Direct website downloads are disabled for intellectual property and security protection. Your complete
+            project archive (.zip) was sent directly to your verified email with your unique encryption key.
           </div>
         </div>
 
@@ -243,7 +292,7 @@
       try {
         const raw = localStorage.getItem('smarthub_cart');
         if (raw) storedCart = JSON.parse(raw);
-      } catch (e) {}
+      } catch (e) { }
 
       if (storedCart && storedCart.length > 0) {
         setupCartCheckout(storedCart, discountParam);
@@ -256,8 +305,8 @@
 
     async function setupSingleProductCheckout(prodId, discountParam = 0) {
       checkoutMode = 'single';
-      let prod = (window.SmartHubData && window.SmartHubData.products) 
-        ? window.SmartHubData.products.find(p => p.id === prodId) 
+      let prod = (window.SmartHubData && window.SmartHubData.products)
+        ? window.SmartHubData.products.find(p => p.id === prodId)
         : null;
 
       if (!prod && window.SmartHubAPI) {
@@ -360,13 +409,13 @@
           if (res && res.products && res.products.length > 0) {
             prods = res.products;
           }
-        } catch (e) {}
+        } catch (e) { }
       }
 
       if (prods && prods.length > 0) {
         // Automatically default to the first verified product
         setupSingleProductCheckout(prods[0].id, discountParam);
-        
+
         // Add a switcher banner above summary
         const container = document.getElementById('order-items-container');
         if (container) {
@@ -526,15 +575,18 @@
 
     function updateTotals() {
       const baseAfterDisc = Math.max(0, currentPrice - discountApplied);
-      const total = baseAfterDisc;
+      const feeRate = getPlatformFeeRate(baseAfterDisc, currentProdCategory);
+      const platformFee = Math.max(1, Math.round(baseAfterDisc * feeRate));
+      const govtTax = Math.round(platformFee * 0.18); // 18% statutory tax on platform services
+      const total = baseAfterDisc + platformFee + govtTax;
 
       document.getElementById('order-subtotal').textContent = `₹${currentPrice.toLocaleString('en-IN')}`;
       const feePercentEl = document.getElementById('order-fee-percent');
-      if (feePercentEl) feePercentEl.textContent = `0%`;
+      if (feePercentEl) feePercentEl.textContent = `${(feeRate * 100).toFixed(1)}%`;
       const feeEl = document.getElementById('order-platform-fee');
-      if (feeEl) feeEl.textContent = `₹0 (FREE)`;
+      if (feeEl) feeEl.textContent = `₹${platformFee.toLocaleString('en-IN')}`;
       const taxEl = document.getElementById('order-tax');
-      if (taxEl) taxEl.textContent = `₹0`;
+      if (taxEl) taxEl.textContent = `₹${govtTax.toLocaleString('en-IN')}`;
 
       document.getElementById('order-total').textContent = `₹${total.toLocaleString('en-IN')}`;
       const payAmtEl = document.getElementById('pay-button-amount');
@@ -619,7 +671,7 @@
               window.dispatchEvent(new CustomEvent('cart-updated', { detail: [] }));
               const badge = document.getElementById('header-cart-count');
               if (badge) badge.style.display = 'none';
-            } catch (e) {}
+            } catch (e) { }
           }
 
           // Hide main grid, show success view
@@ -736,7 +788,7 @@
       const randNonce = Array.from(randBytes.slice(0, 2), b => b.toString(16).padStart(2, '0')).join('').toUpperCase();
       const randSig = Array.from(randBytes.slice(2, 4), b => b.toString(16).padStart(2, '0')).join('').toUpperCase();
       const dynamicKey = `SH-ENC-${new Date().getFullYear()}-${projTag}-${randNonce}-${randSig}`;
-      
+
       const keysContainer = document.getElementById('success-keys-container');
       if (keysContainer) {
         keysContainer.innerHTML = `
@@ -779,4 +831,5 @@
     }
   </script>
 </body>
+
 </html>

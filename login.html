@@ -197,13 +197,21 @@ async function handleFormLogin(e) {
     } else if (res && res.error) {
       const errLower = String(res.error).toLowerCase();
       // Only abort if it's an explicit credential/validation rejection from a reachable server
-      if (!errLower.includes('fetch') && !errLower.includes('network') && !errLower.includes('failed to fetch')) {
+      const isOfflineOrError = errLower.includes('fetch') || 
+                               errLower.includes('network') || 
+                               errLower.includes('failed to fetch') ||
+                               errLower.includes('server error') ||
+                               errLower.includes('unexpected token') ||
+                               errLower.includes('not valid json') ||
+                               errLower.includes('status 5');
+
+      if (!isOfflineOrError) {
         SH.showToast(res.error, 'error');
         submitBtn.disabled = false;
         submitBtn.textContent = currentLoginMode === 'admin' ? '🛡️ Authenticate as Super Admin →' : 'Sign In to Smart Hub →';
         return;
       }
-      console.warn('Backend server unreachable or opened via file:// protocol. Transitioning to local session mode...');
+      console.warn('Backend server unreachable or returned server error. Transitioning to local session mode...');
     }
   } catch (err) {
     console.warn('API error, using client fallback:', err);

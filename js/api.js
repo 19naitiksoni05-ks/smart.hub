@@ -23,14 +23,36 @@
     ws: null,
     isOnline: false,
 
+    // ── Safe JSON Parser Helper ───────────────────────────────
+    async safeJson(res) {
+      if (!res) return { success: false, error: 'No response from server' };
+      try {
+        const text = await res.text();
+        if (!text || !text.trim()) {
+          return { success: res.ok, status: res.status };
+        }
+        try {
+          return JSON.parse(text);
+        } catch {
+          const cleanText = text.replace(/<[^>]*>?/gm, '').trim().slice(0, 150);
+          return {
+            success: false,
+            error: cleanText || `Server responded with HTTP ${res.status}`
+          };
+        }
+      } catch (err) {
+        return { success: false, error: err.message || 'Failed to parse response' };
+      }
+    },
+
     // ── Health Check ──────────────────────────────────────────
     async checkHealth() {
       try {
         const signal = (typeof AbortSignal !== 'undefined' && typeof AbortSignal.timeout === 'function') ? AbortSignal.timeout(5000) : undefined;
         const res = await fetch(`${this.baseUrl}/health`, signal ? { signal } : {});
         if (res.ok) {
-          const data = await res.json();
-          this.isOnline = true;
+          const data = await this.safeJson(res);
+          this.isOnline = Boolean(data && data.status === 'ONLINE');
           return data;
         }
       } catch (e) {
@@ -198,20 +220,64 @@
     },
 
     // ── Authentication ────────────────────────────────────────
-    async register(name, username, email, password, role = 'buyer') {
+    async register(name, username, email, password, role = 'buyer', mobile = '') {
       try {
         const res = await fetch(`${this.baseUrl}/auth/register`, {
           method: 'POST',
           headers: this.getHeaders(),
-          body: JSON.stringify({ name, username, email, password, role })
+          body: JSON.stringify({ name, username, email, password, role, mobile })
         });
-        const data = await res.json();
+        const data = await this.safeJson(res);
         if (data.success && data.token) {
           localStorage.setItem('smarthub_token', data.token);
           localStorage.setItem('smarthub_user', JSON.stringify({ ...data.user, isLoggedIn: true }));
           if (data.apiKey && data.apiKey.rawKey) {
             localStorage.setItem('smarthub_apiKey', data.apiKey.rawKey);
           }
+        }
+        return data;
+      } catch (err) {
+        return { success: false, error: err.message };
+      }
+    },
+
+    async sendOtp(email, mobile) {
+      try {
+        const res = await fetch(this.baseUrl + '/auth/send-otp', {
+          method: 'POST',
+          headers: this.getHeaders(),
+          body: JSON.stringify({ email, mobile })
+        });
+        return await this.safeJson(res);
+      } catch (err) {
+        return { success: false, error: err.message };
+      }
+    },
+
+    async verifyOtp(email, otp) {
+      try {
+        const res = await fetch(this.baseUrl + '/auth/verify-otp', {
+          method: 'POST',
+          headers: this.getHeaders(),
+          body: JSON.stringify({ email, otp })
+        });
+        return await this.safeJson(res);
+      } catch (err) {
+        return { success: false, error: err.message };
+      }
+    },
+
+    async loginWithGoogle(payload) {
+      try {
+        const res = await fetch(this.baseUrl + '/auth/google', {
+          method: 'POST',
+          headers: this.getHeaders(),
+          body: JSON.stringify(payload)
+        });
+        const data = await this.safeJson(res);
+        if (data.success && data.token) {
+          localStorage.setItem('smarthub_token', data.token);
+          localStorage.setItem('smarthub_user', JSON.stringify({ ...data.user, isLoggedIn: true }));
         }
         return data;
       } catch (err) {
@@ -226,7 +292,7 @@
           headers: this.getHeaders(),
           body: JSON.stringify({ identity, password })
         });
-        const data = await res.json();
+        const data = await this.safeJson(res);
         if (data.success && data.token) {
           localStorage.setItem('smarthub_token', data.token);
           localStorage.setItem('smarthub_user', JSON.stringify({ ...data.user, isLoggedIn: true }));
@@ -244,7 +310,7 @@
           headers: this.getHeaders(),
           body: JSON.stringify(payload)
         });
-        const data = await res.json();
+        const data = await this.safeJson(res);
         if (data.success && data.token) {
           localStorage.setItem('smarthub_token', data.token);
           localStorage.setItem('smarthub_user', JSON.stringify({ ...data.user, isLoggedIn: true }));

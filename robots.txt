@@ -1,0 +1,41 @@
+# Smart Hub (https://smarthub.dev)
+# Developer Marketplace Security & Crawling Directives
+
+User-agent: *
+Allow: /
+Allow: /index.html
+Allow: /policies.html
+Allow: /product-detail.html
+Disallow: /api/
+Disallow: /uploads/
+Disallow: /admin.html
+Disallow: /wallet.html
+Disallow: /dashboard.html
+
+# -------------------------------------------------------------
+# Anti-AI Model Scraper Directives (Protects Seller Source Code)
+# -------------------------------------------------------------
+User-agent: GPTBot
+Disallow: /uploads/
+Disallow: /api/
+
+User-agent: CCBot
+Disallow: /uploads/
+Disallow: /api/
+
+User-agent: anthropic-ai
+Disallow: /uploads/
+Disallow: /api/
+
+User-agent: Claude-Web
+Disallow: /uploads/
+Disallow: /api/
+
+User-agent: Google-Extended
+Disallow: /uploads/
+Disallow: /api/
+
+User-agent: Bytespider
+Disallow: /uploads/
+Disallow: /api/
+

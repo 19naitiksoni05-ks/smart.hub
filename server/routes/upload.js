@@ -10,8 +10,9 @@ const { authOptional } = require('../middleware/auth');
 const { supabase, isSupabaseConfigured } = require('../supabase');
 const { validatePythonCode, isPythonFile } = require('../utils/pythonValidator');
 
-// Base directory for uploads
-const UPLOADS_ROOT = path.join(__dirname, '../../uploads');
+const IS_VERCEL = Boolean(process.env.VERCEL);
+// Base directory for uploads (use /tmp on serverless read-only platforms)
+const UPLOADS_ROOT = IS_VERCEL ? path.join('/tmp', 'uploads') : path.join(__dirname, '../../uploads');
 const DIRS = {
   images: path.join(UPLOADS_ROOT, 'images'),
   videos: path.join(UPLOADS_ROOT, 'videos'),
@@ -20,10 +21,14 @@ const DIRS = {
   folders: path.join(UPLOADS_ROOT, 'folders')
 };
 
-// Ensure all upload directories exist
+// Ensure all upload directories exist safely without throwing on read-only environments
 Object.values(DIRS).forEach(dir => {
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
+  try {
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+  } catch (e) {
+    // Graceful fallback for read-only filesystem environments
   }
 });
 

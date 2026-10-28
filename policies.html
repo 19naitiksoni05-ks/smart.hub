@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Legal &amp; Platform Policies — Smart Hub</title>
-  <meta name="description" content="Official Smart Hub legal terms: Privacy Policy, Terms of Service, 100% Refund Policy, and Developer Security Guidelines. Compliant with Indian DPDP Act 2023.">
+  <title>Enterprise Legal Policies, Security Standards & Terms — Smart Hub</title>
+  <meta name="description" content="Official Smart Hub Enterprise E-Commerce Legal Terms: Terms of Service, Privacy & Data Protection Policy, 100% Code Integrity Refund Guarantee, and Multi-Tier Security Guidelines. Compliant with Consumer Protection (E-Commerce) Rules 2020, Indian DPDP Act 2023, IT Act 2000, and ISO/IEC 27001 standards.">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💡</text></svg>">
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/components.css">
@@ -12,65 +12,101 @@
   <link rel="stylesheet" href="css/pages.css">
   <style>
     .policies-hero {
-      padding: 56px 0 32px;
+      padding: 60px 0 36px;
       border-bottom: 1.5px solid var(--border-outline);
-      background: var(--bg-secondary);
+      background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+      position: relative;
+    }
+    .security-badges-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 20px;
+    }
+    .sec-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      border: 1px solid var(--border-outline);
+      background: var(--bg-card);
+      color: var(--text-primary);
+    }
+    .sec-badge.highlight {
+      border-color: rgba(34, 197, 94, 0.4);
+      background: rgba(34, 197, 94, 0.08);
+      color: #22c55e;
+    }
+    .sec-badge.purple {
+      border-color: rgba(124, 58, 237, 0.4);
+      background: rgba(124, 58, 237, 0.08);
+      color: #a78bfa;
+    }
+    .sec-badge.amber {
+      border-color: rgba(245, 158, 11, 0.4);
+      background: rgba(245, 158, 11, 0.08);
+      color: #fbbf24;
     }
     .policies-container {
-      max-width: 1100px;
+      max-width: 1220px;
       margin: 0 auto;
       padding: 40px 24px 80px;
     }
     .policies-layout {
       display: grid;
-      grid-template-columns: 260px 1fr;
+      grid-template-columns: 290px 1fr;
       gap: 36px;
       align-items: start;
     }
     .policies-nav-sidebar {
       position: sticky;
-      top: 130px;
+      top: 120px;
       background: var(--bg-card);
       border: 1.5px solid var(--border-outline);
-      border-radius: var(--radius-xs);
-      padding: 12px;
+      border-radius: 12px;
+      padding: 14px;
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 6px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
     }
     .policies-nav-btn {
       display: flex;
       align-items: center;
-      gap: 10px;
-      padding: 10px 14px;
-      border-radius: var(--radius-xs);
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 8px;
       border: 1px solid transparent;
       background: transparent;
       color: var(--text-secondary);
-      font-family: var(--font-display);
       font-size: 0.9rem;
       font-weight: 700;
       text-align: left;
       cursor: pointer;
-      transition: var(--transition-fast);
+      transition: all 0.2s ease;
       width: 100%;
     }
     .policies-nav-btn:hover {
       background: var(--bg-secondary);
       color: var(--text-primary);
+      transform: translateX(3px);
     }
     .policies-nav-btn.active {
-      background: linear-gradient(135deg, rgba(121, 40, 202, 0.14), rgba(255, 106, 0, 0.12));
-      color: var(--accent-purple);
-      border-color: rgba(121, 40, 202, 0.35);
-      box-shadow: 0 2px 8px rgba(121, 40, 202, 0.08);
+      background: linear-gradient(135deg, rgba(124, 58, 237, 0.15), rgba(255, 91, 54, 0.12));
+      color: #a78bfa;
+      border-color: rgba(124, 58, 237, 0.35);
+      box-shadow: 0 2px 10px rgba(124, 58, 237, 0.12);
     }
     .policies-content-card {
       background: var(--bg-card);
       border: 1.5px solid var(--border-outline);
-      border-radius: var(--radius-xs);
-      padding: 36px 40px;
-      box-shadow: var(--shadow-sm);
+      border-radius: 14px;
+      padding: 44px 50px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.18);
     }
     .policy-doc-pane {
       display: none;
@@ -80,17 +116,18 @@
       animation: fadeInDown 0.25s ease-out;
     }
     .policy-doc-title {
-      font-size: 1.8rem;
-      font-weight: 800;
+      font-size: 2.1rem;
+      font-weight: 900;
       color: var(--text-primary);
       margin-bottom: 8px;
+      letter-spacing: -0.02em;
     }
     .policy-doc-meta {
       font-size: 0.8rem;
-      font-family: var(--font-tech);
+      font-family: var(--font-tech, monospace);
       color: var(--text-muted);
-      margin-bottom: 24px;
-      padding-bottom: 16px;
+      margin-bottom: 26px;
+      padding-bottom: 18px;
       border-bottom: 1px solid var(--border-outline);
       display: flex;
       justify-content: space-between;
@@ -99,38 +136,109 @@
       gap: 10px;
     }
     .policy-doc-h2 {
-      font-size: 1.2rem;
+      font-size: 1.28rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin: 36px 0 14px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border-outline-subtle, rgba(255,255,255,0.06));
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .policy-doc-h3 {
+      font-size: 1.05rem;
       font-weight: 700;
       color: var(--text-primary);
-      margin: 28px 0 10px;
-      padding-bottom: 6px;
-      border-bottom: 1px solid var(--border-outline-subtle);
+      margin: 20px 0 8px;
     }
     .policy-doc-p {
       font-size: 0.95rem;
       color: var(--text-secondary);
-      line-height: 1.75;
+      line-height: 1.82;
       margin-bottom: 16px;
     }
     .policy-doc-list {
-      margin: 0 0 18px 20px;
+      margin: 0 0 22px 22px;
       color: var(--text-secondary);
-      line-height: 1.75;
+      line-height: 1.82;
+      font-size: 0.94rem;
     }
     .policy-doc-list li {
-      margin-bottom: 8px;
+      margin-bottom: 11px;
     }
     .policy-callout {
       background: var(--bg-secondary);
-      border-left: 4px solid var(--accent-coral);
-      padding: 16px 20px;
-      border-radius: var(--radius-xs);
-      margin: 20px 0;
-      font-size: 0.92rem;
+      border-left: 4px solid #7c3aed;
+      padding: 18px 22px;
+      border-radius: 8px;
+      margin: 22px 0;
+      font-size: 0.93rem;
+      line-height: 1.7;
     }
-    .policy-callout.green { border-left-color: #16a34a; }
-    .policy-callout.cyan { border-left-color: #0891b2; }
-    @media (max-width: 840px) {
+    .policy-callout.green { border-left-color: #22c55e; background: rgba(34, 197, 94, 0.05); }
+    .policy-callout.amber { border-left-color: #f59e0b; background: rgba(245, 158, 11, 0.05); }
+    .policy-callout.coral { border-left-color: #ff5b36; background: rgba(255, 91, 54, 0.05); }
+    .policy-callout.blue  { border-left-color: #3b82f6; background: rgba(59, 130, 246, 0.05); }
+
+    .policy-table-wrapper {
+      overflow-x: auto;
+      margin: 22px 0;
+      border-radius: 8px;
+      border: 1px solid var(--border-outline);
+    }
+    .policy-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+      text-align: left;
+    }
+    .policy-table th {
+      background: var(--bg-secondary);
+      padding: 12px 16px;
+      font-weight: 700;
+      color: var(--text-primary);
+      border-bottom: 1px solid var(--border-outline);
+    }
+    .policy-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-outline-subtle, rgba(255,255,255,0.05));
+      color: var(--text-secondary);
+    }
+    .policy-table tr:last-child td { border-bottom: none; }
+
+    .contact-card-box {
+      background: linear-gradient(135deg, rgba(124,58,237,0.08), rgba(255,91,54,0.06));
+      border: 1px solid rgba(124,58,237,0.3);
+      border-radius: 10px;
+      padding: 20px 24px;
+      margin: 24px 0;
+    }
+
+    .toc-box {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-outline);
+      border-radius: 10px;
+      padding: 18px 24px;
+      margin: 24px 0;
+    }
+    .toc-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px 24px;
+      font-size: 0.85rem;
+      margin-top: 10px;
+    }
+    .toc-link {
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .toc-link:hover {
+      color: var(--accent-coral);
+    }
+
+    @media (max-width: 880px) {
       .policies-layout {
         grid-template-columns: 1fr;
       }
@@ -140,26 +248,40 @@
         overflow-x: auto;
       }
       .policies-content-card {
-        padding: 24px;
+        padding: 24px 18px;
+      }
+      .toc-grid {
+        grid-template-columns: 1fr;
       }
     }
   </style>
 </head>
 <body>
 
-<!-- Header -->
+<!-- Global Header -->
 <div id="page-header"></div>
 
-<!-- Policies Hero -->
+<!-- Policies Hero Section -->
 <section class="policies-hero">
-  <div class="header-fluid-container" style="max-width:1100px;margin:0 auto;">
-    <div style="font-family:var(--font-tech);font-size:0.75rem;color:var(--accent-coral);font-weight:700;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.12em;">
-      // LEGAL &amp; REGULATORY COMPLIANCE
+  <div class="header-fluid-container" style="max-width:1220px;margin:0 auto;padding:0 24px;">
+    <div style="font-family:var(--font-tech, monospace);font-size:0.75rem;color:#ff5b36;font-weight:800;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.12em;">
+      // REAL E-COMMERCE MARKETPLACE LEGAL TERMS &amp; MAXIMUM ENTERPRISE SECURITY
     </div>
-    <h1 style="font-size:2.2rem;font-weight:800;letter-spacing:-0.02em;">Smart Hub Platform Policies</h1>
-    <p style="color:var(--text-secondary);margin-top:8px;max-width:680px;font-size:0.95rem;">
-      Clear, developer-first guarantees covering your data rights, commercial licensing, 100% money-back refunds, and automated source code security audits.
+    <h1 style="font-size:2.5rem;font-weight:900;letter-spacing:-0.03em;color:var(--text-primary);">
+      Smart Hub Legal Terms &amp; Marketplace Agreements
+    </h1>
+    <p style="color:var(--text-secondary);margin-top:10px;max-width:840px;font-size:0.98rem;line-height:1.75;">
+      Welcome to Smart Hub's official legal portal. Structured in full compliance with the <strong>Consumer Protection (E-Commerce) Rules, 2020</strong>, the <strong>Information Technology Act, 2000 (Intermediary Guidelines)</strong>, and modeled after global digital e-commerce leaders (Amazon, Shopify, Envato Market, Stripe, and GitHub), our legal terms govern every buyer purchase, creator sale, wallet transaction, and commercial code license across our platform.
     </p>
+
+    <div class="security-badges-bar">
+      <span class="sec-badge highlight">🛒 Full E-Commerce Rules 2020 Compliance</span>
+      <span class="sec-badge purple">🛡️ TLS 1.3 &amp; AES-256 Vault Encryption</span>
+      <span class="sec-badge highlight">🇮🇳 DPDP Act 2023 &amp; IT Act 2000 Compliant</span>
+      <span class="sec-badge amber">⚡ 100% 14-Day Code Integrity Guarantee</span>
+      <span class="sec-badge purple">🔍 Automated AST &amp; Dependency Malware Auditing</span>
+      <span class="sec-badge highlight">🚫 Strict Anti-AI Scraping Protection</span>
+    </div>
   </div>
 </section>
 
@@ -167,166 +289,745 @@
 <div class="policies-container">
   <div class="policies-layout">
     
-    <!-- Sidebar Navigation -->
+    <!-- Left Navigation Sticky Sidebar -->
     <aside class="policies-nav-sidebar">
-      <button class="policies-nav-btn active" data-tab="privacy" onclick="switchDocTab('privacy')">
-        <span>🔒</span> Privacy Policy
+      <div style="font-size:0.75rem;font-weight:800;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;padding:4px 8px 8px;">
+        LEGAL &amp; SECURITY PORTAL
+      </div>
+      <button class="policies-nav-btn active" data-tab="terms" onclick="switchDocTab('terms')">
+        <span style="font-size:1.15rem;">📜</span> Terms of Service
       </button>
-      <button class="policies-nav-btn" data-tab="terms" onclick="switchDocTab('terms')">
-        <span>📜</span> Terms of Service
+      <button class="policies-nav-btn" data-tab="privacy" onclick="switchDocTab('privacy')">
+        <span style="font-size:1.15rem;">🔒</span> Privacy Policy
       </button>
       <button class="policies-nav-btn" data-tab="refund" onclick="switchDocTab('refund')">
-        <span>💳</span> Refund Policy
+        <span style="font-size:1.15rem;">💳</span> Refund Policy
       </button>
       <button class="policies-nav-btn" data-tab="security" onclick="switchDocTab('security')">
-        <span>🛡️</span> Security Guidelines
+        <span style="font-size:1.15rem;">🛡️</span> Security &amp; Auditing
       </button>
-      <div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--border-outline);">
-        <button class="btn btn-outline btn-sm w-full" onclick="window.print()" style="font-size:0.78rem;">🖨️ Print Policies</button>
+      <button class="policies-nav-btn" data-tab="seller" onclick="switchDocTab('seller')">
+        <span style="font-size:1.15rem;">🚀</span> Seller Guidelines
+      </button>
+      <button class="policies-nav-btn" data-tab="compliance" onclick="switchDocTab('compliance')">
+        <span style="font-size:1.15rem;">⚖️</span> AI &amp; Anti-Scraping
+      </button>
+
+      <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border-outline);">
+        <button class="btn btn-outline btn-sm w-full" onclick="window.print()" style="font-size:0.78rem;font-weight:700;">
+          🖨️ Print / Save PDF
+        </button>
+      </div>
+
+      <div style="margin-top:14px;padding:14px;background:var(--bg-secondary);border-radius:8px;font-size:0.75rem;color:var(--text-muted);line-height:1.55;">
+        <strong style="color:var(--text-primary);display:block;margin-bottom:4px;">Lead Developer Contact:</strong>
+        <span style="color:#a78bfa;font-weight:700;">Naitik Soni</span><br>
+        Direct Email: <a href="mailto:naitiksoni700@gmail.com" style="color:var(--accent-coral);word-break:break-all;font-weight:700;">naitiksoni700@gmail.com</a><br>
+        Secondary: <a href="mailto:naitik19ansh@gmail.com" style="color:var(--text-secondary);word-break:break-all;">naitik19ansh@gmail.com</a>
       </div>
     </aside>
 
-    <!-- Main Policy Content Pane -->
+    <!-- Main Content Pane -->
     <main class="policies-content-card">
 
-      <!-- 1. Privacy Policy -->
-      <section class="policy-doc-pane active" id="pane-privacy">
+      <!-- ============================================================
+           TAB 1: COMPREHENSIVE REAL E-COMMERCE TERMS OF SERVICE
+           ============================================================ -->
+      <section class="policy-doc-pane active" id="pane-terms">
+        <h2 class="policy-doc-title">📜 Comprehensive E-Commerce Terms of Service</h2>
+        <div class="policy-doc-meta">
+          <span>LAST UPDATED: OCTOBER 2026 · VERSION 4.0 (FULL E-COMMERCE RELEASE)</span>
+          <span>COMPLIANCE: CONSUMER PROTECTION (E-COMMERCE) RULES 2020 · IT ACT 2000</span>
+        </div>
+
+        <p class="policy-doc-p">
+          These Terms of Service ("Terms", "Agreement") constitute a legally binding electronic agreement between you ("User", "Buyer", "Seller", or "you") and <strong>Smart Hub Technologies</strong>, operated and maintained by Lead Developer <strong>Naitik Soni</strong> ("Smart Hub", "Company", "we", "us", or "our"). This Agreement governs your access to and use of the Smart Hub website, web applications, developer APIs, real-time WebSocket gateways, and the digital software marketplace accessible at <code>http://localhost:5000</code> and associated production domains.
+        </p>
+
+        <!-- Table of Contents -->
+        <div class="toc-box">
+          <strong style="color:var(--text-primary);font-size:0.9rem;text-transform:uppercase;letter-spacing:0.05em;">Table of Articles &amp; Clauses</strong>
+          <div class="toc-grid">
+            <a href="#t-1" class="toc-link">1. Definitions &amp; Legal Interpretation</a>
+            <a href="#t-2" class="toc-link">2. Intermediary Status &amp; E-Commerce Role</a>
+            <a href="#t-3" class="toc-link">3. Eligibility, Age &amp; Capacity</a>
+            <a href="#t-4" class="toc-link">4. Mandatory Single-Use Account Registration</a>
+            <a href="#t-5" class="toc-link">5. Confidential Two-Factor Authentication &amp; OTP</a>
+            <a href="#t-6" class="toc-link">6. Catalog Listings &amp; Seller Warranty</a>
+            <a href="#t-7" class="toc-link">7. Pricing, Currency &amp; GST Tax Compliance</a>
+            <a href="#t-8" class="toc-link">8. Ordering &amp; Binding Digital Sales Contract</a>
+            <a href="#t-9" class="toc-link">9. Smart Hub Rupee Wallet &amp; Escrow</a>
+            <a href="#t-10" class="toc-link">10. Dynamic Platform Fee &amp; Creator Royalties</a>
+            <a href="#t-11" class="toc-link">11. Encrypted Digital Delivery &amp; Token Expiry</a>
+            <a href="#t-12" class="toc-link">12. Commercial Asset Licensing Tiers</a>
+            <a href="#t-13" class="toc-link">13. Buyer Rights &amp; 14-Day Code Integrity Guarantee</a>
+            <a href="#t-14" class="toc-link">14. Zero-Tolerance Malicious Code &amp; Security</a>
+            <a href="#t-15" class="toc-link">15. Anti-Money Laundering (AML) &amp; Fraud Prevention</a>
+            <a href="#t-16" class="toc-link">16. Reviews, Ratings &amp; Community Standards</a>
+            <a href="#t-17" class="toc-link">17. Intellectual Property &amp; DMCA Takedown</a>
+            <a href="#t-18" class="toc-link">18. High Availability &amp; Service Level Agreement (SLA)</a>
+            <a href="#t-19" class="toc-link">19. Disclaimers &amp; "As-Is" Software Provision</a>
+            <a href="#t-20" class="toc-link">20. Limitation of Liability &amp; Damages Cap</a>
+            <a href="#t-21" class="toc-link">21. Indemnification by Users &amp; Sellers</a>
+            <a href="#t-22" class="toc-link">22. Suspension, Termination &amp; Ban Appeals</a>
+            <a href="#t-23" class="toc-link">23. Governing Law, Mediation &amp; Arbitration</a>
+            <a href="#t-24" class="toc-link">24. Consumer Grievance Officer &amp; Contact</a>
+          </div>
+        </div>
+
+        <div class="policy-callout green">
+          <strong>Consumer Notice:</strong> By clicking "Create Account", "Sign In", depositing funds into your Smart Hub Rupee Wallet, or placing an order for digital source code, you unconditionally acknowledge and agree to be bound by all 24 Articles of this Agreement. If you do not agree to every clause, you must discontinue platform use immediately.
+        </div>
+
+        <!-- Article 1 -->
+        <h3 class="policy-doc-h2" id="t-1">Article 1: Definitions &amp; Legal Interpretation</h3>
+        <p class="policy-doc-p">For the purposes of these Terms of Service, capitalized terms have the following meanings:</p>
+        <ul class="policy-doc-list">
+          <li><strong>"Asset" or "Product":</strong> Any digital package, source code repository, template, mobile app project, script, UI kit, machine learning model, or API connector listed on Smart Hub.</li>
+          <li><strong>"Buyer":</strong> Any verified registered developer, agency, or corporate entity that licenses or purchases digital assets from the Smart Hub marketplace.</li>
+          <li><strong>"Seller" or "Creator":</strong> Any verified developer who uploads, offers for licensing, or sells original software assets on Smart Hub.</li>
+          <li><strong>"Intermediary":</strong> Smart Hub Technologies in its statutory capacity as an intermediary facilitating e-commerce under Section 2(1)(w) and Section 79 of the Information Technology Act, 2000.</li>
+          <li><strong>"Smart Hub Rupee Wallet":</strong> The digital escrow ledger associated with a user's account used exclusively for purchasing assets, receiving sales proceeds, and managing 0% deposit balances.</li>
+          <li><strong>"Platform Fee":</strong> The dynamic commission fee (between 0.5% and 3%) charged by Smart Hub exclusively upon completed sales to cover hosting, payment gateway fees, and automated code security audits.</li>
+          <li><strong>"Encrypted Digital Delivery":</strong> The automated transmission of time-sensitive, cryptographically signed project ZIP packages, activation keys, and build manifests to the buyer's verified email.</li>
+        </ul>
+
+        <!-- Article 2 -->
+        <h3 class="policy-doc-h2" id="t-2">Article 2: Intermediary Status &amp; E-Commerce Marketplace Role</h3>
+        <p class="policy-doc-p">
+          Smart Hub functions as a multi-sided electronic marketplace connecting independent software developers (Sellers) with software buyers (Buyers). Pursuant to Section 79 of the Indian Information Technology Act, 2000, and the Consumer Protection (E-Commerce) Rules, 2020:
+        </p>
+        <ul class="policy-doc-list">
+          <li>Smart Hub provides the electronic platform, payment processing integration, automated AST vulnerability scanning, and cryptographic dispatch pipelines.</li>
+          <li>Unless an asset is explicitly designated as an "Official Smart Hub Core Asset", individual products are developed, owned, and listed directly by independent third-party Sellers.</li>
+          <li>Smart Hub exercises automated due diligence over listings (including static code analysis, CVE supply-chain auditing, and SHA-256 hash generation), but the underlying contract of sale for third-party assets is between the Seller and the Buyer.</li>
+        </ul>
+
+        <!-- Article 3 -->
+        <h3 class="policy-doc-h2" id="t-3">Article 3: Eligibility, Age &amp; Contractual Capacity</h3>
+        <p class="policy-doc-p">
+          Access to Smart Hub is permitted solely to individuals who possess the legal capacity to enter into binding contracts under Section 11 of the Indian Contract Act, 1872. You represent and warrant that:
+        </p>
+        <ul class="policy-doc-list">
+          <li>You are at least 18 years of age, or an emancipated minor operating with valid parental/legal guardian consent.</li>
+          <li>If you register or transact on behalf of a company, startup, or legal entity, you possess full corporate authorization to bind that entity to these Terms.</li>
+          <li>You are not barred under any trade embargoes, sanctions, or applicable local laws from purchasing or distributing software technology.</li>
+        </ul>
+
+        <!-- Article 4 -->
+        <h3 class="policy-doc-h2" id="t-4">Article 4: Mandatory Single-Use Account Registration</h3>
+        <p class="policy-doc-p">
+          To maintain an authentic, high-trust developer marketplace, eliminate automated botnets, and thwart identity theft, Smart Hub enforces a <strong>Strict Unique Identity Standard</strong>:
+        </p>
+        <ul class="policy-doc-list">
+          <li><strong>Dual Verification Required:</strong> Every user registration strictly requires both a valid work/personal <strong>email address</strong> and a valid 10-digit <strong>mobile phone number</strong>.</li>
+          <li><strong>Strict Single-Use Rule:</strong> Each verified email address and mobile number may be bound to exactly <strong>one unique account</strong> across the entire network. Any attempt to register multiple accounts using identical or aliased credentials will be rejected by our database constraints.</li>
+          <li><strong>Prohibition on Account Sharing:</strong> You may not sell, lease, transfer, or share your account credentials with external parties. Any activity executed under your authenticated session is deemed your sole legal responsibility.</li>
+        </ul>
+
+        <!-- Article 5 -->
+        <h3 class="policy-doc-h2" id="t-5">Article 5: Confidential Two-Factor Authentication &amp; OTP</h3>
+        <p class="policy-doc-p">
+          Account creation and high-security transactions require verification via Time-based One-Time Password (OTP):
+        </p>
+        <ul class="policy-doc-list">
+          <li>OTPs are generated cryptographically and dispatched solely through out-of-band TLS SMTP transport (Gmail SMTP) or authorized SMS gateways.</li>
+          <li><strong>Maximum Privacy Standard:</strong> OTP codes are <strong>never rendered on client-facing screens</strong> and <strong>never returned in HTTP response JSON payloads</strong>.</li>
+          <li>OTPs expire automatically after 10 minutes. If you suspect unauthorized access to your account, you must alert Lead Developer Naitik Soni at <a href="mailto:naitiksoni700@gmail.com" style="color:var(--accent-coral);font-weight:700;">naitiksoni700@gmail.com</a> immediately.</li>
+        </ul>
+
+        <!-- Article 6 -->
+        <h3 class="policy-doc-h2" id="t-6">Article 6: Product Listings, Catalog Display &amp; Seller Warranty</h3>
+        <p class="policy-doc-p">
+          When listing an asset on Smart Hub, each Seller explicitly warrants and covenants that:
+        </p>
+        <ul class="policy-doc-list">
+          <li><strong>Warranty of Originality:</strong> The software package is 100% original, authored by the Seller, or incorporates open-source libraries strictly in compliance with their respective licenses (e.g. MIT, Apache 2.0, BSD).</li>
+          <li><strong>Accurate Representation:</strong> Listing descriptions, screenshots, tech stack requirements (e.g. Node.js version, Flutter SDK, database dependencies), and live preview URLs must accurately reflect the contents of the delivered package.</li>
+          <li><strong>Stripped Secrets:</strong> The Seller has removed all personal API keys, production database credentials, private SSH keys, and third-party secret tokens from the archive.</li>
+        </ul>
+
+        <!-- Article 7 -->
+        <h3 class="policy-doc-h2" id="t-7">Article 7: Pricing, Currency &amp; GST Tax Compliance</h3>
+        <p class="policy-doc-p">
+          In strict compliance with the Consumer Protection (E-Commerce) Rules, 2020:
+        </p>
+        <ul class="policy-doc-list">
+          <li><strong>Indian Rupee (₹ INR) Standard:</strong> All asset prices are denominated and processed in Indian Rupees (INR).</li>
+          <li><strong>Transparent All-Inclusive Pricing:</strong> The final checkout screen displays the total price, applicable statutory Goods and Services Tax (GST), and any discounts prior to transaction confirmation. No surprise fees are added after checkout.</li>
+          <li><strong>Electronic Tax Invoices:</strong> An automated digital tax invoice containing the Seller's identifier, transaction timestamp, GST breakdown, and order reference is generated for every completed purchase.</li>
+        </ul>
+
+        <!-- Article 8 -->
+        <h3 class="policy-doc-h2" id="t-8">Article 8: Digital Ordering &amp; Binding Sales Contract</h3>
+        <p class="policy-doc-p">
+          When a Buyer clicks "Buy Now" or "Pay from Wallet":
+        </p>
+        <ul class="policy-doc-list">
+          <li>An electronic contract of sale is formed immediately between Buyer and Seller.</li>
+          <li>Payment is debited from the Buyer's Smart Hub Rupee Wallet and held in escrow pending automated delivery.</li>
+          <li>The system generates a unique immutable Order Number, cryptographic activation key, and signed download token.</li>
+        </ul>
+
+        <!-- Article 9 -->
+        <h3 class="policy-doc-h2" id="t-9">Article 9: Smart Hub Rupee Wallet &amp; Escrow Architecture</h3>
+        <p class="policy-doc-p">
+          The Smart Hub Rupee Wallet provides instantaneous, friction-free developer transactions:
+        </p>
+        <ul class="policy-doc-list">
+          <li><strong>0% Deposit Fees:</strong> Adding funds to your Smart Hub Rupee Wallet via UPI, Net Banking, or Debit Card incurs a <strong>flat 0% deposit fee</strong>. ₹1,000 deposited equals ₹1,000 wallet balance.</li>
+          <li><strong>Escrow Settlement:</strong> Funds are safeguarded in an RBI-compliant escrow account until digital delivery is fulfilled.</li>
+          <li><strong>Withdrawal to Bank:</strong> Creators may withdraw their earned balances directly to their verified UPI ID or Indian bank account with zero withdrawal fees.</li>
+        </ul>
+
+        <!-- Article 10 -->
+        <h3 class="policy-doc-h2" id="t-10">Article 10: Dynamic Platform Fee &amp; Creator Royalties</h3>
+        <p class="policy-doc-p">
+          To sustain high-speed cloud distribution, automated AST malware audits, and platform infrastructure:
+        </p>
+        <ul class="policy-doc-list">
+          <li>Smart Hub deducts an industry-low <strong>0.5% to 3% platform fee</strong> strictly on completed marketplace sales.</li>
+          <li>Sellers retain <strong>97% to 99.5%</strong> of their gross software revenue.</li>
+          <li>Statutory Tax Deducted at Source (TDS) and Tax Collected at Source (TCS) are deducted and deposited in accordance with Indian Income Tax and GST regulations where applicable.</li>
+        </ul>
+
+        <!-- Article 11 -->
+        <h3 class="policy-doc-h2" id="t-11">Article 11: Encrypted Digital Delivery &amp; Token Expiry</h3>
+        <p class="policy-doc-p">
+          Unlike physical retail, software assets are delivered electronically:
+        </p>
+        <ul class="policy-doc-list">
+          <li>Upon payment confirmation, a secure download link and AES-256 encrypted license key are dispatched to the buyer's verified email within 60 seconds.</li>
+          <li>Download URLs utilize signed, expiring tokens valid for 15 minutes per session to prevent link sharing, hotlinking, and unauthorized redistribution. Buyers can generate fresh download links anytime from their Order History.</li>
+        </ul>
+
+        <!-- Article 12 -->
+        <h3 class="policy-doc-h2" id="t-12">Article 12: Commercial Asset Licensing Tiers</h3>
+        <p class="policy-doc-p">
+          All digital items purchased on Smart Hub include one of the following transparent licenses:
+        </p>
+        <div class="policy-table-wrapper">
+          <table class="policy-table">
+            <thead>
+              <tr>
+                <th>License Tier</th>
+                <th>Permitted Scope</th>
+                <th>Prohibitions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Standard Commercial</strong></td>
+                <td>Integration into unlimited commercial client websites, internal tools, SaaS applications, and mobile apps. Modification and deployment permitted.</td>
+                <td>Reselling, redistributing, or publishing the raw source code package on competing marketplaces, forums, or torrents.</td>
+              </tr>
+              <tr>
+                <td><strong>Extended / Enterprise</strong></td>
+                <td>Full transfer of development assets, CI/CD pipelines, Docker manifests, white-label deployment, and direct 1-on-1 author technical support.</td>
+                <td>Sub-licensing or reselling the template as a standalone competitor template pack.</td>
+              </tr>
+              <tr>
+                <td><strong>₹0 Starter / Free</strong></td>
+                <td>Personal educational learning, academic research, and non-commercial open-source contributions.</td>
+                <td>Commercial monetization without author permission; removing author attribution headers from code comments.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Article 13 -->
+        <h3 class="policy-doc-h2" id="t-13">Article 13: Buyer Rights &amp; 14-Day Code Integrity Guarantee</h3>
+        <p class="policy-doc-p">
+          Every commercial code package is backed by our <strong>14-Day Code Integrity Guarantee</strong>:
+        </p>
+        <ul class="policy-doc-list">
+          <li><strong>100% Refund Grounds:</strong> Fatal compilation errors that the author cannot patch within 48 hours, missing advertised core features, or undisclosed critical security vulnerabilities qualify for a full 100% refund.</li>
+          <li><strong>Fast Reversals:</strong> Wallet reversals are processed instantly; bank/UPI reversals are processed within 24 to 48 business hours.</li>
+          <li><strong>Non-Refundable:</strong> Simple change of mind ("buyer's remorse") after downloading uncompiled source code, or attempting to run software on legacy environments that contradict documented requirements.</li>
+        </ul>
+
+        <!-- Article 14 -->
+        <h3 class="policy-doc-h2" id="t-14">Article 14: Zero-Tolerance Malicious Code &amp; Security</h3>
+        <p class="policy-doc-p">
+          Modeled after GitHub's Acceptable Use Policy and Google Cloud Security standards:
+        </p>
+        <ul class="policy-doc-list">
+          <li>Sellers and users are strictly prohibited from uploading, distributing, or executing malware, reverse shells, keyloggers, cryptominers, logic bombs, or backdoor telemetry.</li>
+          <li>Every uploaded package must pass our automated 3-tier security pipeline (AST vulnerability scanning, supply chain CVE check, and SHA-256 hash generation).</li>
+          <li><strong>Criminal Prosecution:</strong> Intentional distribution of malicious code will result in immediate permanent account termination, forfeiture of wallet balance, and direct criminal reporting to <strong>CERT-In</strong> and law enforcement under Sections 43 &amp; 66 of the IT Act, 2000.</li>
+        </ul>
+
+        <!-- Article 15 -->
+        <h3 class="policy-doc-h2" id="t-15">Article 15: Anti-Money Laundering (AML) &amp; Fraud Prevention</h3>
+        <p class="policy-doc-p">
+          Smart Hub maintains strict compliance with Reserve Bank of India (RBI) Anti-Money Laundering standards:
+        </p>
+        <ul class="policy-doc-list">
+          <li>Users may not utilize wallet deposit and withdrawal features as a peer-to-peer remittance service or currency mixing pipeline.</li>
+          <li>Wash trading, self-purchasing between colluding accounts to generate synthetic developer reputation, and stolen credit card usage are strictly prohibited.</li>
+          <li>Accounts exhibiting suspicious velocity or transaction patterns will be temporarily frozen pending manual identity verification.</li>
+        </ul>
+
+        <!-- Article 16 -->
+        <h3 class="policy-doc-h2" id="t-16">Article 16: Reviews, Ratings &amp; Community Standards</h3>
+        <p class="policy-doc-p">
+          To maintain honest developer feedback:
+        </p>
+        <ul class="policy-doc-list">
+          <li>Only verified purchasers who have completed an order may submit reviews and ratings.</li>
+          <li>Reviews must be factual and constructive. Extortionist reviews (e.g., demanding free custom work under threat of negative ratings) and paid promotional reviews are strictly forbidden.</li>
+          <li>Smart Hub reserves the right to remove reviews that violate community guidelines, contain hate speech, or leak private contact details.</li>
+        </ul>
+
+        <!-- Article 17 -->
+        <h3 class="policy-doc-h2" id="t-17">Article 17: Intellectual Property &amp; DMCA Takedown Procedure</h3>
+        <p class="policy-doc-p">
+          Pursuant to Section 512 of the DMCA and the Indian Copyright Act, 1957, Smart Hub respects intellectual property rights:
+        </p>
+        <ul class="policy-doc-list">
+          <li>If you believe your copyrighted code or template is listed without authorization, email a formal infringement notice to Lead Developer Naitik Soni at <a href="mailto:naitiksoni700@gmail.com" style="color:var(--accent-coral);font-weight:700;">naitiksoni700@gmail.com</a>.</li>
+          <li>Include proof of ownership, exact listing URL, and your physical/electronic signature.</li>
+          <li>Infringing packages will be taken down within <strong>24 business hours</strong>.</li>
+        </ul>
+
+        <!-- Article 18 -->
+        <h3 class="policy-doc-h2" id="t-18">Article 18: High Availability &amp; Service Level Agreement (SLA)</h3>
+        <p class="policy-doc-p">
+          Smart Hub strives to maintain a <strong>99.9% uptime target</strong> for marketplace browsing, download delivery servers, and WebSocket communication gateways. Scheduled maintenance windows will be announced in advance via platform banners. Smart Hub is not liable for upstream telecom or cloud provider outages outside our reasonable control.
+        </p>
+
+        <!-- Article 19 -->
+        <h3 class="policy-doc-h2" id="t-19">Article 19: Disclaimers &amp; "As-Is" Software Provision</h3>
+        <p class="policy-doc-p">
+          Except as explicitly provided under our 14-Day Code Integrity Guarantee, all downloadable software, source code, and developer templates are provided on an "AS IS" and "AS AVAILABLE" basis without warranties of any kind, express or implied. Smart Hub does not warrant that third-party code will operate uninterrupted or error-free in every custom developer environment.
+        </p>
+
+        <!-- Article 20 -->
+        <h3 class="policy-doc-h2" id="t-20">Article 20: Limitation of Liability &amp; Damages Cap</h3>
+        <p class="policy-doc-p">
+          To the maximum extent permitted by applicable law, in no event shall Smart Hub, its lead developers, or licensors be liable for any indirect, incidental, punitive, or consequential damages (including loss of profits, data corruption, or server downtime) arising from the use or inability to use third-party code assets. In all circumstances, our maximum aggregate liability shall be capped at the total amount paid by you for the specific asset in dispute, or ₹5,000 INR, whichever is lower.
+        </p>
+
+        <!-- Article 21 -->
+        <h3 class="policy-doc-h2" id="t-21">Article 21: Indemnification by Users &amp; Sellers</h3>
+        <p class="policy-doc-p">
+          You agree to defend, indemnify, and hold harmless Smart Hub Technologies, its lead developers, affiliates, and employees from and against any third-party claims, liabilities, damages, and legal expenses arising out of: (a) your violation of these Terms; (b) your violation of any third-party intellectual property rights; or (c) any malicious software or payload uploaded from your account.
+        </p>
+
+        <!-- Article 22 -->
+        <h3 class="policy-doc-h2" id="t-22">Article 22: Suspension, Termination &amp; Ban Appeals</h3>
+        <p class="policy-doc-p">
+          Smart Hub reserves the right to suspend or permanently terminate your account without prior notice if you engage in fraudulent chargebacks, distribute malicious software, or violate single-use credential policies. Users facing suspension may submit a formal ban appeal to <a href="mailto:naitiksoni700@gmail.com" style="color:var(--accent-coral);font-weight:700;">naitiksoni700@gmail.com</a> with supporting documentation.
+        </p>
+
+        <!-- Article 23 -->
+        <h3 class="policy-doc-h2" id="t-23">Article 23: Governing Law, Mediation &amp; Arbitration</h3>
+        <p class="policy-doc-p">
+          This Agreement is governed by and construed in accordance with the substantive laws of the Republic of India. In the event of any dispute, the parties shall first attempt to resolve the matter through good-faith mutual mediation within 30 days. If unresolved, the dispute shall be submitted to final and binding arbitration under the Arbitration and Conciliation Act, 1996, conducted in the English language and seated in New Delhi, India.
+        </p>
+
+        <!-- Article 24 -->
+        <h3 class="policy-doc-h2" id="t-24">Article 24: Consumer Grievance Officer &amp; Contact</h3>
+        <p class="policy-doc-p">
+          In compliance with the Consumer Protection (E-Commerce) Rules, 2020, and the Information Technology Rules, 2021:
+        </p>
+        <div class="contact-card-box">
+          <div style="font-size:1.1rem;font-weight:800;color:var(--text-primary);margin-bottom:8px;">
+            👤 Naitik Soni — Lead Developer &amp; Grievance Redressal Officer
+          </div>
+          <div style="font-size:0.92rem;color:var(--text-secondary);line-height:1.75;">
+            <strong>Primary Contact:</strong> <a href="mailto:naitiksoni700@gmail.com" style="color:#22c55e;font-weight:700;">naitiksoni700@gmail.com</a><br>
+            <strong>Secondary Email:</strong> <a href="mailto:naitik19ansh@gmail.com" style="color:var(--text-primary);font-weight:600;">naitik19ansh@gmail.com</a><br>
+            <strong>Organization:</strong> Smart Hub Technologies · MiniProject SmartHub Platform<br>
+            <strong>Response Timelines:</strong> Grievance acknowledgment within 24 hours; complete investigation and redressal within 7 to 15 business days.
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           TAB 2: PRIVACY & DATA PROTECTION POLICY
+           ============================================================ -->
+      <section class="policy-doc-pane" id="pane-privacy">
         <h2 class="policy-doc-title">🔒 Privacy &amp; Data Protection Policy</h2>
         <div class="policy-doc-meta">
-          <span>EFFECTIVE DATE: OCTOBER 2026 · VERSION 2.4</span>
-          <span>COMPLIANT WITH INDIAN DPDP ACT 2023</span>
+          <span>LAST UPDATED: OCTOBER 2026 · VERSION 4.0</span>
+          <span>COMPLIANCE: INDIAN DPDP ACT 2023 · GDPR · ISO/IEC 27001</span>
         </div>
 
         <p class="policy-doc-p">
-          Smart Hub Technologies Pvt. Ltd. ("Smart Hub", "we", "us") values your developer privacy. We believe developer tools must handle personal data with minimal collection, strict zero-third-party sharing, and transparent storage standards.
-        </p>
-
-        <div class="policy-callout cyan">
-          <strong>Key Guarantee:</strong> We never sell, rent, or broker developer data, code repositories, purchase keys, or browsing telemetry to advertisers or external data brokers.
-        </div>
-
-        <h3 class="policy-doc-h2">1. Information We Collect</h3>
-        <p class="policy-doc-p">We only collect information essential for authenticating your account, delivering encrypted source codes, and processing Rupee earnings:</p>
-        <ul class="policy-doc-list">
-          <li><strong>Identity Data:</strong> Full name, developer username, email address, and optional avatar image.</li>
-          <li><strong>Financial &amp; Payout Data:</strong> UPI ID, bank account IFSC (for creator earnings), and transaction identifiers generated via RBI-authorized payment aggregators (e.g., Razorpay). We do not store raw card CVVs or net banking passwords.</li>
-          <li><strong>Product &amp; License Keys:</strong> Cryptographic token hashes and SHA-256 signatures generated when you buy or list code assets.</li>
-          <li><strong>Technical Data:</strong> IP address, device operating system, and secure session cookies required for authentication and rate-limiting.</li>
-        </ul>
-
-        <h3 class="policy-doc-h2">2. How We Use Your Data</h3>
-        <p class="policy-doc-p">Your data is utilized strictly for the following operational objectives:</p>
-        <ul class="policy-doc-list">
-          <li>Delivering instant encrypted product download links and activation tokens to your registered email.</li>
-          <li>Routing creator royalties (net of 0.5%–3% platform fee and statutory taxes) with automated UPI settlements directly to your bank account.</li>
-          <li>Facilitating developer chat and creator support inquiries.</li>
-          <li>Verifying challenge submissions and publishing leaderboard rankings.</li>
-        </ul>
-
-        <h3 class="policy-doc-h2">3. Data Retention &amp; Deletion Rights</h3>
-        <p class="policy-doc-p">
-          Under the Digital Personal Data Protection (DPDP) Act 2023, you hold the legal right to request a complete export of your account data or complete permanent deletion of your profile and uploaded packages by contacting <code>privacy@smarthub.in</code> or navigating to <strong>Settings &gt; Security &gt; Delete Account</strong>.
-        </p>
-      </section>
-
-      <!-- 2. Terms of Service -->
-      <section class="policy-doc-pane" id="pane-terms">
-        <h2 class="policy-doc-title">📜 Terms of Service &amp; Licensing</h2>
-        <div class="policy-doc-meta">
-          <span>EFFECTIVE DATE: OCTOBER 2026 · VERSION 2.4</span>
-          <span>GOVERNING LAW: REPUBLIC OF INDIA</span>
-        </div>
-
-        <p class="policy-doc-p">
-          By accessing or utilizing Smart Hub (website, APIs, real-time WebSocket gateways, and marketplace downloads), you enter into a binding legal contract with Smart Hub Technologies Pvt. Ltd.
-        </p>
-
-        <h3 class="policy-doc-h2">1. Marketplace Asset Licenses</h3>
-        <p class="policy-doc-p">All digital items purchased on Smart Hub include one of the following transparent licenses:</p>
-        <ul class="policy-doc-list">
-          <li><strong>Standard Commercial License:</strong> Grants you the right to integrate, modify, compile, and deploy the source code in unlimited commercial client projects, SaaS products, and mobile apps. You may not resell or redistribute the raw source code package on competing marketplaces.</li>
-          <li><strong>Extended / Enterprise License:</strong> Includes full transfer of uncompiled source assets, CI/CD deployment scripts, and direct 1-on-1 author technical support for corporate teams.</li>
-          <li><strong>₹0 Free Starter License:</strong> Permitted for personal, open-source, and educational learning with author attribution preserved in comments.</li>
-        </ul>
-
-        <div class="policy-callout">
-          <strong>Platform Fee &amp; Royalty Structure:</strong> Sellers retain full intellectual ownership. Smart Hub charges a dynamic 0.5% – 3% platform fee (dependent on asset category, price tier, and jurisdiction/country tax laws) along with statutory government taxes (e.g. GST). Platform fees and applicable government taxes apply exclusively during buying and selling transactions. There are zero fees when adding money or depositing into your wallet.
-        </div>
-
-        <h3 class="policy-doc-h2">2. Prohibited Conduct &amp; Malicious Code</h3>
-        <p class="policy-doc-p">Authors and users are strictly prohibited from:</p>
-        <ul class="policy-doc-list">
-          <li>Uploading obfuscated malware, unauthorized cryptocurrency miners, reverse shells, or backdoor telemetry.</li>
-          <li>Submitting stolen, pirated, or GPL-violating repositories without explicit distribution rights.</li>
-          <li>Abusing chat or community channels for harassment, spam, or financial fraud.</li>
-        </ul>
-      </section>
-
-      <!-- 3. Refund Policy -->
-      <section class="policy-doc-pane" id="pane-refund">
-        <h2 class="policy-doc-title">💳 100% Money-Back &amp; Refund Policy</h2>
-        <div class="policy-doc-meta">
-          <span>EFFECTIVE DATE: OCTOBER 2026 · VERSION 2.4</span>
-          <span>ZERO-RISK DEVELOPER GUARANTEE</span>
-        </div>
-
-        <p class="policy-doc-p">
-          We want every developer to buy with total confidence. When you purchase source code, web apps, or Flutter templates on Smart Hub, your investment is safeguarded by our <strong>14-Day Code Integrity Guarantee</strong>.
+          Smart Hub Technologies ("Smart Hub", "we", "our", or "us") provides a developer-centric digital marketplace, collaborative challenge ecosystems, and real-time developer communication gateways. We implement industry-leading data privacy frameworks modeled after Google Cloud, GitHub, and Cloudflare. This Privacy Policy details the exact types of information we process, our cryptographic storage standards, and your statutory rights under the <strong>Digital Personal Data Protection (DPDP) Act 2023</strong> and the <strong>Information Technology Act, 2000</strong>.
         </p>
 
         <div class="policy-callout green">
-          <strong>14-Day Buyer Protection:</strong> If a purchased package has unresolvable build errors, broken core functionality, or deviates fundamentally from its store listing, you are entitled to a full 100% refund.
+          <strong>The Zero-Compromise Developer Data Pledge:</strong> We strictly <strong>NEVER</strong> sell, rent, monetize, trade, or share your source code, email address, mobile number, purchase history, API credentials, or browsing telemetry with advertising networks, third-party data brokers, or commercial AI training scrapers.
         </div>
 
-        <h3 class="policy-doc-h2">1. Refund Eligibility Criteria</h3>
-        <p class="policy-doc-p">You are eligible for a complete reimbursement under any of the following verified conditions:</p>
+        <h3 class="policy-doc-h2">1. Minimalist Data Collection Framework</h3>
+        <p class="policy-doc-p">
+          Pursuant to Section 6 of the DPDP Act 2023 (Purpose Limitation &amp; Data Minimization), Smart Hub only collects information strictly indispensable for identity verification, encrypted source delivery, and financial transactions:
+        </p>
         <ul class="policy-doc-list">
-          <li><strong>Fatal Compilation / Build Errors:</strong> The repository fails to compile or install dependencies under standard documentation specifications, and the author does not provide a working patch within 48 hours.</li>
-          <li><strong>Missing Core Assets:</strong> Critical backend endpoints, UI screens, or advertised features are absent from the provided ZIP archive.</li>
-          <li><strong>Security Red Flags:</strong> Static analysis detects unannounced telemetry, tracking scripts, or security vulnerabilities.</li>
+          <li><strong>Identity &amp; Profile Attributes:</strong> Developer full name, chosen handle/username, verified email address, verified 10-digit mobile number, and bcrypt-salted password hashes (cost factor 10). For OAuth sign-ins (Google or GitHub), we only obtain your unique immutable account ID (e.g., Google <code>sub</code> claim), public display name, verified primary email, and avatar image. We never request or access private GitHub repositories, personal emails, or Google Drive files.</li>
+          <li><strong>Mandatory Single-Use Verification Standard:</strong> To guarantee an authentic developer community, eliminate automated botnets, and combat credential stuffing, every account requires two verified single-use vectors:
+            <ul>
+              <li><strong>Verified Email Address:</strong> Used for encrypted order dispatch, password recovery, and security alerts.</li>
+              <li><strong>Verified Mobile Number:</strong> Bound as a unique single-use biometric/SMS credential preventing mass account duplication.</li>
+            </ul>
+            <em>Neither a mobile number nor an email address can be bound to multiple accounts simultaneously.</em>
+          </li>
+          <li><strong>Confidential OTP Dispatch Protocol:</strong> One-Time Passwords (OTPs) generated during account registration or sensitive actions are dispatched strictly out-of-band via encrypted TLS SMTP transport (Gmail SMTP) or authorized SMS gateways. OTPs are <strong>never rendered on client-facing screens</strong>, never returned in browser API responses, and automatically self-destruct after 10 minutes.</li>
+          <li><strong>Financial &amp; Payout Records:</strong> Smart Hub Rupee Wallet transactions, UPI Virtual Payment Addresses (VPA), and bank IFSC details provided by creators. Payment card details (credit/debit cards) are processed through RBI-authorized, PCI-DSS Level 1 certified payment aggregators (e.g., Razorpay/Stripe). <em>Raw credit/debit card numbers, CVVs, and net banking credentials are never stored on Smart Hub servers.</em></li>
+          <li><strong>Cryptographic Vault Credentials:</strong> Developer API keys and project download tokens are encrypted at rest using AES-256-GCM authenticated encryption before being persisted in our database.</li>
+          <li><strong>Security &amp; Abuse Telemetry:</strong> Truncated client IP address (anonymized and hashed for rate-limiting), browser User-Agent strings, and error logs collected solely for DDoS mitigation, brute-force defense, and automated threat detection.</li>
         </ul>
 
-        <h3 class="policy-doc-h2">2. Refund Turnaround Time</h3>
+        <h3 class="policy-doc-h2">2. Processing Objectives &amp; Lawful Bases</h3>
+        <p class="policy-doc-p">We process your data exclusively under the following lawful bases:</p>
+        <ul class="policy-doc-list">
+          <li><strong>Contractual Performance:</strong> Delivering time-sensitive, cryptographically signed project ZIP packages, activation keys, and build manifests to your verified email.</li>
+          <li><strong>Financial Settlement:</strong> Processing buyer purchases and automated instant creator payouts with 0% deposit fees and automated GST compliance.</li>
+          <li><strong>Real-Time Developer Gateways:</strong> Maintaining low-latency WebSocket connections for platform notifications, community chat, and skill challenge updates.</li>
+          <li><strong>Legitimate Security Interests:</strong> Detecting fraudulent account creation, credential stuffing, scraping botnets, and distribution of malicious source code.</li>
+        </ul>
+
+        <h3 class="policy-doc-h2">3. Storage Architecture, Cryptography &amp; Infrastructure</h3>
         <p class="policy-doc-p">
-          Once your dispute ticket is approved, funds are reversed within <strong>24 business hours</strong> directly to your Smart Hub Rupee Wallet or your original UPI ID / bank account.
+          Smart Hub employs defense-in-depth infrastructure designed after Google Cloud and Cloudflare security frameworks:
         </p>
+        <div class="policy-table-wrapper">
+          <table class="policy-table">
+            <thead>
+              <tr>
+                <th>Security Layer</th>
+                <th>Standard Implemented</th>
+                <th>Technical Architecture</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Transport Security</strong></td>
+                <td>TLS 1.3 / Strict HTTPS</td>
+                <td>HSTS (HTTP Strict Transport Security) enabled with 2048-bit forward secrecy. All unencrypted HTTP traffic is permanently redirected.</td>
+              </tr>
+              <tr>
+                <td><strong>Data at Rest</strong></td>
+                <td>AES-256-GCM Encryption</td>
+                <td>Database instances (Supabase PostgreSQL), cloud backups, and uploaded repository ZIPs are encrypted at rest with hardware-backed KMS keys.</td>
+              </tr>
+              <tr>
+                <td><strong>Credential Hashing</strong></td>
+                <td>Bcrypt Salted Hashes</td>
+                <td>User passwords undergo salted bcrypt key derivation with deliberate work factors, preventing rainbow-table and GPU brute-force attacks.</td>
+              </tr>
+              <tr>
+                <td><strong>Perimeter Defense</strong></td>
+                <td>Rate-Limiting &amp; CSP</td>
+                <td>Strict Content Security Policy (CSP), anti-clickjacking <code>X-Frame-Options: DENY</code>, and IP-scoped rate-limiters on all authentication routes.</td>
+              </tr>
+              <tr>
+                <td><strong>API Vault Security</strong></td>
+                <td>PBKDF2 / Scrypt Derivation</td>
+                <td>Developer raw API keys are never stored in plaintext; only cryptographically salted verification hashes are stored in the primary database.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 class="policy-doc-h2">4. Third-Party Subprocessors</h3>
+        <p class="policy-doc-p">
+          We engage an audited, minimal set of SOC-2 Type II and ISO 27001 certified subprocessors strictly to deliver platform functionality:
+        </p>
+        <ul class="policy-doc-list">
+          <li><strong>Database &amp; Storage:</strong> Supabase Inc. (PostgreSQL, row-level security, encrypted file storage).</li>
+          <li><strong>OAuth Identity Providers:</strong> Google Identity Services (Google LLC) and GitHub OAuth (GitHub Inc. / Microsoft).</li>
+          <li><strong>Transactional Email:</strong> Nodemailer with enterprise SMTP servers under TLS transport for verification OTPs and order invoices.</li>
+          <li><strong>Financial Gateway:</strong> RBI-licensed payment aggregators conforming to PCI-DSS Level 1 specifications.</li>
+        </ul>
+
+        <h3 class="policy-doc-h2">5. Cookies, Local Storage &amp; Zero Tracking</h3>
+        <p class="policy-doc-p">
+          Unlike ad-driven web portals, Smart Hub uses <strong>zero third-party tracking pixels, zero Google AdSense scripts, and zero cross-site behavioral telemetry cookies</strong>. We use only strictly necessary local storage:
+        </p>
+        <ul class="policy-doc-list">
+          <li><code>smarthub_token</code>: Authenticated JSON Web Token (JWT) authorizing your session.</li>
+          <li><code>smarthub_user</code>: Minimal local cached user profile for instant hydration and offline recovery.</li>
+          <li><code>smarthub_theme</code>: Visual theme preference (Dark/Light).</li>
+        </ul>
+
+        <h3 class="policy-doc-h2">6. Data Retention, Portability &amp; "Right to be Forgotten"</h3>
+        <p class="policy-doc-p">
+          In alignment with modern privacy legislation (DPDP Act 2023, Section 12; GDPR Article 17), you retain unconditional control over your personal data:
+        </p>
+        <ul class="policy-doc-list">
+          <li><strong>Right to Portability:</strong> You can export a comprehensive machine-readable (JSON) copy of your account profile, transaction history, and purchased licenses at any time from your account settings.</li>
+          <li><strong>Right to Erasure (Account Deletion):</strong> When you delete your account, all personal identifiers (name, email, mobile number, OAuth tokens, and password hashes) are permanently purged within 72 hours. Anonymized financial transaction records are archived solely to the extent required by Indian statutory tax laws (Income Tax Act &amp; GST regulations).</li>
+        </ul>
+
+        <h3 class="policy-doc-h2">7. Lead Developer &amp; Statutory Grievance Redressal Officer</h3>
+        <p class="policy-doc-p">
+          Pursuant to Rule 3(2) of the Information Technology (Intermediary Guidelines and Digital Media Ethics Code) Rules, 2021, and the DPDP Act 2023, the details of our designated Lead Developer &amp; Grievance Officer are:
+        </p>
+        
+        <div class="contact-card-box">
+          <div style="font-size:1.1rem;font-weight:800;color:var(--text-primary);margin-bottom:8px;">
+            👤 Naitik Soni — Lead Developer &amp; Data Protection Officer
+          </div>
+          <div style="font-size:0.92rem;color:var(--text-secondary);line-height:1.75;">
+            <strong>Primary Developer Contact:</strong> <a href="mailto:naitiksoni700@gmail.com" style="color:#22c55e;font-weight:700;">naitiksoni700@gmail.com</a><br>
+            <strong>Secondary / Backup:</strong> <a href="mailto:naitik19ansh@gmail.com" style="color:var(--text-primary);font-weight:600;">naitik19ansh@gmail.com</a><br>
+            <strong>Organization:</strong> Smart Hub Technologies · MiniProject SmartHub Platform<br>
+            <strong>Official Response SLA:</strong> Initial acknowledgment within 24 hours; complete dispute/inquiry resolution within 7 to 15 working days.
+          </div>
+        </div>
       </section>
 
-      <!-- 4. Security Guidelines -->
-      <section class="policy-doc-pane" id="pane-security">
-        <h2 class="policy-doc-title">🛡️ Security &amp; Code Audit Guidelines</h2>
+      <!-- ============================================================
+           TAB 3: REFUND POLICY
+           ============================================================ -->
+      <section class="policy-doc-pane" id="pane-refund">
+        <h2 class="policy-doc-title">💳 100% Money-Back &amp; Code Integrity Guarantee</h2>
         <div class="policy-doc-meta">
-          <span>EFFECTIVE DATE: OCTOBER 2026 · VERSION 2.4</span>
-          <span>STRICT AUTOMATED MALWARE VERIFICATION</span>
+          <span>LAST UPDATED: OCTOBER 2026 · VERSION 4.0</span>
+          <span>14-DAY BUYER PROTECTION · ZERO-RISK DEVELOPER GUARANTEE</span>
         </div>
 
         <p class="policy-doc-p">
-          Security is the core pillar of Smart Hub. We implement multi-stage static analysis, AST vulnerability parsers, and cryptographic key dispatch to ensure every downloaded codebase is safe and clean.
+          At Smart Hub, we believe you should never have to pay for broken code or deceptive product descriptions. Every commercial package purchased on our marketplace is backed by our rock-solid <strong>14-Day Code Integrity Guarantee</strong>.
         </p>
 
-        <h3 class="policy-doc-h2">1. Automated Multi-Tier Code Audits</h3>
-        <p class="policy-doc-p">Every repository uploaded by sellers must pass three levels of automated inspection before appearing in the marketplace:</p>
+        <div class="policy-callout green">
+          <strong>The 100% Refund Promise:</strong> If a purchased package suffers from fatal compilation errors, missing core files advertised in the listing, or undisclosed security vulnerabilities, you are guaranteed a full 100% refund.
+        </div>
+
+        <h3 class="policy-doc-h2">1. Legitimate Refund Grounds</h3>
+        <p class="policy-doc-p">You are eligible for an immediate, full reimbursement under any of the following verified conditions within 14 days of purchase:</p>
         <ul class="policy-doc-list">
-          <li><strong>Static AST Vulnerability Scans:</strong> Code is inspected for dangerous execution functions (e.g. <code>eval()</code>, unescaped SQL injections, hardcoded secret API keys, insecure deserialization).</li>
-          <li><strong>Dependency Supply Chain Verification:</strong> All <code>package.json</code>, <code>pubspec.yaml</code>, and <code>requirements.txt</code> dependencies are checked against national CVE vulnerability databases.</li>
-          <li><strong>Cryptographic SHA-256 Hash Matching:</strong> Every generated download ZIP produces a SHA-256 checksum displayed on the product page and included in your delivery email. You can verify package integrity via terminal command: <code>certutil -hashfile package.zip SHA256</code>.</li>
+          <li><strong>Fatal Compilation &amp; Build Errors:</strong> The repository fails to compile, build, or initialize under the documented environment prerequisites (e.g. Node.js version, Flutter SDK, Python runtime), and the seller fails to provide a verified working patch within 48 hours of reporting.</li>
+          <li><strong>Material Discrepancy / Missing Core Modules:</strong> Critical backend endpoints, key UI modules, database migration scripts, or advertised core features are missing from the delivered ZIP archive.</li>
+          <li><strong>Undisclosed Security Flaws:</strong> The codebase contains hardcoded backdoor endpoints, unauthorized third-party trackers, or critical CVE security vulnerabilities not disclosed in the listing.</li>
+          <li><strong>Accidental Duplicate Purchases:</strong> If you accidentally purchased the identical item multiple times in error, duplicate charges are refunded immediately.</li>
         </ul>
 
-        <div class="policy-callout cyan">
-          <strong>Encrypted Key Delivery:</strong> Purchase keys and download links are encrypted via AES-256 before email transmission, ensuring zero interception during transit.
+        <h3 class="policy-doc-h2">2. Non-Eligible Scenarios</h3>
+        <p class="policy-doc-p">To prevent bad-faith exploitation, refunds cannot be granted in the following scenarios:</p>
+        <ul class="policy-doc-list">
+          <li>"Buyer's Remorse" or simply changing your mind after successfully downloading and cloning the uncompiled source code.</li>
+          <li>Attempting to run modern software on legacy environments that explicitly violate the product's documented minimum system specifications (e.g., trying to run Node 20 packages on Node 14).</li>
+          <li>Inability to operate standard developer toolchains (e.g., unfamiliarity with <code>npm install</code>, Git, or Docker when the product documentation clearly specifies standard developer tooling).</li>
+        </ul>
+
+        <h3 class="policy-doc-h2">3. Dispute Process &amp; Rapid Reversal Timelines</h3>
+        <p class="policy-doc-p">
+          Initiating a dispute is fast, seamless, and transparent:
+        </p>
+        <ol class="policy-doc-list" style="margin-left:24px;">
+          <li>Navigate to your <strong>Account &gt; Orders &gt; Report Issue</strong> or email Lead Developer Naitik Soni at <a href="mailto:naitiksoni700@gmail.com" style="color:#22c55e;font-weight:700;">naitiksoni700@gmail.com</a> with your Order Number and terminal build logs.</li>
+          <li>Our technical audit harness reviews the claim within 24 hours.</li>
+          <li>Upon dispute approval, the refund is reversed immediately:
+            <ul style="margin-top:6px;">
+              <li><strong>Smart Hub Wallet:</strong> Instant 100% credit (available immediately for other purchases or bank withdrawal).</li>
+              <li><strong>Original UPI / Bank Method:</strong> 24 to 48 business hours via standard RBI clearing pipelines.</li>
+            </ul>
+          </li>
+        </ol>
+      </section>
+
+      <!-- ============================================================
+           TAB 4: SECURITY & CODE AUDITING
+           ============================================================ -->
+      <section class="policy-doc-pane" id="pane-security">
+        <h2 class="policy-doc-title">🛡️ Security Standards &amp; Code Audit Protocol</h2>
+        <div class="policy-doc-meta">
+          <span>LAST UPDATED: OCTOBER 2026 · VERSION 4.0</span>
+          <span>MULTI-TIER STATIC ANALYSIS · RESPONSIBLE DISCLOSURE PROGRAM</span>
         </div>
 
-        <h3 class="policy-doc-h2">2. Vulnerability Disclosure &amp; Bug Bounty</h3>
         <p class="policy-doc-p">
-          Security researchers who discover vulnerabilities within Smart Hub infrastructure or verified marketplace packages are encouraged to report findings to <code>security@smarthub.in</code>. Eligible submissions qualify for bounties up to <strong>₹50,000 INR</strong>.
+          Security is not an afterthought at Smart Hub — it is our core engineering foundation. We implement automated multi-stage static analysis, AST vulnerability parsing, and cryptographic package signing to ensure that every codebase in our catalog is clean, safe, and ready for commercial deployment.
         </p>
+
+        <h3 class="policy-doc-h2">1. The 3-Tier Automated Code Security Pipeline</h3>
+        <p class="policy-doc-p">Every repository package uploaded by sellers must pass three automated security gates prior to public indexing:</p>
+        <div class="policy-table-wrapper">
+          <table class="policy-table">
+            <thead>
+              <tr>
+                <th>Audit Stage</th>
+                <th>Inspection Scope</th>
+                <th>Failure Criteria</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Stage 1: AST Vulnerability Parsing</strong></td>
+                <td>Abstract Syntax Tree inspection of JavaScript, TypeScript, Python, Dart, and Go source files.</td>
+                <td>Flags dangerous executions (<code>eval()</code>, <code>exec()</code>, unescaped raw SQL injections, insecure deserialization, prototype pollution, exposed plaintext private keys).</td>
+              </tr>
+              <tr>
+                <td><strong>Stage 2: Supply Chain CVE Scans</strong></td>
+                <td>Deep audit of dependency manifests (<code>package.json</code>, <code>requirements.txt</code>, <code>pubspec.yaml</code>, <code>go.mod</code>).</td>
+                <td>Cross-referenced against the National Vulnerability Database (NVD) and GitHub Advisory Database. High/Critical CVE packages are automatically rejected.</td>
+              </tr>
+              <tr>
+                <td><strong>Stage 3: SHA-256 Cryptographic Checksum</strong></td>
+                <td>Generating immutable SHA-256 cryptographic hashes for the exact archive byte stream.</td>
+                <td>Displayed on the product page and embedded in order receipts. Guarantees the downloaded ZIP has suffered zero tampering in transit.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 class="policy-doc-h2">2. Package Hash Verification Guide for Buyers</h3>
+        <p class="policy-doc-p">
+          To verify that your downloaded project archive matches our official security audit checksum, execute the following command in your terminal:
+        </p>
+        <div class="policy-callout blue" style="font-family:monospace;font-size:0.86rem;">
+          # On Windows PowerShell:<br>
+          Get-FileHash -Algorithm SHA256 .\project-package.zip<br><br>
+          # On macOS / Linux:<br>
+          sha256sum project-package.zip
+        </div>
+        <p class="policy-doc-p">
+          Compare the returned 64-character hash string with the checksum displayed on your order confirmation page. A matching hash confirms 100% byte-for-byte integrity.
+        </p>
+
+        <h3 class="policy-doc-h2">3. Responsible Vulnerability Disclosure Program (Bug Bounty Matrix)</h3>
+        <p class="policy-doc-p">
+          We deeply respect and support the independent ethical hacker and white-hat security researcher community. If you identify a potential security vulnerability within Smart Hub's web infrastructure, APIs, WebSocket gateways, or public catalog packages, please disclose it to us responsibly:
+        </p>
+
+        <div class="policy-table-wrapper">
+          <table class="policy-table">
+            <thead>
+              <tr>
+                <th>Severity (CVSS v3.1)</th>
+                <th>Vulnerability Examples</th>
+                <th>Bounty Reward (INR)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>P1 — Critical (9.0 - 10.0)</strong></td>
+                <td>Remote Code Execution (RCE), Authentication Bypass, SQL Injection leading to user data dump.</td>
+                <td><strong>₹25,000 – ₹50,000 INR</strong></td>
+              </tr>
+              <tr>
+                <td><strong>P2 — High (7.0 - 8.9)</strong></td>
+                <td>Broken Object-Level Authorization (BOLA), Stored Cross-Site Scripting (XSS), Privilege Escalation to Seller/Admin.</td>
+                <td><strong>₹10,000 – ₹25,000 INR</strong></td>
+              </tr>
+              <tr>
+                <td><strong>P3 — Medium (4.0 - 6.9)</strong></td>
+                <td>CSRF with meaningful impact, sensitive API key leakage in public bundle, unverified rate-limit bypass.</td>
+                <td><strong>₹3,000 – ₹10,000 INR</strong></td>
+              </tr>
+              <tr>
+                <td><strong>P4 — Low (0.1 - 3.9)</strong></td>
+                <td>Subdomain takeover without sensitive impact, software version disclosures, minor header misconfigurations.</td>
+                <td><strong>Smart Hub Hall of Fame Badge</strong></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <ul class="policy-doc-list">
+          <li><strong>Direct Security Submission Channel:</strong> Send complete reproduction steps and PoC to Lead Developer Naitik Soni at <a href="mailto:naitiksoni700@gmail.com" style="color:#22c55e;font-weight:700;">naitiksoni700@gmail.com</a>.</li>
+          <li><strong>Safe Harbor Guarantee:</strong> Smart Hub will not initiate legal action against researchers conducting bona fide, non-destructive security research within scope who provide reasonable time (up to 30 days) for remediation prior to public disclosure.</li>
+        </ul>
+      </section>
+
+      <!-- ============================================================
+           TAB 5: SELLER GUIDELINES
+           ============================================================ -->
+      <section class="policy-doc-pane" id="pane-seller">
+        <h2 class="policy-doc-title">🚀 Seller Guidelines &amp; Code Quality Standards</h2>
+        <div class="policy-doc-meta">
+          <span>LAST UPDATED: OCTOBER 2026 · VERSION 4.0</span>
+          <span>CREATOR EXCELLENCE &amp; MARKETPLACE ARCHITECTURE</span>
+        </div>
+
+        <p class="policy-doc-p">
+          Smart Hub is built by developers, for developers. We hold our creator catalog to high architectural standards to ensure every asset represents clean, scalable, and maintainable software.
+        </p>
+
+        <h3 class="policy-doc-h2">1. Code Packaging &amp; Repository Standards</h3>
+        <p class="policy-doc-p">To achieve verified catalog approval, every uploaded repository must include:</p>
+        <ul class="policy-doc-list">
+          <li><strong>Comprehensive README.md:</strong> Clear setup instructions detailing prerequisites, environment variables (<code>.env.example</code>), local execution commands, and production build steps.</li>
+          <li><strong>Clean Directory Hierarchy:</strong> Proper separation of business logic, models, controllers, and UI components. Temporary artifacts (e.g. <code>node_modules</code>, <code>.git</code>, compiled binaries) must be excluded from the upload archive.</li>
+          <li><strong>Secret Sanitization:</strong> All live production secrets, AWS keys, Stripe secret tokens, and private database connection strings must be stripped and replaced with sample placeholders.</li>
+        </ul>
+
+        <h3 class="policy-doc-h2">2. Creator Royalties &amp; Instant UPI Payouts</h3>
+        <p class="policy-doc-p">
+          We believe creators should keep the overwhelming majority of their earned income:
+        </p>
+        <ul class="policy-doc-list">
+          <li><strong>97% – 99.5% Creator Retained Earnings:</strong> Smart Hub charges an industry-low platform fee of just 0.5% to 3% to cover infrastructure, payment gateway processing, and automated AST auditing.</li>
+          <li><strong>Instant UPI Settlement:</strong> Payouts can be triggered on demand to your verified UPI ID or Indian bank account via NEFT/IMPS with zero settlement hold periods.</li>
+          <li><strong>Real-time Analytics:</strong> Track page views, conversion rates, customer ratings, and verified wallet balances directly from your Seller Dashboard.</li>
+        </ul>
+
+        <h3 class="policy-doc-h2">3. Author Support SLA &amp; Maintenance Commitment</h3>
+        <p class="policy-doc-p">
+          Verified sellers agree to provide responsive technical assistance to buyers who have purchased Standard or Extended commercial licenses:
+        </p>
+        <ul class="policy-doc-list">
+          <li>Respond to buyer technical inquiries or build issue reports within <strong>48 hours</strong>.</li>
+          <li>Provide minor patch updates for breaking dependency upgrades within reasonable industry timeframes.</li>
+        </ul>
+      </section>
+
+      <!-- ============================================================
+           TAB 6: AI & SCRAPING GOVERNANCE
+           ============================================================ -->
+      <section class="policy-doc-pane" id="pane-compliance">
+        <h2 class="policy-doc-title">⚖️ AI Governance &amp; Anti-Scraping Protection</h2>
+        <div class="policy-doc-meta">
+          <span>LAST UPDATED: OCTOBER 2026 · VERSION 4.0</span>
+          <span>INTELLECTUAL PROPERTY &amp; AI TRAINING RESTRICTIONS</span>
+        </div>
+
+        <p class="policy-doc-p">
+          Smart Hub implements the strictest intellectual property protection in the developer marketplace ecosystem. We recognize the risk posed by unauthorized web crawlers and autonomous scraping bots extracting proprietary seller codebases for commercial Large Language Model (LLM) training.
+        </p>
+
+        <div class="policy-callout amber">
+          <strong>Strict Anti-AI Training Standard:</strong> No third-party entity, artificial intelligence research laboratory, automated crawler, or web scraper is permitted to ingest, download, or index source code packages hosted on Smart Hub for the purpose of training, fine-tuning, or evaluating commercial AI foundation models without explicit written licensing agreements.
+        </div>
+
+        <h3 class="policy-doc-h2">1. Technical Anti-Scraping Defenses</h3>
+        <p class="policy-doc-p">
+          Smart Hub deploys active threat defense against automated web crawlers and scrapers:
+        </p>
+        <ul class="policy-doc-list">
+          <li><strong>Rate-Limiting &amp; Bot Heuristics:</strong> IP-scoped sliding window rate-limiters that detect and throttle headless scrapers (Puppeteer, Playwright, Selenium, Scrapy).</li>
+          <li><strong>Signed Ephemeral Download URLs:</strong> Source code packages are never exposed via static unauthenticated URLs. Every download link requires JWT verification and is bound to a single-use cryptographically signed token that expires in 15 minutes.</li>
+          <li><strong>Robots.txt &amp; AI Directives:</strong> Strict <code>robots.txt</code> directives disallowing common AI crawlers (GPTBot, CCBot, Google-Extended, Anthropic AI crawlers) from accessing catalog source archives.</li>
+        </ul>
+
+        <h3 class="policy-doc-h2">2. Direct Legal Inquiry &amp; Developer Contact</h3>
+        <p class="policy-doc-p">
+          For any enterprise licensing inquiries, copyright issues, or legal clarifications, contact our Lead Developer directly:
+        </p>
+        <div class="contact-card-box">
+          <div style="font-size:1.15rem;font-weight:800;color:var(--text-primary);margin-bottom:8px;">
+            📧 Lead Developer &amp; Project Creator Contact
+          </div>
+          <p style="color:var(--text-secondary);font-size:0.93rem;line-height:1.75;margin:0;">
+            <strong>Developer:</strong> Naitik Soni<br>
+            <strong>Primary Email:</strong> <a href="mailto:naitiksoni700@gmail.com" style="color:#22c55e;font-weight:700;">naitiksoni700@gmail.com</a><br>
+            <strong>Secondary Email:</strong> <a href="mailto:naitik19ansh@gmail.com" style="color:var(--text-primary);font-weight:600;">naitik19ansh@gmail.com</a><br>
+            <strong>Response Time:</strong> Within 24 hours for security or legal inquiries.
+          </p>
+        </div>
       </section>
 
     </main>
   </div>
 </div>
 
-<!-- Footer -->
+<!-- Global Footer -->
 <div id="page-footer"></div>
 
 <!-- Scripts -->
@@ -336,20 +1037,34 @@
 <script src="js/layout.js"></script>
 <script>
 function switchDocTab(tab) {
-  document.querySelectorAll('.policies-nav-btn').forEach(btn => {
+  var validTabs = ['terms', 'privacy', 'refund', 'security', 'seller', 'compliance'];
+  if (validTabs.indexOf(tab) === -1) tab = 'terms';
+
+  document.querySelectorAll('.policies-nav-btn').forEach(function(btn) {
     btn.classList.toggle('active', btn.dataset.tab === tab);
   });
-  document.querySelectorAll('.policy-doc-pane').forEach(pane => {
-    pane.classList.toggle('active', pane.id === `pane-${tab}`);
+  document.querySelectorAll('.policy-doc-pane').forEach(function(pane) {
+    pane.classList.toggle('active', pane.id === 'pane-' + tab);
   });
-  // Update URL hash without scroll jump
-  history.replaceState(null, null, `?tab=${tab}`);
+
+  // Smooth scroll back to top of document card on mobile
+  if (window.innerWidth < 880) {
+    var contentCard = document.querySelector('.policies-content-card');
+    if (contentCard) {
+      contentCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
+  // Update URL search query without jumping page
+  try {
+    var newUrl = window.location.protocol + '//' + window.location.host + window.location.pathname + '?tab=' + tab;
+    window.history.replaceState({ path: newUrl }, '', newUrl);
+  } catch(e) {}
 }
 
-// Auto-switch tab based on URL query param
-document.addEventListener('DOMContentLoaded', () => {
-  const urlParams = new URLSearchParams(window.location.search);
-  const tab = urlParams.get('tab') || 'privacy';
+document.addEventListener('DOMContentLoaded', function() {
+  var urlParams = new URLSearchParams(window.location.search);
+  var tab = urlParams.get('tab') || 'terms';
   switchDocTab(tab);
 });
 </script>
