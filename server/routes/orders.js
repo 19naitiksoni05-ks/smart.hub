@@ -4,8 +4,127 @@ const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
 const AdmZip = require('adm-zip');
+const nodemailer = require('nodemailer');
 const db = require('../db');
 const { authRequired, authOptional } = require('../middleware/auth');
+const { supabase, isSupabaseConfigured } = require('../supabase');
+
+// ── Email Transporter Setup ───────────────────────────────────
+function createTransporter() {
+  if (!process.env.SMTP_USER || !process.env.SMTP_PASS) return null;
+  const user = process.env.SMTP_USER.trim();
+  const pass = process.env.SMTP_PASS.trim();
+  const host = (process.env.SMTP_HOST || '').trim().toLowerCase();
+
+  if (host.includes('gmail') || user.endsWith('@gmail.com')) {
+    return nodemailer.createTransport({
+      service: 'gmail',
+      auth: { user, pass }
+    });
+  }
+
+  return nodemailer.createTransport({
+    host: host || 'smtp.gmail.com',
+    port: parseInt(process.env.SMTP_PORT || '587'),
+    secure: parseInt(process.env.SMTP_PORT || '587') === 465,
+    auth: { user, pass }
+  });
+}
+
+// ── Build Safe Project ZIP for Email Delivery ──────────────────
+function getProjectZipBuffer(product) {
+  const rootUploads = path.join(__dirname, '../../uploads');
+  const safeZip = new AdmZip();
+  let addedAny = false;
+
+  // 1. Try reading from existing ZIP on disk
+  const zipRel = (product.bundleInfo && product.bundleInfo.zipUrl) || product.downloadUrl;
+  if (zipRel) {
+    const cleanZipPath = zipRel.replace(/^\/uploads\//, '');
+    const fullZipPath = path.join(rootUploads, cleanZipPath);
+    if (fs.existsSync(fullZipPath) && fullZipPath.endsWith('.zip')) {
+      try {
+        const existingZip = new AdmZip(fullZipPath);
+        existingZip.getEntries().forEach(entry => {
+          if (!entry.isDirectory) {
+            let name = entry.entryName.replace(/^[/\\]+/, '');
+            // Safeguard against Gmail/ISP malware filters blocking raw .js in email zips
+            if (/\.(js|jsx|ts|tsx|bat|cmd|exe)$/i.test(name)) {
+              name = `${name}.txt`;
+            }
+            safeZip.addFile(name, entry.getData());
+            addedAny = true;
+          }
+        });
+      } catch (e) {
+        console.warn('[Orders] Could not unpack existing zip for email:', e.message);
+      }
+    }
+  }
+
+  // 2. Try reading from folder on disk
+  if (!addedAny) {
+    let folderId = product.bundleInfo && (product.bundleInfo.folderId || product.bundleInfo.id);
+    if (!folderId) {
+      const allUploads = db.get('uploads') || [];
+      const folderMatch = allUploads.find(u =>
+        u.type === 'folder' && (
+          (product.bundleInfo && product.bundleInfo.folderName && u.name === product.bundleInfo.folderName) ||
+          (product.downloadUrl && u.url === product.downloadUrl) ||
+          (product.author && u.userId === product.author.id)
+        )
+      );
+      if (folderMatch) folderId = folderMatch.id;
+    }
+
+    if (folderId) {
+      const folderPath = path.join(rootUploads, 'folders', folderId);
+      if (fs.existsSync(folderPath)) {
+        try {
+          const addDirRecursive = (dir, relPrefix = '') => {
+            const entries = fs.readdirSync(dir, { withFileTypes: true });
+            for (const ent of entries) {
+              const fullP = path.join(dir, ent.name);
+              const relP = relPrefix ? `${relPrefix}/${ent.name}` : ent.name;
+              if (ent.isDirectory()) {
+                addDirRecursive(fullP, relP);
+              } else {
+                let name = relP;
+                if (/\.(js|jsx|ts|tsx|bat|cmd|exe)$/i.test(name)) {
+                  name = `${name}.txt`;
+                }
+                safeZip.addFile(name, fs.readFileSync(fullP));
+                addedAny = true;
+              }
+            }
+          };
+          addDirRecursive(folderPath);
+        } catch (e) {
+          console.warn('[Orders] Could not pack folder for email:', e.message);
+        }
+      }
+    }
+  }
+
+  // 3. Fallback: Generate starter production bundle files
+  if (!addedAny) {
+    const title = product.title || 'Project';
+    const category = (product.category || 'React').toLowerCase();
+    const slug = title.toLowerCase().replace(/[^a-z0-9_-]/g, '-');
+
+    if (category.includes('python')) {
+      safeZip.addFile('main.py', Buffer.from(`# ${title}\n\ndef main():\n    print("Welcome to ${title}")\n\nif __name__ == '__main__':\n    main()\n`, 'utf8'));
+      safeZip.addFile('utils.py', Buffer.from(`# Utility helper functions for ${title}\n\ndef calculate():\n    return 42\n`, 'utf8'));
+      safeZip.addFile('requirements.txt', Buffer.from(`# Dependencies for ${title}\n`, 'utf8'));
+    } else {
+      safeZip.addFile('index.js.txt', Buffer.from(`// ${title}\nconsole.log("Starting ${title}...");\n`, 'utf8'));
+      safeZip.addFile('package.json', Buffer.from(JSON.stringify({ name: slug, version: '1.0.0', main: 'index.js' }, null, 2), 'utf8'));
+    }
+    safeZip.addFile('README.md', Buffer.from(`# ${title}\n\n${product.description || 'Verified Smart Hub Digital Asset'}\n\n## Note\nScript files (.js, .ts) have .txt appended to prevent email security filter blocks. Remove .txt extension when opening or use Smart Hub Studio to decrypt directly.\n`, 'utf8'));
+  }
+
+  return safeZip.toBuffer();
+}
 
 // Server-side backend pepper secret (never sent to client)
 const LICENSE_PEPPER = process.env.LICENSE_PEPPER || 'smarthub_vault_license_pepper_2026_aes256';
@@ -48,7 +167,7 @@ function generateDynamicLicenseKey({ productId, orderNumber, buyerEmail, timesta
 }
 
 // ── Execute Encrypted Checkout & Dispatch Activation Email ───
-router.post('/checkout', authOptional, (req, res) => {
+router.post('/checkout', authOptional, async (req, res) => {
   try {
     const { productId, items, paymentMethod = 'wallet', deliveryEmail, couponCode, license = 'regular' } = req.body;
 
@@ -125,15 +244,40 @@ router.post('/checkout', authOptional, (req, res) => {
       });
     }
 
-    if ((buyer.walletBalance || 0) < finalAmount) {
+    // Fetch fresh balance from Supabase if available
+    let currentBuyerBal = Number(buyer.walletBalance) || 0;
+    if (isSupabaseConfigured() && supabase) {
+      try {
+        const { data: sbBuyer } = await supabase
+          .from('users')
+          .select('wallet_balance')
+          .or(`id.eq.${buyer.id},email.eq.${buyer.email}`)
+          .maybeSingle();
+        if (sbBuyer && sbBuyer.wallet_balance !== null && sbBuyer.wallet_balance !== undefined) {
+          currentBuyerBal = Number(sbBuyer.wallet_balance) || 0;
+          buyer.walletBalance = currentBuyerBal;
+        }
+      } catch (e) {}
+    }
+
+    if (currentBuyerBal < finalAmount) {
       return res.status(400).json({
         success: false,
-        error: `Insufficient wallet balance. You have ₹${(buyer.walletBalance || 0).toLocaleString('en-IN')}, required ₹${finalAmount.toLocaleString('en-IN')}. Please add money to your wallet.`
+        error: `Insufficient wallet balance. You have ₹${currentBuyerBal.toLocaleString('en-IN')}, required ₹${finalAmount.toLocaleString('en-IN')}. Please add money to your wallet.`
       });
     }
 
     // Deduct buyer wallet
-    const newBuyerBal = (buyer.walletBalance || 0) - finalAmount;
+    const newBuyerBal = currentBuyerBal - finalAmount;
+    if (isSupabaseConfigured() && supabase) {
+      try {
+        await supabase
+          .from('users')
+          .update({ wallet_balance: newBuyerBal })
+          .or(`id.eq.${buyer.id},email.eq.${buyer.email}`);
+      } catch (e) {}
+    }
+    buyer.walletBalance = newBuyerBal;
     db.update('users', buyer.id, { walletBalance: newBuyerBal });
 
     // Record buyer debit transaction
@@ -231,6 +375,26 @@ router.post('/checkout', authOptional, (req, res) => {
       db.insert('orders', newOrder);
       db.update('products', product.id, { sales: (product.sales || 0) + it.qty });
 
+      // Persist order in Supabase cloud
+      if (isSupabaseConfigured() && supabase) {
+        try {
+          await supabase.from('orders').upsert([{
+            id: newOrder.id,
+            user_id: buyer ? buyer.id : (req.user ? req.user.id : 'u_1793202450797'),
+            product_id: product.id,
+            product_title: product.title,
+            amount: newOrder.amount,
+            currency: 'INR',
+            status: 'completed',
+            encryption_key: encKey,
+            seller_id: (product.author && product.author.id) || product.seller_id || null,
+            created_at: newOrder.createdAt
+          }], { onConflict: 'id' });
+        } catch (sbErr) {
+          console.warn('[Orders] Supabase order sync notice:', sbErr.message);
+        }
+      }
+
       const zipName = (product.bundleInfo && product.bundleInfo.folderName ? `${product.bundleInfo.folderName}.zip` : `${product.title.replace(/[^a-zA-Z0-9_-]/g, '_')}_source.zip`);
 
       const origin = req.get('origin') || (req.protocol + '://' + req.get('host')) || 'http://localhost:5000';
@@ -288,6 +452,86 @@ The Smart Hub Engineering Team`
 
       db.insert('emails', emailRecord);
       sentEmails.push(emailRecord);
+
+      // Real-time Email Dispatch with Attached Code Package & Decryption Key via Nodemailer
+      const transporter = createTransporter();
+      if (transporter && deliveryEmail) {
+        try {
+          const zipBuffer = getProjectZipBuffer(product);
+          const fromAddress = `"Smart Hub India" <${process.env.SMTP_USER.trim()}>`;
+          const activateFullUrl = `${origin}/repo.html?id=${product.id}&activateKey=${encKey}`;
+
+          await transporter.sendMail({
+            from: fromAddress,
+            to: deliveryEmail,
+            subject: `🔒 Smart Hub Source Code Package & Encryption Key: ${product.title}`,
+            text: emailRecord.body,
+            html: `
+              <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;max-width:620px;margin:0 auto;background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,0.06);">
+                <div style="background:linear-gradient(135deg,#6366f1,#8b5cf6,#ec4899);padding:28px 24px;text-align:center;color:#ffffff;">
+                  <h1 style="margin:0 0 6px;font-size:1.6rem;letter-spacing:-0.02em;">Smart Hub India</h1>
+                  <p style="margin:0;opacity:0.95;font-size:0.92rem;">Payment Verified · Source Code Package & Encryption Key Dispatched</p>
+                </div>
+                
+                <div style="padding:28px 24px;color:#1e293b;line-height:1.6;">
+                  <h2 style="margin-top:0;font-size:1.25rem;color:#0f172a;">🎉 Transaction Completed: ${product.title}</h2>
+                  <p style="color:#475569;margin-bottom:20px;">
+                    Thank you for purchasing on Smart Hub India! The encrypted source code package (.zip) and unlock encryption key have been dispatched exclusively to this email address.
+                  </p>
+
+                  <div style="background:#f8fafc;border:2px dashed #6366f1;border-radius:10px;padding:20px;text-align:center;margin:24px 0;">
+                    <div style="font-size:0.75rem;font-weight:700;letter-spacing:0.1em;color:#6366f1;text-transform:uppercase;margin-bottom:8px;">
+                      🔑 YOUR UNIQUE EMAIL ENCRYPTION ACTIVATION KEY:
+                    </div>
+                    <div style="font-family:monospace;font-size:1.35rem;font-weight:800;color:#0f172a;background:#ffffff;padding:12px 18px;border-radius:6px;border:1px solid #cbd5e1;display:inline-block;letter-spacing:0.06em;">
+                      ${encKey}
+                    </div>
+                    <div style="font-size:0.8rem;color:#64748b;margin-top:10px;">
+                      Enter this key in Smart Hub Studio to decrypt and unlock the complete source code.
+                    </div>
+                  </div>
+
+                  <div style="text-align:center;margin:28px 0;">
+                    <a href="${activateFullUrl}" style="background:#6366f1;color:#ffffff;padding:14px 28px;border-radius:8px;text-decoration:none;font-weight:700;font-size:1rem;display:inline-block;box-shadow:0 4px 12px rgba(99,102,241,0.35);">
+                      🔓 Open Studio & Decrypt Code Now →
+                    </a>
+                  </div>
+
+                  <div style="background:#f1f5f9;border-radius:8px;padding:16px;margin:20px 0;font-size:0.85rem;color:#334155;">
+                    <div style="font-weight:700;margin-bottom:8px;color:#0f172a;">📦 Delivered Digital Assets:</div>
+                    <div>• <strong>Attached Package:</strong> <code>${zipName}</code> (Attached below)</div>
+                    <div>• <strong>Order Number:</strong> <code>${orderNumber}</code></div>
+                    <div>• <strong>Product:</strong> ${product.title}</div>
+                    <div>• <strong>Licensee:</strong> ${deliveryEmail}</div>
+                    <div>• <strong>Security:</strong> AES-256 Multi-Factor Cryptographic Token</div>
+                  </div>
+
+                  <div style="font-size:0.82rem;color:#64748b;border-top:1px solid #e2e8f0;padding-top:16px;margin-top:24px;">
+                    <strong>Instructions to Decrypt:</strong><br>
+                    1. Click the <em>Open Studio & Decrypt Code Now</em> button above.<br>
+                    2. If prompted, paste your Encryption Key: <code>${encKey}</code>.<br>
+                    3. The source code will immediately decrypt in your browser for live inspection, copying, and download.
+                  </div>
+                </div>
+
+                <div style="background:#f8fafc;padding:16px 24px;border-top:1px solid #e2e8f0;text-align:center;font-size:0.75rem;color:#94a3b8;">
+                  © 2026 Smart Hub India · Developer Marketplace & Code Repository Ecosystem
+                </div>
+              </div>
+            `,
+            attachments: zipBuffer ? [
+              {
+                filename: zipName,
+                content: zipBuffer,
+                contentType: 'application/zip'
+              }
+            ] : []
+          });
+          console.log(`[Orders] Dispatched live email with key and zip attachment to: ${deliveryEmail}`);
+        } catch (mailErr) {
+          console.error('[Orders] Email dispatch error:', mailErr);
+        }
+      }
 
       createdOrders.push(newOrder);
       encKeysList.push({
@@ -347,7 +591,7 @@ The Smart Hub Engineering Team`
 });
 
 // ── Activate Encryption Key for Source Code Access ────────────
-router.post(['/activate-key', '/verify-key'], authOptional, (req, res) => {
+router.post(['/activate-key', '/verify-key'], authOptional, async (req, res) => {
   try {
     const rawKey = req.body.licenseKey || req.body.key || req.body.encKey;
     const { productId, email } = req.body;
@@ -359,10 +603,41 @@ router.post(['/activate-key', '/verify-key'], authOptional, (req, res) => {
     const orders = db.get('orders') || [];
 
     // Match order by encKey (case-insensitive) and optionally productId
-    const order = orders.find(o =>
+    let order = orders.find(o =>
       o.encKey && o.encKey.toUpperCase() === cleanKey &&
       (!productId || o.productId === productId)
     );
+
+    // Cloud Supabase lookup fallback
+    if (!order && isSupabaseConfigured() && supabase) {
+      try {
+        const { data: sbOrders } = await supabase
+          .from('orders')
+          .select('*')
+          .ilike('encryption_key', cleanKey)
+          .limit(1);
+
+        if (sbOrders && sbOrders.length > 0) {
+          const so = sbOrders[0];
+          order = {
+            id: so.id,
+            orderNumber: `SH-ORD-2026-${so.id.slice(-4)}`,
+            buyerId: so.user_id,
+            buyerEmail: email || (req.user ? req.user.email : 'buyer@smarthub.io'),
+            productId: so.product_id,
+            productTitle: so.product_title,
+            amount: Number(so.amount) || 0,
+            encKey: so.encryption_key,
+            keyActivated: true,
+            status: 'completed',
+            createdAt: so.created_at
+          };
+          db.insert('orders', order);
+        }
+      } catch (sbErr) {
+        console.warn('[Orders] Supabase order activation fallback notice:', sbErr.message);
+      }
+    }
 
     if (!order) {
       return res.status(404).json({
@@ -380,6 +655,13 @@ router.post(['/activate-key', '/verify-key'], authOptional, (req, res) => {
       order.buyerId = req.user.id;
     }
     db.update('orders', order.id, order);
+
+    // Sync activation status to Supabase
+    if (isSupabaseConfigured() && supabase) {
+      try {
+        await supabase.from('orders').update({ status: 'completed' }).ilike('encryption_key', cleanKey);
+      } catch (e) {}
+    }
 
     res.json({
       success: true,
@@ -403,7 +685,7 @@ router.post(['/activate-key', '/verify-key'], authOptional, (req, res) => {
 });
 
 // ── Check Access Permission for Project Source Code ───────────
-router.get(['/check-access/:productId', '/access-check/:productId'], authOptional, (req, res) => {
+router.get(['/check-access/:productId', '/access-check/:productId'], authOptional, async (req, res) => {
   try {
     const prodId = req.params.productId;
     const product = db.findById('products', prodId);
@@ -427,11 +709,35 @@ router.get(['/check-access/:productId', '/access-check/:productId'], authOptiona
 
     // 2. Check if key provided matches an activated order
     if (clientKey) {
-      const orderByKey = db.findOne('orders', o =>
+      let orderByKey = db.findOne('orders', o =>
         o.productId === prodId &&
         o.encKey && o.encKey.toUpperCase() === clientKey &&
         o.keyActivated === true
       );
+
+      if (!orderByKey && isSupabaseConfigured() && supabase) {
+        try {
+          const { data: sbOrders } = await supabase
+            .from('orders')
+            .select('*')
+            .ilike('encryption_key', clientKey)
+            .limit(1);
+          if (sbOrders && sbOrders.length > 0) {
+            const so = sbOrders[0];
+            return res.json({
+              success: true,
+              hasAccess: true,
+              isOwner: false,
+              isActivated: true,
+              reason: 'ACTIVATED_KEY_VERIFIED',
+              buyerEmail: (user ? user.email : null) || 'buyer@smarthub.io',
+              orderNumber: `SH-ORD-2026-${so.id.slice(-4)}`,
+              encKey: so.encryption_key
+            });
+          }
+        } catch (e) {}
+      }
+
       if (orderByKey) {
         return res.json({
           success: true,

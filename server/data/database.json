@@ -42,7 +42,7 @@
       "githubId": "286883392",
       "passwordHash": "$2b$10$5xBk6BGBbZMF5l5qcF5QE.7k.50gnoA76PF6RdA4PYx5Yg/pMZg26",
       "avatar": "https://avatars.githubusercontent.com/u/286883392?v=4",
-      "walletBalance": 0,
+      "walletBalance": 3000,
       "role": "admin",
       "xp": 150,
       "badges": 1,
@@ -50,7 +50,7 @@
       "location": "India",
       "headline": "Platform & Architecture · Super Admin",
       "createdAt": "2026-10-27T20:36:28.881+00:00",
-      "updatedAt": "2026-10-28T14:17:55.974114+00:00"
+      "updatedAt": "2026-10-28T18:57:28.229Z"
     },
     {
       "id": "a9b9e238-6ec8-4622-8f22-9b6eb6939ac2",
@@ -174,14 +174,14 @@
       "email": "334tanmaygupta@gmail.com",
       "passwordHash": "$2b$10$.sV8bSVo0veLBGOvhHzxJuIAMIXXJrmDNwk4ILOndMct5EGJ5EAyS",
       "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=tanmay.5987&backgroundColor=ff5b36",
-      "walletBalance": 0,
+      "walletBalance": 700,
       "role": "buyer",
       "xp": 0,
       "badges": 0,
       "location": "India",
       "headline": "Smart Hub Developer",
       "createdAt": "2026-10-28T15:47:30.797+00:00",
-      "updatedAt": "2026-10-28T15:47:31.46145+00:00"
+      "updatedAt": "2026-10-28T18:45:14.798+00:00"
     }
   ],
   "products": [
@@ -479,6 +479,28 @@
   ],
   "orders": [],
   "transactions": [
+    {
+      "id": "t_1793213848233",
+      "userId": "u_1793133388791",
+      "type": "credit",
+      "title": "Wallet Top-up (UPI)",
+      "amount": 2000,
+      "date": "2026-10-28",
+      "icon": "➕",
+      "method": "UPI",
+      "createdAt": "2026-10-28T18:57:28.233Z"
+    },
+    {
+      "id": "t_1793213847772",
+      "userId": "u_1793133388791",
+      "type": "credit",
+      "title": "Wallet Top-up (UPI)",
+      "amount": 1000,
+      "date": "2026-10-28",
+      "icon": "➕",
+      "method": "UPI",
+      "createdAt": "2026-10-28T18:57:27.772Z"
+    },
     {
       "id": "t_w_1792939748601",
       "userId": "a9b9e238-6ec8-4622-8f22-9b6eb6939ac2",

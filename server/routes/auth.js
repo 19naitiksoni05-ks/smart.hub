@@ -731,7 +731,28 @@ router.get('/config', (req, res) => {
 });
 
 // ── 3. Get Current Authenticated Profile ──────────────────────
-router.get('/me', authRequired, (req, res) => {
+router.get('/me', authRequired, async (req, res) => {
+  try {
+    if (isSupabaseConfigured() && supabase && req.user) {
+      const { data: sbUser } = await supabase
+        .from('users')
+        .select('wallet_balance, xp, badges, role')
+        .or(`id.eq.${req.user.id},email.eq.${req.user.email}`)
+        .maybeSingle();
+
+      if (sbUser) {
+        if (sbUser.wallet_balance !== null && sbUser.wallet_balance !== undefined) {
+          req.user.walletBalance = Number(sbUser.wallet_balance);
+        }
+        if (sbUser.xp !== null && sbUser.xp !== undefined) req.user.xp = Number(sbUser.xp);
+        if (sbUser.badges !== null && sbUser.badges !== undefined) req.user.badges = Number(sbUser.badges);
+        if (sbUser.role) req.user.role = sbUser.role;
+      }
+    }
+  } catch (e) {
+    console.warn('[Auth /me] Supabase profile sync note:', e.message);
+  }
+
   const userKeys = db.find('apiKeys', k => k.userId === req.user.id && k.status === 'active');
 
   res.json({

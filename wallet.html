@@ -48,7 +48,7 @@
           🟢 Active · Linked with Instant UPI
         </div>
         <div class="wallet-actions">
-          <button class="btn btn-primary btn-lg" data-open-modal="modal-topup">
+          <button class="btn btn-primary btn-lg" onclick="openTopupModal()">
             ➕ Add Money
           </button>
           <button class="btn btn-secondary" onclick="openTransferModal()">
@@ -233,7 +233,7 @@
 
     <div style="margin-bottom:20px;">
       <label style="font-size:0.82rem;color:var(--text-muted);display:block;margin-bottom:8px;">Or enter custom amount</label>
-      <input class="input" type="number" placeholder="₹ Enter amount" id="modal-custom-amount" min="10">
+      <input class="input" type="number" placeholder="₹ Enter custom amount (min ₹10)" id="modal-custom-amount" min="10" oninput="onCustomAmountInput(this.value)">
     </div>
 
     <div style="margin-bottom:20px;">
@@ -270,7 +270,7 @@
       🎉 <strong>Zero fee to add money</strong>. Platform fee (0.5%–3% + statutory tax) applies only when buying or selling digital assets.
     </div>
 
-    <button class="btn btn-primary" style="width:100%;justify-content:center;font-size:1rem;padding:14px;" onclick="processTopup()">
+    <button class="btn btn-primary" id="btn-submit-topup" style="width:100%;justify-content:center;font-size:1rem;padding:14px;font-weight:700;" onclick="processTopup()">
       🚀 Add ₹<span id="topup-amount-display">1,000</span> to Wallet
     </button>
     <p style="text-align:center;font-size:0.75rem;color:var(--text-muted);margin-top:10px;">Secured by Razorpay · 256-bit SSL encryption</p>
@@ -621,33 +621,80 @@ function renderQuickAmounts() {
     <div class="topup-amount" onclick="setQuickAmount(${a}, this)">₹${a.toLocaleString('en-IN')}</div>`).join('');
 }
 
+function openTopupModal(defaultAmt) {
+  const amt = defaultAmt || selectedTopupAmount || 1000;
+  selectedTopupAmount = amt;
+  const display = document.getElementById('topup-amount-display');
+  if (display) display.textContent = amt.toLocaleString('en-IN');
+  const modalCustom = document.getElementById('modal-custom-amount');
+  if (modalCustom) modalCustom.value = '';
+  document.querySelectorAll('#modal-topup .topup-amount').forEach(el => {
+    const chipVal = parseInt(el.textContent.replace(/[^0-9]/g, ''), 10);
+    if (chipVal === amt) {
+      el.classList.add('active');
+    } else {
+      el.classList.remove('active');
+    }
+  });
+  SH.openModal('modal-topup');
+}
+
 function setAmount(amount, el) {
   selectedTopupAmount = amount;
   document.querySelectorAll('#modal-topup .topup-amount').forEach(e => e.classList.remove('active'));
-  el.classList.add('active');
+  if (el) el.classList.add('active');
+  const modalCustom = document.getElementById('modal-custom-amount');
+  if (modalCustom) modalCustom.value = '';
   const display = document.getElementById('topup-amount-display');
   if (display) display.textContent = amount.toLocaleString('en-IN');
 }
 
+function onCustomAmountInput(val) {
+  const num = parseInt(val, 10);
+  document.querySelectorAll('#modal-topup .topup-amount').forEach(e => e.classList.remove('active'));
+  const display = document.getElementById('topup-amount-display');
+  if (num && num >= 10) {
+    selectedTopupAmount = num;
+    if (display) display.textContent = num.toLocaleString('en-IN');
+  } else {
+    if (display) display.textContent = (num || 0).toLocaleString('en-IN');
+  }
+}
+
 function setQuickAmount(amount, el) {
   document.querySelectorAll('#quick-amounts .topup-amount').forEach(e => e.classList.remove('active'));
-  el.classList.add('active');
+  if (el) el.classList.add('active');
   document.getElementById('custom-amount').value = amount;
 }
 
 function initiateTopup() {
   const custom = document.getElementById('custom-amount').value;
-  const amount = custom ? parseInt(custom) : 1000;
+  const amount = custom ? parseInt(custom, 10) : 1000;
   if (!amount || amount < 10) { SH.showToast('Minimum add amount is ₹10', 'error'); return; }
-  selectedTopupAmount = amount;
-  document.getElementById('topup-amount-display').textContent = amount.toLocaleString('en-IN');
-  SH.openModal('modal-topup');
+  openTopupModal(amount);
+  const matched = Array.from(document.querySelectorAll('#modal-topup .topup-amount')).some(
+    el => parseInt(el.textContent.replace(/[^0-9]/g, ''), 10) === amount
+  );
+  const modalCustom = document.getElementById('modal-custom-amount');
+  if (!matched && modalCustom) {
+    modalCustom.value = amount;
+    onCustomAmountInput(amount);
+  }
 }
 
 async function processTopup() {
-  const customInput = document.getElementById('modal-custom-amount').value;
-  const amount = customInput ? parseInt(customInput) : selectedTopupAmount;
-  if (!amount || amount < 10) { SH.showToast('Please enter a valid amount (min ₹10)', 'error'); return; }
+  const customInput = document.getElementById('modal-custom-amount').value.trim();
+  const amount = customInput ? parseInt(customInput, 10) : selectedTopupAmount;
+  if (!amount || isNaN(amount) || amount < 10) {
+    SH.showToast('Please enter a valid amount (min ₹10)', 'error');
+    return;
+  }
+
+  const btn = document.getElementById('btn-submit-topup');
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Processing Top-up...';
+  }
 
   const methodRadio = document.querySelector('input[name="payment-method"]:checked');
   const method = methodRadio ? methodRadio.value.toUpperCase() : 'UPI';
@@ -657,7 +704,7 @@ async function processTopup() {
     if (window.SmartHubAPI) {
       const res = await window.SmartHubAPI.topupWallet(amount, method);
       if (res && res.success) {
-        walletBalance = res.newBalance;
+        walletBalance = Number(res.newBalance);
         document.getElementById('wallet-main-balance').textContent = '₹' + walletBalance.toLocaleString('en-IN');
         document.querySelectorAll('.wallet-display').forEach(el => {
           el.textContent = '₹' + walletBalance.toLocaleString('en-IN');
@@ -667,6 +714,8 @@ async function processTopup() {
         const curUser = (window.getCurrentUser && window.getCurrentUser()) || {};
         curUser.walletBalance = walletBalance;
         localStorage.setItem('smarthub_user', JSON.stringify(curUser));
+        localStorage.setItem('currentUser', JSON.stringify(curUser));
+        localStorage.setItem('currentUser', JSON.stringify(curUser));
         window.dispatchEvent(new CustomEvent('wallet-updated', { detail: { balance: walletBalance } }));
 
         if (res.transaction) {
@@ -687,6 +736,12 @@ async function processTopup() {
     throw new Error('Wallet service is temporarily unreachable');
   } catch (err) {
     SH.showToast(err.message || 'Top-up failed. Please check backend connection.', 'error');
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      const display = document.getElementById('topup-amount-display');
+      btn.innerHTML = `🚀 Add ₹<span id="topup-amount-display">${(display && display.textContent) || selectedTopupAmount.toLocaleString('en-IN')}</span> to Wallet`;
+    }
   }
 }
 
@@ -705,6 +760,7 @@ async function loadBackendWallet() {
         const curUser = (window.getCurrentUser && window.getCurrentUser()) || {};
         curUser.walletBalance = walletBalance;
         localStorage.setItem('smarthub_user', JSON.stringify(curUser));
+        localStorage.setItem('currentUser', JSON.stringify(curUser));
 
         const te = document.getElementById('wallet-total-earned');
         if (te) te.textContent = '₹' + Number(data.wallet.totalEarned || 0).toLocaleString('en-IN');
