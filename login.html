@@ -240,9 +240,9 @@ async function handleFormLogin(e) {
       email: isNaitik ? 'naitik19ansh@gmail.com' : (identity.includes('@') ? identity : `${cleanName.toLowerCase()}@smarthub.dev`),
       role: isNaitik ? 'admin' : 'buyer',
       avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(handle)}&backgroundColor=ff5b36`,
-      walletBalance: isNaitik ? 50000 : 500,
-      xp: isNaitik ? 9990 : 100,
-      level: isNaitik ? 42 : 1,
+      walletBalance: 0,
+      xp: 0,
+      level: 1,
       isLoggedIn: true,
     };
 

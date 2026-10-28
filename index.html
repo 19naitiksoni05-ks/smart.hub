@@ -857,7 +857,9 @@ async function handleLogin() {
     username: isNaitik ? '@naitik19' : '@' + cleanName.toLowerCase(),
     role: isNaitik ? 'admin' : 'buyer',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + encodeURIComponent(cleanName) + '&backgroundColor=ff5b36',
-    walletBalance: isNaitik ? 50000 : 500,
+    walletBalance: 0,
+    xp: 0,
+    level: 1,
     isLoggedIn: true,
   };
   localStorage.setItem('smarthub_user', JSON.stringify(user));

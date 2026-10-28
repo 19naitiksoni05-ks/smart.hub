@@ -460,12 +460,11 @@
       try {
         const query = new URLSearchParams(params).toString();
         const res = await fetch(`${this.baseUrl}/products?${query}`);
-        const data = await res.json();
-        if (data.success && Array.isArray(data.products)) {
+        const data = await this.safeJson(res);
+        if (data && data.success && Array.isArray(data.products)) {
           // Sync with local SmartHubData
-          if (window.SmartHubData) {
-            window.SmartHubData.products = data.products;
-          }
+          if (!window.SmartHubData) window.SmartHubData = {};
+          window.SmartHubData.products = data.products;
           return data.products;
         }
       } catch (err) {
@@ -494,8 +493,10 @@
           headers: this.getHeaders(),
           body: JSON.stringify(productData)
         });
-        const data = await res.json();
-        if (data.success && data.product && window.SmartHubData && window.SmartHubData.products) {
+        const data = await this.safeJson(res);
+        if (data && data.success && data.product) {
+          if (!window.SmartHubData) window.SmartHubData = {};
+          if (!window.SmartHubData.products) window.SmartHubData.products = [];
           window.SmartHubData.products.unshift(data.product);
         }
         return data;

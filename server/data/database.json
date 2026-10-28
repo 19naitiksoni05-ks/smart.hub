@@ -89,6 +89,34 @@
   ],
   "products": [
     {
+      "id": "p_1793195355652",
+      "title": "React E-Commerce Dashboard",
+      "category": "React",
+      "price": 1499,
+      "oldPrice": null,
+      "rating": 5,
+      "reviews": 1,
+      "sales": 0,
+      "author": {
+        "id": "dev_guest",
+        "name": "Verified Developer",
+        "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=dev&backgroundColor=6366f1"
+      },
+      "tags": [
+        "React",
+        "SaaS",
+        "Tailwind"
+      ],
+      "badge": "New",
+      "thumb": "https://picsum.photos/seed/React%20E-Commerce%20Dashboard/400/250",
+      "videoUrl": null,
+      "downloadUrl": null,
+      "bundleInfo": null,
+      "description": "Complete full-stack React marketplace application",
+      "type": "Source Code",
+      "createdAt": "2026-10-28T13:49:15.652Z"
+    },
+    {
       "id": "p_1792913427884",
       "title": "Python Array & Algorithm Utility Suite",
       "category": "Python",

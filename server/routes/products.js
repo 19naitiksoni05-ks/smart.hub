@@ -2,11 +2,58 @@ const express = require('express');
 const router = express.Router();
 const db = require('../db');
 const { authRequired, authOptional } = require('../middleware/auth');
+const { supabase, isConfigured } = require('../supabase');
+
+// Helper to format Supabase product row into platform model
+function formatSupabaseProduct(p) {
+  return {
+    id: p.id,
+    title: p.title,
+    description: p.description,
+    price: Number(p.price) || 0,
+    oldPrice: p.original_price ? Number(p.original_price) : null,
+    discount: p.discount || 0,
+    category: p.category,
+    badge: p.badge || 'Verified',
+    rating: Number(p.rating) || 5.0,
+    reviews: p.reviews_count || 0,
+    sales: p.sales_count || 0,
+    author: {
+      id: p.seller_id || 'dev_seller',
+      name: p.seller_name || 'Verified Developer',
+      avatar: p.seller_avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=seller&backgroundColor=6366f1'
+    },
+    liveDemoUrl: p.live_demo_url || null,
+    downloadUrl: p.download_url || null,
+    thumb: p.thumbnail || `https://picsum.photos/seed/${encodeURIComponent(p.title)}/400/250`,
+    tags: Array.isArray(p.tags) ? p.tags : (typeof p.tags === 'string' ? JSON.parse(p.tags || '[]') : ['Code']),
+    features: Array.isArray(p.features) ? p.features : [],
+    techStack: Array.isArray(p.tech_stack) ? p.tech_stack : [],
+    createdAt: p.created_at || new Date().toISOString()
+  };
+}
 
 // ── List Products with Filtering & Sorting ────────────────────
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   try {
-    let products = [...db.get('products')];
+    let products = [];
+
+    // Attempt live fetch from Supabase first
+    if (isConfigured() && supabase) {
+      try {
+        const { data, error } = await supabase.from('products').select('*').order('created_at', { ascending: false });
+        if (!error && Array.isArray(data) && data.length > 0) {
+          products = data.map(formatSupabaseProduct);
+        }
+      } catch (sbErr) {
+        console.warn('[Products] Live Supabase query fallback to local:', sbErr.message);
+      }
+    }
+
+    // Fallback to local memory/JSON if Supabase returned 0 or failed
+    if (products.length === 0) {
+      products = [...db.get('products')];
+    }
     const { cat, search, minPrice, maxPrice, sort, tag, limit } = req.query;
 
     // Filter by Category
@@ -114,7 +161,7 @@ router.get('/:id', (req, res) => {
 });
 
 // ── Create New Product (Seller Studio) ────────────────────────
-router.post('/', authOptional, (req, res) => {
+router.post('/', authOptional, async (req, res) => {
   try {
     const { title, category, price, oldPrice, description, tags, thumb, type, badge, videoUrl, downloadUrl, bundleInfo } = req.body;
 
@@ -165,6 +212,42 @@ router.post('/', authOptional, (req, res) => {
 
     db.insert('products', newProduct);
 
+    // Persist directly and immediately to Supabase
+    if (isConfigured() && supabase) {
+      try {
+        const row = {
+          id: newProduct.id,
+          title: newProduct.title,
+          description: newProduct.description,
+          price: newProduct.price,
+          original_price: newProduct.oldPrice,
+          category: newProduct.category,
+          badge: newProduct.badge,
+          rating: newProduct.rating,
+          reviews_count: newProduct.reviews,
+          sales_count: newProduct.sales,
+          seller_id: newProduct.author.id !== 'dev_guest' ? newProduct.author.id : null,
+          seller_name: newProduct.author.name,
+          seller_avatar: newProduct.author.avatar,
+          live_demo_url: newProduct.videoUrl,
+          download_url: newProduct.downloadUrl,
+          thumbnail: newProduct.thumb,
+          tags: newProduct.tags,
+          features: [],
+          tech_stack: [newProduct.category],
+          created_at: newProduct.createdAt
+        };
+        const { error: insErr } = await supabase.from('products').upsert([row], { onConflict: 'id' });
+        if (insErr) {
+          console.warn('[Products] Supabase insert warning:', insErr.message);
+        } else {
+          console.log(`[Products] Successfully persisted product "${newProduct.title}" to Supabase!`);
+        }
+      } catch (sbErr) {
+        console.warn('[Products] Supabase write error:', sbErr.message);
+      }
+    }
+
     // Also update categories count
     const categories = db.get('categories');
     const catItem = categories.find(c => c.name.toLowerCase() === category.toLowerCase());
@@ -185,7 +268,7 @@ router.post('/', authOptional, (req, res) => {
 });
 
 // ── Update Product ────────────────────────────────────────────
-router.put('/:id', authRequired, (req, res) => {
+router.put('/:id', authRequired, async (req, res) => {
   try {
     const product = db.findById('products', req.params.id);
     if (!product) {
@@ -198,6 +281,21 @@ router.put('/:id', authRequired, (req, res) => {
     }
 
     const updated = db.update('products', req.params.id, req.body);
+
+    if (isConfigured() && supabase) {
+      try {
+        const updateRow = {};
+        if (req.body.title) updateRow.title = req.body.title;
+        if (req.body.description) updateRow.description = req.body.description;
+        if (req.body.price !== undefined) updateRow.price = Number(req.body.price);
+        if (req.body.category) updateRow.category = req.body.category;
+        if (req.body.tags) updateRow.tags = req.body.tags;
+        if (req.body.thumb) updateRow.thumbnail = req.body.thumb;
+        updateRow.updated_at = new Date().toISOString();
+        await supabase.from('products').update(updateRow).eq('id', req.params.id);
+      } catch (e) {}
+    }
+
     res.json({
       success: true,
       message: 'Product updated successfully',
@@ -209,12 +307,19 @@ router.put('/:id', authRequired, (req, res) => {
 });
 
 // ── Delete Product ────────────────────────────────────────────
-router.delete('/:id', authRequired, (req, res) => {
+router.delete('/:id', authRequired, async (req, res) => {
   try {
     const success = db.delete('products', req.params.id);
     if (!success) {
       return res.status(404).json({ success: false, error: 'Product not found' });
     }
+
+    if (isConfigured() && supabase) {
+      try {
+        await supabase.from('products').delete().eq('id', req.params.id);
+      } catch (e) {}
+    }
+
     res.json({ success: true, message: 'Product removed from marketplace' });
   } catch (err) {
     res.status(500).json({ success: false, error: 'Failed to delete product' });

@@ -112,9 +112,28 @@ function securityHeaders(req, res, next) {
   next();
 }
 
+// Safe client IP extractor (resilient to serverless and proxy headers)
+function getClientIp(req) {
+  try {
+    if (req && req.headers) {
+      const forwarded = req.headers['x-forwarded-for'] || req.headers['x-real-ip'];
+      if (forwarded) {
+        return String(forwarded).split(',')[0].trim();
+      }
+    }
+    if (req && req.socket && req.socket.remoteAddress) {
+      return req.socket.remoteAddress;
+    }
+    if (req && req.connection && req.connection.remoteAddress) {
+      return req.connection.remoteAddress;
+    }
+  } catch (e) {}
+  return '127.0.0.1';
+}
+
 // ── Global Rate Limit Middleware ─────────────────────────────
 function rateLimitGlobal(req, res, next) {
-  const clientIp = (req.headers && req.headers['x-forwarded-for']) || (req.socket && req.socket.remoteAddress) || req.ip || '127.0.0.1';
+  const clientIp = getClientIp(req);
   const result = globalLimiter.isAllowed(clientIp);
 
   res.setHeader('X-RateLimit-Limit', '150');
@@ -133,7 +152,7 @@ function rateLimitGlobal(req, res, next) {
 
 // ── Sensitive Auth / Mutation Rate Limit Middleware ──────────
 function rateLimitAuth(req, res, next) {
-  const clientIp = (req.headers && req.headers['x-forwarded-for']) || (req.socket && req.socket.remoteAddress) || req.ip || '127.0.0.1';
+  const clientIp = getClientIp(req);
   const result = authLimiter.isAllowed('auth_' + clientIp);
 
   if (!result.allowed) {
