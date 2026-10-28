@@ -4,7 +4,6 @@ const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
 const multer = require('multer');
-const archiver = require('archiver');
 const db = require('../db');
 const { authOptional } = require('../middleware/auth');
 const { supabase, isSupabaseConfigured } = require('../supabase');
