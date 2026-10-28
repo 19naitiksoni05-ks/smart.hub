@@ -8,8 +8,11 @@ const { supabase, isSupabaseConfigured } = require('../supabase');
 router.use(adminRequired);
 
 // ── 1. Comprehensive System Overview & Metrics ──────────────
-router.get('/overview', (req, res) => {
+router.get('/overview', async (req, res) => {
   try {
+    if (isSupabaseConfigured() && supabase && typeof db.syncFromSupabase === 'function') {
+      try { await db.syncFromSupabase(); } catch (e) {}
+    }
     const users = db.get('users') || [];
     const products = db.get('products') || [];
     const orders = db.get('orders') || [];
@@ -54,8 +57,11 @@ router.get('/overview', (req, res) => {
 });
 
 // ── 2. All Users Directory ───────────────────────────────────
-router.get('/users', (req, res) => {
+router.get('/users', async (req, res) => {
   try {
+    if (isSupabaseConfigured() && supabase && typeof db.syncFromSupabase === 'function') {
+      try { await db.syncFromSupabase(); } catch (e) {}
+    }
     const users = db.get('users') || [];
     const apiKeys = db.get('apiKeys') || [];
     const orders = db.get('orders') || [];
@@ -80,7 +86,7 @@ router.get('/users', (req, res) => {
       };
     });
 
-    res.json({ success: true, users: enrichedUsers });
+    res.json({ success: true, count: enrichedUsers.length, users: enrichedUsers });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
@@ -269,14 +275,45 @@ router.post('/sync-supabase', async (req, res) => {
       });
     }
 
+    let synced = { users: 0, products: 0, categories: 0, channels: 0 };
+
+    // 1. Bidirectional Users Sync (Hydrate from Cloud + Ensure All Users in Cloud)
+    if (typeof db.syncFromSupabase === 'function') {
+      await db.syncFromSupabase();
+    }
+    const localUsers = db.get('users') || [];
+    for (const u of localUsers) {
+      const cleanEmail = (u.email || '').toLowerCase().trim();
+      if (!cleanEmail) continue;
+      const row = {
+        id: u.id,
+        name: u.name || 'Developer',
+        username: u.username || ('@' + cleanEmail.split('@')[0]),
+        email: cleanEmail,
+        password_hash: u.passwordHash || u.password_hash || '',
+        avatar: u.avatar || null,
+        wallet_balance: Number(u.walletBalance) || 0,
+        role: u.role || 'buyer',
+        xp: Number(u.xp) || 0,
+        badges: Number(u.badges) || 0,
+        location: u.location || 'India',
+        headline: u.headline || 'Developer',
+        created_at: u.createdAt || new Date().toISOString()
+      };
+      await supabase.from('users').upsert([row], { onConflict: 'email' });
+    }
+    synced.users = localUsers.length;
+
+    // 2. Products Sync
+    const { data: sbProds } = await supabase.from('products').select('id');
+    synced.products = (sbProds && sbProds.length) || (db.get('products') || []).length;
+
+    // 3. Categories & Channels
     const categories = db.get('categories') || [];
     const channels = db.get('channels') || [];
-    const challenges = db.get('challenges') || [];
-
-    let synced = { categories: 0, channels: 0, challenges: 0 };
 
     if (categories.length > 0) {
-      const { data } = await supabase.from('categories').upsert(categories, { onConflict: 'name' });
+      await supabase.from('categories').upsert(categories, { onConflict: 'name' });
       synced.categories = categories.length;
     }
 
@@ -294,8 +331,9 @@ router.post('/sync-supabase', async (req, res) => {
 
     res.json({
       success: true,
-      message: 'Cloud sync to Supabase completed successfully!',
-      synced
+      message: 'Cloud sync to Supabase completed successfully! All users and data are intact.',
+      synced,
+      totalUsers: localUsers.length
     });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });

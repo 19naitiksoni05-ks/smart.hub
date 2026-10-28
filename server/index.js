@@ -7,6 +7,13 @@ require('dotenv').config();
 
 const db = require('./db');
 
+// Ensure background hydration from Supabase
+if (db && typeof db.syncFromSupabase === 'function') {
+  db.syncFromSupabase().catch(err => {
+    console.warn('[Server] Supabase sync notice:', err.message);
+  });
+}
+
 // Route modules
 const authRoutes = require('./routes/auth');
 const productsRoutes = require('./routes/products');
