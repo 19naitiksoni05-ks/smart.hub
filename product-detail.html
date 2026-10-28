@@ -158,8 +158,8 @@
         <div id="spec-tab-overview" class="spec-content">
           <div style="display:grid;grid-template-columns:2fr 1fr;gap:36px;" class="spec-grid">
             <div>
-              <h3 style="margin-bottom:16px;">Production-Ready Software Engine Built for Scale</h3>
-              <p style="line-height:1.7;color:var(--text-secondary);margin-bottom:20px;">
+              <h3 id="prod-overview-heading" style="margin-bottom:16px;">Production-Ready Software Engine Built for Scale</h3>
+              <p id="prod-overview-desc" style="line-height:1.7;color:var(--text-secondary);margin-bottom:20px;">
                 This verified package delivers a comprehensive, battle-tested modern store architecture built on Next.js 15, React 19, and Tailwind-free modular Vanilla CSS. It comes pre-wired with Indian payment gateways (Razorpay, PhonePe, UPI Intent, and Cash on Delivery), complete inventory management, dynamic coupon engine, and real-time order tracking.
               </p>
               
@@ -287,11 +287,53 @@
   <script src="js/react-components.js"></script>
 
   <script>
-    // Load Product Data dynamically based on ?id= query param
-    document.addEventListener('DOMContentLoaded', () => {
+    // Load Product Data dynamically based on ?id= query param with async API fallback
+    document.addEventListener('DOMContentLoaded', async () => {
       const urlParams = new URLSearchParams(window.location.search);
       const prodId = urlParams.get('id');
-      const prod = prodId && SmartHubData.products ? SmartHubData.products.find(p => p.id === prodId) : (SmartHubData.products && SmartHubData.products[0]);
+
+      let prod = null;
+
+      // 1. Fetch live product from API
+      if (prodId) {
+        try {
+          if (window.SmartHubAPI && typeof window.SmartHubAPI.getProduct === 'function') {
+            const res = await window.SmartHubAPI.getProduct(prodId);
+            if (res && res.product) {
+              prod = res.product;
+            }
+          }
+          if (!prod) {
+            const apiRes = await fetch(`/api/products/${encodeURIComponent(prodId)}`);
+            if (apiRes.ok) {
+              const apiData = await apiRes.json();
+              if (apiData && apiData.product) {
+                prod = apiData.product;
+              }
+            }
+          }
+        } catch (apiErr) {
+          console.warn('[ProductDetail] Live API lookup note:', apiErr.message);
+        }
+      }
+
+      // 2. Fallback to preloaded local SmartHubData
+      if (!prod && window.SmartHubData && Array.isArray(window.SmartHubData.products) && window.SmartHubData.products.length > 0) {
+        prod = prodId ? window.SmartHubData.products.find(p => p.id === prodId) : window.SmartHubData.products[0];
+      }
+
+      // 3. Fallback: Fetch catalog list from API if single lookup missed
+      if (!prod) {
+        try {
+          const allRes = await fetch('/api/products');
+          if (allRes.ok) {
+            const allData = await allRes.json();
+            if (allData && Array.isArray(allData.products) && allData.products.length > 0) {
+              prod = prodId ? allData.products.find(p => p.id === prodId) : allData.products[0];
+            }
+          }
+        } catch (e) {}
+      }
 
       if (!prod) {
         const main = document.querySelector('main');
@@ -310,41 +352,76 @@
         return;
       }
 
-      document.getElementById('prod-title').textContent = prod.title;
-      document.getElementById('prod-bread-title').textContent = prod.title.toUpperCase();
-      document.getElementById('prod-category-tag').textContent = `[ ${prod.category.toUpperCase()} ]`;
-      document.getElementById('prod-bread-cat').textContent = prod.category.toUpperCase();
-      document.getElementById('prod-bread-cat').href = `marketplace.html?cat=${encodeURIComponent(prod.category)}`;
-      document.getElementById('prod-price-display').textContent = `₹${prod.price.toLocaleString('en-IN')}`;
-      document.getElementById('prod-main-img').src = prod.thumb;
+      // Cache into local SmartHubData so reactive widgets get fresh product data
+      if (!window.SmartHubData) window.SmartHubData = {};
+      if (!window.SmartHubData.products) window.SmartHubData.products = [];
+      const cachedIdx = window.SmartHubData.products.findIndex(p => p.id === prod.id);
+      if (cachedIdx !== -1) {
+        window.SmartHubData.products[cachedIdx] = prod;
+      } else {
+        window.SmartHubData.products.unshift(prod);
+      }
+
+      // Populate DOM elements
+      const prodTitle = prod.title || prod.name || 'Untitled Asset';
+      const prodCategory = prod.category || 'React';
+      const prodPrice = Number(prod.price) || 0;
       const authorName = (prod.author && prod.author.name) || prod.seller_name || 'Verified Developer';
       const authorAvatar = (prod.author && prod.author.avatar) || prod.seller_avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=seller&backgroundColor=6366f1';
-      document.getElementById('prod-author-name').innerHTML = `${authorName} <span style="color:var(--accent-cyan);">✓ Verified Seller</span>`;
-      document.getElementById('prod-author-avatar').src = authorAvatar;
-      document.getElementById('prod-buy-now-btn').href = `checkout.html?id=${prod.id}`;
+
+      const titleEl = document.getElementById('prod-title');
+      if (titleEl) titleEl.textContent = prodTitle;
+
+      const breadTitle = document.getElementById('prod-bread-title');
+      if (breadTitle) breadTitle.textContent = prodTitle.toUpperCase();
+
+      const catTag = document.getElementById('prod-category-tag');
+      if (catTag) catTag.textContent = `[ ${prodCategory.toUpperCase()} ]`;
+
+      const breadCat = document.getElementById('prod-bread-cat');
+      if (breadCat) {
+        breadCat.textContent = prodCategory.toUpperCase();
+        breadCat.href = `marketplace.html?cat=${encodeURIComponent(prodCategory)}`;
+      }
+
+      const priceDisplay = document.getElementById('prod-price-display');
+      if (priceDisplay) priceDisplay.textContent = `₹${prodPrice.toLocaleString('en-IN')}`;
+
+      const mainImg = document.getElementById('prod-main-img');
+      if (mainImg) mainImg.src = prod.thumb || prod.thumbnail || `https://picsum.photos/seed/${encodeURIComponent(prodTitle)}/400/250`;
+
+      const authorNameEl = document.getElementById('prod-author-name');
+      if (authorNameEl) authorNameEl.innerHTML = `${authorName} <span style="color:var(--accent-cyan);">✓ Verified Seller</span>`;
+
+      const authorAvatarEl = document.getElementById('prod-author-avatar');
+      if (authorAvatarEl) authorAvatarEl.src = authorAvatar;
+
+      const buyBtn = document.getElementById('prod-buy-now-btn');
+      if (buyBtn) buyBtn.href = `checkout.html?id=${prod.id}`;
+
       const repoBtn = document.getElementById('prod-view-repo-btn');
       if (repoBtn) repoBtn.href = `repo.html?id=${prod.id}`;
+
       const chatBtn = document.getElementById('prod-chat-author-btn');
       if (chatBtn) chatBtn.href = `chat.html?seller=${encodeURIComponent(authorName)}&product=${prod.id}`;
-      if (prod.badge) {
-        document.getElementById('prod-badge-tag').textContent = `[ ${prod.badge.toUpperCase()} ]`;
-      } else {
-        document.getElementById('prod-badge-tag').style.display = 'none';
+
+      const badgeTag = document.getElementById('prod-badge-tag');
+      if (badgeTag) {
+        if (prod.badge) {
+          badgeTag.textContent = `[ ${prod.badge.toUpperCase()} ]`;
+          badgeTag.style.display = 'block';
+        } else {
+          badgeTag.style.display = 'none';
+        }
       }
+
+      const overviewHeading = document.getElementById('prod-overview-heading');
+      if (overviewHeading && prodTitle) overviewHeading.textContent = prodTitle;
+
+      const overviewDesc = document.getElementById('prod-overview-desc');
+      if (overviewDesc && prod.description) overviewDesc.textContent = prod.description;
 
       bindProductMediaAndBundle(prod);
-
-      // Fetch from live backend API if available
-      if (window.SmartHubAPI && prodId) {
-        window.SmartHubAPI.getProduct(prodId).then(res => {
-          if (res && res.product) {
-            const liveProd = res.product;
-            document.getElementById('prod-title').textContent = liveProd.title;
-            document.getElementById('prod-price-display').textContent = `₹${liveProd.price.toLocaleString('en-IN')}`;
-            bindProductMediaAndBundle(liveProd);
-          }
-        }).catch(() => {});
-      }
     });
 
     let currentProductVideoUrl = null;

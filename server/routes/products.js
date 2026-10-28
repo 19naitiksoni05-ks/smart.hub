@@ -8,9 +8,13 @@ const { supabase, isConfigured } = require('../supabase');
 
 // Helper to format Supabase product row into platform model
 function formatSupabaseProduct(p) {
+  const displayTitle = p.title || p.name || 'Untitled Asset';
+  const sellerName = p.seller_name || (p.author && p.author.name) || 'Verified Developer';
+  const sellerAvatar = p.seller_avatar || (p.author && p.author.avatar) || 'https://api.dicebear.com/7.x/avataaars/svg?seed=seller&backgroundColor=6366f1';
   return {
     id: p.id,
-    title: p.title,
+    title: displayTitle,
+    name: displayTitle,
     description: p.description,
     price: Number(p.price) || 0,
     oldPrice: p.original_price ? Number(p.original_price) : null,
@@ -20,14 +24,16 @@ function formatSupabaseProduct(p) {
     rating: Number(p.rating) || 5.0,
     reviews: p.reviews_count || 0,
     sales: p.sales_count || 0,
+    seller_name: sellerName,
+    seller_avatar: sellerAvatar,
     author: {
-      id: p.seller_id || 'dev_seller',
-      name: p.seller_name || 'Verified Developer',
-      avatar: p.seller_avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=seller&backgroundColor=6366f1'
+      id: p.seller_id || (p.author && p.author.id) || 'dev_seller',
+      name: sellerName,
+      avatar: sellerAvatar
     },
     liveDemoUrl: p.live_demo_url || null,
     downloadUrl: p.download_url || null,
-    thumb: p.thumbnail || `https://picsum.photos/seed/${encodeURIComponent(p.title)}/400/250`,
+    thumb: p.thumbnail || `https://picsum.photos/seed/${encodeURIComponent(displayTitle)}/400/250`,
     tags: Array.isArray(p.tags) ? p.tags : (typeof p.tags === 'string' ? JSON.parse(p.tags || '[]') : ['Code']),
     features: Array.isArray(p.features) ? p.features : [],
     techStack: Array.isArray(p.tech_stack) ? p.tech_stack : [],
@@ -140,10 +146,10 @@ router.get('/featured', (req, res) => {
 // ── Get Single Product Details ────────────────────────────────
 router.get('/:id', async (req, res) => {
   try {
-    let product = db.findById('products', req.params.id);
+    let product = null;
 
-    // If not found in local db, query Supabase cloud database
-    if (!product && isConfigured() && supabase) {
+    // 1. Query Supabase cloud database first for freshest live product state
+    if (isConfigured() && supabase) {
       try {
         const { data, error } = await supabase.from('products').select('*').eq('id', req.params.id).limit(1);
         if (!error && data && data.length > 0) {
@@ -151,6 +157,14 @@ router.get('/:id', async (req, res) => {
         }
       } catch (sbErr) {
         console.warn('[Products] Single fetch Supabase fallback:', sbErr.message);
+      }
+    }
+
+    // 2. Fallback to local db if not found in Supabase
+    if (!product) {
+      const localProd = db.findById('products', req.params.id);
+      if (localProd) {
+        product = formatSupabaseProduct(localProd);
       }
     }
 
@@ -178,10 +192,11 @@ router.get('/:id', async (req, res) => {
 // ── Create New Product (Seller Studio) ────────────────────────
 router.post('/', authOptional, async (req, res) => {
   try {
-    const { title, category, price, oldPrice, description, tags, thumb, type, badge, videoUrl, downloadUrl, bundleInfo, author: bodyAuthor } = req.body;
+    const { title, name, category, price, oldPrice, description, tags, thumb, type, badge, videoUrl, downloadUrl, bundleInfo, author: bodyAuthor } = req.body;
+    const resolvedTitle = (title || name || '').trim();
 
-    if (!title || !category || price === undefined || price === null || isNaN(Number(price))) {
-      return res.status(400).json({ success: false, error: 'Title, category and a valid price (>= 0) are required' });
+    if (!resolvedTitle || !category || price === undefined || price === null || isNaN(Number(price))) {
+      return res.status(400).json({ success: false, error: 'Title or name, category and a valid price (>= 0) are required' });
     }
 
     // Determine author from authenticated context, explicit payload, or headers
@@ -271,7 +286,8 @@ router.post('/', authOptional, async (req, res) => {
 
     const newProduct = {
       id: 'p_' + Date.now(),
-      title: title.trim(),
+      title: resolvedTitle,
+      name: resolvedTitle,
       category,
       price: Math.max(0, Number(price)),
       oldPrice: oldPrice ? Number(oldPrice) : null,
@@ -281,7 +297,7 @@ router.post('/', authOptional, async (req, res) => {
       author,
       tags: Array.isArray(tags) ? tags : (typeof tags === 'string' ? tags.split(',').map(t => t.trim()) : ['Code']),
       badge: badge || 'New',
-      thumb: thumb || `https://picsum.photos/seed/${encodeURIComponent(title)}/400/250`,
+      thumb: thumb || `https://picsum.photos/seed/${encodeURIComponent(resolvedTitle)}/400/250`,
       videoUrl: videoUrl || null,
       downloadUrl: downloadUrl || null,
       bundleInfo: bundleInfo || null,

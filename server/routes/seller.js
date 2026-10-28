@@ -9,7 +9,15 @@ function getSellerStatsHandler(req, res) {
     const user = req.user || null;
     const products = db.get('products') || [];
     const myProducts = user
-      ? products.filter(p => p.author && (p.author.id === user.id || p.author.name === user.name))
+      ? products.filter(p => {
+          const aId = (p.author && p.author.id) || p.seller_id;
+          const aName = (p.author && p.author.name) || p.seller_name;
+          const aUsername = (p.author && p.author.username) ? p.author.username.toLowerCase().replace(/^@/, '').trim() : null;
+          const uUsername = user.username ? user.username.toLowerCase().replace(/^@/, '').trim() : null;
+          return (aId && String(aId) === String(user.id)) ||
+                 (aUsername && uUsername && aUsername === uUsername) ||
+                 (aName && user.name && aName.toLowerCase().trim() === user.name.toLowerCase().trim());
+        })
       : [];
 
     const totalSales = myProducts.reduce((sum, p) => sum + (p.sales || 0), 0);
@@ -60,7 +68,15 @@ router.get(['/products', '/listings'], authOptional, (req, res) => {
     const user = req.user || null;
     const products = db.get('products') || [];
     const myProducts = user
-      ? products.filter(p => p.author && (p.author.id === user.id || p.author.name === user.name))
+      ? products.filter(p => {
+          const aId = (p.author && p.author.id) || p.seller_id;
+          const aName = (p.author && p.author.name) || p.seller_name;
+          const aUsername = (p.author && p.author.username) ? p.author.username.toLowerCase().replace(/^@/, '').trim() : null;
+          const uUsername = user.username ? user.username.toLowerCase().replace(/^@/, '').trim() : null;
+          return (aId && String(aId) === String(user.id)) ||
+                 (aUsername && uUsername && aUsername === uUsername) ||
+                 (aName && user.name && aName.toLowerCase().trim() === user.name.toLowerCase().trim());
+        })
       : [];
 
     res.json({

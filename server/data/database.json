@@ -89,6 +89,78 @@
   ],
   "products": [
     {
+      "id": "p_1793202576224",
+      "title": "data structure",
+      "name": "data structure",
+      "category": "Backend",
+      "price": 1000,
+      "oldPrice": null,
+      "rating": 5,
+      "reviews": 1,
+      "sales": 0,
+      "author": {
+        "id": "u_1793202450797",
+        "name": "TANMAY GUPTA",
+        "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=u_1793202450797&backgroundColor=ff5b36"
+      },
+      "tags": [
+        "#algorithm"
+      ],
+      "badge": "New",
+      "thumb": "/uploads/images/Screenshot_2026-09-09_210507_1793202554384_8d102a7d.png",
+      "downloadUrl": null,
+      "description": "to learn data structure",
+      "createdAt": "2026-10-28T15:49:36.224+00:00"
+    },
+    {
+      "id": "p_1793200481721",
+      "title": "Audit Verification Suite Kit",
+      "name": "Audit Verification Suite Kit",
+      "category": "Full Stack SaaS",
+      "price": 1499,
+      "oldPrice": null,
+      "rating": 5,
+      "reviews": 1,
+      "sales": 0,
+      "author": {
+        "id": "u_audit_creator",
+        "name": "Independent Developer",
+        "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Independent%20Developer&backgroundColor=ff5b36"
+      },
+      "tags": [
+        "Code"
+      ],
+      "badge": "New",
+      "thumb": "https://picsum.photos/seed/Audit%20Verification%20Suite%20Kit/400/250",
+      "downloadUrl": null,
+      "description": "High performance digital source code asset.",
+      "createdAt": "2026-10-28T15:14:41.721+00:00"
+    },
+    {
+      "id": "p_1793199918934",
+      "title": "Project",
+      "name": "Project",
+      "category": "React",
+      "price": 300,
+      "oldPrice": null,
+      "rating": 5,
+      "reviews": 1,
+      "sales": 0,
+      "author": {
+        "id": "edf429c2-1399-4969-867c-679cc2ea0b14",
+        "name": "Muaviya",
+        "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=edf429c2-1399-4969-867c-679cc2ea0b14&backgroundColor=ff5b36"
+      },
+      "tags": [
+        "SQl"
+      ],
+      "badge": "New",
+      "thumb": "https://picsum.photos/seed/Project/400/250",
+      "downloadUrl": null,
+      "description": "utfyj",
+      "createdAt": "2026-10-28T15:05:18.934+00:00"
+    },
+    {
       "id": "p_1793199548469",
       "title": "Test Asset New Seller",
       "category": "React",
@@ -113,7 +185,8 @@
       "bundleInfo": null,
       "description": "Testing persist with creator",
       "type": "Source Code",
-      "createdAt": "2026-10-28T14:59:08.469Z"
+      "createdAt": "2026-10-28T14:59:08.469Z",
+      "name": "Test Asset New Seller"
     },
     {
       "id": "p_1793199492373",
@@ -139,7 +212,8 @@
       "bundleInfo": null,
       "description": "Testing persist",
       "type": "Source Code",
-      "createdAt": "2026-10-28T14:58:12.373Z"
+      "createdAt": "2026-10-28T14:58:12.373Z",
+      "name": "Test Audit Asset"
     },
     {
       "id": "p_1793195355652",
@@ -151,7 +225,7 @@
       "reviews": 1,
       "sales": 0,
       "author": {
-        "id": "dev_guest",
+        "id": "dev_seller",
         "name": "Verified Developer",
         "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=dev&backgroundColor=6366f1"
       },
@@ -167,21 +241,21 @@
       "bundleInfo": null,
       "description": "Complete full-stack React marketplace application",
       "type": "Source Code",
-      "createdAt": "2026-10-28T13:49:15.652Z"
+      "createdAt": "2026-10-28T13:49:15.652+00:00",
+      "name": "React E-Commerce Dashboard"
     },
     {
       "id": "p_1792913427884",
       "title": "Python Array & Algorithm Utility Suite",
       "category": "Python",
       "price": 1999,
-      "oldPrice": 2999,
+      "oldPrice": null,
       "rating": 5,
       "reviews": 1,
       "sales": 0,
       "author": {
         "id": "a9b9e238-6ec8-4622-8f22-9b6eb6939ac2",
         "name": "Naitik Soni",
-        "username": "@naitik",
         "avatar": "/uploads/images/profilpic_-_Copy_1792920691972_ac19a138.png"
       },
       "tags": [
@@ -191,7 +265,7 @@
         "Audited"
       ],
       "badge": "Verified",
-      "thumb": "/uploads/images/Screenshot_2026-10-25_115438_1792913394059_1d933efd.png",
+      "thumb": "https://picsum.photos/seed/Python%20Array%20%26%20Algorithm%20Utility%20Suite/400/250",
       "videoUrl": null,
       "downloadUrl": "/uploads/archives/project_code_1792913414196.zip",
       "bundleInfo": {
@@ -204,9 +278,10 @@
       },
       "description": "Genuine Python algorithm and array manipulation suite featuring traversal, scope demonstration, summation, reverse array, odd/even counting, and second-largest element sorting.",
       "type": "Source Code",
-      "createdAt": "2026-10-25T07:30:27.884Z",
+      "createdAt": "2026-10-28T13:39:07.537836+00:00",
       "stars": 42,
-      "updatedAt": "2026-10-25T13:29:50.663Z"
+      "updatedAt": "2026-10-25T13:29:50.663Z",
+      "name": "Python Array & Algorithm Utility Suite"
     }
   ],
   "categories": [

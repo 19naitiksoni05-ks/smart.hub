@@ -302,6 +302,34 @@
 
 const langColors = { React: '#61dafb', JavaScript: '#f7df1e', 'Node.js': '#339933', Flutter: '#02569b', Python: '#3776ab', TypeScript: '#3178c6', HTML: '#e34f26', CSS: '#1572b6' };
 
+function getUserUploadedProjects(allProductsList) {
+  const allProducts = allProductsList || (window.SmartHubData && window.SmartHubData.products) || (typeof SmartHubData !== 'undefined' ? SmartHubData.products : []) || [];
+  const curUser = (window.getCurrentUser && window.getCurrentUser()) || (window.getSessionUser && window.getSessionUser()) || {};
+
+  if (!curUser || (!curUser.id && !curUser.name && !curUser.email && !curUser.username)) {
+    return [];
+  }
+
+  const uId = curUser.id ? String(curUser.id).toLowerCase().trim() : null;
+  const uName = curUser.name ? curUser.name.toLowerCase().trim() : null;
+  const uUsername = curUser.username ? curUser.username.toLowerCase().replace(/^@/, '').trim() : null;
+  const uEmail = curUser.email ? curUser.email.toLowerCase().trim() : null;
+
+  return allProducts.filter(p => {
+    if (!p) return false;
+    const aId = (p.author && p.author.id) || p.seller_id || p.userId;
+    const aName = (p.author && p.author.name) || p.seller_name;
+    const aUsername = (p.author && p.author.username) ? p.author.username.toLowerCase().replace(/^@/, '').trim() : null;
+    const aEmail = (p.author && p.author.email) || p.seller_email;
+
+    if (uId && aId && String(aId).toLowerCase().trim() === uId) return true;
+    if (uUsername && aUsername && aUsername === uUsername) return true;
+    if (uEmail && aEmail && aEmail.toLowerCase().trim() === uEmail) return true;
+    if (uName && aName && aName.toLowerCase().trim() === uName) return true;
+    return false;
+  });
+}
+
 async function renderProfileProjects() {
   const grid = document.getElementById('profile-projects-grid');
   if (!grid) return;
@@ -319,26 +347,14 @@ async function renderProfileProjects() {
   }
 
   const allProducts = (window.SmartHubData && window.SmartHubData.products) || (typeof SmartHubData !== 'undefined' ? SmartHubData.products : []) || [];
-  const curUser = (window.getCurrentUser && window.getCurrentUser()) || (window.getSessionUser && window.getSessionUser()) || {};
-
-  let list = allProducts;
-  if (curUser && (curUser.id || curUser.name)) {
-    const userCreated = allProducts.filter(p => {
-      const aId = (p.author && p.author.id) || p.seller_id;
-      const aName = (p.author && p.author.name) || p.seller_name;
-      return (aId && aId === curUser.id) ||
-             (aName && curUser.name && aName.toLowerCase().trim() === curUser.name.toLowerCase().trim());
-    });
-    // For non-admin users, strictly show only their own creations. For admin with no creations, fallback to catalog.
-    if (userCreated.length > 0 || curUser.role !== 'admin') {
-      list = userCreated;
-    }
-  }
+  
+  // Strictly display only projects uploaded by the currently logged-in user
+  const list = getUserUploadedProjects(allProducts);
   
   // Update header count & sidebar stats
   const statProdEl = document.getElementById('profile-stat-products');
   if (statProdEl) statProdEl.textContent = list.length;
-  renderProfileStats();
+  renderProfileStats(list);
 
   if (list.length === 0) {
     grid.innerHTML = `
@@ -346,7 +362,7 @@ async function renderProfileProjects() {
         <div style="font-size:2.5rem;margin-bottom:12px;">📦</div>
         <h4>No Published Projects Yet</h4>
         <p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:18px;">List your first digital asset or template to showcase it on your developer profile.</p>
-        <a href="seller-dashboard.html" class="btn btn-outline btn-sm">+ Publish Project →</a>
+        <button class="btn btn-primary btn-sm" onclick="SH.openModal('modal-upload')">+ Upload Project</button>
       </div>
     `;
     return;
@@ -471,16 +487,18 @@ function renderTechStack() {
   el.innerHTML = techs.map(t => `<span class="tag" style="color:${langColors[t] || 'var(--text-secondary)'};">● ${t}</span>`).join('');
 }
 
-function renderProfileStats() {
+function renderProfileStats(userProductsList) {
   const el = document.getElementById('profile-stats-list');
   if (!el) return;
   const user = (window.getCurrentUser && window.getCurrentUser()) || {};
-  const products = (window.SmartHubData && window.SmartHubData.products) || [];
+  const products = userProductsList || getUserUploadedProjects();
+  const totalDownloads = products.reduce((acc, p) => acc + (p.sales || 0), 0);
+  const avgRating = products.length > 0 ? (products.reduce((acc, p) => acc + (p.rating || 5.0), 0) / products.length).toFixed(1) + ' ★' : '—';
   const stats = [
     { label: 'Total Earnings', value: `₹${(user.walletBalance || 0).toLocaleString('en-IN')}`, icon: '💰' },
     { label: 'Products Listed', value: String(products.length), icon: '📦' },
-    { label: 'Avg Rating', value: products.length > 0 ? '5.0 ★' : '—', icon: '⭐' },
-    { label: 'Total Downloads', value: String(products.reduce((acc, p) => acc + (p.sales || 0), 0)), icon: '💾' },
+    { label: 'Avg Rating', value: avgRating, icon: '⭐' },
+    { label: 'Total Downloads', value: String(totalDownloads), icon: '💾' },
     { label: 'Milestones Done', value: '0 of 6', icon: '🏆' },
     { label: 'XP Points', value: `${(user.xp || 0).toLocaleString('en-IN')}`, icon: '⚡' },
   ];
