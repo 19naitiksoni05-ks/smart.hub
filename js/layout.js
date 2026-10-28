@@ -8,13 +8,6 @@ function getSessionUser() {
     if (saved) {
       const u = JSON.parse(saved);
       if (u && (u.isLoggedIn || u.id)) {
-        if (u.walletBalance >= 50000 || u.xp === 9990 || u.level === 42) {
-          u.walletBalance = 0;
-          u.xp = 0;
-          u.level = 1;
-          localStorage.setItem('smarthub_user', JSON.stringify(u));
-          localStorage.setItem('currentUser', JSON.stringify(u));
-        }
         return u;
       }
     }

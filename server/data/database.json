@@ -7,14 +7,14 @@
       "email": "muaviya492@gmail.com",
       "passwordHash": "$2b$10$s8LnI6KWgg8new3Z2XWMzecgd.m/NYNGJNJMBHxao/p/DHtlexgzS",
       "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=edf429c2-1399-4969-867c-679cc2ea0b14&backgroundColor=ff5b36",
-      "walletBalance": 0,
+      "walletBalance": 289,
       "role": "admin",
       "xp": 0,
       "badges": 0,
       "location": "India",
       "headline": "Platform & Architecture · Super Admin",
       "createdAt": "2026-10-28T15:38:17.829+00:00",
-      "updatedAt": "2026-10-28T18:10:58.797+00:00"
+      "updatedAt": "2026-10-28T19:05:57.446+00:00"
     },
     {
       "id": "7e98609d-045f-459f-bf87-3c6bdfc63c2a",
@@ -50,7 +50,7 @@
       "location": "India",
       "headline": "Platform & Architecture · Super Admin",
       "createdAt": "2026-10-27T20:36:28.881+00:00",
-      "updatedAt": "2026-10-28T18:57:28.229Z"
+      "updatedAt": "2026-10-28T14:17:55.974114+00:00"
     },
     {
       "id": "a9b9e238-6ec8-4622-8f22-9b6eb6939ac2",
@@ -77,7 +77,7 @@
       "email": "naitik19ansh@gmail.com",
       "passwordHash": "$2b$10$JQLRNYtqUJ2yntYpwPpaAu7409.35jA1paT0ro5aLVCVOL5zsbspe",
       "avatar": "/uploads/images/avatar_test_1792913095876_c066afcd.png",
-      "walletBalance": 0,
+      "walletBalance": 77000,
       "role": "admin",
       "xp": 5000,
       "badges": 5,
@@ -174,14 +174,14 @@
       "email": "334tanmaygupta@gmail.com",
       "passwordHash": "$2b$10$.sV8bSVo0veLBGOvhHzxJuIAMIXXJrmDNwk4ILOndMct5EGJ5EAyS",
       "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=tanmay.5987&backgroundColor=ff5b36",
-      "walletBalance": 700,
+      "walletBalance": 400,
       "role": "buyer",
       "xp": 0,
       "badges": 0,
       "location": "India",
       "headline": "Smart Hub Developer",
       "createdAt": "2026-10-28T15:47:30.797+00:00",
-      "updatedAt": "2026-10-28T18:45:14.798+00:00"
+      "updatedAt": "2026-10-28T19:05:57.445+00:00"
     }
   ],
   "products": [

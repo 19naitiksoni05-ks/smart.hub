@@ -274,7 +274,7 @@
       }
 
       // Sync wallet balance asynchronously from server
-      syncWalletState(false);
+      await syncWalletState(false);
 
       const urlParams = new URLSearchParams(window.location.search);
       const prodId = urlParams.get('id');
@@ -561,10 +561,18 @@
         try {
           const res = await window.SmartHubAPI.getWallet();
           if (res && res.success && res.wallet) {
-            const user = (window.getCurrentUser && window.getCurrentUser()) || {};
-            user.walletBalance = res.wallet.balance;
+            const bal = Number(res.wallet.balance) || 0;
+            let user = (window.getCurrentUser && window.getCurrentUser()) || {};
+            user.walletBalance = bal;
             localStorage.setItem('smarthub_user', JSON.stringify(user));
-            if (showNotice) showToast(`Wallet synced! Balance: ₹${res.wallet.balance.toLocaleString('en-IN')}`, 'success');
+            localStorage.setItem('currentUser', JSON.stringify(user));
+
+            const walletBal = document.getElementById('checkout-wallet-bal');
+            if (walletBal) walletBal.textContent = `₹${bal.toLocaleString('en-IN')}`;
+            document.querySelectorAll('.wallet-display').forEach(el => {
+              el.textContent = `₹${bal.toLocaleString('en-IN')}`;
+            });
+            if (showNotice) showToast(`Wallet synced! Balance: ₹${bal.toLocaleString('en-IN')}`, 'success');
           }
         } catch (e) {
           if (showNotice) showToast('Could not sync wallet from server', 'error');

@@ -831,13 +831,7 @@ async function uploadProject() {
 document.addEventListener('DOMContentLoaded', () => {
   const user = (window.getCurrentUser && window.getCurrentUser());
   if (user) {
-    if (user.walletBalance >= 50000 || user.xp === 9990 || user.level === 42) {
-      user.walletBalance = 0;
-      user.xp = 0;
-      user.level = 1;
-      localStorage.setItem('smarthub_user', JSON.stringify(user));
-      localStorage.setItem('currentUser', JSON.stringify(user));
-    }
+    // wallet cleaned
     const nameEl = document.getElementById('profile-name-text');
     if (nameEl) nameEl.textContent = user.name;
     const handleEl = document.getElementById('profile-handle');

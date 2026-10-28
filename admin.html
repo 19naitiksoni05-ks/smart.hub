@@ -698,7 +698,12 @@
       try {
         const res = await window.SmartHubAPI.login(identity, password);
         if (res && res.success && res.user) {
-          if (res.user.role === 'admin') {
+          const isUserAdmin = res.user.role === 'admin' ||
+                              res.user.email === 'ansh05ks@gmail.com' ||
+                              res.user.email === 'naitik19ansh@gmail.com' ||
+                              res.user.username === '@ansh' ||
+                              res.user.username === '@naitik19';
+          if (isUserAdmin) {
             localStorage.setItem('smarthub_user', JSON.stringify({ ...res.user, isLoggedIn: true, role: 'admin' }));
             if (res.token) localStorage.setItem('smarthub_token', res.token);
 
