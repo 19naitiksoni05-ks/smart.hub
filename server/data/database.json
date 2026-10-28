@@ -8,12 +8,13 @@
       "passwordHash": "$2b$10$s8LnI6KWgg8new3Z2XWMzecgd.m/NYNGJNJMBHxao/p/DHtlexgzS",
       "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=edf429c2-1399-4969-867c-679cc2ea0b14&backgroundColor=ff5b36",
       "walletBalance": 0,
-      "role": "buyer",
+      "role": "admin",
       "xp": 0,
       "badges": 0,
       "location": "India",
-      "headline": "Smart Hub Creator",
-      "createdAt": "2026-10-28T15:38:17.829Z"
+      "headline": "Platform & Architecture · Super Admin",
+      "createdAt": "2026-10-28T15:38:17.829+00:00",
+      "updatedAt": "2026-10-28T18:10:58.797+00:00"
     },
     {
       "id": "7e98609d-045f-459f-bf87-3c6bdfc63c2a",
@@ -30,8 +31,8 @@
       "location": "India",
       "headline": "Smart Hub Developer",
       "emailVerified": true,
-      "createdAt": "2026-10-28T11:13:59.808Z",
-      "updatedAt": "2026-10-28T15:28:01.708Z"
+      "createdAt": "2026-10-28T11:13:59.808+00:00",
+      "updatedAt": "2026-10-28T14:17:55.781275+00:00"
     },
     {
       "id": "u_1793133388791",
@@ -48,8 +49,8 @@
       "authProvider": "github",
       "location": "India",
       "headline": "Platform & Architecture · Super Admin",
-      "createdAt": "2026-10-27T20:36:28.881Z",
-      "updatedAt": "2026-10-28T15:28:02.024Z"
+      "createdAt": "2026-10-27T20:36:28.881+00:00",
+      "updatedAt": "2026-10-28T14:17:55.974114+00:00"
     },
     {
       "id": "a9b9e238-6ec8-4622-8f22-9b6eb6939ac2",
@@ -64,9 +65,9 @@
       "badges": 1,
       "location": "India",
       "headline": "Smart Hub Developer",
-      "createdAt": "2026-10-25T06:31:25.671Z",
+      "createdAt": "2026-10-25T06:31:25.671+00:00",
       "cover": "/uploads/images/Screenshot__1__1792920634969_373d9b62.png",
-      "updatedAt": "2026-10-28T15:28:01.400Z",
+      "updatedAt": "2026-10-25T06:31:22.658091+00:00",
       "githubId": "gh_336231360"
     },
     {
@@ -82,9 +83,105 @@
       "badges": 5,
       "location": "India",
       "headline": "Platform & Architecture Lead",
-      "createdAt": "2026-10-24T19:15:56.573Z",
-      "updatedAt": "2026-10-28T15:28:01.104Z",
+      "createdAt": "2026-10-24T19:15:56.573+00:00",
+      "updatedAt": "2026-10-25T07:23:41.077+00:00",
       "cover": "/uploads/images/avatar_test_1792913095876_c066afcd.png"
+    },
+    {
+      "id": "5d314a82-99a3-4bd0-ae4a-e54893070a0d",
+      "name": "Wallet Test User",
+      "username": "@wallet_test_1792934986869",
+      "email": "buyer_1792934986869@smarthub.io",
+      "passwordHash": "$2b$10$BPPmiYNmOFKRGGucqTh0BOGN8baDWU9sxdOjpm/NhiUGXFWFjMeVW",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=wallet_test_1792934986869&backgroundColor=ff5b36",
+      "walletBalance": 10000,
+      "role": "buyer",
+      "xp": 0,
+      "badges": 0,
+      "location": "India",
+      "headline": "Smart Hub Developer",
+      "createdAt": "2026-10-25T13:29:50.405+00:00",
+      "updatedAt": "2026-10-25T13:29:50.627+00:00"
+    },
+    {
+      "id": "cd8c4c62-3c11-4b93-8972-04d9373139fe",
+      "name": "Kamran",
+      "username": "@kammo",
+      "email": "kamransaifi972@gmail.com",
+      "passwordHash": "$2b$10$mQIoocdlO1q5JNwTn9b78O7Vhg/4HFNqQMueyd5xxuY/2TjBOQ9Hq",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=kammo&backgroundColor=ff5b36",
+      "walletBalance": 0,
+      "role": "buyer",
+      "xp": 0,
+      "badges": 0,
+      "location": "India",
+      "headline": "Smart Hub Developer",
+      "createdAt": "2026-10-28T15:10:24.848+00:00",
+      "updatedAt": "2026-10-28T15:10:25.522998+00:00"
+    },
+    {
+      "id": "u_tester_99",
+      "name": "Verified Creator",
+      "username": "@tester_99",
+      "email": "u_tester_99@creator.smarthub.io",
+      "passwordHash": "$2b$10$lI3M74VAp/IpKoYblKgRoeSFbv6Iz0Qr6y7Ao5ibuDmkM9hH1/0XK",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Verified%20Creator&backgroundColor=ff5b36",
+      "walletBalance": 0,
+      "role": "seller",
+      "xp": 0,
+      "badges": 0,
+      "location": "India",
+      "headline": "Smart Hub Creator",
+      "createdAt": "2026-10-28T14:59:08.325+00:00",
+      "updatedAt": "2026-10-28T14:59:08.148744+00:00"
+    },
+    {
+      "id": "u_audit_creator",
+      "name": "Independent Developer",
+      "username": "@indie_dev",
+      "email": "u_audit_creator@creator.smarthub.io",
+      "passwordHash": "$2b$10$OJ3XfSwhf5ELEEJKJA5uZOWJwB7fVevux2QuHITqsRKUID0rI0Lja",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Independent%20Developer&backgroundColor=ff5b36",
+      "walletBalance": 0,
+      "role": "seller",
+      "xp": 0,
+      "badges": 0,
+      "location": "India",
+      "headline": "Smart Hub Creator",
+      "createdAt": "2026-10-28T15:14:41.585+00:00",
+      "updatedAt": "2026-10-28T15:14:41.405751+00:00"
+    },
+    {
+      "id": "u_1793202389071",
+      "name": "Nishant Arora",
+      "username": "@nishantarora147369@gmail.com",
+      "email": "nishantarora630@gmail.com",
+      "passwordHash": "$2b$10$15ypkqKIstHjh3CPm6AueOeIuSdnjrytI3ia8jnQzkSabTz1IknnS",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=nishantarora147369%40gmail.com&backgroundColor=ff5b36",
+      "walletBalance": 0,
+      "role": "seller",
+      "xp": 0,
+      "badges": 0,
+      "location": "India",
+      "headline": "Smart Hub Developer",
+      "createdAt": "2026-10-28T15:46:29.071+00:00",
+      "updatedAt": "2026-10-28T15:46:29.720604+00:00"
+    },
+    {
+      "id": "u_1793202450797",
+      "name": "TANMAY GUPTA",
+      "username": "@tanmay.5987",
+      "email": "334tanmaygupta@gmail.com",
+      "passwordHash": "$2b$10$.sV8bSVo0veLBGOvhHzxJuIAMIXXJrmDNwk4ILOndMct5EGJ5EAyS",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=tanmay.5987&backgroundColor=ff5b36",
+      "walletBalance": 0,
+      "role": "buyer",
+      "xp": 0,
+      "badges": 0,
+      "location": "India",
+      "headline": "Smart Hub Developer",
+      "createdAt": "2026-10-28T15:47:30.797+00:00",
+      "updatedAt": "2026-10-28T15:47:31.46145+00:00"
     }
   ],
   "products": [
@@ -110,7 +207,9 @@
       "thumb": "/uploads/images/Screenshot_2026-09-09_210507_1793202554384_8d102a7d.png",
       "downloadUrl": null,
       "description": "to learn data structure",
-      "createdAt": "2026-10-28T15:49:36.224+00:00"
+      "createdAt": "2026-10-28T15:49:36.224+00:00",
+      "seller_id": "u_1793202450797",
+      "seller_name": "TANMAY GUPTA"
     },
     {
       "id": "p_1793200481721",
@@ -134,7 +233,9 @@
       "thumb": "https://picsum.photos/seed/Audit%20Verification%20Suite%20Kit/400/250",
       "downloadUrl": null,
       "description": "High performance digital source code asset.",
-      "createdAt": "2026-10-28T15:14:41.721+00:00"
+      "createdAt": "2026-10-28T15:14:41.721+00:00",
+      "seller_id": "u_audit_creator",
+      "seller_name": "Independent Developer"
     },
     {
       "id": "p_1793199918934",
@@ -158,7 +259,9 @@
       "thumb": "https://picsum.photos/seed/Project/400/250",
       "downloadUrl": null,
       "description": "utfyj",
-      "createdAt": "2026-10-28T15:05:18.934+00:00"
+      "createdAt": "2026-10-28T15:05:18.934+00:00",
+      "seller_id": "edf429c2-1399-4969-867c-679cc2ea0b14",
+      "seller_name": "Muaviya"
     },
     {
       "id": "p_1793199548469",
@@ -242,7 +345,9 @@
       "description": "Complete full-stack React marketplace application",
       "type": "Source Code",
       "createdAt": "2026-10-28T13:49:15.652+00:00",
-      "name": "React E-Commerce Dashboard"
+      "name": "React E-Commerce Dashboard",
+      "seller_id": null,
+      "seller_name": "Verified Developer"
     },
     {
       "id": "p_1792913427884",
@@ -281,7 +386,9 @@
       "createdAt": "2026-10-28T13:39:07.537836+00:00",
       "stars": 42,
       "updatedAt": "2026-10-25T13:29:50.663Z",
-      "name": "Python Array & Algorithm Utility Suite"
+      "name": "Python Array & Algorithm Utility Suite",
+      "seller_id": "a9b9e238-6ec8-4622-8f22-9b6eb6939ac2",
+      "seller_name": "Naitik Soni"
     }
   ],
   "categories": [

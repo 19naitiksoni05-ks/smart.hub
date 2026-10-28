@@ -128,6 +128,43 @@ class Database {
     return this.findOne(collection, item => item.id === id);
   }
 
+  async syncFromSupabase() {
+    if (!isConfigured() || !supabase) return;
+    try {
+      const { data: sbUsers, error: uErr } = await supabase.from('users').select('*');
+      if (!uErr && Array.isArray(sbUsers) && sbUsers.length > 0) {
+        sbUsers.forEach(su => {
+          const existing = this.findOne('users', u => u.id === su.id || (u.email && su.email && u.email.toLowerCase() === su.email.toLowerCase()));
+          const mappedUser = {
+            id: su.id,
+            name: su.name,
+            username: su.username,
+            email: su.email,
+            passwordHash: su.password_hash,
+            avatar: su.avatar,
+            walletBalance: Number(su.wallet_balance) || 0,
+            role: su.role || 'buyer',
+            xp: Number(su.xp) || 0,
+            badges: Number(su.badges) || 0,
+            location: su.location || 'India',
+            headline: su.headline || 'Developer',
+            createdAt: su.created_at,
+            updatedAt: su.updated_at
+          };
+          if (existing) {
+            if (!mappedUser.passwordHash) mappedUser.passwordHash = existing.passwordHash;
+            Object.assign(existing, mappedUser);
+          } else {
+            this.data.users.push(mappedUser);
+          }
+        });
+        this.save();
+      }
+    } catch (e) {
+      console.warn('[DB] Supabase hydration notice:', e.message);
+    }
+  }
+
   syncSupabase(action, collection, item) {
     if (!isConfigured() || !supabase) return;
 
