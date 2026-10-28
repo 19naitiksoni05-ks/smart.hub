@@ -607,7 +607,7 @@ function renderFooter() {
 }
 
 // Global Injector & Theme Initializer
-document.addEventListener('DOMContentLoaded', () => {
+function initGlobalLayout() {
   // Apply saved theme preference
   const savedTheme = localStorage.getItem('smarthub_theme') || 'dark';
   document.documentElement.setAttribute('data-theme', savedTheme);
@@ -620,7 +620,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const headerEl = document.getElementById('page-header');
   const footerEl = document.getElementById('page-footer');
   const activePage = window.location.pathname.split('/').pop() || 'index.html';
-  if (headerEl) {
+  if (headerEl && !headerEl.querySelector('.header')) {
     headerEl.innerHTML = renderHeader(activePage);
     // Bind interactive header widgets immediately after rendering
     if (typeof window.initUserDropdown === 'function') window.initUserDropdown();
@@ -628,7 +628,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (typeof window.initThemeToggle === 'function') window.initThemeToggle();
     if (typeof window.initMobileMenu === 'function') window.initMobileMenu();
   }
-  if (footerEl) footerEl.innerHTML = renderFooter();
+  if (footerEl && !footerEl.querySelector('.footer')) footerEl.innerHTML = renderFooter();
 
   // Attach Signout Handler
   const signoutBtn = document.getElementById('header-signout-btn');
@@ -665,7 +665,13 @@ document.addEventListener('DOMContentLoaded', () => {
     r3.src = 'js/react-components.js';
     document.body.appendChild(r3);
   }
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initGlobalLayout);
+} else {
+  initGlobalLayout();
+}
 
 // ── Global Policy Controller (Opens dedicated standalone policy page) ──
 window.openPolicyModal = function(tab = 'privacy') {

@@ -30,26 +30,26 @@
   </style>
 </head>
 <body>
-<div id="page-header"></div>
+<div id="page-header" style="min-height:70px;"></div>
 
 <div class="profile-layout">
   <!-- Cover -->
-  <div class="profile-cover" id="profile-cover" style="position:relative;background-size:cover;background-position:center;">
+  <div class="profile-cover" id="profile-cover">
     <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(139,92,246,0.45),rgba(6,182,212,0.35),rgba(236,72,153,0.25));pointer-events:none;"></div>
     <!-- Floating particles -->
     <div class="bg-glow bg-glow-purple" style="width:300px;height:300px;top:-80px;right:100px;pointer-events:none;"></div>
     <div class="bg-glow bg-glow-cyan" style="width:200px;height:200px;bottom:-40px;left:200px;pointer-events:none;"></div>
-    <button class="profile-cover-edit" style="z-index:2;cursor:pointer;" onclick="document.getElementById('profile-cover-file').click()">📷 Change Cover</button>
+    <button class="profile-cover-edit" onclick="document.getElementById('profile-cover-file').click()" title="Change profile cover artwork">📷 Change Cover</button>
     <input type="file" id="profile-cover-file" accept="image/*" style="display:none;" onchange="handleCoverPhotoUpload(this)">
   </div>
 
   <!-- Profile Info -->
   <div class="profile-info-section">
-    <div class="profile-avatar-wrap" style="position:relative;cursor:pointer;" onclick="document.getElementById('profile-avatar-file').click()" title="Click to upload profile photo">
+    <div class="profile-avatar-wrap" onclick="document.getElementById('profile-avatar-file').click()" title="Click to upload profile photo">
       <div class="avatar-ring">
-        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=user&backgroundColor=6366f1" id="profile-avatar" alt="User Avatar" style="width:120px;height:120px;border-radius:50%;border:3px solid var(--bg-primary);object-fit:cover;">
+        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=user&backgroundColor=6366f1" id="profile-avatar" alt="User Avatar">
       </div>
-      <div class="avatar-camera-badge" style="position:absolute;bottom:4px;right:4px;width:34px;height:34px;border-radius:50%;background:var(--accent-purple);color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.95rem;border:2.5px solid var(--bg-primary);box-shadow:0 3px 10px rgba(0,0,0,0.5);transition:all 0.2s ease;">
+      <div class="avatar-camera-badge" title="Upload new photo">
         📷
       </div>
       <input type="file" id="profile-avatar-file" accept="image/*" style="display:none;" onchange="handleProfileAvatarUpload(this)">
@@ -796,13 +796,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const walletMeta = document.getElementById('profile-wallet-meta');
     if (walletMeta) walletMeta.textContent = `💰 ₹${(user.walletBalance || 0).toLocaleString('en-IN')} in Wallet`;
 
-    // Load custom profile cover if saved
+    // Load custom profile cover if saved (with graceful gradient fallback)
     if (user.cover) {
       const coverEl = document.getElementById('profile-cover');
       if (coverEl) {
-        coverEl.style.backgroundImage = `url('${user.cover}')`;
-        coverEl.style.backgroundSize = 'cover';
-        coverEl.style.backgroundPosition = 'center';
+        const coverImg = new Image();
+        coverImg.onload = () => {
+          coverEl.style.backgroundImage = `url('${user.cover}')`;
+          coverEl.style.backgroundSize = 'cover';
+          coverEl.style.backgroundPosition = 'center';
+        };
+        coverImg.onerror = () => {
+          coverEl.style.background = 'linear-gradient(135deg, rgba(139,92,246,0.65), rgba(6,182,212,0.45), rgba(236,72,153,0.35))';
+        };
+        coverImg.src = user.cover;
       }
     }
   } else {

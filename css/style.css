@@ -156,7 +156,7 @@ body {
   background: var(--bg-primary);
   color: var(--text-primary);
   line-height: 1.6;
-  overflow-x: hidden;
+  overflow-x: clip;
   min-height: 100vh;
 }
 
@@ -471,6 +471,10 @@ body.theme-light .badge-blue { background: rgba(37, 99, 235, 0.12); color: #2563
   padding: 2px;
   background: var(--grad-primary);
   border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 .avatar-ring img { border: 2px solid var(--bg-primary); }
 
