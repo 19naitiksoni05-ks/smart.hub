@@ -22,7 +22,7 @@
       "username": "@ansh",
       "email": "ansh05ks@gmail.com",
       "mobile": "7007099722",
-      "passwordHash": "$2b$10$5zpbyaUx5eCHHXKhLtxTn.5z3G71/PW0UakVvHD6OyW9qCXpsCBou",
+      "passwordHash": "$2b$10$xvFGE14kBVKq5h52hAU5c.dzIrSp7MHofdFtD3ZcLLWMbHq72t9m.",
       "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=ansh&backgroundColor=ff5b36",
       "walletBalance": 0,
       "role": "admin",
@@ -32,7 +32,7 @@
       "headline": "Platform & Architecture · Super Admin",
       "emailVerified": true,
       "createdAt": "2026-10-28T11:13:59.808+00:00",
-      "updatedAt": "2026-10-28T19:28:53.103Z"
+      "updatedAt": "2026-10-28T14:17:55.781275+00:00"
     },
     {
       "id": "u_1793133388791",
@@ -77,7 +77,7 @@
       "email": "naitik19ansh@gmail.com",
       "passwordHash": "$2b$10$JQLRNYtqUJ2yntYpwPpaAu7409.35jA1paT0ro5aLVCVOL5zsbspe",
       "avatar": "/uploads/images/avatar_test_1792913095876_c066afcd.png",
-      "walletBalance": 77000,
+      "walletBalance": 71000,
       "role": "admin",
       "xp": 5000,
       "badges": 5,
@@ -156,7 +156,7 @@
       "name": "Nishant Arora",
       "username": "@nishantarora147369@gmail.com",
       "email": "nishantarora630@gmail.com",
-      "passwordHash": "$2b$10$15ypkqKIstHjh3CPm6AueOeIuSdnjrytI3ia8jnQzkSabTz1IknnS",
+      "passwordHash": "$2b$10$PJIuLyXK6H8LAxDbshWgbOsSAaS/DMuSzkUTmCqKN6HvHkfw6x7hW",
       "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=nishantarora147369%40gmail.com&backgroundColor=ff5b36",
       "walletBalance": 0,
       "role": "seller",
@@ -165,7 +165,7 @@
       "location": "India",
       "headline": "Smart Hub Developer",
       "createdAt": "2026-10-28T15:46:29.071+00:00",
-      "updatedAt": "2026-10-28T15:46:29.720604+00:00"
+      "updatedAt": "2026-10-29T04:23:50.243Z"
     },
     {
       "id": "u_1793202450797",
@@ -174,14 +174,14 @@
       "email": "334tanmaygupta@gmail.com",
       "passwordHash": "$2b$10$.sV8bSVo0veLBGOvhHzxJuIAMIXXJrmDNwk4ILOndMct5EGJ5EAyS",
       "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=tanmay.5987&backgroundColor=ff5b36",
-      "walletBalance": 400,
+      "walletBalance": 4304,
       "role": "buyer",
       "xp": 0,
       "badges": 0,
       "location": "India",
       "headline": "Smart Hub Developer",
       "createdAt": "2026-10-28T15:47:30.797+00:00",
-      "updatedAt": "2026-10-28T19:05:57.445+00:00"
+      "updatedAt": "2026-10-28T19:44:46.691+00:00"
     }
   ],
   "products": [

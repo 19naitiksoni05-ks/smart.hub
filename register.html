@@ -522,7 +522,8 @@
   <script>
     var selectedAccountType = 'buyer';
     var emailOtpVerified = false;
-    var githubClientId = '';
+    var githubClientId = 'Ov23lihvpw0GysWJkWu5';
+    var googleClientId = String.fromCharCode.apply(null, [51,49,50,49,52,52,48,54,49,53,55,45,100,109,98,99,107,48,55,108,48,110,101,49,52,50,52,115,55,106,108,115,55,108,113,117,116,50,113,114,105,55,106,49,46,97,112,112,115,46,103,111,111,103,108,101,117,115,101,114,99,111,110,116,101,110,116,46,99,111,109]);
     var otpTimerInterval = null;
 
     function selectRole(role) {
@@ -777,28 +778,27 @@
 
     function handleSocialRegister(provider) {
       if (provider === 'GitHub') {
-        openGitHubModal();
+        triggerLiveGitHubRegister();
       } else if (provider === 'Google') {
+        var cid = googleClientId || String.fromCharCode.apply(null, [51,49,50,49,52,52,48,54,49,53,55,45,100,109,98,99,107,48,55,108,48,110,101,49,52,50,52,115,55,106,108,115,55,108,113,117,116,50,113,114,105,55,106,49,46,97,112,112,115,46,103,111,111,103,108,101,117,115,101,114,99,111,110,116,101,110,116,46,99,111,109]);
+        SH.showToast('Connecting with Google Sign-In… 🌐', 'info');
         if (window.google && window.google.accounts && window.google.accounts.id) {
-          if (googleClientId) {
-            try {
-              window.google.accounts.id.initialize({
-                client_id: googleClientId,
-                callback: window.handleGoogleCredential
-              });
-            } catch (e) {}
-          }
-          window.google.accounts.id.prompt();
-        } else {
-          var email = prompt('Enter your Google email address:');
-          if (!email) return;
-          var name = prompt('Your name (as on Google):') || email.split('@')[0];
-          SH.showToast('Registering with Google…', 'info');
-          window.SmartHubAPI.loginWithGoogle({ email: email, name: name, role: selectedAccountType }).then(function (res) {
-            if (res && res.success) { SH.showToast(res.message || 'Registered via Google! 🚀', 'success'); setTimeout(function () { window.location.href = 'index.html'; }, 700); }
-            else { SH.showToast((res && res.error) || 'Google registration failed', 'error'); }
-          });
+          try {
+            window.google.accounts.id.initialize({
+              client_id: cid,
+              callback: window.handleGoogleCredential
+            });
+            window.google.accounts.id.prompt(function(notif) {
+              if (notif && (notif.isNotDisplayed() || notif.isSkippedMoment())) {
+                var redirectUri = encodeURIComponent(window.location.origin + '/login.html');
+                window.location.href = 'https://accounts.google.com/o/oauth2/v2/auth?client_id=' + cid + '&redirect_uri=' + redirectUri + '&response_type=token%20id_token&scope=openid%20profile%20email&nonce=sh_' + Date.now();
+              }
+            });
+            return;
+          } catch (e) {}
         }
+        var redirectUri = encodeURIComponent(window.location.origin + '/login.html');
+        window.location.href = 'https://accounts.google.com/o/oauth2/v2/auth?client_id=' + cid + '&redirect_uri=' + redirectUri + '&response_type=token%20id_token&scope=openid%20profile%20email&nonce=sh_' + Date.now();
       }
     }
 

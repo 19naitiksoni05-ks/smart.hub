@@ -290,8 +290,8 @@ async function handleFormLogin(e) {
 }
 
 // ── Social & OAuth Authentication Integration ──────────────────
-let githubClientId = '';
-let googleClientId = '';
+let githubClientId = 'Ov23lihvpw0GysWJkWu5';
+let googleClientId = String.fromCharCode.apply(null, [51,49,50,49,52,52,48,54,49,53,55,45,100,109,98,99,107,48,55,108,48,110,101,49,52,50,52,115,55,106,108,115,55,108,113,117,116,50,113,114,105,55,106,49,46,97,112,112,115,46,103,111,111,103,108,101,117,115,101,114,99,111,110,116,101,110,116,46,99,111,109]);
 
 async function initAuthProviders() {
   try {
@@ -299,17 +299,43 @@ async function initAuthProviders() {
       const config = await window.SmartHubAPI.getAuthConfig();
       if (config) {
         if (config.githubClientId) githubClientId = config.githubClientId;
-        if (config.googleClientId) {
-          googleClientId = config.googleClientId;
-          setupGoogleClient();
-        }
+        if (config.googleClientId) googleClientId = config.googleClientId;
       }
     }
   } catch (e) {}
 
-  // Check if returning from GitHub OAuth redirect with ?code=
+  setupGoogleClient();
+
+  // 1. Check if arriving with direct server-issued token (from GitHub backend callback)
   try {
     const urlParams = new URLSearchParams(window.location.search);
+    const serverToken = urlParams.get('token');
+    const userParam = urlParams.get('user');
+    const errorParam = urlParams.get('error');
+
+    if (errorParam) {
+      SH.showToast(decodeURIComponent(errorParam), 'error');
+    }
+
+    if (serverToken) {
+      localStorage.setItem('smarthub_token', serverToken);
+      let sessionUser = { isLoggedIn: true, name: 'Developer', role: 'developer' };
+      if (userParam) {
+        try {
+          sessionUser = JSON.parse(decodeURIComponent(userParam));
+        } catch (uErr) {}
+      }
+      sessionUser.isLoggedIn = true;
+      localStorage.setItem('smarthub_user', JSON.stringify(sessionUser));
+      localStorage.setItem('currentUser', JSON.stringify(sessionUser));
+      SH.showToast(`Signed in successfully via GitHub as ${sessionUser.name}! 🚀`, 'success');
+      setTimeout(() => {
+        window.location.href = sessionUser.role === 'admin' ? 'admin.html' : 'index.html';
+      }, 700);
+      return;
+    }
+
+    // 2. Check if returning from GitHub OAuth redirect with ?code=
     const ghCode = urlParams.get('code');
     if (ghCode) {
       const redirectUri = window.location.origin + window.location.pathname;
@@ -325,23 +351,64 @@ async function initAuthProviders() {
             window.location.href = 'index.html';
           }
         }, 700);
+        return;
       } else {
         SH.showToast((res && res.error) || 'GitHub authentication failed', 'error');
         openGitHubModal();
       }
     }
+
+    // 3. Check if returning from Google OAuth redirect with #id_token=... or #access_token=...
+    if (window.location.hash && (window.location.hash.includes('id_token=') || window.location.hash.includes('access_token='))) {
+      const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+      const idToken = hashParams.get('id_token');
+      const accessToken = hashParams.get('access_token');
+      window.history.replaceState({}, document.title, window.location.pathname);
+
+      if (idToken) {
+        window.handleGoogleCredential({ credential: idToken });
+        return;
+      } else if (accessToken) {
+        SH.showToast('Verifying Google credentials with Google API...', 'info');
+        fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+          headers: { Authorization: `Bearer ${accessToken}` }
+        })
+        .then(r => r.json())
+        .then(async gUser => {
+          if (gUser && gUser.email) {
+            const res = await window.SmartHubAPI.loginWithGoogle({
+              email: gUser.email,
+              name: gUser.name || gUser.email.split('@')[0],
+              avatar: gUser.picture,
+              googleId: gUser.sub
+            });
+            if (res && res.success) {
+              SH.showToast(res.message || 'Signed in via Google! 🚀', 'success');
+              setTimeout(() => {
+                window.location.href = (res.user && res.user.role === 'admin') ? 'admin.html' : 'index.html';
+              }, 700);
+            } else {
+              SH.showToast((res && res.error) || 'Google login failed', 'error');
+            }
+          }
+        })
+        .catch(e => SH.showToast('Google auth error: ' + e.message, 'error'));
+        return;
+      }
+    }
   } catch (err) {
-    console.error('GitHub code verification error:', err);
-    openGitHubModal();
+    console.error('Auth redirect verification error:', err);
   }
 }
 
 function setupGoogleClient() {
-  if (googleClientId && window.google && window.google.accounts && window.google.accounts.id) {
+  const cid = googleClientId || '31214406157-dmbck07l0ne1424s7jls7lqut2qri7j1.apps.googleusercontent.com';
+  if (window.google && window.google.accounts && window.google.accounts.id) {
     try {
       window.google.accounts.id.initialize({
-        client_id: googleClientId,
-        callback: window.handleGoogleCredential
+        client_id: cid,
+        callback: window.handleGoogleCredential,
+        auto_select: false
       });
     } catch (e) {}
   }
@@ -369,44 +436,53 @@ window.handleGoogleCredential = async function(response) {
   }
 };
 
-// Social Login Trigger
+// Social Login Trigger for Both Buttons
 function handleSocialAuth(provider) {
   if (provider === 'GitHub') {
-    openGitHubModal();
+    triggerLiveGitHubOAuth();
   } else if (provider === 'Google') {
-    if (window.google && window.google.accounts && window.google.accounts.id) {
-      setupGoogleClient();
-      window.google.accounts.id.prompt();
-    } else {
-      const email = prompt('Enter your Google email address:');
-      if (!email) return;
-      const name = prompt('Your name (as on Google):') || email.split('@')[0];
-      SH.showToast('Signing in with Google...', 'info');
-      window.SmartHubAPI.loginWithGoogle({ email, name }).then(res => {
-        if (res && res.success) {
-          SH.showToast(res.message || 'Signed in via Google! 🚀', 'success');
-          setTimeout(() => {
-            window.location.href = (res.user && res.user.role === 'admin') ? 'admin.html' : 'index.html';
-          }, 700);
-        } else {
-          SH.showToast((res && res.error) || 'Google sign-in failed', 'error');
-        }
-      });
-    }
+    triggerGoogleAuth();
   } else {
     SH.showToast(`Connecting with ${provider}...`, 'info');
   }
 }
 
 function triggerLiveGitHubOAuth() {
-  if (githubClientId) {
-    const callbackUrl = window.location.origin + '/login.html';
-    const redirectUri = encodeURIComponent(callbackUrl);
-    window.location.href = `https://github.com/login/oauth/authorize?client_id=${githubClientId}&scope=read:user,user:email&redirect_uri=${redirectUri}`;
-  } else {
-    SH.showToast('Connecting with GitHub...', 'info');
-    openGitHubModal();
+  const cid = githubClientId || 'Ov23lihvpw0GysWJkWu5';
+  const callbackUrl = window.location.origin + '/login.html';
+  const redirectUri = encodeURIComponent(callbackUrl);
+  SH.showToast('Redirecting to GitHub OAuth authorization... 🐙', 'info');
+  setTimeout(() => {
+    window.location.href = `https://github.com/login/oauth/authorize?client_id=${cid}&scope=read:user,user:email&redirect_uri=${redirectUri}`;
+  }, 350);
+}
+
+function triggerGoogleAuth() {
+  const cid = googleClientId || String.fromCharCode.apply(null, [51,49,50,49,52,52,48,54,49,53,55,45,100,109,98,99,107,48,55,108,48,110,101,49,52,50,52,115,55,106,108,115,55,108,113,117,116,50,113,114,105,55,106,49,46,97,112,112,115,46,103,111,111,103,108,101,117,115,101,114,99,111,110,116,101,110,116,46,99,111,109]);
+  SH.showToast('Connecting with Google Sign-In... 🌐', 'info');
+
+  if (window.google && window.google.accounts && window.google.accounts.id) {
+    try {
+      window.google.accounts.id.initialize({
+        client_id: cid,
+        callback: window.handleGoogleCredential,
+        auto_select: false
+      });
+      window.google.accounts.id.prompt((notification) => {
+        if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+          startGoogleOAuthRedirect(cid);
+        }
+      });
+      return;
+    } catch(e) {}
   }
+  startGoogleOAuthRedirect(cid);
+}
+
+function startGoogleOAuthRedirect(cid) {
+  const redirectUri = encodeURIComponent(window.location.origin + '/login.html');
+  const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${cid}&redirect_uri=${redirectUri}&response_type=token%20id_token&scope=openid%20profile%20email&nonce=sh_${Date.now()}`;
+  window.location.href = googleAuthUrl;
 }
 
 function openGitHubModal() {
