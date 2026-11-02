@@ -726,6 +726,29 @@ app.post('/api/webhook/upi-success', async (req, res) => {
     // ──────────────────────────────────────────────────────────
     // 5. REACT SELLER STUDIO (Mounted on seller-dashboard.html)
     // ──────────────────────────────────────────────────────────
+    
+    function formatFileSize(bytes, decimals = 1) {
+      if (!bytes || bytes === 0) return '0 B';
+      const k = 1024;
+      const dm = decimals < 0 ? 0 : decimals;
+      const sizes = ['B', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + (sizes[i] || 'B');
+    }
+
+    function getCodeFileIcon(filename) {
+      const ext = (filename || '').split('.').pop().toLowerCase();
+      if (['html', 'htm'].includes(ext)) return '🌐';
+      if (['css', 'scss', 'sass', 'less'].includes(ext)) return '🎨';
+      if (['js', 'jsx', 'ts', 'tsx', 'mjs'].includes(ext)) return '⚡';
+      if (['py'].includes(ext)) return '🐍';
+      if (['json', 'yaml', 'yml'].includes(ext)) return '⚙️';
+      if (['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg', 'ico'].includes(ext)) return '🖼️';
+      if (['md', 'txt', 'rtf'].includes(ext)) return '📝';
+      if (['zip', 'rar', 'tar', 'gz', '7z'].includes(ext)) return '📦';
+      return '📄';
+    }
+
     function SellerStudio() {
       const [title, setTitle] = useState('');
       const [category, setCategory] = useState('React');
@@ -736,7 +759,8 @@ app.post('/api/webhook/upi-success', async (req, res) => {
       const [videoUrl, setVideoUrl] = useState(null);
       const [downloadUrl, setDownloadUrl] = useState(null);
       const [bundleInfo, setBundleInfo] = useState(null);
-      const [bundleMode, setBundleMode] = useState('zip');
+      const [bundleMode, setBundleMode] = useState('folder');
+      const [scannedFiles, setScannedFiles] = useState([]);
       const [coverUploading, setCoverUploading] = useState(false);
       const [videoUploading, setVideoUploading] = useState(false);
       const [bundleUploading, setBundleUploading] = useState(false);
@@ -802,12 +826,21 @@ app.post('/api/webhook/upi-success', async (req, res) => {
         const file = e.target.files && e.target.files[0];
         if (!file) return;
         setBundleUploading(true);
-        setBundleProgressText(`Uploading ${file.name}...`);
+        setBundleProgressText('Uploading archive ' + file.name + '...');
+        const item = [{
+          name: file.name,
+          path: file.name,
+          size: file.size,
+          sizeFormatted: formatFileSize(file.size),
+          icon: '📦'
+        }];
+        setScannedFiles(item);
+
         try {
           const res = await window.SmartHubAPI.uploadSingle(file);
           if (res && res.success) {
             setDownloadUrl(res.url);
-            setBundleInfo({ type: 'zip', originalName: file.name, size: file.size });
+            setBundleInfo({ type: 'zip', originalName: file.name, size: file.size, url: res.url });
             if (window.showToast) window.showToast('Source codebase ZIP uploaded! 📦', 'success');
           } else {
             if (window.showToast) window.showToast((res && res.error) || 'Upload failed', 'error');
@@ -822,20 +855,86 @@ app.post('/api/webhook/upi-success', async (req, res) => {
         const filesList = e.target.files;
         if (!filesList || filesList.length === 0) return;
         const filesArr = Array.from(filesList);
+        
+        // Immediately read and prepare manifest so ALL files show up on the UI!
         const paths = filesArr.map(f => f.webkitRelativePath || f.name);
-        const folderName = paths[0] ? paths[0].split('/')[0] : 'ProjectFolder';
-
+        const folderName = (paths[0] && paths[0].includes('/')) ? paths[0].split('/')[0] : (title.trim() || 'ProjectFolder');
+        
+        const fileItems = filesArr.map((f, i) => ({
+          name: f.name,
+          path: paths[i] || f.name,
+          size: f.size,
+          sizeFormatted: formatFileSize(f.size),
+          icon: getCodeFileIcon(f.name)
+        }));
+        
+        setScannedFiles(fileItems);
         setBundleUploading(true);
-        setBundleProgressText(`Packaging ${filesArr.length} files from /${folderName}...`);
+        setBundleProgressText('Packaging ' + filesArr.length + ' verified files from /' + folderName + '...');
 
         try {
-          const res = await window.SmartHubAPI.uploadFolder(filesArr, paths, folderName);
+          const res = await window.SmartHubAPI.uploadFolder(filesArr, folderName, paths);
           if (res && res.success) {
-            setDownloadUrl(res.zipUrl || res.folderPath);
-            setBundleInfo({ type: 'folder', folderName, fileCount: res.fileCount, totalSize: res.totalSize, zipUrl: res.zipUrl });
-            if (window.showToast) window.showToast(`Folder /${folderName} (${res.fileCount} files) zipped and secured! 📁`, 'success');
+            const assignedFolderId = (res.folder && res.folder.id) || res.folderId || null;
+            const finalZip = res.zipUrl || res.url || res.folderPath;
+            setDownloadUrl(finalZip);
+            setBundleInfo({
+              type: 'folder',
+              folderId: assignedFolderId,
+              folderName: folderName,
+              fileCount: res.fileCount || filesArr.length,
+              totalSize: res.totalSize || filesArr.reduce((a, b) => a + b.size, 0),
+              zipUrl: finalZip,
+              files: res.files || fileItems
+            });
+            if (window.showToast) window.showToast('Folder /' + folderName + ' (' + filesArr.length + ' files) verified & ready! 📁', 'success');
           } else {
             if (window.showToast) window.showToast((res && res.error) || 'Folder packaging failed', 'error');
+          }
+        } catch (err) {
+          if (window.showToast) window.showToast(err.message, 'error');
+        }
+        setBundleUploading(false);
+      }
+
+      async function onBundleMultiFilesChange(e) {
+        const filesList = e.target.files;
+        if (!filesList || filesList.length === 0) return;
+        const filesArr = Array.from(filesList);
+        
+        const folderName = (title.trim() || 'project_files').replace(/[^a-zA-Z0-9_-]/g, '_');
+        const paths = filesArr.map(f => f.webkitRelativePath || f.name);
+        
+        const fileItems = filesArr.map((f, i) => ({
+          name: f.name,
+          path: paths[i] || f.name,
+          size: f.size,
+          sizeFormatted: formatFileSize(f.size),
+          icon: getCodeFileIcon(f.name)
+        }));
+        
+        setScannedFiles(fileItems);
+        setBundleUploading(true);
+        setBundleProgressText('Packaging ' + filesArr.length + ' selected files into bundle...');
+
+        try {
+          const res = await window.SmartHubAPI.uploadFolder(filesArr, folderName, paths);
+          if (res && res.success) {
+            const assignedFolderId = (res.folder && res.folder.id) || res.folderId || null;
+            const finalZip = res.zipUrl || res.url || res.folderPath;
+            setDownloadUrl(finalZip);
+            setBundleInfo({
+              type: 'folder',
+              folderId: assignedFolderId,
+              folderName: folderName,
+              fileCount: res.fileCount || filesArr.length,
+              totalSize: res.totalSize || filesArr.reduce((a, b) => a + b.size, 0),
+              zipUrl: finalZip,
+              files: res.files || fileItems
+            });
+            if (window.showToast) window.showToast(filesArr.length + ' files packaged & verified! 📄', 'success');
+          } else {
+            if (window.showToast) window.showToast((res && res.error) || 'Files packaging failed', 'error');
           }
         } catch (err) {
           if (window.showToast) window.showToast(err.message, 'error');
@@ -1048,30 +1147,50 @@ app.post('/api/webhook/upi-success', async (req, res) => {
 
                 // 3. Source Code Bundle or Folder
                 h('div', { style: { border: '1px solid var(--border-outline)', borderRadius: '6px', padding: '12px', background: 'var(--bg-card)' } },
-                  h('div', { style: { display: 'flex', justifyContent: 'space-between', marginBottom: '6px' } },
-                    h('span', { style: { fontSize: '0.78rem', fontWeight: 700 } }, '📁 Source Code'),
-                    downloadUrl ? h('span', { style: { fontSize: '0.68rem', color: 'var(--accent-green)', fontWeight: 700 } }, '✓ SECURED') : null
+                  h('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' } },
+                    h('span', { style: { fontSize: '0.8rem', fontWeight: 700 } }, '📁 Source Code / Folder'),
+                    downloadUrl
+                      ? h('span', { style: { fontSize: '0.68rem', color: 'var(--accent-green)', fontWeight: 700, fontFamily: 'var(--font-tech)' } }, '✓ SECURED & READY')
+                      : h('span', { style: { fontSize: '0.68rem', color: 'var(--text-muted)', fontFamily: 'var(--font-tech)' } }, 'ZIP, FOLDER OR FILES')
                   ),
-                  h('div', { style: { display: 'flex', gap: '4px', marginBottom: '6px' } },
+                  
+                  // 3 Mode Toggle Buttons: Folder, Files, ZIP
+                  h('div', { style: { display: 'flex', gap: '4px', marginBottom: '8px' } },
                     h('button', {
                       type: 'button',
-                      className: `btn btn-sm ${bundleMode === 'zip' ? 'btn-primary' : 'btn-outline'}`,
-                      style: { fontSize: '0.68rem', padding: '2px 6px', flex: 1 },
-                      onClick: () => setBundleMode('zip')
-                    }, 'ZIP File'),
-                    h('button', {
-                      type: 'button',
-                      className: `btn btn-sm ${bundleMode === 'folder' ? 'btn-primary' : 'btn-outline'}`,
-                      style: { fontSize: '0.68rem', padding: '2px 6px', flex: 1 },
+                      className: 'btn btn-sm ' + (bundleMode === 'folder' ? 'btn-primary' : 'btn-outline'),
+                      style: { fontSize: '0.7rem', padding: '3px 6px', flex: 1 },
                       onClick: () => setBundleMode('folder')
-                    }, 'Full Folder')
+                    }, '📁 Entire Folder'),
+                    h('button', {
+                      type: 'button',
+                      className: 'btn btn-sm ' + (bundleMode === 'files' ? 'btn-primary' : 'btn-outline'),
+                      style: { fontSize: '0.7rem', padding: '3px 6px', flex: 1 },
+                      onClick: () => setBundleMode('files')
+                    }, '📄 Select Files'),
+                    h('button', {
+                      type: 'button',
+                      className: 'btn btn-sm ' + (bundleMode === 'zip' ? 'btn-primary' : 'btn-outline'),
+                      style: { fontSize: '0.7rem', padding: '3px 6px', flex: 1 },
+                      onClick: () => setBundleMode('zip')
+                    }, '📦 ZIP Archive')
                   ),
+
+                  // Hidden Inputs
                   h('input', {
                     type: 'file',
                     id: 'react-pub-zip',
-                    accept: '.zip,.tar,.gz,.rar,.json,.js,.py,.ts',
+                    accept: '.zip,.tar,.gz,.rar,.7z',
                     style: { display: 'none' },
                     onChange: onBundleFileChange
+                  }),
+                  h('input', {
+                    type: 'file',
+                    id: 'react-pub-files',
+                    multiple: true,
+                    accept: '*/*',
+                    style: { display: 'none' },
+                    onChange: onBundleMultiFilesChange
                   }),
                   h('input', {
                     type: 'file',
@@ -1082,35 +1201,101 @@ app.post('/api/webhook/upi-success', async (req, res) => {
                     style: { display: 'none' },
                     onChange: onBundleFolderChange
                   }),
+
+                  // Clickable Select Area
                   h('div', {
                     style: {
-                      border: '1.5px dashed rgba(255,255,255,0.18)',
+                      border: '1.5px dashed ' + (downloadUrl ? 'var(--accent-green)' : 'rgba(255,255,255,0.2)'),
                       borderRadius: '6px',
-                      padding: '10px 8px',
+                      padding: '12px 10px',
                       textAlign: 'center',
                       cursor: 'pointer',
-                      background: downloadUrl ? 'rgba(34, 197, 94, 0.05)' : 'transparent'
+                      background: downloadUrl ? 'rgba(34, 197, 94, 0.05)' : 'transparent',
+                      transition: 'all 0.2s'
                     },
                     onClick: () => {
-                      const id = bundleMode === 'folder' ? 'react-pub-folder' : 'react-pub-zip';
+                      const id = bundleMode === 'folder' ? 'react-pub-folder' : (bundleMode === 'files' ? 'react-pub-files' : 'react-pub-zip');
                       const el = document.getElementById(id);
                       if (el) el.click();
                     }
                   },
                     downloadUrl ? h('div', null,
-                      h('div', { style: { fontSize: '1.2rem' } }, bundleInfo && bundleInfo.type === 'folder' ? '📁' : '📦'),
-                      h('div', { style: { fontSize: '0.72rem', color: 'var(--accent-green)', fontWeight: 700 } },
-                        bundleInfo && bundleInfo.type === 'folder' ? `✓ ${bundleInfo.fileCount} Files Zipped` : '✓ ZIP Secured'
+                      h('div', { style: { fontSize: '1.4rem', marginBottom: '2px' } }, bundleInfo && bundleInfo.type === 'folder' ? '📁' : '📦'),
+                      h('div', { style: { fontSize: '0.78rem', color: 'var(--accent-green)', fontWeight: 700 } },
+                        bundleInfo && bundleInfo.type === 'folder' ? ('✓ /' + (bundleInfo.folderName || 'Project') + ' (' + bundleInfo.fileCount + ' Files Zipped)') : '✓ ZIP Archive Verified'
                       ),
-                      h('div', { style: { fontSize: '0.65rem', color: 'var(--text-muted)' } }, 'Click to replace')
+                      h('div', { style: { fontSize: '0.68rem', color: 'var(--text-muted)', marginTop: '2px' } }, 'Click to choose another folder or archive')
                     ) : h('div', null,
-                      h('div', { style: { fontSize: '1.2rem' } }, bundleMode === 'folder' ? '📁' : '📦'),
-                      h('div', { style: { fontSize: '0.75rem', fontWeight: 700 } },
-                        bundleUploading ? (bundleProgressText || 'Uploading...') : (bundleMode === 'folder' ? 'Select Project Folder' : 'Select ZIP Package')
+                      h('div', { style: { fontSize: '1.4rem', marginBottom: '2px' } }, bundleMode === 'folder' ? '📁' : (bundleMode === 'files' ? '📄' : '📦')),
+                      h('div', { style: { fontSize: '0.78rem', fontWeight: 700 } },
+                        bundleUploading ? (bundleProgressText || 'Packaging files...') : (
+                          bundleMode === 'folder' ? 'Select Project Folder' : (bundleMode === 'files' ? 'Select All Project Files (Ctrl+A)' : 'Choose ZIP Archive')
+                        )
                       ),
-                      h('div', { style: { fontSize: '0.65rem', color: 'var(--text-muted)' } }, bundleMode === 'folder' ? 'Auto-packs to ZIP' : 'Audited Archive')
+                      h('div', { style: { fontSize: '0.68rem', color: 'var(--text-muted)', marginTop: '2px' } },
+                        bundleMode === 'folder' ? 'Auto-packs to ZIP · Preserves relative paths' : (
+                          bundleMode === 'files' ? 'Browse inside folder & pick all code files' : '.zip, .tar.gz supported'
+                        )
+                      )
                     )
-                  )
+                  ),
+
+                  // Windows Folder vs Files Tip Note
+                  h('div', { style: { fontSize: '0.67rem', color: 'var(--accent-cyan)', background: 'rgba(6,182,212,0.06)', borderRadius: '4px', padding: '6px 8px', marginTop: '8px', lineHeight: '1.3' } },
+                    bundleMode === 'folder'
+                      ? "💡 Windows Tip: Windows folder dialog only displays subfolders ('image', etc.) to select the parent folder. Once selected, ALL files inside will be read and listed below immediately!"
+                      : (bundleMode === 'files'
+                        ? '💡 Tip: In Files mode, open your folder and press Ctrl+A to select all files directly so each file shows up in the file list below.'
+                        : '💡 Tip: Upload an existing .zip or .tar.gz archive of your codebase.')
+                  ),
+
+                  // Verified Files Manifest Preview List ("ALL FILES MUST BE READ AND SHOW UP TO UPLOAD")
+                  scannedFiles.length > 0 ? h('div', { style: { marginTop: '10px', borderTop: '1px solid var(--border-outline)', paddingTop: '8px' } },
+                    h('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' } },
+                      h('span', { style: { fontSize: '0.72rem', fontWeight: 700, color: 'var(--accent-green)' } },
+                        '✓ ' + scannedFiles.length + ' Verified Files Read (' + formatFileSize(scannedFiles.reduce((s, f) => s + (f.size || 0), 0)) + ')'
+                      ),
+                      h('button', {
+                        type: 'button',
+                        style: { background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: '0.65rem', cursor: 'pointer', textDecoration: 'underline' },
+                        onClick: (e) => {
+                          e.stopPropagation();
+                          setScannedFiles([]);
+                          setDownloadUrl(null);
+                          setBundleInfo(null);
+                        }
+                      }, 'Clear')
+                    ),
+                    h('div', {
+                      style: {
+                        maxHeight: '140px',
+                        overflowY: 'auto',
+                        background: 'rgba(0,0,0,0.3)',
+                        borderRadius: '4px',
+                        border: '1px solid rgba(255,255,255,0.06)',
+                        padding: '4px 6px',
+                        fontSize: '0.68rem',
+                        fontFamily: 'var(--font-mono)'
+                      }
+                    },
+                      scannedFiles.map((item, idx) => h('div', {
+                        key: idx,
+                        style: {
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          padding: '3px 4px',
+                          borderBottom: idx < scannedFiles.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none'
+                        }
+                      },
+                        h('div', { style: { display: 'flex', alignItems: 'center', gap: '6px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' } },
+                          h('span', null, item.icon || getCodeFileIcon(item.name)),
+                          h('span', { style: { color: 'var(--text-primary)' } }, item.path || item.name)
+                        ),
+                        h('span', { style: { color: 'var(--text-muted)', flexShrink: 0, marginLeft: '8px' } }, item.sizeFormatted || formatFileSize(item.size))
+                      ))
+                    )
+                  ) : null
                 )
               )
             ),

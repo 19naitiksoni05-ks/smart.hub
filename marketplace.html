@@ -205,6 +205,7 @@
           🛒 Buy Now — Pay with Wallet
         </button>
         <button class="btn btn-secondary" onclick="addToWishlist()">♡ Add to Wishlist</button>
+        <button class="btn btn-danger" id="detail-delete-btn" onclick="deleteModalProduct()" style="display:none;background:#dc2626;border-color:#b91c1c;color:#fff;justify-content:center;">🗑️ Delete This Project</button>
       </div>
       <p style="font-size:0.78rem;color:var(--text-muted);text-align:center;margin-top:12px;">🔐 Delivered to your email with encryption key</p>
     </div>
@@ -248,6 +249,86 @@ function formatNum(n) {
   return n;
 }
 
+// ── Project Owner Helper ────────────────────────────────────
+function isProjectOwner(p) {
+  if (!p) return false;
+  const user = (window.getCurrentUser && window.getCurrentUser());
+  if (user && user.role === 'admin') return true;
+
+  const uId = user ? String(user.id || '').trim().toLowerCase() : '';
+  const uName = user ? String(user.name || '').trim().toLowerCase() : '';
+  const uEmail = user ? String(user.email || '').trim().toLowerCase() : '';
+
+  const aId = String((p.author && p.author.id) || p.seller_id || '').trim().toLowerCase();
+  const aName = String((p.author && p.author.name) || p.seller_name || '').trim().toLowerCase();
+  const aEmail = String((p.author && p.author.email) || '').trim().toLowerCase();
+
+  if (uId && aId && uId === aId) return true;
+  if (uName && aName && (uName === aName || aName.includes(uName) || uName.includes(aName))) return true;
+  if (uEmail && aEmail && uEmail === aEmail) return true;
+
+  try {
+    const my = JSON.parse(localStorage.getItem('smarthub_my_products') || '[]');
+    if (my.includes(p.id)) return true;
+  } catch(e) {}
+
+  return false;
+}
+
+// ── Global Delete Project Function ───────────────────────────
+window.deleteProject = async function(id, title) {
+  if (!id) return;
+  const projectTitle = title || 'this project';
+  if (!confirm(`Are you sure you want to permanently delete "${projectTitle}" from Smart Hub?\n\nThis action cannot be undone.`)) {
+    return;
+  }
+  
+  try {
+    let res = null;
+    if (window.SmartHubAPI && typeof window.SmartHubAPI.deleteProduct === 'function') {
+      res = await window.SmartHubAPI.deleteProduct(id);
+    } else {
+      res = await fetch(`/api/products/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(localStorage.getItem('smarthub_token') ? { 'Authorization': `Bearer ${localStorage.getItem('smarthub_token')}` } : {})
+        }
+      }).then(r => r.json());
+    }
+
+    if (res && res.success) {
+      if (typeof showToast === 'function') {
+        showToast(`Project "${projectTitle}" deleted successfully.`, 'success');
+      } else if (window.SH && window.SH.showToast) {
+        window.SH.showToast(`Project "${projectTitle}" deleted successfully.`, 'success');
+      } else {
+        alert(`Project "${projectTitle}" deleted successfully.`);
+      }
+
+      if (window.SmartHubData && Array.isArray(window.SmartHubData.products)) {
+        window.SmartHubData.products = window.SmartHubData.products.filter(p => p.id !== id);
+      }
+      filteredProducts = filteredProducts.filter(p => p.id !== id);
+      renderProducts(filteredProducts);
+
+      const modal = document.getElementById('product-detail-overlay');
+      if (modal && modal.classList.contains('active')) {
+        modal.classList.remove('active');
+      }
+    } else {
+      alert((res && res.error) || 'Failed to delete project.');
+    }
+  } catch (err) {
+    alert('Error deleting project: ' + err.message);
+  }
+};
+
+function deleteModalProduct() {
+  if (!currentProduct) return;
+  window.deleteProject(currentProduct.id, currentProduct.title);
+}
+
 // ── Render Products ──────────────────────────────────────────
 function renderProducts(products) {
   const grid = document.getElementById('products-grid');
@@ -273,44 +354,54 @@ function renderProducts(products) {
 
   grid.innerHTML = products.map(p => {
     const discount = p.oldPrice ? Math.round((1 - p.price/p.oldPrice)*100) : 0;
+    const isOwner = isProjectOwner(p);
+    const safeTitle = (p.title || 'Project').replace(/'/g, "\\'");
+    const authorName = (p.author && p.author.name) || p.seller_name || 'Creator';
+    const authorAvatar = (p.author && p.author.avatar) || p.seller_avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=user&backgroundColor=ff5b36';
+    const thumbUrl = p.thumb || `https://picsum.photos/seed/${encodeURIComponent(p.title || 'code')}/400/250`;
+    const prodType = (p.type && p.type !== 'undefined') ? p.type : '';
+
     return `
     <div class="product-card" onclick="window.location.href='product-detail.html?id=${p.id}'">
       <div class="product-card-thumb">
-        <img src="${p.thumb}" alt="${p.title}" loading="lazy">
+        <img src="${thumbUrl}" alt="${p.title}" loading="lazy" onerror="this.onerror=null;this.src='https://picsum.photos/seed/${encodeURIComponent(p.title || 'code')}/400/250';">
         <div class="product-card-overlay">
           <div class="product-card-actions">
             <a href="product-detail.html?id=${p.id}" class="btn btn-primary btn-sm" onclick="event.stopPropagation()">View Details →</a>
+            ${isOwner ? `<button type="button" class="btn btn-sm" onclick="event.stopPropagation(); window.deleteProject('${p.id}', '${safeTitle}')" style="background:#dc2626;border:1px solid #b91c1c;color:#fff;" title="Delete this project">🗑️ Delete</button>` : ''}
           </div>
         </div>
         ${p.badge ? `<div class="badge badge-${p.badge==='Bestseller'?'orange':p.badge==='New'?'cyan':p.badge==='Hot'?'pink':'purple'}" style="position:absolute;top:12px;left:12px;">${p.badge}</div>` : ''}
-        <div class="badge badge-blue" style="position:absolute;top:12px;right:12px;font-size:0.7rem;">${p.type}</div>
+        ${prodType ? `<div class="badge badge-blue" style="position:absolute;top:12px;right:${isOwner ? '82px' : '12px'};font-size:0.7rem;">${prodType}</div>` : ''}
+        ${isOwner ? `<button type="button" onclick="event.stopPropagation(); window.deleteProject('${p.id}', '${safeTitle}')" title="Delete your project" class="card-delete-badge">🗑️ Delete</button>` : ''}
       </div>
       <div class="product-card-body">
         <div class="product-card-category">${p.category}</div>
         <div class="product-card-title">${p.title}</div>
         <div class="product-card-meta">
           <div class="product-card-author">
-            <img src="${(p.author && p.author.avatar) || p.seller_avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=user&backgroundColor=ff5b36'}" alt="${(p.author && p.author.name) || p.seller_name || 'Creator'}">
-            ${(p.author && p.author.name) || p.seller_name || 'Creator'}
+            <img src="${authorAvatar}" alt="${authorName}">
+            ${authorName}${isOwner ? ' <span style="color:var(--accent-coral);font-weight:700;font-size:0.74rem;">(You)</span>' : ''}
           </div>
           <div class="product-card-stats">
-            <div class="product-card-stat">★ ${p.rating}</div>
-            <div class="product-card-stat">(${p.reviews})</div>
+            <div class="product-card-stat">★ ${p.rating || 5}</div>
+            <div class="product-card-stat">(${p.reviews || 0})</div>
           </div>
         </div>
         <div class="tag-cloud">
-          ${p.tags.slice(0,3).map(t=>`<span class="tag">${t}</span>`).join('')}
+          ${(p.tags || ['Code']).slice(0,3).map(t=>`<span class="tag">${t}</span>`).join('')}
         </div>
       </div>
       <div class="product-card-footer">
         <div class="product-card-price">
           <div class="price"><span class="currency">₹</span>${p.price.toLocaleString('en-IN')}</div>
-          ${p.oldPrice ? `<div style="display:flex;gap:8px;align-items:center;margin-top:2px;"><span class="price-old">₹${p.oldPrice.toLocaleString('en-IN')}</span><span class="price-discount">-${discount}%</span></div>` : ''}
+          ${p.oldPrice ? `<div style="display:flex;gap:6px;align-items:center;margin-top:2px;"><span class="price-old" style="font-size:0.78rem;">₹${p.oldPrice.toLocaleString('en-IN')}</span><span class="price-discount" style="font-size:0.72rem;">-${discount}%</span></div>` : ''}
         </div>
-        <div style="display:flex;gap:6px;align-items:center;">
-          <a href="repo.html?id=${p.id}" class="btn btn-outline btn-sm" onclick="event.stopPropagation()" title="View Project & Code Studio" style="padding:4px 8px;font-size:0.75rem;border-color:var(--accent-coral);color:var(--accent-coral);">⚡ Studio</a>
-          <button class="btn btn-outline btn-sm" onclick="event.stopPropagation();window.addToCart('${p.id}')" title="Add to Cart">🛒</button>
+        <div class="product-card-footer-actions">
+          <a href="repo.html?id=${p.id}" class="btn btn-outline btn-sm" onclick="event.stopPropagation()" title="View Project & Code Studio" style="border-color:var(--accent-coral);color:var(--accent-coral);">⚡ Studio</a>
+          <button type="button" class="btn btn-outline btn-sm btn-icon-sm" onclick="event.stopPropagation();window.addToCart('${p.id}')" title="Add to Cart">🛒</button>
           <a href="checkout.html?id=${p.id}" class="btn btn-primary btn-sm" onclick="event.stopPropagation()">Buy ₹${p.price.toLocaleString('en-IN')}</a>
+          ${isOwner ? `<button type="button" class="btn btn-outline btn-sm btn-icon-sm" onclick="event.stopPropagation(); window.deleteProject('${p.id}', '${safeTitle}')" title="Delete Project" style="border-color:#ef4444;color:#ef4444;">🗑️</button>` : ''}
         </div>
       </div>
     </div>`;
@@ -409,6 +500,10 @@ function openProductDetail(id) {
     </div>
   `;
   document.getElementById('buy-btn').textContent = `🛒 Buy Now — ₹${total.toLocaleString('en-IN')}`;
+  const modalDelBtn = document.getElementById('detail-delete-btn');
+  if (modalDelBtn) {
+    modalDelBtn.style.display = isProjectOwner(product) ? 'flex' : 'none';
+  }
   document.getElementById('product-detail-overlay').classList.add('active');
 }
 

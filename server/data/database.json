@@ -100,8 +100,8 @@
       "badges": 0,
       "location": "India",
       "headline": "Smart Hub Developer",
-      "createdAt": "2026-10-25T13:29:50.405+00:00",
-      "updatedAt": "2026-10-25T13:29:50.627+00:00"
+      "createdAt": "2026-10-29T04:52:58.464726+00:00",
+      "updatedAt": "2026-10-29T04:52:58.464726+00:00"
     },
     {
       "id": "cd8c4c62-3c11-4b93-8972-04d9373139fe",
@@ -132,8 +132,8 @@
       "badges": 0,
       "location": "India",
       "headline": "Smart Hub Creator",
-      "createdAt": "2026-10-28T14:59:08.325+00:00",
-      "updatedAt": "2026-10-28T14:59:08.148744+00:00"
+      "createdAt": "2026-10-29T04:52:58.464726+00:00",
+      "updatedAt": "2026-10-29T04:52:58.464726+00:00"
     },
     {
       "id": "u_audit_creator",
@@ -148,8 +148,8 @@
       "badges": 0,
       "location": "India",
       "headline": "Smart Hub Creator",
-      "createdAt": "2026-10-28T15:14:41.585+00:00",
-      "updatedAt": "2026-10-28T15:14:41.405751+00:00"
+      "createdAt": "2026-10-29T04:52:58.464726+00:00",
+      "updatedAt": "2026-10-29T04:52:58.464726+00:00"
     },
     {
       "id": "u_1793202389071",
@@ -165,14 +165,14 @@
       "location": "India",
       "headline": "Smart Hub Developer",
       "createdAt": "2026-10-28T15:46:29.071+00:00",
-      "updatedAt": "2026-10-29T04:23:50.243Z"
+      "updatedAt": "2026-10-29T04:23:50.243+00:00"
     },
     {
       "id": "u_1793202450797",
       "name": "TANMAY GUPTA",
       "username": "@tanmay.5987",
       "email": "334tanmaygupta@gmail.com",
-      "passwordHash": "$2b$10$.sV8bSVo0veLBGOvhHzxJuIAMIXXJrmDNwk4ILOndMct5EGJ5EAyS",
+      "passwordHash": "$2b$10$GjynNUZpIUAMmRX8pBIIZOJSd.HMQ0eSMRMO14pglFTrOWDHzwuSS",
       "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=tanmay.5987&backgroundColor=ff5b36",
       "walletBalance": 4304,
       "role": "buyer",
@@ -181,7 +181,7 @@
       "location": "India",
       "headline": "Smart Hub Developer",
       "createdAt": "2026-10-28T15:47:30.797+00:00",
-      "updatedAt": "2026-10-28T19:44:46.691+00:00"
+      "updatedAt": "2026-10-29T04:30:44.62+00:00"
     }
   ],
   "products": [
@@ -1032,6 +1032,43 @@
     }
   ],
   "uploads": [
+    {
+      "id": "folder_1793248911742_a18d9d",
+      "name": "webdes",
+      "type": "folder",
+      "category": "folders",
+      "fileCount": 3,
+      "size": 120,
+      "sizeFormatted": "120 Bytes",
+      "zipSize": 420,
+      "zipSizeFormatted": "420 Bytes",
+      "url": "/api/orders/download-cloud?path=archives%2Fwebdes_1793248911743.zip",
+      "storageKey": "supabase://archives/archives/webdes_1793248911743.zip",
+      "folderUrl": "/uploads/folders/folder_1793248911742_a18d9d",
+      "files": [
+        {
+          "path": "index.html",
+          "name": "index.html",
+          "size": 63,
+          "sizeFormatted": "63 Bytes"
+        },
+        {
+          "path": "style.css",
+          "name": "style.css",
+          "size": 36,
+          "sizeFormatted": "36 Bytes"
+        },
+        {
+          "path": "script.js",
+          "name": "script.js",
+          "size": 21,
+          "sizeFormatted": "21 Bytes"
+        }
+      ],
+      "userId": null,
+      "uploaderName": "Guest Developer",
+      "createdAt": "2026-10-29T04:41:52.433Z"
+    },
     {
       "id": "up_1793201891163_b0cf7e",
       "originalName": "cloud_codebase.zip",

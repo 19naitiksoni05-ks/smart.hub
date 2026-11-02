@@ -357,12 +357,14 @@
                     <span id="bundle-status-badge" style="font-size:0.7rem;font-family:var(--font-tech);color:var(--text-muted);">ZIP OR FOLDER</span>
                   </div>
                   
-                  <div style="display:flex;gap:6px;margin-bottom:10px;">
-                    <button type="button" class="btn btn-outline btn-sm" id="btn-mode-zip" onclick="setBundleMode('zip')" style="flex:1;font-size:0.75rem;padding:4px 8px;">📦 ZIP File</button>
-                    <button type="button" class="btn btn-outline btn-sm" id="btn-mode-folder" onclick="setBundleMode('folder')" style="flex:1;font-size:0.75rem;padding:4px 8px;">📁 Entire Folder</button>
+                  <div style="display:flex;gap:4px;margin-bottom:8px;">
+                    <button type="button" class="btn btn-outline btn-sm" id="btn-mode-folder" onclick="setBundleMode('folder')" style="flex:1;font-size:0.72rem;padding:4px 6px;">📁 Entire Folder</button>
+                    <button type="button" class="btn btn-outline btn-sm" id="btn-mode-files" onclick="setBundleMode('files')" style="flex:1;font-size:0.72rem;padding:4px 6px;">📄 Select Files</button>
+                    <button type="button" class="btn btn-outline btn-sm" id="btn-mode-zip" onclick="setBundleMode('zip')" style="flex:1;font-size:0.72rem;padding:4px 6px;">📦 ZIP Archive</button>
                   </div>
 
-                  <input type="file" id="pub-bundle-file" accept=".zip,.tar,.gz,.rar,.json,.js,.py,.ts" style="display:none;" onchange="handleBundleFileUpload(this)">
+                  <input type="file" id="pub-bundle-file" accept=".zip,.tar,.gz,.rar,.7z" style="display:none;" onchange="handleBundleFileUpload(this)">
+                  <input type="file" id="pub-bundle-files" multiple accept="*/*" style="display:none;" onchange="handleBundleMultiFilesUpload(this)">
                   <input type="file" id="pub-bundle-folder" webkitdirectory directory multiple style="display:none;" onchange="handleBundleFolderUpload(this)">
 
                   <div id="bundle-drop-box" onclick="triggerBundleSelect()" style="border:1.5px dashed rgba(255,255,255,0.15);border-radius:var(--radius-xs);padding:14px;text-align:center;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--accent-green)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.15)'">
@@ -372,6 +374,20 @@
                       <div style="font-size:0.72rem;color:var(--text-muted);margin-top:2px;" id="bundle-box-desc">Select ZIP or entire repo folder</div>
                     </div>
                   </div>
+                  
+                  <div id="bundle-windows-tip" style="font-size:0.67rem;color:var(--accent-cyan);background:rgba(6,182,212,0.06);border-radius:4px;padding:6px 8px;margin-top:8px;line-height:1.3;">
+                    💡 Windows Tip: Windows folder dialog only displays subfolders ('image', etc.) to select the parent folder. Once selected, ALL files inside will be read and listed below immediately!
+                  </div>
+
+                  <div id="bundle-scanned-container" style="display:none;margin-top:10px;border-top:1px solid var(--border-outline);padding-top:8px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                      <span id="bundle-scanned-count-badge" style="font-size:0.72rem;font-weight:700;color:var(--accent-green);">✓ 0 Files Read</span>
+                      <button type="button" style="background:none;border:none;color:var(--text-muted);font-size:0.65rem;cursor:pointer;text-decoration:underline;" onclick="clearBundleFiles()">Clear</button>
+                    </div>
+                    <div id="bundle-scanned-list" style="max-height:130px;overflow-y:auto;background:rgba(0,0,0,0.3);border-radius:4px;border:1px solid rgba(255,255,255,0.06);padding:4px 6px;font-size:0.68rem;font-family:var(--font-mono);">
+                    </div>
+                  </div>
+
                   <div id="bundle-progress" style="display:none;margin-top:8px;">
                     <div style="height:4px;background:rgba(255,255,255,0.1);border-radius:2px;overflow:hidden;">
                       <div id="bundle-progress-bar" style="height:100%;width:0%;background:var(--accent-green);transition:width 0.2s;"></div>
@@ -400,32 +416,105 @@
       `;
     }
 
-    let bundleMode = 'zip';
+    let bundleMode = 'folder';
+    let bundleScannedFilesList = [];
+
+    function clearBundleFiles() {
+      bundleScannedFilesList = [];
+      pubDownloadUrl = null;
+      pubBundleInfo = null;
+      const sc = document.getElementById('bundle-scanned-container');
+      if (sc) sc.style.display = 'none';
+      const badge = document.getElementById('bundle-status-badge');
+      if (badge) { badge.textContent = 'ZIP, FOLDER OR FILES'; badge.style.color = 'var(--text-muted)'; }
+      const wrap = document.getElementById('bundle-preview-wrap');
+      if (wrap) {
+        wrap.innerHTML = `
+          <div style="font-size:1.8rem;margin-bottom:4px;">📦</div>
+          <div style="font-size:0.8rem;font-weight:700;" id="bundle-box-title">${bundleMode === 'folder' ? 'Select Project Folder' : (bundleMode === 'files' ? 'Select All Project Files (Ctrl+A)' : 'Choose ZIP Archive')}</div>
+          <div style="font-size:0.72rem;color:var(--text-muted);margin-top:2px;" id="bundle-box-desc">Select ZIP, individual files or entire repo folder</div>
+        `;
+      }
+    }
+
     function setBundleMode(mode) {
       bundleMode = mode;
       const bZip = document.getElementById('btn-mode-zip');
       const bFolder = document.getElementById('btn-mode-folder');
+      const bFiles = document.getElementById('btn-mode-files');
       const boxTitle = document.getElementById('bundle-box-title');
       const boxDesc = document.getElementById('bundle-box-desc');
-      if (mode === 'zip') {
-        if (bZip) { bZip.classList.add('btn-primary'); bZip.classList.remove('btn-outline'); }
-        if (bFolder) { bFolder.classList.remove('btn-primary'); bFolder.classList.add('btn-outline'); }
-        if (boxTitle) boxTitle.textContent = 'Choose Project ZIP Archive';
-        if (boxDesc) boxDesc.textContent = '.zip, .tar.gz (audited source code)';
-      } else {
+      const tip = document.getElementById('bundle-windows-tip');
+
+      [bZip, bFolder, bFiles].forEach(b => {
+        if (b) { b.classList.remove('btn-primary'); b.classList.add('btn-outline'); }
+      });
+
+      if (mode === 'folder') {
         if (bFolder) { bFolder.classList.add('btn-primary'); bFolder.classList.remove('btn-outline'); }
-        if (bZip) { bZip.classList.remove('btn-primary'); bZip.classList.add('btn-outline'); }
         if (boxTitle) boxTitle.textContent = 'Select Entire Project Folder';
         if (boxDesc) boxDesc.textContent = 'Preserves relative paths & auto-zips';
+        if (tip) tip.textContent = "💡 Windows Tip: Windows folder dialog only displays subfolders ('image', etc.) to select the parent folder. Once selected, ALL files inside will be read and listed below immediately!";
+      } else if (mode === 'files') {
+        if (bFiles) { bFiles.classList.add('btn-primary'); bFiles.classList.remove('btn-outline'); }
+        if (boxTitle) boxTitle.textContent = 'Select All Project Files (Ctrl+A)';
+        if (boxDesc) boxDesc.textContent = 'Browse inside folder & select all files directly';
+        if (tip) tip.textContent = "💡 Tip: In Files mode, navigate inside your project folder and press Ctrl+A to select all files directly.";
+      } else {
+        if (bZip) { bZip.classList.add('btn-primary'); bZip.classList.remove('btn-outline'); }
+        if (boxTitle) boxTitle.textContent = 'Choose Project ZIP Archive';
+        if (boxDesc) boxDesc.textContent = '.zip, .tar.gz (audited source code)';
+        if (tip) tip.textContent = "💡 Tip: Upload an existing .zip or .tar.gz archive of your codebase.";
       }
     }
 
     function triggerBundleSelect() {
       if (bundleMode === 'folder') {
         document.getElementById('pub-bundle-folder').click();
+      } else if (bundleMode === 'files') {
+        document.getElementById('pub-bundle-files').click();
       } else {
         document.getElementById('pub-bundle-file').click();
       }
+    }
+
+    function renderScannedFilesList(filesArr, relativePaths = []) {
+      const container = document.getElementById('bundle-scanned-container');
+      const badge = document.getElementById('bundle-scanned-count-badge');
+      const listEl = document.getElementById('bundle-scanned-list');
+      if (!container || !listEl) return;
+
+      let totalBytes = filesArr.reduce((s, f) => s + (f.size || 0), 0);
+      let formattedTotal = (totalBytes / (1024 * 1024)).toFixed(2) + ' MB';
+      if (totalBytes < 1024 * 1024) formattedTotal = (totalBytes / 1024).toFixed(1) + ' KB';
+
+      badge.textContent = `✓ ${filesArr.length} Verified Files Read (${formattedTotal})`;
+      container.style.display = 'block';
+
+      listEl.innerHTML = filesArr.map((f, i) => {
+        const p = relativePaths[i] || f.webkitRelativePath || f.name;
+        const ext = f.name.split('.').pop().toLowerCase();
+        let icon = '📄';
+        if (['html', 'htm'].includes(ext)) icon = '🌐';
+        else if (['css', 'scss'].includes(ext)) icon = '🎨';
+        else if (['js', 'jsx', 'ts', 'tsx'].includes(ext)) icon = '⚡';
+        else if (['py'].includes(ext)) icon = '🐍';
+        else if (['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg', 'ico'].includes(ext)) icon = '🖼️';
+        else if (['json', 'yaml', 'yml'].includes(ext)) icon = '⚙️';
+
+        let sz = (f.size / 1024).toFixed(1) + ' KB';
+        if (f.size < 1024) sz = f.size + ' B';
+
+        return `
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:3px 4px;border-bottom:1px solid rgba(255,255,255,0.04);">
+            <div style="display:flex;align-items:center;gap:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+              <span>${icon}</span>
+              <span style="color:var(--text-primary);">${p}</span>
+            </div>
+            <span style="color:var(--text-muted);flex-shrink:0;margin-left:8px;">${sz}</span>
+          </div>
+        `;
+      }).join('');
     }
 
     async function handleCoverUpload(input) {
@@ -586,11 +675,14 @@
       }
     }
 
-    async function handleBundleFolderUpload(input) {
+    async function handleBundleMultiFilesUpload(input) {
       if (!input.files || input.files.length === 0) return;
       const files = Array.from(input.files);
+      const title = (document.getElementById('pub-title') ? document.getElementById('pub-title').value.trim() : '') || 'project_files';
+      const folderName = title.replace(/[^a-zA-Z0-9_-]/g, '_');
       const paths = files.map(f => f.webkitRelativePath || f.name);
-      const folderName = paths[0] ? paths[0].split('/')[0] : 'ProjectFolder';
+
+      renderScannedFilesList(files, paths);
 
       const prog = document.getElementById('bundle-progress');
       const bar = document.getElementById('bundle-progress-bar');
@@ -598,36 +690,62 @@
       const badge = document.getElementById('bundle-status-badge');
       const wrap = document.getElementById('bundle-preview-wrap');
 
-      const category = document.getElementById('pub-category') ? document.getElementById('pub-category').value : '';
-      const isPythonSelected = category.toLowerCase().includes('python');
+      prog.style.display = 'block';
+      bar.style.width = '35%';
+      progText.textContent = `Packaging ${files.length} selected files into archive...`;
+      badge.textContent = 'PACKAGING...';
+      badge.style.color = 'var(--accent-cyan)';
 
-      // Genuine Python check
-      const pyFiles = files.filter(f => f.name.toLowerCase().endsWith('.py'));
-      if (isPythonSelected && pyFiles.length === 0) {
-        showToast('Validation Error: Python category requires at least one genuine .py file in the folder!', 'error');
-        badge.textContent = 'NO PYTHON';
+      try {
+        const res = await window.SmartHubAPI.uploadFolder(files, folderName, paths);
+        bar.style.width = '100%';
+        if (res && res.success) {
+          pubDownloadUrl = res.zipUrl || res.url || res.folderPath;
+          const assignedFolderId = (res.folder && res.folder.id) || res.folderId || null;
+          pubBundleInfo = {
+            type: 'folder',
+            folderId: assignedFolderId,
+            folderName,
+            fileCount: res.fileCount || files.length,
+            totalSize: res.totalSize || files.reduce((s, f) => s + f.size, 0),
+            zipUrl: pubDownloadUrl,
+            files: res.files || []
+          };
+          badge.textContent = `✓ ${files.length} FILES VERIFIED`;
+          badge.style.color = 'var(--accent-green)';
+          progText.textContent = `Archive generated successfully (${(pubBundleInfo.totalSize / (1024 * 1024)).toFixed(2)} MB)`;
+          wrap.innerHTML = `
+            <div style="font-size:1.8rem;margin-bottom:4px;">📄</div>
+            <div style="font-size:0.75rem;font-weight:700;color:var(--text-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${files.length} Project Files</div>
+            <div style="font-size:0.68rem;color:var(--accent-green);font-family:var(--font-tech);">All Files Verified & Packaged</div>
+          `;
+          showToast(`${files.length} files verified & packaged into archive! 🎉`, 'success');
+        } else {
+          badge.textContent = 'FAILED';
+          badge.style.color = '#ef4444';
+          showToast((res && res.error) || 'Upload failed', 'error');
+        }
+      } catch (err) {
+        badge.textContent = 'ERROR';
         badge.style.color = '#ef4444';
-        return;
+        showToast('Packaging error: ' + err.message, 'error');
       }
+    }
 
-      // Check all .py files for authenticity
-      for (const pyFile of pyFiles) {
-        try {
-          const text = await readFileAsText(pyFile);
-          if (text.includes('\0')) {
-            showToast(`Security Alert: "${pyFile.name}" contains binary data and is not genuine Python code!`, 'error');
-            badge.textContent = 'REJECTED';
-            badge.style.color = '#ef4444';
-            return;
-          }
-          if (/<html|<body|<\?php/i.test(text)) {
-            showToast(`Validation Error: "${pyFile.name}" contains HTML/PHP markup, not genuine Python!`, 'error');
-            badge.textContent = 'NOT PYTHON';
-            badge.style.color = '#ef4444';
-            return;
-          }
-        } catch (e) { }
-      }
+    async function handleBundleFolderUpload(input) {
+      if (!input.files || input.files.length === 0) return;
+      const files = Array.from(input.files);
+      const paths = files.map(f => f.webkitRelativePath || f.name);
+      const folderName = paths[0] ? paths[0].split('/')[0] : 'ProjectFolder';
+
+      // Immediately render all files read from the folder so the user sees them on screen!
+      renderScannedFilesList(files, paths);
+
+      const prog = document.getElementById('bundle-progress');
+      const bar = document.getElementById('bundle-progress-bar');
+      const progText = document.getElementById('bundle-progress-text');
+      const badge = document.getElementById('bundle-status-badge');
+      const wrap = document.getElementById('bundle-preview-wrap');
 
       prog.style.display = 'block';
       bar.style.width = '30%';
@@ -636,28 +754,29 @@
       badge.style.color = 'var(--accent-cyan)';
 
       try {
-        const res = await window.SmartHubAPI.uploadFolder(files, paths, folderName);
+        const res = await window.SmartHubAPI.uploadFolder(files, folderName, paths);
         bar.style.width = '100%';
         if (res && res.success) {
-          pubDownloadUrl = res.zipUrl || res.folderPath;
+          pubDownloadUrl = res.zipUrl || res.url || res.folderPath;
           const assignedFolderId = (res.folder && res.folder.id) || res.folderId || null;
           pubBundleInfo = {
             type: 'folder',
             folderId: assignedFolderId,
             folderName,
-            fileCount: res.fileCount,
-            totalSize: res.totalSize,
-            zipUrl: res.zipUrl || res.url
+            fileCount: res.fileCount || files.length,
+            totalSize: res.totalSize || files.reduce((s, f) => s + f.size, 0),
+            zipUrl: pubDownloadUrl,
+            files: res.files || []
           };
-          badge.textContent = `✓ ${res.fileCount} FILES VERIFIED`;
+          badge.textContent = `✓ ${res.fileCount || files.length} FILES VERIFIED`;
           badge.style.color = 'var(--accent-green)';
-          progText.textContent = `Packed to ${res.zipFilename || 'archive.zip'} (${(res.totalSize / (1024 * 1024)).toFixed(2)} MB)`;
+          progText.textContent = `Packed to ${res.zipFilename || 'archive.zip'} (${(pubBundleInfo.totalSize / (1024 * 1024)).toFixed(2)} MB)`;
           wrap.innerHTML = `
             <div style="font-size:1.8rem;margin-bottom:4px;">📁</div>
             <div style="font-size:0.75rem;font-weight:700;color:var(--text-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">/${folderName}</div>
-            <div style="font-size:0.68rem;color:var(--accent-green);font-family:var(--font-tech);">${res.fileCount} files · Verified & Ready</div>
+            <div style="font-size:0.68rem;color:var(--accent-green);font-family:var(--font-tech);">${files.length} files · Verified & Ready</div>
           `;
-          showToast(`Folder /${folderName} (${res.fileCount} files) verified & packaged! 🎉`, 'success');
+          showToast(`Folder /${folderName} (${files.length} files) verified & packaged! 🎉`, 'success');
         } else {
           badge.textContent = 'FAILED';
           badge.style.color = '#ef4444';
@@ -803,7 +922,8 @@
                 <td style="padding:16px 18px;"><span class="badge badge-green">LIVE</span></td>
                 <td style="padding:16px 18px;text-align:right;white-space:nowrap;">
                   <a href="repo.html?id=${p.id}" class="btn btn-outline btn-sm" style="margin-right:6px;border-color:var(--accent-coral);color:var(--accent-coral);">⚡ View Studio</a>
-                  <a href="product-detail.html?id=${p.id}" class="btn btn-secondary btn-sm">Store →</a>
+                  <a href="product-detail.html?id=${p.id}" class="btn btn-secondary btn-sm" style="margin-right:6px;">Store →</a>
+                  <button type="button" onclick="deleteSellerProduct('${p.id}', '${p.title.replace(/'/g, "\\'")}')" class="btn btn-outline btn-sm" style="border-color:#ef4444;color:#ef4444;" title="Delete Project">🗑️ Delete</button>
                 </td>
               </tr>
             `).join('');

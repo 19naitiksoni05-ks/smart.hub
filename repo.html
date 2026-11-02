@@ -509,6 +509,10 @@
             <a href="checkout.html" class="btn btn-primary" id="btn-studio-buy" style="font-weight:700;">
               ⚡ Buy Commercial License (<span id="studio-price-tag">₹1,999</span>)
             </a>
+            <button type="button" class="btn btn-outline" onclick="deleteStudioProject()" id="btn-studio-delete"
+              style="display:none;color:#ef4444;border-color:#ef4444;font-weight:700;">
+              🗑️ Delete Project
+            </button>
             <span id="header-unlocked-badge" class="badge badge-green"
               style="display:none;font-size:0.78rem;padding:6px 12px;">
               ✓ LICENSE ACTIVE
@@ -988,29 +992,38 @@
 
       // Local fallback
       const prod = (window.SmartHubData && window.SmartHubData.products)
-        ? window.SmartHubData.products.find(p => p.id === projId) || window.SmartHubData.products[0]
-        : { id: projId, title: 'Python Array & Algorithm Suite', price: 1999, category: 'Python', description: 'Genuine Python algorithm and array manipulation suite' };
+        ? (window.SmartHubData.products.find(p => p.id === projId) || { id: projId, title: 'Web Design Studio Asset', price: 1999, category: 'React' })
+        : { id: projId, title: 'Web Design Studio Asset', price: 1999, category: 'React', description: 'Developer source code bundle' };
+
+      const isPy = (prod.category || '').toLowerCase().includes('python') || (prod.title || '').toLowerCase().includes('python');
+      
+      const fallbackTree = isPy ? [
+        { path: 'python', name: 'python', type: 'dir', size: 0 },
+        { path: 'python/.vscode', name: '.vscode', type: 'dir', size: 0 },
+        { path: 'python/.vscode/settings.json', name: 'settings.json', type: 'file', size: 135 },
+        { path: 'python/python.py', name: 'python.py', type: 'file', size: 250 },
+        { path: 'python/sumofarray.py', name: 'sumofarray.py', type: 'file', size: 468 }
+      ] : [
+        { path: 'index.html', name: 'index.html', type: 'file', size: 420 },
+        { path: 'style.css', name: 'style.css', type: 'file', size: 310 },
+        { path: 'script.js', name: 'script.js', type: 'file', size: 180 },
+        { path: 'package.json', name: 'package.json', type: 'file', size: 140 }
+      ];
 
       currentRepo = {
         id: prod.id,
         title: prod.title,
-        description: prod.description,
+        description: prod.description || 'Verified developer source code asset.',
         price: prod.price || 1999,
-        category: prod.category || 'Python',
+        category: prod.category || 'React',
         stars: 42,
         thumb: prod.thumb,
         downloadUrl: prod.downloadUrl || `/api/orders/${prod.id}/download`,
         author: prod.author || { name: prod.seller_name || 'Verified Creator', username: '@creator' },
-        fileCount: 3,
-        languages: [{ name: 'Python', percent: 84.2, color: '#3572A5' }, { name: 'JSON', percent: 15.8, color: '#292929' }],
-        tree: [
-          { path: 'python', name: 'python', type: 'dir', size: 0 },
-          { path: 'python/.vscode', name: '.vscode', type: 'dir', size: 0 },
-          { path: 'python/.vscode/settings.json', name: 'settings.json', type: 'file', size: 135 },
-          { path: 'python/python.py', name: 'python.py', type: 'file', size: 250 },
-          { path: 'python/sumofarray.py', name: 'sumofarray.py', type: 'file', size: 468 }
-        ],
-        readme: `# ${prod.title}\n\nGenuine developer source code bundle.`
+        fileCount: fallbackTree.filter(t => t.type === 'file').length,
+        languages: isPy ? [{ name: 'Python', percent: 84.2, color: '#3572A5' }, { name: 'JSON', percent: 15.8, color: '#292929' }] : [{ name: 'HTML', percent: 45.0, color: '#e34c26' }, { name: 'CSS', percent: 35.0, color: '#1572b6' }, { name: 'JavaScript', percent: 20.0, color: '#f1e05a' }],
+        tree: fallbackTree,
+        readme: `# ${prod.title}\n\nVerified developer source code bundle.`
       };
 
       markProjectLocked();
@@ -1193,6 +1206,22 @@
         previewImg.style.display = 'none';
       }
       document.getElementById('studio-full-description').textContent = repo.description || 'Verified source code asset published on Smart Hub.';
+
+      // Check owner and toggle delete button
+      const studioDelBtn = document.getElementById('btn-studio-delete');
+      if (studioDelBtn) {
+        const user = (window.getCurrentUser && window.getCurrentUser());
+        const uId = user ? String(user.id || '').trim().toLowerCase() : '';
+        const uName = user ? String(user.name || '').trim().toLowerCase() : '';
+        const aId = String((repo.author && repo.author.id) || '').trim().toLowerCase();
+        const aName = String((repo.author && repo.author.name) || '').trim().toLowerCase();
+        let isOwner = user && (user.role === 'admin' || (uId && aId && uId === aId) || (uName && aName && (uName === aName || aName.includes(uName) || uName.includes(aName))));
+        try {
+          const my = JSON.parse(localStorage.getItem('smarthub_my_products') || '[]');
+          if (my.includes(repo.id)) isOwner = true;
+        } catch(e) {}
+        studioDelBtn.style.display = isOwner ? 'inline-flex' : 'none';
+      }
 
       // Exact Manifest
       const manifestList = document.getElementById('studio-manifest-list');

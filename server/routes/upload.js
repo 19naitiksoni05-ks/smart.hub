@@ -385,9 +385,16 @@ router.post('/folder', authOptional, folderUpload.any(), async (req, res) => {
     files.forEach((file, index) => {
       totalBytes += file.size;
       const rawRel = relativePaths[index] || file.originalname || `file_${index}`;
-      let cleanRel = String(rawRel).replace(/^(\.\.[\/\\])+/, '').trim();
-      if (cleanRel.startsWith(folderTitle + '/') || cleanRel.startsWith(folderTitle + '\\')) {
-        cleanRel = cleanRel.substring(folderTitle.length + 1);
+      let cleanRel = String(rawRel).replace(/^(\.\.[\/\\])+/, '').replace(/\\/g, '/').trim();
+      
+      // If relative path starts with the folder name, strip top folder so contents reside at root
+      const parts = cleanRel.split('/');
+      if (parts.length > 1 && (
+        parts[0].toLowerCase() === folderTitle.toLowerCase() ||
+        (req.body.folderName && parts[0].toLowerCase() === String(req.body.folderName).toLowerCase()) ||
+        parts[0].replace(/[^a-zA-Z0-9_-]/g, '_').toLowerCase() === folderTitle.toLowerCase()
+      )) {
+        cleanRel = parts.slice(1).join('/');
       }
       if (!cleanRel || cleanRel === '.' || cleanRel === '/') {
         cleanRel = file.originalname || `file_${index}`;
@@ -399,6 +406,10 @@ router.post('/folder', authOptional, folderUpload.any(), async (req, res) => {
         destPath = path.join(targetFolderDir, file.originalname || `file_${index}`);
       }
       const destDir = path.dirname(destPath);
+
+      if (fs.existsSync(destDir) && !fs.statSync(destDir).isDirectory()) {
+        try { fs.unlinkSync(destDir); } catch (e) {}
+      }
 
       if (!fs.existsSync(destDir)) {
         fs.mkdirSync(destDir, { recursive: true });
@@ -412,6 +423,7 @@ router.post('/folder', authOptional, folderUpload.any(), async (req, res) => {
       fs.writeFileSync(destPath, file.buffer);
       fileManifest.push({
         path: cleanRel,
+        name: path.basename(cleanRel),
         size: file.size,
         sizeFormatted: formatBytes(file.size)
       });
@@ -426,7 +438,7 @@ router.post('/folder', authOptional, folderUpload.any(), async (req, res) => {
     try {
       const AdmZip = require('adm-zip');
       const zip = new AdmZip();
-      zip.addLocalFolder(targetFolderDir, folderTitle);
+      zip.addLocalFolder(targetFolderDir);
       zip.writeZip(zipFilePath);
       zipBuffer = zip.toBuffer();
       if (zipBuffer) zipSize = zipBuffer.length;
@@ -470,7 +482,7 @@ router.post('/folder', authOptional, folderUpload.any(), async (req, res) => {
       url: finalZipUrl, // primary link downloads the zipped bundle
       storageKey,
       folderUrl: folderViewUrl,
-      files: fileManifest.slice(0, 60), // preview first 60 files in manifest
+      files: fileManifest, // Keep full manifest of all files!
       userId: req.user ? req.user.id : null,
       uploaderName: req.user ? req.user.name : 'Guest Developer',
       createdAt: new Date().toISOString()
@@ -482,10 +494,12 @@ router.post('/folder', authOptional, folderUpload.any(), async (req, res) => {
       success: true,
       message: `Folder "${folderTitle}" uploaded and packaged into ZIP successfully! (${files.length} files)`,
       folder: record,
+      folderId: record.id,
       zipUrl: record.url,
       zipFilename,
       fileCount: files.length,
-      totalSize: totalBytes
+      totalSize: totalBytes,
+      files: fileManifest
     });
   } catch (err) {
     console.error('[Folder Upload Error]', err);

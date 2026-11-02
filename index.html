@@ -667,39 +667,44 @@
     // ── Render Product Card (Wix Outline Style) ──────────────────
     function renderProductCard(product) {
       const discount = product.oldPrice ? Math.round((1 - product.price / product.oldPrice) * 100) : 0;
+      const thumbUrl = product.thumb || `https://picsum.photos/seed/${encodeURIComponent(product.title || 'code')}/400/250`;
+      const authorName = (product.author && product.author.name) || product.seller_name || 'Creator';
+      const authorAvatar = (product.author && product.author.avatar) || product.seller_avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=user&backgroundColor=ff5b36';
+
       return `
     <div class="product-card" onclick="window.location.href='product-detail.html?id=${product.id}'">
       <div class="product-card-thumb">
-        <img src="${product.thumb}" alt="${product.title}" loading="lazy">
+        <img src="${thumbUrl}" alt="${product.title}" loading="lazy" onerror="this.onerror=null;this.src='https://picsum.photos/seed/${encodeURIComponent(product.title || 'code')}/400/250';">
         <div class="product-card-overlay">
           <div class="product-card-actions">
-            <a href="product-detail.html?id=${product.id}" class="btn btn-outline btn-sm" onclick="event.stopPropagation()">View Details →</a>
+            <a href="product-detail.html?id=${product.id}" class="btn btn-primary btn-sm" onclick="event.stopPropagation()">View Details →</a>
           </div>
         </div>
-        ${product.badge ? `<div class="badge" style="position:absolute;top:10px;left:10px;border:1.5px solid currentColor;font-family:var(--font-tech);font-size:0.65rem;padding:2px 8px;border-radius:2px;background:var(--bg-card);color:${product.badge === 'Bestseller' ? 'var(--accent-coral)' : product.badge === 'New' ? 'var(--accent-cyan)' : 'var(--accent-green)'};letter-spacing:0.08em;">[ ${product.badge.toUpperCase()} ]</div>` : ''}
+        ${product.badge ? `<div class="badge badge-${product.badge==='Bestseller'?'orange':product.badge==='New'?'cyan':product.badge==='Hot'?'pink':'purple'}" style="position:absolute;top:10px;left:10px;">${product.badge}</div>` : ''}
       </div>
       <div class="product-card-body">
         <div class="product-card-category">[ ${product.category} ]</div>
         <div class="product-card-title">${product.title}</div>
         <div class="product-card-meta">
           <div class="product-card-author">
-            <img src="${(product.author && product.author.avatar) || product.seller_avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=user&backgroundColor=ff5b36'}" alt="${(product.author && product.author.name) || product.seller_name || 'Creator'}">
-            ${(product.author && product.author.name) || product.seller_name || 'Creator'}
+            <img src="${authorAvatar}" alt="${authorName}">
+            <span>${authorName}</span>
           </div>
           <div class="product-card-stats">
-            <div class="product-card-stat">★ ${product.rating}</div>
-            <div class="product-card-stat">(${formatNum(product.sales)})</div>
+            <div class="product-card-stat">★ ${product.rating || 5}</div>
+            <div class="product-card-stat">(${formatNum(product.sales || 0)})</div>
           </div>
         </div>
       </div>
       <div class="product-card-footer">
         <div class="product-card-price">
           <div class="price"><span class="currency">₹</span>${product.price.toLocaleString('en-IN')}</div>
-          ${product.oldPrice ? `<div style="display:flex;gap:8px;align-items:center;margin-top:2px;"><span class="price-old">₹${product.oldPrice.toLocaleString('en-IN')}</span><span class="price-discount">-${discount}%</span></div>` : ''}
+          ${product.oldPrice ? `<div style="display:flex;gap:6px;align-items:center;margin-top:2px;"><span class="price-old" style="font-size:0.78rem;">₹${product.oldPrice.toLocaleString('en-IN')}</span><span class="price-discount" style="font-size:0.72rem;">-${discount}%</span></div>` : ''}
         </div>
-        <div style="display:flex;gap:6px;">
-          <button class="btn btn-outline btn-sm" onclick="event.stopPropagation();window.addToCart('${product.id}')" title="Add to Cart" style="padding:4px 8px;">🛒</button>
-          <button class="product-card-wishlist" title="Add to Wishlist"><span>♡</span></button>
+        <div class="product-card-footer-actions">
+          <a href="repo.html?id=${product.id}" class="btn btn-outline btn-sm" onclick="event.stopPropagation()" title="View Studio" style="border-color:var(--accent-coral);color:var(--accent-coral);">⚡ Studio</a>
+          <button class="btn btn-outline btn-sm btn-icon-sm" onclick="event.stopPropagation();window.addToCart('${product.id}')" title="Add to Cart">🛒</button>
+          <a href="checkout.html?id=${product.id}" class="btn btn-primary btn-sm" onclick="event.stopPropagation()">Buy ₹${product.price.toLocaleString('en-IN')}</a>
         </div>
       </div>
     </div>

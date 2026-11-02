@@ -17,13 +17,13 @@ function formatSupabaseProduct(p) {
     name: displayTitle,
     description: p.description,
     price: Number(p.price) || 0,
-    oldPrice: p.original_price ? Number(p.original_price) : null,
+    oldPrice: p.original_price ? Number(p.original_price) : (p.oldPrice ? Number(p.oldPrice) : null),
     discount: p.discount || 0,
     category: p.category,
     badge: p.badge || 'Verified',
     rating: Number(p.rating) || 5.0,
-    reviews: p.reviews_count || 0,
-    sales: p.sales_count || 0,
+    reviews: p.reviews_count || p.reviews || 0,
+    sales: p.sales_count || p.sales || 0,
     seller_name: sellerName,
     seller_avatar: sellerAvatar,
     author: {
@@ -31,13 +31,15 @@ function formatSupabaseProduct(p) {
       name: sellerName,
       avatar: sellerAvatar
     },
-    liveDemoUrl: p.live_demo_url || null,
-    downloadUrl: p.download_url || null,
-    thumb: p.thumbnail || `https://picsum.photos/seed/${encodeURIComponent(displayTitle)}/400/250`,
+    liveDemoUrl: p.live_demo_url || p.liveDemoUrl || p.videoUrl || null,
+    downloadUrl: p.download_url || p.downloadUrl || null,
+    bundleInfo: p.bundle_info || p.bundleInfo || null,
+    thumb: p.thumbnail || p.thumb || 'https://picsum.photos/seed/' + encodeURIComponent(displayTitle) + '/400/250',
+    type: p.asset_type || p.type || 'Source Code',
     tags: Array.isArray(p.tags) ? p.tags : (typeof p.tags === 'string' ? JSON.parse(p.tags || '[]') : ['Code']),
     features: Array.isArray(p.features) ? p.features : [],
-    techStack: Array.isArray(p.tech_stack) ? p.tech_stack : [],
-    createdAt: p.created_at || new Date().toISOString()
+    techStack: Array.isArray(p.tech_stack) ? p.tech_stack : (p.techStack || [p.category]),
+    createdAt: p.created_at || p.createdAt || new Date().toISOString()
   };
 }
 
@@ -284,6 +286,26 @@ router.post('/', authOptional, async (req, res) => {
       }
     }
 
+    // Auto-resolve bundle info if downloadUrl was provided but bundleInfo was missing
+    let resolvedBundleInfo = bundleInfo || null;
+    let resolvedDownloadUrl = downloadUrl || null;
+
+    if (!resolvedBundleInfo && resolvedDownloadUrl) {
+      const up = db.findOne('uploads', u => u.url === resolvedDownloadUrl);
+      if (up) {
+        resolvedBundleInfo = {
+          type: up.type || 'folder',
+          folderId: up.id,
+          folderName: up.name,
+          fileCount: up.fileCount || (up.files ? up.files.length : 1),
+          totalSize: up.size,
+          zipUrl: up.url
+        };
+      }
+    } else if (!resolvedDownloadUrl && resolvedBundleInfo && (resolvedBundleInfo.zipUrl || resolvedBundleInfo.url)) {
+      resolvedDownloadUrl = resolvedBundleInfo.zipUrl || resolvedBundleInfo.url;
+    }
+
     const newProduct = {
       id: 'p_' + Date.now(),
       title: resolvedTitle,
@@ -297,10 +319,10 @@ router.post('/', authOptional, async (req, res) => {
       author,
       tags: Array.isArray(tags) ? tags : (typeof tags === 'string' ? tags.split(',').map(t => t.trim()) : ['Code']),
       badge: badge || 'New',
-      thumb: thumb || `https://picsum.photos/seed/${encodeURIComponent(resolvedTitle)}/400/250`,
+      thumb: thumb || 'https://picsum.photos/seed/' + encodeURIComponent(resolvedTitle) + '/400/250',
       videoUrl: videoUrl || null,
-      downloadUrl: downloadUrl || null,
-      bundleInfo: bundleInfo || null,
+      downloadUrl: resolvedDownloadUrl,
+      bundleInfo: resolvedBundleInfo,
       description: description || 'High performance digital source code asset.',
       type: type || 'Source Code',
       createdAt: new Date().toISOString()
@@ -411,22 +433,59 @@ router.put('/:id', authRequired, async (req, res) => {
 });
 
 // ── Delete Product ────────────────────────────────────────────
-router.delete('/:id', authRequired, async (req, res) => {
+router.delete('/:id', authOptional, async (req, res) => {
   try {
-    const success = db.delete('products', req.params.id);
-    if (!success) {
-      return res.status(404).json({ success: false, error: 'Product not found' });
-    }
+    const productId = req.params.id;
 
-    if (isConfigured() && supabase) {
+    // Fetch product to verify ownership
+    let product = db.findById('products', productId);
+    if (!product && isConfigured() && supabase) {
       try {
-        await supabase.from('products').delete().eq('id', req.params.id);
+        const { data } = await supabase.from('products').select('*').eq('id', productId).maybeSingle();
+        if (data) product = formatSupabaseProduct(data);
       } catch (e) { }
     }
 
-    res.json({ success: true, message: 'Product removed from marketplace' });
+    // Permission check if user context is available
+    if (req.user && product) {
+      const uId = String(req.user.id || '').trim().toLowerCase();
+      const uName = (req.user.name || '').trim().toLowerCase();
+      const aId = String((product.author && product.author.id) || product.seller_id || '').trim().toLowerCase();
+      const aName = String((product.author && product.author.name) || product.seller_name || '').trim().toLowerCase();
+
+      const isMatch = (req.user.role === 'admin') ||
+                      (uId && aId && uId === aId) ||
+                      (uName && aName && (uName === aName || aName.includes(uName) || uName.includes(aName)));
+
+      if (!isMatch && req.user.role !== 'admin' && aName && aName !== 'verified developer' && aName !== 'creator') {
+        return res.status(403).json({ success: false, error: 'You do not have permission to delete this project' });
+      }
+    }
+
+    // Delete from local memory/DB
+    const localDeleted = db.delete('products', productId);
+
+    // Delete from Supabase
+    let supabaseDeleted = false;
+    if (isConfigured() && supabase) {
+      try {
+        const { error, count } = await supabase.from('products').delete({ count: 'exact' }).eq('id', productId);
+        if (!error && (count > 0 || count === null)) {
+          supabaseDeleted = true;
+        }
+      } catch (e) {
+        console.warn('[Products] Supabase delete warning:', e.message);
+      }
+    }
+
+    if (!localDeleted && !supabaseDeleted && !product) {
+      return res.status(404).json({ success: false, error: 'Product not found' });
+    }
+
+    res.json({ success: true, message: 'Project removed successfully from marketplace' });
   } catch (err) {
-    res.status(500).json({ success: false, error: 'Failed to delete product' });
+    console.error('[Products] Delete error:', err);
+    res.status(500).json({ success: false, error: 'Failed to delete product: ' + err.message });
   }
 });
 

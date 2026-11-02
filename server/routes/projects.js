@@ -155,19 +155,23 @@ function getProjectRealTreeAndFiles(product) {
   let tree = [];
   let files = {};
   const rootUploads = path.join(__dirname, '../../uploads');
+  const DIRS = {
+    archives: path.join(rootUploads, 'archives'),
+    folders: path.join(rootUploads, 'folders')
+  };
   let foundRealFiles = false;
 
   // 1. Check if product has bundleInfo pointing to a folder
   let folderId = product.bundleInfo && (product.bundleInfo.folderId || product.bundleInfo.id);
 
-  // If not explicitly set in bundleInfo, search database uploads table
+  // If not explicitly set in bundleInfo, search database uploads table strictly by folderName or exact URL
   if (!folderId) {
     const allUploads = db.get('uploads') || [];
     const folderMatch = allUploads.find(u =>
       u.type === 'folder' && (
-        (product.bundleInfo && product.bundleInfo.folderName && u.name === product.bundleInfo.folderName) ||
-        (product.downloadUrl && u.url === product.downloadUrl) ||
-        (product.author && u.userId === product.author.id)
+        (product.bundleInfo && product.bundleInfo.folderName && u.name && u.name.toLowerCase() === product.bundleInfo.folderName.toLowerCase()) ||
+        (product.downloadUrl && (u.url === product.downloadUrl || (u.folderUrl && u.folderUrl === product.downloadUrl))) ||
+        (product.bundleInfo && product.bundleInfo.zipUrl && u.url === product.bundleInfo.zipUrl)
       )
     );
     if (folderMatch) {
@@ -182,7 +186,7 @@ function getProjectRealTreeAndFiles(product) {
       function scanDir(dir, relPath = '') {
         const entries = fs.readdirSync(dir, { withFileTypes: true });
         for (const entry of entries) {
-          const entryRel = relPath ? `${relPath}/${entry.name}` : entry.name;
+          const entryRel = relPath ? (relPath + '/' + entry.name) : entry.name;
           const fullPath = path.join(dir, entry.name);
           if (entry.isDirectory()) {
             tree.push({
@@ -196,33 +200,28 @@ function getProjectRealTreeAndFiles(product) {
             });
             scanDir(fullPath, entryRel);
           } else {
-            try {
-              const content = fs.readFileSync(fullPath, 'utf8');
-              files[entryRel] = content;
-              tree.push({
-                path: entryRel,
-                name: entry.name,
-                type: 'file',
-                parent: relPath,
-                size: fs.statSync(fullPath).size,
-                lines: content.split('\n').length,
-                time: 'Verified File'
-              });
-              foundRealFiles = true;
-            } catch (readErr) {
-              const stats = fs.statSync(fullPath);
-              files[entryRel] = `[Binary Asset - ${stats.size} Bytes]`;
-              tree.push({
-                path: entryRel,
-                name: entry.name,
-                type: 'file',
-                parent: relPath,
-                size: stats.size,
-                lines: 0,
-                time: 'Verified File'
-              });
-              foundRealFiles = true;
+            const ext = path.extname(entry.name).toLowerCase();
+            const isBinary = ['.png', '.jpg', '.jpeg', '.gif', '.webp', '.ico', '.pdf', '.zip', '.tar', '.gz', '.mp4', '.webm', '.mov'].includes(ext);
+            const stats = fs.statSync(fullPath);
+            if (isBinary) {
+              files[entryRel] = '[Binary Media Asset - ' + stats.size + ' Bytes]';
+            } else {
+              try {
+                files[entryRel] = fs.readFileSync(fullPath, 'utf8');
+              } catch (readErr) {
+                files[entryRel] = '[Binary Asset - ' + stats.size + ' Bytes]';
+              }
             }
+            tree.push({
+              path: entryRel,
+              name: entry.name,
+              type: 'file',
+              parent: relPath,
+              size: stats.size,
+              lines: isBinary ? 0 : (files[entryRel] || '').split('\n').length,
+              time: 'Verified File'
+            });
+            foundRealFiles = true;
           }
         }
       }
@@ -233,8 +232,18 @@ function getProjectRealTreeAndFiles(product) {
   // 3. If no folder found directly, inspect zip archive via AdmZip
   if (!foundRealFiles && (product.downloadUrl || (product.bundleInfo && product.bundleInfo.zipUrl))) {
     const zipRel = (product.bundleInfo && product.bundleInfo.zipUrl) || product.downloadUrl;
-    const cleanZipPath = zipRel.replace(/^\/uploads\//, '');
-    const fullZipPath = path.join(rootUploads, cleanZipPath);
+    let fullZipPath = '';
+    if (zipRel.startsWith('http://') || zipRel.startsWith('https://')) {
+      const baseName = path.basename(zipRel.split('?')[0]);
+      fullZipPath = path.join(DIRS.archives, baseName);
+    } else {
+      const cleanZipPath = zipRel.replace(/^https?:\/\/[^\/]+/, '').replace(/^\/uploads\//, '');
+      fullZipPath = path.join(rootUploads, cleanZipPath);
+      if (!fs.existsSync(fullZipPath)) {
+        fullZipPath = path.join(DIRS.archives, path.basename(cleanZipPath));
+      }
+    }
+
     if (fs.existsSync(fullZipPath) && fullZipPath.endsWith('.zip')) {
       try {
         const AdmZip = require('adm-zip');
@@ -242,24 +251,41 @@ function getProjectRealTreeAndFiles(product) {
         const entries = zip.getEntries();
         for (const entry of entries) {
           if (!entry.isDirectory) {
-            const entryName = entry.entryName.replace(/^[/\\]+/, '').replace(/\\/g, '/');
+            const entryName = entry.entryName.replace(/^[\/\\]+/, '').replace(/\\/g, '/');
             const parts = entryName.split('/');
             const name = parts[parts.length - 1];
             const parent = parts.length > 1 ? parts.slice(0, -1).join('/') : '';
+            const ext = path.extname(name).toLowerCase();
+            const isBinary = ['.png', '.jpg', '.jpeg', '.gif', '.webp', '.ico', '.pdf', '.zip', '.tar', '.gz', '.mp4', '.webm', '.mov'].includes(ext);
             let content = '';
-            try {
-              content = entry.getData().toString('utf8');
-            } catch (e) {
-              content = `[Binary Asset - ${entry.header.size} Bytes]`;
+            if (isBinary) {
+              content = '[Binary Asset - ' + entry.header.size + ' Bytes]';
+            } else {
+              try {
+                content = entry.getData().toString('utf8');
+              } catch (e) {
+                content = '[Binary Asset - ' + entry.header.size + ' Bytes]';
+              }
             }
             files[entryName] = content;
+            if (parent && !tree.some(t => t.path === parent && t.type === 'dir')) {
+              tree.push({
+                path: parent,
+                name: parts[0],
+                type: 'dir',
+                parent: '',
+                size: 0,
+                lines: 0,
+                time: 'Verified Directory'
+              });
+            }
             tree.push({
               path: entryName,
               name,
               type: 'file',
               parent,
               size: entry.header.size,
-              lines: content.split('\n').length,
+              lines: isBinary ? 0 : content.split('\n').length,
               time: 'Verified File'
             });
             foundRealFiles = true;
@@ -271,19 +297,26 @@ function getProjectRealTreeAndFiles(product) {
     }
   }
 
-  // 4. Fallback only if no uploaded files are on disk
+  // 4. Fallback matching project category & title
   if (!foundRealFiles) {
-    const category = (product.category || 'React').toLowerCase();
-    if (category.includes('python')) {
-      files['main.py'] = `# ${product.title}\n\ndef main():\n    print("Welcome to ${product.title}")\n\nif __name__ == '__main__':\n    main()\n`;
-      files['utils.py'] = `# Utility helper functions\n\ndef calculate():\n    return 42\n`;
+    const cat = (product.category || '').toLowerCase();
+    const ttl = (product.title || '').toLowerCase();
+    const isPython = cat.includes('python') || ttl.includes('python');
+
+    if (isPython) {
+      files['main.py'] = '# ' + product.title + '\n\ndef main():\n    print("Welcome to ' + product.title + '")\n\nif __name__ == "__main__":\n    main()\n';
+      files['utils.py'] = '# Utility helper functions\n\ndef calculate():\n    return 42\n';
       tree.push({ path: 'main.py', name: 'main.py', type: 'file', parent: '', size: 120, lines: 7, time: 'Starter' });
       tree.push({ path: 'utils.py', name: 'utils.py', type: 'file', parent: '', size: 85, lines: 4, time: 'Starter' });
     } else {
-      files['index.js'] = `// ${product.title}\nconsole.log("Starting ${product.title}...");\n`;
-      files['package.json'] = JSON.stringify({ name: (product.title || 'project').toLowerCase().replace(/\s+/g, '-'), version: '1.0.0' }, null, 2);
-      tree.push({ path: 'index.js', name: 'index.js', type: 'file', parent: '', size: 80, lines: 2, time: 'Starter' });
-      tree.push({ path: 'package.json', name: 'package.json', type: 'file', parent: '', size: 95, lines: 4, time: 'Starter' });
+      files['index.html'] = '<!DOCTYPE html>\n<html lang="en">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1.0">\n  <title>' + product.title + '</title>\n  <link rel="stylesheet" href="style.css">\n</head>\n<body>\n  <header>\n    <h1>' + product.title + '</h1>\n    <p>' + (product.description || 'Verified Developer Project') + '</p>\n  </header>\n  <main id="app">\n    <p>Project initialized.</p>\n  </main>\n  <script src="script.js"></script>\n</body>\n</html>\n';
+      files['style.css'] = '/* Stylesheet for ' + product.title + ' */\n* { box-sizing: border-box; margin: 0; padding: 0; }\nbody {\n  font-family: system-ui, -apple-system, sans-serif;\n  background: #0d1117;\n  color: #f0f6fc;\n  padding: 32px;\n}\nh1 { color: #ff5b36; margin-bottom: 8px; }\n';
+      files['script.js'] = '// Main JavaScript for ' + product.title + '\nconsole.log("' + product.title + ' ready.");\n';
+      files['package.json'] = JSON.stringify({ name: (product.title || 'project').toLowerCase().replace(/\s+/g, '-'), version: '1.0.0', description: product.description || '' }, null, 2);
+      tree.push({ path: 'index.html', name: 'index.html', type: 'file', parent: '', size: Buffer.byteLength(files['index.html'], 'utf8'), lines: 17, time: 'Starter' });
+      tree.push({ path: 'style.css', name: 'style.css', type: 'file', parent: '', size: Buffer.byteLength(files['style.css'], 'utf8'), lines: 9, time: 'Starter' });
+      tree.push({ path: 'script.js', name: 'script.js', type: 'file', parent: '', size: Buffer.byteLength(files['script.js'], 'utf8'), lines: 3, time: 'Starter' });
+      tree.push({ path: 'package.json', name: 'package.json', type: 'file', parent: '', size: Buffer.byteLength(files['package.json'], 'utf8'), lines: 5, time: 'Starter' });
     }
   }
 
@@ -495,6 +528,12 @@ router.get('/:id/blob', authOptional, async (req, res) => {
     }
 
     let product = db.findById('products', prodId);
+    if (!product && isConfigured() && supabase) {
+      try {
+        const { data } = await supabase.from('products').select('*').eq('id', prodId).limit(1);
+        if (data && data.length > 0) product = data[0];
+      } catch (e) {}
+    }
     if (!product) {
       const allProds = db.get('products');
       if (allProds.length > 0) product = allProds[0];
@@ -567,6 +606,58 @@ router.post('/:id/star', authOptional, (req, res) => {
     res.json({ success: true, stars: product.stars, starred: true });
   } catch (err) {
     res.status(500).json({ success: false, error: 'Failed to star project' });
+  }
+});
+
+
+// ── Delete Project ────────────────────────────────────────────
+router.delete('/:id', authOptional, async (req, res) => {
+  try {
+    const prodId = req.params.id;
+    let product = db.findById('products', prodId);
+    if (!product && isConfigured() && supabase) {
+      try {
+        const { data } = await supabase.from('products').select('*').eq('id', prodId).maybeSingle();
+        if (data) product = data;
+      } catch (e) { }
+    }
+
+    if (req.user && product) {
+      const uId = String(req.user.id || '').trim().toLowerCase();
+      const uName = (req.user.name || '').trim().toLowerCase();
+      const aId = String((product.author && product.author.id) || product.seller_id || '').trim().toLowerCase();
+      const aName = String((product.author && product.author.name) || product.seller_name || '').trim().toLowerCase();
+
+      const isMatch = (req.user.role === 'admin') ||
+                      (uId && aId && uId === aId) ||
+                      (uName && aName && (uName === aName || aName.includes(uName) || uName.includes(aName)));
+
+      if (!isMatch && req.user.role !== 'admin' && aName && aName !== 'verified developer' && aName !== 'creator') {
+        return res.status(403).json({ success: false, error: 'You do not have permission to delete this project' });
+      }
+    }
+
+    const localDeleted = db.delete('products', prodId);
+    let supabaseDeleted = false;
+    if (isConfigured() && supabase) {
+      try {
+        const { error, count } = await supabase.from('products').delete({ count: 'exact' }).eq('id', prodId);
+        if (!error && (count > 0 || count === null)) {
+          supabaseDeleted = true;
+        }
+      } catch (e) {
+        console.warn('[Projects] Supabase delete warning:', e.message);
+      }
+    }
+
+    if (!localDeleted && !supabaseDeleted && !product) {
+      return res.status(404).json({ success: false, error: 'Project not found' });
+    }
+
+    res.json({ success: true, message: 'Project removed successfully' });
+  } catch (err) {
+    console.error('[Projects] Delete error:', err);
+    res.status(500).json({ success: false, error: 'Failed to delete project: ' + err.message });
   }
 });
 

@@ -121,6 +121,9 @@
             <button class="btn btn-outline btn-lg" id="prod-add-cart-btn" onclick="triggerAddToCart()" style="justify-content:center;">
               🛒 Add to Interactive Cart
             </button>
+            <button type="button" class="btn btn-outline btn-lg" id="prod-delete-btn" onclick="deleteCurrentProject()" style="display:none;justify-content:center;font-weight:700;border-color:#ef4444;color:#ef4444;background:rgba(239,68,68,0.06);">
+              🗑️ Delete This Project
+            </button>
           </div>
 
           <!-- Security Badges -->
@@ -421,8 +424,74 @@
       const overviewDesc = document.getElementById('prod-overview-desc');
       if (overviewDesc && prod.description) overviewDesc.textContent = prod.description;
 
+      window.currentProductObj = prod;
+      const deleteBtn = document.getElementById('prod-delete-btn');
+      if (deleteBtn) {
+        const user = window.getCurrentUser ? window.getCurrentUser() : null;
+        const uId = user ? String(user.id || '').trim().toLowerCase() : '';
+        const uName = user ? String(user.name || '').trim().toLowerCase() : '';
+        const aId = String((prod.author && prod.author.id) || prod.seller_id || '').trim().toLowerCase();
+        const aName = String((prod.author && prod.author.name) || prod.seller_name || '').trim().toLowerCase();
+        let isOwner = user && (user.role === 'admin' || (uId && aId && uId === aId) || (uName && aName && (uName === aName || aName.includes(uName) || uName.includes(aName))));
+        try {
+          const my = JSON.parse(localStorage.getItem('smarthub_my_products') || '[]');
+          if (my.includes(prod.id)) isOwner = true;
+        } catch(e) {}
+        deleteBtn.style.display = isOwner ? 'flex' : 'none';
+      }
+
       bindProductMediaAndBundle(prod);
     });
+
+    async function deleteCurrentProject() {
+      if (!window.currentProductObj) return;
+      const p = window.currentProductObj;
+      const title = p.title || p.name || 'this project';
+      if (!confirm(`Are you sure you want to permanently delete "${title}" from Smart Hub?\n\nThis action cannot be undone.`)) {
+        return;
+      }
+      const btn = document.getElementById('prod-delete-btn');
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Deleting Project...';
+      }
+      try {
+        let res = null;
+        if (window.SmartHubAPI && typeof window.SmartHubAPI.deleteProduct === 'function') {
+          res = await window.SmartHubAPI.deleteProduct(p.id);
+        } else {
+          res = await fetch(`/api/products/${p.id}`, {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+              ...(localStorage.getItem('smarthub_token') ? { 'Authorization': `Bearer ${localStorage.getItem('smarthub_token')}` } : {})
+            }
+          }).then(r => r.json());
+        }
+        if (res && res.success) {
+          if (typeof showToast === 'function') {
+            showToast(`Project "${title}" deleted successfully.`, 'success');
+          } else {
+            alert(`Project "${title}" deleted successfully.`);
+          }
+          setTimeout(() => {
+            window.location.href = 'marketplace.html';
+          }, 900);
+        } else {
+          alert((res && res.error) || 'Failed to delete project.');
+          if (btn) {
+            btn.disabled = false;
+            btn.textContent = '🗑️ Delete This Project';
+          }
+        }
+      } catch (err) {
+        alert('Error deleting project: ' + err.message);
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = '🗑️ Delete This Project';
+        }
+      }
+    }
 
     let currentProductVideoUrl = null;
 

@@ -174,12 +174,14 @@
           folderName = typeof relativePaths === 'string' ? relativePaths : 'project_folder';
           relativePaths = tmp;
         }
+        if (!Array.isArray(relativePaths)) relativePaths = [];
+        const filesArr = Array.from(fileList || []);
         const formData = new FormData();
         formData.append('folderName', folderName || 'project_folder');
-        Array.from(fileList).forEach((file, idx) => {
+        filesArr.forEach((file, idx) => {
           formData.append('folderFiles', file);
-          if (!relativePaths[idx] && file.webkitRelativePath) {
-            relativePaths[idx] = file.webkitRelativePath;
+          if (!relativePaths[idx]) {
+            relativePaths[idx] = file.webkitRelativePath || file.name;
           }
         });
         if (relativePaths && relativePaths.length > 0) {
@@ -537,11 +539,45 @@
       }
     },
 
-    // ── GitHub-like Project Repository API ────────────────────
-    async getProjectRepo(id) {
+    async deleteProduct(id) {
       try {
-        const res = await fetch(`${this.baseUrl}/projects/${id}/repo`, {
+        let res = await fetch(`${this.baseUrl}/products/${id}`, {
+          method: 'DELETE',
           headers: this.getHeaders()
+        });
+        let data = await this.safeJson(res);
+        if (!data || !data.success) {
+          const fallbackRes = await fetch(`${this.baseUrl}/projects/${id}`, {
+            method: 'DELETE',
+            headers: this.getHeaders()
+          });
+          const fallbackData = await this.safeJson(fallbackRes);
+          if (fallbackData && fallbackData.success) {
+            data = fallbackData;
+          }
+        }
+        if (data && data.success) {
+          if (window.SmartHubData && Array.isArray(window.SmartHubData.products)) {
+            window.SmartHubData.products = window.SmartHubData.products.filter(p => p.id !== id);
+          }
+          try {
+            const my = JSON.parse(localStorage.getItem('smarthub_my_products') || '[]');
+            const updatedMy = my.filter(mId => mId !== id);
+            localStorage.setItem('smarthub_my_products', JSON.stringify(updatedMy));
+          } catch (e) {}
+        }
+        return data || { success: false, error: 'Failed to delete product' };
+      } catch (err) {
+        return { success: false, error: err.message };
+      }
+    },
+
+    // ── GitHub-like Project Repository API ────────────────────
+    async getProjectRepo(id, extraHeaders = {}) {
+      try {
+        const headers = { ...this.getHeaders(), ...(extraHeaders || {}) };
+        const res = await fetch(`${this.baseUrl}/projects/${id}/repo`, {
+          headers
         });
         return await res.json();
       } catch (err) {
