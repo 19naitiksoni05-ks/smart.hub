@@ -176,7 +176,7 @@
     }
 
     .field-verified-badge {
-      display: none;
+      display: none !important;
       align-items: center;
       gap: 5px;
       font-size: .75rem;
@@ -186,7 +186,7 @@
     }
 
     .field-verified-badge.show {
-      display: flex
+      display: flex !important
     }
 
     .social-btn-row {
@@ -364,7 +364,7 @@
               <div class="password-meter-bar" id="pwd-bar-3"></div>
               <div class="password-meter-bar" id="pwd-bar-4"></div>
             </div>
-            <div class="password-strength-text" id="pwd-strength-label">Password Strength: Empty</div>
+            <div class="password-strength-text" id="pwd-strength-label">Password Strength: Not entered (min. 8 characters)</div>
           </div>
         </div>
 
@@ -383,7 +383,7 @@
             <span style="font-size:.8rem;line-height:1.5;">
               I agree to Smart Hub <a href="policies.html?tab=terms" class="auth-link" target="_blank">Terms of
                 Service</a>,
-              <a href="policies.html?tab=security" class="auth-link" target="_blank">Seller Guidelines</a>
+              <a href="policies.html?tab=seller" class="auth-link" target="_blank">Seller Guidelines</a>
               &amp; <a href="policies.html?tab=privacy" class="auth-link" target="_blank">Privacy Policy</a>
             </span>
           </label>
@@ -556,7 +556,7 @@
       var colors = ['#ef4444', '#f97316', '#eab308', '#22c55e'];
       var labels = ['Weak', 'Moderate', 'Good', 'Strong'];
       bars.forEach(function (b, i) { b.style.background = i < score ? colors[score - 1] : 'var(--border-outline)'; });
-      if (!val) { strengthLabel.textContent = 'Password Strength: Empty'; strengthLabel.style.color = 'var(--text-muted)'; }
+      if (!val) { strengthLabel.textContent = 'Password Strength: Not entered (min. 8 characters)'; strengthLabel.style.color = 'var(--text-muted)'; }
       else { strengthLabel.textContent = 'Password Strength: ' + (labels[score - 1] || 'Weak'); strengthLabel.style.color = colors[score - 1] || '#ef4444'; }
     });
 

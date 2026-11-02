@@ -502,7 +502,7 @@
         </div>
         <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.82rem;font-family:var(--font-tech);">
           <span>PROGRESS TO <strong style="color:var(--accent-orange);" id="hud-next-tier">TIER 2: CODE NOVICE</strong></span>
-          <span id="hud-xp-display"><strong style="color:var(--accent-purple);">0</strong> / 501 XP (0%)</span>
+          <span id="hud-xp-display"><strong style="color:var(--accent-purple);">0</strong> / 500 XP (0%)</span>
         </div>
         <div class="journey-progress-track">
           <div class="journey-progress-bar" id="hud-progress-bar" style="width: 0%;"></div>
@@ -788,7 +788,7 @@
           <div style="font-size:2rem;margin-bottom:10px;">💬</div>
           <h3 style="font-size:1.18rem;margin-bottom:8px;">24/7 Community Channels</h3>
           <p style="font-size:0.86rem;color:var(--text-muted);line-height:1.6;margin-bottom:14px;">
-            Join Discord-style forums for React, Flutter, Python AI, Node.js backend, and hiring desks with over 14,800 active developers online.
+            Join Discord-style forums for React, Flutter, Python AI, Node.js backend, and hiring desks connecting developers and creators across India.
           </p>
           <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;">
             <span class="badge badge-purple">#react-js</span>
@@ -845,7 +845,7 @@
       <div style="background:var(--bg-card);border:1.5px solid var(--border-outline);padding:20px 24px;border-radius:var(--radius-xs);display:flex;align-items:center;justify-content:space-between;">
         <div>
           <h4 style="margin:0 0 4px;font-size:1.02rem;">💰 Rupee Wallet &amp; Payouts</h4>
-          <p style="font-size:0.82rem;color:var(--text-muted);margin:0;">Current Balance: <strong>₹4,750 INR</strong> • Direct UPI instant settlement.</p>
+          <p style="font-size:0.82rem;color:var(--text-muted);margin:0;" id="ecosystem-wallet-snippet">Direct UPI instant settlement &amp; seller payouts.</p>
         </div>
         <a href="wallet.html" class="btn btn-outline-coral btn-sm">View Wallet</a>
       </div>
@@ -934,8 +934,8 @@
 <script>
 // ── 1. The 10 Developer Tiers Progression System ─────────────
 const DEVELOPER_TIERS = [
-  { tier: 1, name: 'Script Initiate', xpMin: 0, xpMax: 500, icon: '🥉', color: '#cd7f32', bg: 'rgba(205,127,50,0.12)', perks: 'Browse marketplace, participate in community discussions, view public repo audits.' },
-  { tier: 2, name: 'Code Novice', xpMin: 501, xpMax: 1500, icon: '🥉', color: '#b87333', bg: 'rgba(184,115,51,0.12)', perks: 'Direct peer messaging unlocked, participate in weekly tech trivia and basic challenges.' },
+  { tier: 1, name: 'Script Initiate', xpMin: 0, xpMax: 499, icon: '🥉', color: '#cd7f32', bg: 'rgba(205,127,50,0.12)', perks: 'Browse marketplace, participate in community discussions, view public repo audits.' },
+  { tier: 2, name: 'Code Novice', xpMin: 500, xpMax: 1500, icon: '🥉', color: '#b87333', bg: 'rgba(184,115,51,0.12)', perks: 'Direct peer messaging unlocked, participate in weekly tech trivia and basic challenges.' },
   { tier: 3, name: 'Syntax Builder', xpMin: 1501, xpMax: 3500, icon: '🥈', color: '#94a3b8', bg: 'rgba(148,163,184,0.15)', perks: 'Download ₹0 Free Starter Codebases, post architectural questions in developer feed.' },
   { tier: 4, name: 'Logic Craftsman', xpMin: 3501, xpMax: 6500, icon: '⚙️', color: '#7928ca', bg: 'rgba(121,40,202,0.15)', perks: 'Review community challenge submissions, submit first custom component to ecosystem.' },
   { tier: 5, name: 'Fullstack Artisan', xpMin: 6501, xpMax: 11000, icon: '🥇', color: '#f59e0b', bg: 'rgba(245,158,11,0.15)', perks: 'Creator Studio unlocked! Upload verified codebases for sale with instant UPI payouts.' },

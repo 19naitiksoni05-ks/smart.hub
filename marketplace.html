@@ -172,7 +172,7 @@
       <div class="projects-grid" id="products-grid"></div>
 
       <!-- Pagination -->
-      <div style="display:flex;justify-content:center;gap:8px;margin-top:48px;" id="pagination">
+      <div style="display:none;justify-content:center;gap:8px;margin-top:48px;" id="pagination">
         <button class="btn btn-secondary btn-sm" disabled>← Prev</button>
         <button class="btn btn-primary btn-sm">1</button>
         <button class="btn btn-secondary btn-sm">2</button>
@@ -207,7 +207,7 @@
         <button class="btn btn-secondary" onclick="addToWishlist()">♡ Add to Wishlist</button>
         <button class="btn btn-danger" id="detail-delete-btn" onclick="deleteModalProduct()" style="display:none;background:#dc2626;border-color:#b91c1c;color:#fff;justify-content:center;">🗑️ Delete This Project</button>
       </div>
-      <p style="font-size:0.78rem;color:var(--text-muted);text-align:center;margin-top:12px;">🔐 Delivered to your email with encryption key</p>
+      <p style="font-size:0.78rem;color:var(--text-muted);text-align:center;margin-top:12px;">🔐 Signed expiring download link with SHA-256 integrity verification</p>
     </div>
   </div>
 </div>
@@ -222,7 +222,7 @@
     <div id="purchase-summary"></div>
     <div style="padding:16px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);border-radius:var(--radius-md);margin:20px 0;">
       <div style="font-size:0.85rem;color:var(--text-muted);">Delivery Method</div>
-      <div style="font-size:0.78rem;color:var(--text-muted);margin-top:2px;">License Security: <span style="font-family:var(--font-mono);color:var(--accent-green);">Auto-Generated on Purchase (Multi-Factor AES-256)</span></div>
+      <div style="font-size:0.78rem;color:var(--text-muted);margin-top:2px;">License Security: <span style="font-family:var(--font-mono);color:var(--accent-green);">Signed Expiring Download Link &amp; SHA-256 Package Checksum</span></div>
     </div>
     <div style="display:flex;gap:12px;">
       <button class="btn btn-secondary" style="flex:1;justify-content:center;" onclick="SH.closeModal('modal-purchase')">Cancel</button>
@@ -249,28 +249,20 @@ function formatNum(n) {
   return n;
 }
 
-// ── Project Owner Helper ────────────────────────────────────
+// ── Project Owner Helper (Strict Authentication & Authorization) ───
 function isProjectOwner(p) {
   if (!p) return false;
   const user = (window.getCurrentUser && window.getCurrentUser());
-  if (user && user.role === 'admin') return true;
+  if (!user || !user.isLoggedIn) return false;
+  if (user.role === 'admin') return true;
 
-  const uId = user ? String(user.id || '').trim().toLowerCase() : '';
-  const uName = user ? String(user.name || '').trim().toLowerCase() : '';
-  const uEmail = user ? String(user.email || '').trim().toLowerCase() : '';
-
+  const uId = String(user.id || '').trim().toLowerCase();
   const aId = String((p.author && p.author.id) || p.seller_id || '').trim().toLowerCase();
-  const aName = String((p.author && p.author.name) || p.seller_name || '').trim().toLowerCase();
-  const aEmail = String((p.author && p.author.email) || '').trim().toLowerCase();
-
   if (uId && aId && uId === aId) return true;
-  if (uName && aName && (uName === aName || aName.includes(uName) || uName.includes(aName))) return true;
-  if (uEmail && aEmail && uEmail === aEmail) return true;
 
-  try {
-    const my = JSON.parse(localStorage.getItem('smarthub_my_products') || '[]');
-    if (my.includes(p.id)) return true;
-  } catch(e) {}
+  const uEmail = String(user.email || '').trim().toLowerCase();
+  const aEmail = String((p.author && p.author.email) || '').trim().toLowerCase();
+  if (uEmail && aEmail && uEmail === aEmail) return true;
 
   return false;
 }

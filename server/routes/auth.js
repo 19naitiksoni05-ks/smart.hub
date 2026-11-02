@@ -9,26 +9,15 @@ const { supabase, isConfigured: isSupabaseConfigured, syncUserToSupabase } = req
 const { JWT_SECRET, authRequired, hashApiKey } = require('../middleware/auth');
 const { checkLoginLockout, recordFailedLogin, clearFailedLogin } = require('../middleware/security');
 
-const _cc = arr => String.fromCharCode.apply(null, arr);
-const DEFAULT_GITHUB_CLIENT_ID = 'Ov23lihvpw0GysWJkWu5';
-const DEFAULT_GITHUB_CLIENT_SECRET = _cc([99,100,50,99,97,51,49,102,52,54,50,101,53,50,99,57,101,99,50,57,56,53,53,53,48,98,102,50,48,49,49,100,97,51,99,100,56,56,102,49]);
-const DEFAULT_GOOGLE_CLIENT_ID = _cc([51,49,50,49,52,52,48,54,49,53,55,45,100,109,98,99,107,48,55,108,48,110,101,49,52,50,52,115,55,106,108,115,55,108,113,117,116,50,113,114,105,55,106,49,46,97,112,112,115,46,103,111,111,103,108,101,117,115,101,114,99,111,110,116,101,110,116,46,99,111,109]);
-const DEFAULT_GOOGLE_CLIENT_SECRET = _cc([71,79,67,83,80,88,45,116,102,109,86,53,119,53,102,71,116,88,81,70,97,48,122,112,122,72,45,89,51,73,79,79,72,106,76]);
-const DEFAULT_SMTP_HOST = 'smtp.gmail.com';
-const DEFAULT_SMTP_PORT = 587;
-const DEFAULT_SMTP_USER = 'naitiksoni700@gmail.com';
-const DEFAULT_SMTP_PASS = _cc([105,113,120,118,121,120,102,98,97,106,113,98,116,112,101,104]);
-const DEFAULT_SMTP_FROM = 'Smart Hub <noreply@smarthub.dev>';
-
-const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID || DEFAULT_GITHUB_CLIENT_ID;
-const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET || DEFAULT_GITHUB_CLIENT_SECRET;
-const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || DEFAULT_GOOGLE_CLIENT_ID;
-const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || DEFAULT_GOOGLE_CLIENT_SECRET;
-const SMTP_USER = process.env.SMTP_USER || DEFAULT_SMTP_USER;
-const SMTP_PASS = process.env.SMTP_PASS || DEFAULT_SMTP_PASS;
-const SMTP_HOST = process.env.SMTP_HOST || DEFAULT_SMTP_HOST;
-const SMTP_PORT = parseInt(process.env.SMTP_PORT || String(DEFAULT_SMTP_PORT));
-const SMTP_FROM = process.env.SMTP_FROM || DEFAULT_SMTP_FROM;
+const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID || '';
+const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET || '';
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '';
+const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || '';
+const SMTP_USER = process.env.SMTP_USER || '';
+const SMTP_PASS = process.env.SMTP_PASS || '';
+const SMTP_HOST = process.env.SMTP_HOST || 'smtp.gmail.com';
+const SMTP_PORT = parseInt(process.env.SMTP_PORT || '587');
+const SMTP_FROM = process.env.SMTP_FROM || 'Smart Hub <support@smarthub.dev>';
 
 // ── Email Transporter (OTP) ───────────────────────────────────
 function createTransporter() {
@@ -332,6 +321,13 @@ router.post('/register', async (req, res) => {
       { expiresIn: '30d' }
     );
 
+    res.cookie('smarthub_token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 30 * 24 * 60 * 60 * 1000
+    });
+
     // Broadcast user registration to active WebSocket clients
     try {
       const broadcastWs = req.app.get('broadcastWs');
@@ -421,85 +417,30 @@ router.post('/login', async (req, res) => {
       } catch (e) { }
     }
 
-    // Ensure user exists
-    if (!user) {
+    // Generic response to prevent account enumeration
+    if (!user || !user.passwordHash) {
       recordFailedLogin(cleanIdentity);
       return res.status(401).json({
         success: false,
-        error: 'No account found with this email or username. Please register or sign up first!'
+        error: 'Invalid email/username or password. Please try again.'
       });
     }
 
-    // Auto-promote Ansh to admin if needed
-    const isAnshUser = (user.email && user.email.toLowerCase() === 'ansh05ks@gmail.com') ||
-                       (user.username && user.username.toLowerCase() === '@ansh') ||
-                       cleanIdentity === 'ansh' ||
-                       cleanIdentity === '@ansh' ||
-                       cleanIdentity === 'ansh05ks@gmail.com';
-    if (isAnshUser && user.role !== 'admin') {
-      user.role = 'admin';
-      user.headline = 'Platform & Architecture · Super Admin';
-      db.update('users', user.id, { role: 'admin', headline: 'Platform & Architecture · Super Admin' });
-    }
-
-    // Verify password with bcrypt (with auto-sync and dev fallback for previous accounts)
+    // Strict bcrypt password verification
     let isMatch = false;
     try {
-      if (user.passwordHash) {
-        isMatch = bcrypt.compareSync(password, user.passwordHash);
-      }
+      isMatch = bcrypt.compareSync(password, user.passwordHash);
     } catch (e) { }
-
-    // Allow dev master passkeys (123456, naitik123, admin123, ansh123, ansh@123, ansh) and auto-heal stored hash
-    const isAnshPasskey = isAnshUser && (
-      password === 'ansh' ||
-      password === 'ansh123' ||
-      password === 'Ansh123' ||
-      password === 'ansh@123' ||
-      password === 'Ansh@123' ||
-      password === 'ansh05' ||
-      password === 'ansh05ks' ||
-      password === '7007099722'
-    );
-    const isMasterPasskey = (
-      password === '123456' ||
-      password === '12345678' ||
-      password === 'admin123' ||
-      password === 'naitik123' ||
-      password === 'naitik19' ||
-      password === 'naitik' ||
-      password === 'password' ||
-      password === 'password123' ||
-      password === 'smarthub' ||
-      password === 'smarthub123' ||
-      password === 'tanmay' ||
-      password === 'tanmay123' ||
-      password === 'kamran' ||
-      password === 'kamran123' ||
-      password === 'muaviya' ||
-      password === 'muaviya123' ||
-      password === 'nishant' ||
-      password === 'nishant123' ||
-      password === cleanNoAt ||
-      isAnshPasskey
-    );
-
-    if (!isMatch && isMasterPasskey) {
-      isMatch = true;
-      try {
-        const salt = bcrypt.genSaltSync(10);
-        user.passwordHash = bcrypt.hashSync(password, salt);
-        db.update('users', user.id, { passwordHash: user.passwordHash });
-        syncUserToSupabase(user);
-      } catch (upgradeErr) { }
-    }
 
     if (!isMatch) {
       recordFailedLogin(cleanIdentity);
-      return res.status(401).json({ success: false, error: 'Incorrect password. Please enter the correct password.' });
+      return res.status(401).json({
+        success: false,
+        error: 'Invalid email/username or password. Please try again.'
+      });
     }
 
-    // Successful login: clear any failed attempt history
+    // Successful login: clear failed attempts
     clearFailedLogin(cleanIdentity);
 
     // Also attempt Supabase Auth sign-in if configured
@@ -512,7 +453,6 @@ router.post('/login', async (req, res) => {
       } catch (sbErr) { }
     }
 
-    // Sync user state to Supabase cloud
     syncUserToSupabase(user);
 
     const token = jwt.sign(
@@ -520,6 +460,13 @@ router.post('/login', async (req, res) => {
       JWT_SECRET,
       { expiresIn: '30d' }
     );
+
+    res.cookie('smarthub_token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 30 * 24 * 60 * 60 * 1000
+    });
 
     res.json({
       success: true,
@@ -529,119 +476,107 @@ router.post('/login', async (req, res) => {
     });
   } catch (err) {
     console.error('Login error:', err);
-    res.status(500).json({ success: false, error: 'Internal server error during login' });
+    res.status(500).json({ success: false, error: 'Login failed due to a server error' });
   }
 });
 
-// ── 2b. GitHub Sign-In & Registration ─────────────────────────
+// ── Logout Account ────────────────────────────────────────────
+router.post('/logout', (req, res) => {
+  res.clearCookie('smarthub_token', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax'
+  });
+  res.json({ success: true, message: 'Logged out successfully' });
+});
+
+// ── 2b. GitHub Sign-In & Registration (Live OAuth Code Exchange) ──
 router.post('/github', async (req, res) => {
   try {
-    let { code, redirectUri, redirect_uri, username, email, name, avatar, githubId, role } = req.body;
+    const { code, redirectUri, redirect_uri } = req.body;
     const finalRedirectUri = redirectUri || redirect_uri;
 
-    // Flow 1: If an OAuth code was provided from GitHub OAuth redirect
-    if (code) {
-      const clientId = GITHUB_CLIENT_ID;
-      const clientSecret = GITHUB_CLIENT_SECRET;
-
-      if (clientId && clientSecret) {
-        try {
-          const tokenBody = {
-            client_id: clientId,
-            client_secret: clientSecret,
-            code
-          };
-          if (finalRedirectUri) {
-            tokenBody.redirect_uri = finalRedirectUri;
-          }
-
-          const tokenRes = await fetch('https://github.com/login/oauth/access_token', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Accept': 'application/json'
-            },
-            body: JSON.stringify(tokenBody),
-            signal: AbortSignal.timeout(7000)
-          });
-          const tokenData = await tokenRes.json();
-          if (tokenData.error) {
-            console.warn('[GitHub OAuth] Token exchange notice:', tokenData.error, tokenData.error_description);
-            if (!username && !email) {
-              return res.status(400).json({
-                success: false,
-                error: tokenData.error_description || tokenData.error || 'GitHub authorization code verification failed'
-              });
-            }
-          }
-          if (tokenData.access_token) {
-            const ghUserRes = await fetch('https://api.github.com/user', {
-              headers: {
-                'Authorization': `Bearer ${tokenData.access_token}`,
-                'User-Agent': 'SmartHub-App',
-                'Accept': 'application/json'
-              },
-              signal: AbortSignal.timeout(6000)
-            });
-            if (ghUserRes.ok) {
-              const ghUser = await ghUserRes.json();
-              githubId = String(ghUser.id);
-              username = ghUser.login;
-              name = ghUser.name || ghUser.login;
-              avatar = ghUser.avatar_url;
-              email = ghUser.email;
-
-              if (!email) {
-                try {
-                  const emailsRes = await fetch('https://api.github.com/user/emails', {
-                    headers: {
-                      'Authorization': `Bearer ${tokenData.access_token}`,
-                      'User-Agent': 'SmartHub-App'
-                    },
-                    signal: AbortSignal.timeout(4000)
-                  });
-                  if (emailsRes.ok) {
-                    const emailsList = await emailsRes.json();
-                    const primary = emailsList.find(e => e.primary && e.verified) || emailsList[0];
-                    if (primary) email = primary.email;
-                  }
-                } catch (emErr) { }
-              }
-            }
-          }
-        } catch (oauthErr) {
-          console.warn('[GitHub OAuth] Code exchange warning:', oauthErr.message);
-        }
-      }
+    // Strict validation: Require real authorization code
+    if (!code || typeof code !== 'string') {
+      return res.status(400).json({
+        success: false,
+        error: 'GitHub authorization code is required. Direct username or profile login is not permitted.'
+      });
     }
 
-    // Flow 2: Live lookup if username provided but details missing
-    if (username && (!name || !avatar || !email)) {
-      const cleanGhUser = username.replace('@', '').trim();
+    const clientId = GITHUB_CLIENT_ID;
+    const clientSecret = GITHUB_CLIENT_SECRET;
+
+    if (!clientId || !clientSecret) {
+      return res.status(503).json({
+        success: false,
+        error: 'GitHub OAuth is not configured on this server. Please contact an administrator.'
+      });
+    }
+
+    const tokenBody = {
+      client_id: clientId,
+      client_secret: clientSecret,
+      code: code.trim()
+    };
+    if (finalRedirectUri) {
+      tokenBody.redirect_uri = finalRedirectUri;
+    }
+
+    const tokenRes = await fetch('https://github.com/login/oauth/access_token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(tokenBody),
+      signal: AbortSignal.timeout(7000)
+    });
+
+    const tokenData = await tokenRes.json();
+    if (!tokenData || !tokenData.access_token) {
+      return res.status(401).json({
+        success: false,
+        error: tokenData?.error_description || tokenData?.error || 'GitHub authorization code verification failed'
+      });
+    }
+
+    // Fetch verified profile from GitHub API using the acquired access_token
+    const ghUserRes = await fetch('https://api.github.com/user', {
+      headers: {
+        'Authorization': `Bearer ${tokenData.access_token}`,
+        'User-Agent': 'SmartHub-App',
+        'Accept': 'application/json'
+      },
+      signal: AbortSignal.timeout(6000)
+    });
+
+    if (!ghUserRes.ok) {
+      return res.status(401).json({ success: false, error: 'Failed to retrieve GitHub user profile' });
+    }
+
+    const ghUser = await ghUserRes.json();
+    const githubId = String(ghUser.id);
+    let username = ghUser.login;
+    let name = ghUser.name || ghUser.login;
+    let avatar = ghUser.avatar_url;
+    let email = ghUser.email;
+
+    if (!email) {
       try {
-        const ghProfileRes = await fetch(`https://api.github.com/users/${encodeURIComponent(cleanGhUser)}`, {
+        const emailsRes = await fetch('https://api.github.com/user/emails', {
           headers: {
-            'User-Agent': 'SmartHub-App',
-            'Accept': 'application/json'
+            'Authorization': `Bearer ${tokenData.access_token}`,
+            'User-Agent': 'SmartHub-App'
           },
-          signal: AbortSignal.timeout(4500)
+          signal: AbortSignal.timeout(4000)
         });
-        if (ghProfileRes.ok) {
-          const ghProfile = await ghProfileRes.json();
-          githubId = githubId || String(ghProfile.id);
-          name = name || ghProfile.name || ghProfile.login;
-          avatar = avatar || ghProfile.avatar_url;
-          if (!email && ghProfile.email) email = ghProfile.email;
+        if (emailsRes.ok) {
+          const emailsList = await emailsRes.json();
+          const primary = emailsList.find(e => e.primary && e.verified) || emailsList[0];
+          if (primary) email = primary.email;
         }
-      } catch (ghApiErr) { }
-    }
-
-    // Fallbacks
-    if (!username && email) {
-      username = email.split('@')[0];
-    }
-    if (!username) {
-      return res.status(400).json({ success: false, error: 'GitHub username or email is required' });
+      } catch (emErr) { }
     }
 
     const cleanHandle = username.startsWith('@') ? username : '@' + username;
@@ -649,30 +584,20 @@ router.post('/github', async (req, res) => {
     const cleanEmail = (email || `${rawHandle}@users.noreply.github.com`).toLowerCase().trim();
     name = name ? name.trim() : rawHandle;
     avatar = avatar || `https://github.com/${rawHandle}.png`;
-    githubId = String(githubId || ('gh_' + Math.abs(rawHandle.split('').reduce((a, b) => ((a << 5) - a) + b.charCodeAt(0), 0))));
 
-    // Check if Super Admin account
-    const isNaitikAdmin = cleanEmail === 'naitik19ansh@gmail.com' ||
-      cleanEmail.includes('naitik19') ||
-      cleanEmail.includes('19naitiksoni05') ||
-      rawHandle === 'naitik19' ||
-      rawHandle === '19naitiksoni05-ks' ||
-      rawHandle.includes('naitik');
-
-    // Find if user already exists in local DB
+    // Find existing user in local DB
     let user = db.findOne('users', u =>
       (u.githubId && String(u.githubId) === String(githubId)) ||
-      (u.email && u.email.toLowerCase() === cleanEmail) ||
-      (u.username && u.username.toLowerCase().replace('@', '') === rawHandle)
+      (u.email && u.email.toLowerCase() === cleanEmail)
     );
 
-    // Fallback lookup in Supabase cloud if not in local db
+    // Fallback lookup in Supabase cloud
     if (!user && isSupabaseConfigured() && supabase) {
       try {
         const { data: cloudUsers } = await supabase
           .from('users')
           .select('*')
-          .or(`email.ilike.${cleanEmail},username.ilike.@${rawHandle},username.ilike.${rawHandle}`)
+          .or(`email.ilike.${cleanEmail},githubId.eq.${githubId}`)
           .limit(1);
 
         if (cloudUsers && cloudUsers.length > 0) {
@@ -686,29 +611,23 @@ router.post('/github', async (req, res) => {
             passwordHash: cu.password_hash,
             avatar: cu.avatar || avatar,
             walletBalance: cu.wallet_balance || 0,
-            role: cu.role || (isNaitikAdmin ? 'admin' : (role || 'buyer')),
+            role: cu.role || 'buyer',
             xp: cu.xp || 150,
             badges: cu.badges || 1,
             authProvider: 'github',
             location: cu.location || 'India',
-            headline: cu.headline || (isNaitikAdmin ? 'Platform & Architecture · Super Admin' : 'Verified GitHub Developer'),
+            headline: cu.headline || 'Verified GitHub Developer',
             createdAt: cu.created_at || new Date().toISOString()
           };
           db.insert('users', user);
         }
-      } catch (sbErr) {
-        console.warn('[GitHub Auth] Supabase cloud lookup note:', sbErr.message);
-      }
+      } catch (sbErr) { }
     }
 
     if (user) {
       const updates = {};
       if (!user.githubId) updates.githubId = githubId;
       if (!user.avatar || user.avatar.includes('dicebear')) updates.avatar = avatar;
-      if (isNaitikAdmin && user.role !== 'admin') {
-        updates.role = 'admin';
-        updates.headline = 'Platform & Architecture · Super Admin';
-      }
       if (Object.keys(updates).length > 0) {
         user = db.update('users', user.id, updates);
       }
@@ -726,12 +645,12 @@ router.post('/github', async (req, res) => {
         passwordHash: randomPasswordHash,
         avatar,
         walletBalance: 0,
-        role: isNaitikAdmin ? 'admin' : (role || 'buyer'),
+        role: 'buyer',
         xp: 150,
         badges: 1,
         authProvider: 'github',
         location: 'India',
-        headline: isNaitikAdmin ? 'Platform & Architecture · Super Admin' : 'Verified GitHub Developer',
+        headline: 'Verified GitHub Developer',
         createdAt: new Date().toISOString()
       };
 
@@ -755,7 +674,6 @@ router.post('/github', async (req, res) => {
       db.insert('apiKeys', starterApiKey);
     }
 
-    // Sync user state to Supabase cloud
     syncUserToSupabase(user);
 
     const token = jwt.sign(
@@ -763,6 +681,13 @@ router.post('/github', async (req, res) => {
       JWT_SECRET,
       { expiresIn: '30d' }
     );
+
+    res.cookie('smarthub_token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 30 * 24 * 60 * 60 * 1000
+    });
 
     try {
       const broadcastWs = req.app.get('broadcastWs');
@@ -847,14 +772,9 @@ router.get('/github/callback', async (req, res) => {
     const cleanEmail = (email || `${username}@users.noreply.github.com`).toLowerCase().trim();
     let user = db.findOne('users', u => (u.githubId && String(u.githubId) === githubId) || (u.email && u.email.toLowerCase() === cleanEmail));
 
-    const isNaitikAdmin = cleanEmail === '19naitiksoni05@gmail.com' || cleanEmail === 'naitik19ansh@gmail.com' || username.toLowerCase() === '19naitiksoni05-ks' || username.toLowerCase() === 'naitik19';
-    const isAnshAdmin = cleanEmail === 'ansh05ks@gmail.com' || username.toLowerCase() === 'ansh';
-    const isAdmin = isNaitikAdmin || isAnshAdmin;
-
     if (user) {
       const updates = { githubId };
       if (!user.avatar || user.avatar.includes('dicebear')) updates.avatar = avatar;
-      if (isAdmin && user.role !== 'admin') updates.role = 'admin';
       user = db.update('users', user.id, updates);
     } else {
       user = {
@@ -865,7 +785,7 @@ router.get('/github/callback', async (req, res) => {
         githubId,
         avatar,
         walletBalance: 0,
-        role: isAdmin ? 'admin' : 'developer',
+        role: 'buyer',
         xp: 150,
         badges: 1,
         authProvider: 'github',
@@ -880,6 +800,14 @@ router.get('/github/callback', async (req, res) => {
       JWT_SECRET,
       { expiresIn: '30d' }
     );
+
+    res.cookie('smarthub_token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 30 * 24 * 60 * 60 * 1000
+    });
+
     const userSafe = sanitizeUser(user);
     const encodedUser = encodeURIComponent(JSON.stringify(userSafe));
     return res.redirect(`/login.html?token=${encodeURIComponent(token)}&user=${encodedUser}`);
@@ -1036,14 +964,22 @@ router.post('/forgot-password', async (req, res) => {
     // Generate single-use expiring cryptographic token (15 minutes)
     const resetToken = crypto.randomBytes(32).toString('hex');
     const expiresAt = Date.now() + 15 * 60 * 1000;
-    passwordResetTokens.set(resetToken, {
+    const resetRecord = {
+      id: 'prt_' + Date.now(),
+      token: resetToken,
       userId: user.id,
       email: user.email,
-      expiresAt
-    });
+      expiresAt,
+      used: false,
+      createdAt: new Date().toISOString()
+    };
+    passwordResetTokens.set(resetToken, resetRecord);
+    try {
+      db.insert('resetTokens', resetRecord);
+    } catch (dbErr) { }
 
-    const host = req.get('host') || 'localhost:5000';
-    const proto = req.protocol || 'http';
+    const host = req.get('host') || 'smarthub-gilt.vercel.app';
+    const proto = req.get('x-forwarded-proto') || req.protocol || 'https';
     const resetUrl = `${proto}://${host}/reset-password.html?token=${resetToken}`;
 
     // Dispatch email via SMTP if configured
@@ -1095,8 +1031,15 @@ router.post('/reset-password', async (req, res) => {
       return res.status(400).json({ success: false, error: 'New password must be at least 6 characters long' });
     }
 
-    const record = passwordResetTokens.get(token);
-    if (!record || record.expiresAt < Date.now()) {
+    let record = passwordResetTokens.get(token);
+    if (!record) {
+      try {
+        const dbRecord = db.findOne('resetTokens', r => r.token === token && !r.used);
+        if (dbRecord) record = dbRecord;
+      } catch (e) { }
+    }
+
+    if (!record || record.expiresAt < Date.now() || record.used) {
       passwordResetTokens.delete(token);
       return res.status(400).json({ success: false, error: 'Password reset token is invalid or has expired. Please request a new one.' });
     }
@@ -1115,6 +1058,11 @@ router.post('/reset-password', async (req, res) => {
 
     // Invalidate the single-use token immediately
     passwordResetTokens.delete(token);
+    try {
+      if (record.id) {
+        db.update('resetTokens', record.id, { used: true });
+      }
+    } catch (e) { }
 
     // Sync updated password hash to Supabase cloud
     await syncUserToSupabase(user);
@@ -1501,41 +1449,42 @@ router.post('/verify-otp', async (req, res) => {
   }
 });
 
-// ── 13. Google OAuth Sign-In & Registration ───────────────────
+// ── 13. Google OAuth Sign-In & Registration (Live Token Verification) ──
 router.post('/google', async (req, res) => {
   try {
-    let { idToken, email, name, avatar, googleId, role } = req.body;
+    const { idToken } = req.body;
 
-    // If idToken provided, verify with Google
-    if (idToken) {
-      try {
-        const verifyRes = await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${idToken}`, {
-          signal: AbortSignal.timeout(6000)
-        });
-        if (verifyRes.ok) {
-          const payload = await verifyRes.json();
-          if (payload.aud === GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_ID || payload.aud.includes('31214406157')) {
-            googleId = payload.sub;
-            email = payload.email;
-            name = payload.name || name;
-            avatar = payload.picture || avatar;
-          }
-        }
-      } catch (verifyErr) {
-        console.warn('[Google OAuth] Token verify warning:', verifyErr.message);
+    if (!idToken || typeof idToken !== 'string') {
+      return res.status(400).json({
+        success: false,
+        error: 'Google idToken is required. Direct email or profile authentication is not permitted.'
+      });
+    }
+
+    let googlePayload = null;
+    try {
+      const verifyRes = await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${encodeURIComponent(idToken.trim())}`, {
+        signal: AbortSignal.timeout(6000)
+      });
+      if (verifyRes.ok) {
+        googlePayload = await verifyRes.json();
       }
+    } catch (verifyErr) {
+      console.warn('[Google OAuth] Token verify network error:', verifyErr.message);
     }
 
-    if (!email) {
-      return res.status(400).json({ success: false, error: 'Google email is required' });
+    if (!googlePayload || !googlePayload.email) {
+      return res.status(401).json({
+        success: false,
+        error: 'Invalid or expired Google ID token. Please authenticate through Google Identity Services.'
+      });
     }
 
-    const cleanEmail = email.toLowerCase().trim();
-    const rawHandle = (name || cleanEmail.split('@')[0]).toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
-    avatar = avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(rawHandle)}&backgroundColor=ff5b36`;
-    googleId = String(googleId || ('ggl_' + cleanEmail.replace('@', '_')));
-
-    const isNaitikAdmin = cleanEmail === 'naitik19ansh@gmail.com';
+    const googleId = String(googlePayload.sub);
+    const cleanEmail = googlePayload.email.toLowerCase().trim();
+    const name = googlePayload.name || cleanEmail.split('@')[0];
+    const rawHandle = cleanEmail.split('@')[0].toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
+    const avatar = googlePayload.picture || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(rawHandle)}&backgroundColor=ff5b36`;
 
     let user = db.findOne('users', u =>
       (u.googleId && String(u.googleId) === String(googleId)) ||
@@ -1546,30 +1495,26 @@ router.post('/google', async (req, res) => {
       const updates = {};
       if (!user.googleId) updates.googleId = googleId;
       if (!user.avatar || user.avatar.includes('dicebear')) updates.avatar = avatar;
-      if (isNaitikAdmin && user.role !== 'admin') {
-        updates.role = 'admin';
-        updates.headline = 'Platform & Architecture · Super Admin';
-      }
       if (Object.keys(updates).length > 0) user = db.update('users', user.id, updates);
     } else {
       const salt = bcrypt.genSaltSync(10);
       const randomPasswordHash = bcrypt.hashSync(crypto.randomBytes(16).toString('hex'), salt);
       const newUser = {
         id: 'u_' + Date.now(),
-        name: name || rawHandle,
+        name,
         username: '@' + rawHandle,
         email: cleanEmail,
         googleId,
         passwordHash: randomPasswordHash,
         avatar,
         walletBalance: 0,
-        role: isNaitikAdmin ? 'admin' : (role || 'buyer'),
+        role: 'buyer',
         xp: 100,
         badges: 1,
         authProvider: 'google',
         emailVerified: true,
         location: 'India',
-        headline: isNaitikAdmin ? 'Platform & Architecture · Super Admin' : 'Google Verified Developer',
+        headline: 'Google Verified Developer',
         createdAt: new Date().toISOString()
       };
       db.insert('users', newUser);
@@ -1599,6 +1544,13 @@ router.post('/google', async (req, res) => {
       JWT_SECRET,
       { expiresIn: '30d' }
     );
+
+    res.cookie('smarthub_token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 30 * 24 * 60 * 60 * 1000
+    });
 
     try {
       const broadcastWs = req.app.get('broadcastWs');

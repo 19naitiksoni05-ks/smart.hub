@@ -6,14 +6,16 @@ const path = require('path');
 const AdmZip = require('adm-zip');
 const nodemailer = require('nodemailer');
 const db = require('../db');
-const { authRequired, authOptional } = require('../middleware/auth');
+const { authRequired, authOptional, adminRequired } = require('../middleware/auth');
 const { supabase, isSupabaseConfigured } = require('../supabase');
 
 // ── Email Transporter Setup ───────────────────────────────────
 function createTransporter() {
-  const user = (process.env.SMTP_USER || 'naitiksoni700@gmail.com').trim();
-  const pass = (process.env.SMTP_PASS || 'iqxvyxfbajqbtpeh').trim();
+  const user = (process.env.SMTP_USER || '').trim();
+  const pass = (process.env.SMTP_PASS || '').trim();
   const host = (process.env.SMTP_HOST || 'smtp.gmail.com').trim().toLowerCase();
+
+  if (!user || !pass) return null;
 
   if (host.includes('gmail') || user.endsWith('@gmail.com')) {
     return nodemailer.createTransport({
@@ -166,9 +168,23 @@ function generateDynamicLicenseKey({ productId, orderNumber, buyerEmail, timesta
 }
 
 // ── Execute Encrypted Checkout & Dispatch Activation Email ───
-router.post('/checkout', authOptional, async (req, res) => {
+router.post('/checkout', authRequired, async (req, res) => {
   try {
     const { productId, items, paymentMethod = 'wallet', deliveryEmail, couponCode, license = 'regular' } = req.body;
+
+    const idempotencyKey = req.headers['x-idempotency-key'] || req.body.idempotencyKey;
+    if (idempotencyKey) {
+      const existingOrder = db.findOne('orders', o => o.idempotencyKey === idempotencyKey);
+      if (existingOrder) {
+        return res.json({
+          success: true,
+          message: 'Order already processed (idempotent)',
+          order: existingOrder,
+          orderNumber: existingOrder.orderNumber,
+          encryptionKey: existingOrder.encKey
+        });
+      }
+    }
 
     if (!deliveryEmail || !deliveryEmail.includes('@')) {
       return res.status(400).json({ success: false, error: 'Valid delivery email address is required' });
@@ -359,6 +375,7 @@ router.post('/checkout', authOptional, async (req, res) => {
         discount: Math.round(discount * itemRatio),
         license: it.license,
         paymentMethod,
+        idempotencyKey: idempotencyKey || null,
         encKey,
         keyActivated: false, // Initially unactivated - buyer must verify in website!
         status: 'completed',
@@ -396,7 +413,7 @@ router.post('/checkout', authOptional, async (req, res) => {
 
       const zipName = (product.bundleInfo && product.bundleInfo.folderName ? `${product.bundleInfo.folderName}.zip` : `${product.title.replace(/[^a-zA-Z0-9_-]/g, '_')}_source.zip`);
 
-      const origin = req.get('origin') || (req.protocol + '://' + req.get('host')) || 'http://localhost:5000';
+      const origin = req.get('origin') || (req.protocol + '://' + req.get('host')) || 'https://smarthub-gilt.vercel.app';
 
       // Generate Email Record & Save to database (File & Key delivered to email only)
       const emailRecord = {
@@ -457,8 +474,8 @@ The Smart Hub Engineering Team`
       if (transporter && deliveryEmail) {
         try {
           const zipBuffer = getProjectZipBuffer(product);
-          const smtpUser = (process.env.SMTP_USER || 'naitiksoni700@gmail.com').trim();
-          const fromAddress = `"Smart Hub India" <${smtpUser}>`;
+          const smtpUser = (process.env.SMTP_FROM || process.env.SMTP_USER || 'support@smarthub.dev').trim();
+          const fromAddress = smtpUser.includes('<') ? smtpUser : `"Smart Hub" <${smtpUser}>`;
           const activateFullUrl = `${origin}/repo.html?id=${product.id}&activateKey=${encKey}`;
 
           await transporter.sendMail({
@@ -632,8 +649,8 @@ router.post('/resend-delivery-email', async (req, res) => {
     const zipName = `${safeTitle}_source_bundle.zip`;
     const origin = req.headers.origin || 'https://smarthub-gilt.vercel.app';
     const activateFullUrl = `${origin}/repo.html?id=${product.id}&activateKey=${key}`;
-    const smtpUser = (process.env.SMTP_USER || 'naitiksoni700@gmail.com').trim();
-    const fromAddress = `"Smart Hub India" <${smtpUser}>`;
+    const smtpUser = (process.env.SMTP_FROM || process.env.SMTP_USER || 'support@smarthub.dev').trim();
+    const fromAddress = smtpUser.includes('<') ? smtpUser : `"Smart Hub" <${smtpUser}>`;
 
     await transporter.sendMail({
       from: fromAddress,
@@ -960,8 +977,8 @@ router.get(['/check-access/:productId', '/access-check/:productId'], authOptiona
   }
 });
 
-// ── Get Sent Delivery Emails (Simulated Email Inbox) ──────────
-router.get('/email-inbox/:email', (req, res) => {
+// ── Get Sent Delivery Emails (Simulated Email Inbox - Admin Only) ──
+router.get('/email-inbox/:email', adminRequired, (req, res) => {
   try {
     const email = req.params.email;
     const allEmails = db.get('emails') || [];
@@ -1020,15 +1037,8 @@ router.get('/verify-key/:key', (req, res) => {
   }
 });
 
-// ── Download Project Source Package (.zip) (Authorized Per Buyer) ──
-router.get('/:idOrNumber/download', authOptional, async (req, res) => {
-  if (!req.user) {
-    return res.status(401).json({
-      success: false,
-      error: 'Unauthorized: Please sign in with your buyer account to download this codebase.'
-    });
-  }
-
+// ── Download Project Source Package (.zip) (Authorized Per Buyer, Expiring 15m) ──
+router.get('/:idOrNumber/download', authRequired, async (req, res) => {
   const { idOrNumber } = req.params;
   const order = db.findOne('orders', o => o.id === idOrNumber || o.orderNumber === idOrNumber);
 
@@ -1038,6 +1048,7 @@ router.get('/:idOrNumber/download', authOptional, async (req, res) => {
 
   const isOwner = (order.userId && order.userId === req.user.id) ||
     (order.buyer && order.buyer.id === req.user.id) ||
+    (order.buyerId && order.buyerId === req.user.id) ||
     (order.buyerEmail && req.user.email && order.buyerEmail.toLowerCase() === req.user.email.toLowerCase()) ||
     req.user.role === 'admin';
 
@@ -1053,7 +1064,7 @@ router.get('/:idOrNumber/download', authOptional, async (req, res) => {
   const downloadUrl = (product && product.downloadUrl) || order.downloadUrl;
   const storageKey = (product && product.storageKey) || order.storageKey;
 
-  // 1. Cloud Object Storage (Supabase Storage) Delivery
+  // 1. Cloud Object Storage (Supabase Storage) Delivery (Signed 15-Minute URL)
   try {
     const { getSignedDownloadUrl } = require('../cloudStorage');
     let cloudPath = null;
@@ -1070,7 +1081,7 @@ router.get('/:idOrNumber/download', authOptional, async (req, res) => {
     }
 
     if (cloudPath) {
-      const signedUrl = await getSignedDownloadUrl(cloudPath, 3600);
+      const signedUrl = await getSignedDownloadUrl(cloudPath, 900); // 15 minutes (900 seconds)
       if (signedUrl) {
         if (req.query.redirect === 'true' || req.headers['accept']?.includes('text/html')) {
           return res.redirect(signedUrl);
@@ -1081,8 +1092,8 @@ router.get('/:idOrNumber/download', authOptional, async (req, res) => {
           productTitle: (product && product.title) || order.productTitle,
           deliveryType: 'cloud_object_storage',
           downloadUrl: signedUrl,
-          expiresIn: '60 minutes',
-          instructions: 'Secure signed download URL generated. Valid for 60 minutes via global CDN.'
+          expiresIn: '15 minutes',
+          instructions: 'Secure signed download URL generated. Valid for single buyer for 15 minutes.'
         });
       }
     }
@@ -1101,16 +1112,20 @@ router.get('/:idOrNumber/download', authOptional, async (req, res) => {
     }
   }
 
-  // Graceful delivery metadata with single-use cryptographic token
-  const downloadToken = crypto.randomBytes(24).toString('hex');
+  // Cryptographic signed token valid for 15 minutes
+  const downloadExpires = Date.now() + 15 * 60 * 1000;
+  const signPayload = `${order.id}:${req.user.id}:${downloadExpires}`;
+  const sig = crypto.createHmac('sha256', process.env.JWT_SECRET || 'smarthub_dev_secret_key_2026_jwt_token').update(signPayload).digest('hex');
+  const signedToken = Buffer.from(JSON.stringify({ orderId: order.id, userId: req.user.id, expires: downloadExpires, sig })).toString('base64url');
+
   return res.json({
     success: true,
     message: 'Authorized: codebase package ready for verified delivery.',
     productTitle: (product && product.title) || order.productTitle,
     deliveryType: 'verified_stream',
-    token: downloadToken,
-    expiresIn: '60 minutes',
-    instructions: 'Your access grant has been verified. The download link remains valid for 60 minutes.'
+    token: signedToken,
+    expiresIn: '15 minutes',
+    instructions: 'Single-buyer expiring cryptographic token generated. Valid for 15 minutes.'
   });
 });
 

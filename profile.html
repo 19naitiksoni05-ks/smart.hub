@@ -59,7 +59,7 @@
         <div>
           <div class="profile-name" style="display:flex;align-items:center;gap:10px;">
             <span id="profile-name-text">Developer Profile</span>
-            <span class="badge badge-cyan">✓ Verified Member</span>
+            <span class="badge badge-cyan" id="profile-verified-badge" style="display:none;">✓ Verified Member</span>
             <span class="badge badge-purple" id="profile-level-badge">Level 1</span>
           </div>
           <div class="profile-username" id="profile-handle">@developer · Full Stack Builder · 📍 India</div>
@@ -154,7 +154,15 @@
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
             <h3>Activity Heatmap</h3>
             <div style="display:flex;align-items:center;gap:6px;font-size:0.78rem;color:var(--text-muted);">
-              Less <div style="display:flex;gap:3px;">${[0,1,2,3,4].map(i => `<div style="width:12px;height:12px;border-radius:2px;" class="contrib-${i}"></div>`).join('')}</div> More
+              Less
+              <div style="display:flex;gap:3px;">
+                <div style="width:12px;height:12px;border-radius:2px;" class="contrib-0"></div>
+                <div style="width:12px;height:12px;border-radius:2px;" class="contrib-1"></div>
+                <div style="width:12px;height:12px;border-radius:2px;" class="contrib-2"></div>
+                <div style="width:12px;height:12px;border-radius:2px;" class="contrib-3"></div>
+                <div style="width:12px;height:12px;border-radius:2px;" class="contrib-4"></div>
+              </div>
+              More
             </div>
           </div>
           <div class="contribution-grid" id="contribution-grid"></div>
@@ -178,13 +186,11 @@
           <div style="display:flex;flex-direction:column;gap:12px;" id="profile-stats-list"></div>
         </div>
 
-        <!-- Social Links -->
-        <div class="glass-card" style="padding:20px;">
+        <!-- Social Links (Populated dynamically) -->
+        <div class="glass-card" style="padding:20px;" id="profile-social-card">
           <h5 style="margin-bottom:16px;font-size:0.88rem;">🔗 Links</h5>
-          <div style="display:flex;flex-direction:column;gap:10px;">
-            <a href="https://github.com" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;gap:8px;font-size:0.85rem;color:var(--text-secondary);" onmouseover="this.style.color='var(--accent-coral)'" onmouseout="this.style.color='var(--text-secondary)'">🌐 Developer Portfolio ↗</a>
-            <a href="https://github.com" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;gap:8px;font-size:0.85rem;color:var(--text-secondary);" onmouseover="this.style.color='var(--accent-coral)'" onmouseout="this.style.color='var(--text-secondary)'">⌥ GitHub Profile ↗</a>
-            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;gap:8px;font-size:0.85rem;color:var(--text-secondary);" onmouseover="this.style.color='var(--accent-coral)'" onmouseout="this.style.color='var(--text-secondary)'">💼 LinkedIn ↗</a>
+          <div style="display:flex;flex-direction:column;gap:10px;" id="profile-social-links">
+            <span style="font-size:0.82rem;color:var(--text-muted);">No external links configured yet.</span>
           </div>
         </div>
       </aside>
@@ -831,8 +837,12 @@ async function uploadProject() {
 
 document.addEventListener('DOMContentLoaded', () => {
   const user = (window.getCurrentUser && window.getCurrentUser());
-  if (user) {
-    // wallet cleaned
+  const verifiedBadge = document.getElementById('profile-verified-badge');
+  const socialCard = document.getElementById('profile-social-card');
+  const socialLinksEl = document.getElementById('profile-social-links');
+
+  if (user && user.isLoggedIn) {
+    if (verifiedBadge) verifiedBadge.style.display = 'inline-flex';
     const nameEl = document.getElementById('profile-name-text');
     if (nameEl) nameEl.textContent = user.name;
     const handleEl = document.getElementById('profile-handle');
@@ -849,6 +859,26 @@ document.addEventListener('DOMContentLoaded', () => {
     if (badgesEl) badgesEl.textContent = user.badges || 0;
     const walletMeta = document.getElementById('profile-wallet-meta');
     if (walletMeta) walletMeta.textContent = `💰 ₹${(user.walletBalance || 0).toLocaleString('en-IN')} in Wallet`;
+
+    // Populate user's real social links
+    if (socialLinksEl) {
+      const linksHtml = [];
+      if (user.website) {
+        linksHtml.push(`<a href="${user.website}" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;gap:8px;font-size:0.85rem;color:var(--text-secondary);" onmouseover="this.style.color='var(--accent-coral)'" onmouseout="this.style.color='var(--text-secondary)'">🌐 Website / Portfolio ↗</a>`);
+      }
+      if (user.github || user.githubId || user.authProvider === 'github') {
+        const ghUrl = user.github || `https://github.com/${(user.username || '').replace('@','')}`;
+        linksHtml.push(`<a href="${ghUrl}" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;gap:8px;font-size:0.85rem;color:var(--text-secondary);" onmouseover="this.style.color='var(--accent-coral)'" onmouseout="this.style.color='var(--text-secondary)'">⌥ GitHub Profile ↗</a>`);
+      }
+      if (user.linkedin) {
+        linksHtml.push(`<a href="${user.linkedin}" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;gap:8px;font-size:0.85rem;color:var(--text-secondary);" onmouseover="this.style.color='var(--accent-coral)'" onmouseout="this.style.color='var(--text-secondary)'">💼 LinkedIn ↗</a>`);
+      }
+      if (linksHtml.length > 0) {
+        socialLinksEl.innerHTML = linksHtml.join('');
+      } else {
+        socialLinksEl.innerHTML = `<span style="font-size:0.82rem;color:var(--text-muted);">No external links configured yet.</span>`;
+      }
+    }
 
     // Live sync verified wallet balance and XP directly from backend database
     if (window.SmartHubAPI && window.SmartHubAPI.getMe) {
@@ -886,6 +916,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   } else {
     // Clean Guest state
+    if (verifiedBadge) verifiedBadge.style.display = 'none';
     const nameEl = document.getElementById('profile-name-text');
     if (nameEl) nameEl.textContent = 'Guest Developer';
     const handleEl = document.getElementById('profile-handle');
@@ -907,6 +938,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (badgesEl) badgesEl.textContent = '0';
     const walletMeta = document.getElementById('profile-wallet-meta');
     if (walletMeta) walletMeta.textContent = '💰 ₹0 in Wallet';
+    if (socialLinksEl) {
+      socialLinksEl.innerHTML = `<span style="font-size:0.82rem;color:var(--text-muted);">Sign in to view developer links.</span>`;
+    }
   }
 
   renderProfileProjects();

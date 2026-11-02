@@ -17,6 +17,20 @@
     ? (window.location.protocol === 'https:' ? 'wss://' : 'ws://') + window.location.host
     : (isLocalExpressPort ? (window.location.protocol === 'https:' ? 'wss://' : 'ws://') + window.location.host : 'ws://localhost:5000');
 
+  // Automatic credentials injection for secure httpOnly session cookies across all API requests
+  if (typeof window !== 'undefined' && window.fetch) {
+    const nativeFetch = window.fetch;
+    window.fetch = function (resource, config = {}) {
+      const urlStr = typeof resource === 'string' ? resource : (resource && resource.url ? resource.url : '');
+      if (urlStr.includes('/api') || urlStr.startsWith('/api')) {
+        if (!config.credentials) {
+          config.credentials = 'include';
+        }
+      }
+      return nativeFetch.call(window, resource, config);
+    };
+  }
+
   const SmartHubAPI = {
     baseUrl: API_BASE,
     wsUrl: WS_URL,
@@ -78,15 +92,6 @@
       if (contentType) headers['Content-Type'] = contentType;
       const token = localStorage.getItem('smarthub_token');
       if (token) headers['Authorization'] = `Bearer ${token}`;
-      const user = localStorage.getItem('smarthub_user');
-      if (user) {
-        try {
-          const u = JSON.parse(user);
-          if (u.id) headers['x-user-id'] = u.id;
-          if (u.email) headers['x-user-email'] = u.email;
-          if (u.name) headers['x-user-name'] = encodeURIComponent(u.name);
-        } catch (e) { }
-      }
       return headers;
     },
 
@@ -94,15 +99,6 @@
       const headers = {};
       const token = localStorage.getItem('smarthub_token');
       if (token) headers['Authorization'] = `Bearer ${token}`;
-      const user = localStorage.getItem('smarthub_user');
-      if (user) {
-        try {
-          const u = JSON.parse(user);
-          if (u.id) headers['x-user-id'] = u.id;
-          if (u.email) headers['x-user-email'] = u.email;
-          if (u.name) headers['x-user-name'] = encodeURIComponent(u.name);
-        } catch (e) { }
-      }
       return headers;
     },
 

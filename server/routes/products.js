@@ -432,8 +432,8 @@ router.put('/:id', authRequired, async (req, res) => {
   }
 });
 
-// ── Delete Product ────────────────────────────────────────────
-router.delete('/:id', authOptional, async (req, res) => {
+// ── Delete Product (Strict Owner or Admin Authorization) ─────
+router.delete('/:id', authRequired, async (req, res) => {
   try {
     const productId = req.params.id;
 
@@ -446,20 +446,18 @@ router.delete('/:id', authOptional, async (req, res) => {
       } catch (e) { }
     }
 
-    // Permission check if user context is available
-    if (req.user && product) {
-      const uId = String(req.user.id || '').trim().toLowerCase();
-      const uName = (req.user.name || '').trim().toLowerCase();
-      const aId = String((product.author && product.author.id) || product.seller_id || '').trim().toLowerCase();
-      const aName = String((product.author && product.author.name) || product.seller_name || '').trim().toLowerCase();
+    if (!product) {
+      return res.status(404).json({ success: false, error: 'Product not found' });
+    }
 
-      const isMatch = (req.user.role === 'admin') ||
-                      (uId && aId && uId === aId) ||
-                      (uName && aName && (uName === aName || aName.includes(uName) || uName.includes(aName)));
+    // Permission check: caller must be an admin or the project's author/seller
+    const uId = String(req.user.id || '').trim();
+    const aId = String((product.author && product.author.id) || product.seller_id || '').trim();
+    const isOwner = uId && aId && uId === aId;
+    const isAdmin = req.user.role === 'admin';
 
-      if (!isMatch && req.user.role !== 'admin' && aName && aName !== 'verified developer' && aName !== 'creator') {
-        return res.status(403).json({ success: false, error: 'You do not have permission to delete this project' });
-      }
+    if (!isOwner && !isAdmin) {
+      return res.status(403).json({ success: false, error: 'Forbidden: You do not have permission to delete this product' });
     }
 
     // Delete from local memory/DB
@@ -476,10 +474,6 @@ router.delete('/:id', authOptional, async (req, res) => {
       } catch (e) {
         console.warn('[Products] Supabase delete warning:', e.message);
       }
-    }
-
-    if (!localDeleted && !supabaseDeleted && !product) {
-      return res.status(404).json({ success: false, error: 'Product not found' });
     }
 
     res.json({ success: true, message: 'Project removed successfully from marketplace' });

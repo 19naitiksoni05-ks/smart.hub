@@ -1,6 +1,151 @@
 {
   "users": [
     {
+      "id": "u_test_admin_1793625204196",
+      "name": "Verified Admin",
+      "username": "@verifiedadmin_1793625204196",
+      "email": "verifiedadmin_1793625204196@test.dev",
+      "passwordHash": "$2b$10$9lVzcqcfKkefw.v/Fz6GL.sXOOKUAfRTAezZmBvTAsM/UpmWQk0J6",
+      "role": "admin",
+      "walletBalance": 5000,
+      "emailVerified": true,
+      "createdAt": "2026-11-02T13:13:24.412Z"
+    },
+    {
+      "id": "u_test_buyer_1793625204196",
+      "name": "Normal Buyer",
+      "username": "@normalbuyer_1793625204196",
+      "email": "normalbuyer_1793625204196@test.dev",
+      "passwordHash": "$2b$10$EmgoJ4uz5dnkXCAT5jd.eeuXrniBLrryyByo05eO4tFRw0MRIAak6",
+      "role": "buyer",
+      "walletBalance": 2000,
+      "emailVerified": true,
+      "createdAt": "2026-11-02T13:13:24.306+00:00",
+      "avatar": null,
+      "xp": 0,
+      "badges": 0,
+      "location": "India",
+      "headline": "Smart Hub Developer",
+      "updatedAt": "2026-11-02T13:13:30.826Z"
+    },
+    {
+      "id": "u_test_admin_1793625012765",
+      "name": "Verified Admin",
+      "username": "@verifiedadmin",
+      "email": "verifiedadmin@test.dev",
+      "passwordHash": "$2b$10$v6qENUP6ddnKEdU8zOhLiuC03Jmruo.VNtwiAeSMSodFpIycKFFmi",
+      "role": "admin",
+      "walletBalance": 5000,
+      "emailVerified": true,
+      "createdAt": "2026-11-02T13:10:12.891Z"
+    },
+    {
+      "id": "u_test_buyer_1793624740854",
+      "name": "Normal Buyer",
+      "username": "@normalbuyer",
+      "email": "normalbuyer@test.dev",
+      "passwordHash": "$2b$10$KMsHuWUElQqhfxlC07jdOupF8yKE9rsqiCTwTDymJmE1dJDmZg8J.",
+      "role": "buyer",
+      "walletBalance": 2000,
+      "emailVerified": true,
+      "createdAt": "2026-11-02T13:05:41.022+00:00",
+      "avatar": null,
+      "xp": 0,
+      "badges": 0,
+      "location": "India",
+      "headline": "Smart Hub Developer",
+      "updatedAt": "2026-11-02T13:05:42.924404+00:00"
+    },
+    {
+      "id": "test_123",
+      "name": "Tester",
+      "createdAt": "2026-11-02T13:08:00.529Z"
+    },
+    {
+      "id": "u_test_admin_1793624816212",
+      "name": "Verified Admin",
+      "username": "@verifiedadmin",
+      "email": "verifiedadmin@test.dev",
+      "passwordHash": "$2b$10$qZrtsSPWKIEhP91WyVJjE.UTkYOkXP7sDzCC46oWuje0crLxHf892",
+      "role": "admin",
+      "walletBalance": 5000,
+      "emailVerified": true,
+      "createdAt": "2026-11-02T13:06:56.404Z"
+    },
+    {
+      "id": "u_test_buyer_1793624740854",
+      "name": "Normal Buyer",
+      "username": "@normalbuyer",
+      "email": "normalbuyer@test.dev",
+      "passwordHash": "$2b$10$6ECUfDGOdngT7y0NlmCtFe.ZCQNnuWmTdSOepJwH5TOFXMTTujmja",
+      "role": "buyer",
+      "walletBalance": 2000,
+      "emailVerified": true,
+      "createdAt": "2026-11-02T13:05:41.022+00:00",
+      "avatar": null,
+      "xp": 0,
+      "badges": 0,
+      "location": "India",
+      "headline": "Smart Hub Developer",
+      "updatedAt": "2026-11-02T13:07:03.653Z"
+    },
+    {
+      "id": "u_test_admin_1793624776686",
+      "name": "Verified Admin",
+      "username": "@verifiedadmin",
+      "email": "verifiedadmin@test.dev",
+      "passwordHash": "$2b$10$CHATbep8MK9APhCF8evU/.hj.AxkkSaw20PAsgWuMfIiSiOc21rRq",
+      "role": "admin",
+      "walletBalance": 5000,
+      "emailVerified": true,
+      "createdAt": "2026-11-02T13:06:16.846Z"
+    },
+    {
+      "id": "u_test_buyer_1793624740854",
+      "name": "Normal Buyer",
+      "username": "@normalbuyer",
+      "email": "normalbuyer@test.dev",
+      "passwordHash": "$2b$10$emDbMqWe0BhkG11FFqS.OuojPdJJtJvqjAXpvCKefaerGgb9334YK",
+      "role": "buyer",
+      "walletBalance": 2000,
+      "emailVerified": true,
+      "createdAt": "2026-11-02T13:05:41.022+00:00",
+      "avatar": null,
+      "xp": 0,
+      "badges": 0,
+      "location": "India",
+      "headline": "Smart Hub Developer",
+      "updatedAt": "2026-11-02T13:06:25.073Z"
+    },
+    {
+      "id": "u_test_admin_1793624741026",
+      "name": "Verified Admin",
+      "username": "@verifiedadmin",
+      "email": "verifiedadmin@test.dev",
+      "passwordHash": "$2b$10$FEL1onTVDcoIGBaNUUpwmugLDAblK7zyuFzuNy69OmsXP/FZlWz76",
+      "role": "admin",
+      "walletBalance": 5000,
+      "emailVerified": true,
+      "createdAt": "2026-11-02T13:05:41.154Z"
+    },
+    {
+      "id": "u_test_buyer_1793624740854",
+      "name": "Normal Buyer",
+      "username": "@normalbuyer",
+      "email": "normalbuyer@test.dev",
+      "passwordHash": "$2b$10$gKdBzdrbpd186DYA5j4Vnelj4aE5hOzWddSW7OO2.NdxerNRCpxui",
+      "role": "buyer",
+      "walletBalance": 2000,
+      "emailVerified": true,
+      "createdAt": "2026-11-02T13:05:41.022+00:00",
+      "avatar": null,
+      "xp": 0,
+      "badges": 0,
+      "location": "India",
+      "headline": "Smart Hub Developer",
+      "updatedAt": "2026-11-02T13:05:48.937Z"
+    },
+    {
       "id": "edf429c2-1399-4969-867c-679cc2ea0b14",
       "name": "Muaviya",
       "username": "@umair",
@@ -77,7 +222,7 @@
       "email": "naitik19ansh@gmail.com",
       "passwordHash": "$2b$10$JQLRNYtqUJ2yntYpwPpaAu7409.35jA1paT0ro5aLVCVOL5zsbspe",
       "avatar": "/uploads/images/avatar_test_1792913095876_c066afcd.png",
-      "walletBalance": 71000,
+      "walletBalance": 69501,
       "role": "admin",
       "xp": 5000,
       "badges": 5,
@@ -174,17 +319,72 @@
       "email": "334tanmaygupta@gmail.com",
       "passwordHash": "$2b$10$GjynNUZpIUAMmRX8pBIIZOJSd.HMQ0eSMRMO14pglFTrOWDHzwuSS",
       "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=tanmay.5987&backgroundColor=ff5b36",
-      "walletBalance": 4304,
+      "walletBalance": 5280,
       "role": "buyer",
       "xp": 0,
       "badges": 0,
       "location": "India",
       "headline": "Smart Hub Developer",
       "createdAt": "2026-10-28T15:47:30.797+00:00",
-      "updatedAt": "2026-10-29T04:30:44.62+00:00"
+      "updatedAt": "2026-10-31T10:23:14.883+00:00"
     }
   ],
   "products": [
+    {
+      "id": "p_test_1793625204417",
+      "title": "Secure Test Microservice",
+      "price": 499,
+      "author": {
+        "id": "u_test_admin_1793625204196",
+        "name": "Verified Admin"
+      },
+      "seller_id": "u_test_admin_1793625204196",
+      "createdAt": "2026-11-02T13:13:24.417Z"
+    },
+    {
+      "id": "p_test_1793625012897",
+      "title": "Secure Test Microservice",
+      "price": 499,
+      "author": {
+        "id": "u_test_admin_1793625012765",
+        "name": "Verified Admin"
+      },
+      "seller_id": "u_test_admin_1793625012765",
+      "createdAt": "2026-11-02T13:10:12.897Z"
+    },
+    {
+      "id": "p_test_1793624816411",
+      "title": "Secure Test Microservice",
+      "price": 499,
+      "author": {
+        "id": "u_test_admin_1793624816212",
+        "name": "Verified Admin"
+      },
+      "seller_id": "u_test_admin_1793624816212",
+      "createdAt": "2026-11-02T13:06:56.411Z"
+    },
+    {
+      "id": "p_test_1793624776857",
+      "title": "Secure Test Microservice",
+      "price": 499,
+      "author": {
+        "id": "u_test_admin_1793624776686",
+        "name": "Verified Admin"
+      },
+      "seller_id": "u_test_admin_1793624776686",
+      "createdAt": "2026-11-02T13:06:16.857Z"
+    },
+    {
+      "id": "p_test_1793624741160",
+      "title": "Secure Test Microservice",
+      "price": 499,
+      "author": {
+        "id": "u_test_admin_1793624741026",
+        "name": "Verified Admin"
+      },
+      "seller_id": "u_test_admin_1793624741026",
+      "createdAt": "2026-11-02T13:05:41.160Z"
+    },
     {
       "id": "p_1793202576224",
       "title": "data structure",
@@ -479,6 +679,67 @@
   ],
   "orders": [],
   "transactions": [
+    {
+      "id": "t_1793625206334",
+      "userId": "u_test_buyer_1793625204196",
+      "type": "credit",
+      "title": "Wallet Top-up (UPI)",
+      "amount": 500,
+      "date": "2026-11-02",
+      "icon": "➕",
+      "method": "UPI",
+      "idempotencyKey": "idem_key_1793625206084",
+      "newBalance": 2000,
+      "createdAt": "2026-11-02T13:13:26.334Z"
+    },
+    {
+      "id": "t_1793625014828",
+      "userId": "u_test_buyer_1793625012619",
+      "type": "credit",
+      "title": "Wallet Top-up (UPI)",
+      "amount": 500,
+      "date": "2026-11-02",
+      "icon": "➕",
+      "method": "UPI",
+      "idempotencyKey": "idem_key_1793625014610",
+      "createdAt": "2026-11-02T13:10:14.829Z"
+    },
+    {
+      "id": "t_1793624818899",
+      "userId": "u_test_buyer_1793624815966",
+      "type": "credit",
+      "title": "Wallet Top-up (UPI)",
+      "amount": 500,
+      "date": "2026-11-02",
+      "icon": "➕",
+      "method": "UPI",
+      "idempotencyKey": "idem_key_1793624818529",
+      "createdAt": "2026-11-02T13:06:58.899Z"
+    },
+    {
+      "id": "t_1793624781597",
+      "userId": "u_test_buyer_1793624776432",
+      "type": "credit",
+      "title": "Wallet Top-up (UPI)",
+      "amount": 500,
+      "date": "2026-11-02",
+      "icon": "➕",
+      "method": "UPI",
+      "idempotencyKey": "idem_key_1793624781205",
+      "createdAt": "2026-11-02T13:06:21.597Z"
+    },
+    {
+      "id": "t_1793624743887",
+      "userId": "u_test_buyer_1793624740854",
+      "type": "credit",
+      "title": "Wallet Top-up (UPI)",
+      "amount": 500,
+      "date": "2026-11-02",
+      "icon": "➕",
+      "method": "UPI",
+      "idempotencyKey": "idem_key_1793624743651",
+      "createdAt": "2026-11-02T13:05:43.887Z"
+    },
     {
       "id": "t_1793213848233",
       "userId": "u_1793133388791",
@@ -1487,6 +1748,58 @@
       "status": "active",
       "token": "46839d2e63fa6e23ccc573547566bc64",
       "createdAt": "2026-10-28T15:14:41.120Z"
+    }
+  ],
+  "resetTokens": [
+    {
+      "id": "prt_1793625206842",
+      "token": "996874981dc96a44494d15b534064ed7a98ccdc6a0a9212630160e85f7abe8d9",
+      "userId": "u_test_buyer_1793625204196",
+      "email": "normalbuyer_1793625204196@test.dev",
+      "expiresAt": 1793626106842,
+      "used": true,
+      "createdAt": "2026-11-02T13:13:26.842Z",
+      "updatedAt": "2026-11-02T13:13:30.830Z"
+    },
+    {
+      "id": "prt_1793625015404",
+      "token": "31b326938685d5bd1ad106e1d8b3e2fba4847200e1a6aa60e93631db127d68a5",
+      "userId": "u_test_buyer_1793624740854",
+      "email": "normalbuyer@test.dev",
+      "expiresAt": 1793625915404,
+      "used": true,
+      "createdAt": "2026-11-02T13:10:15.404Z",
+      "updatedAt": "2026-11-02T13:10:18.361Z"
+    },
+    {
+      "id": "prt_1793624819491",
+      "token": "e7f3dc35de91474b88dfd749ae73840fa4eb2431b0ecd4a8a7c515eaadecbbf7",
+      "userId": "u_test_buyer_1793624740854",
+      "email": "normalbuyer@test.dev",
+      "expiresAt": 1793625719491,
+      "used": true,
+      "createdAt": "2026-11-02T13:06:59.492Z",
+      "updatedAt": "2026-11-02T13:07:03.657Z"
+    },
+    {
+      "id": "prt_1793624782294",
+      "token": "686f0a063fd084dd510ca24158b3e446c0efcf52eb54cf217359aadbd463b35f",
+      "userId": "u_test_buyer_1793624740854",
+      "email": "normalbuyer@test.dev",
+      "expiresAt": 1793625682294,
+      "used": true,
+      "createdAt": "2026-11-02T13:06:22.294Z",
+      "updatedAt": "2026-11-02T13:06:25.076Z"
+    },
+    {
+      "id": "prt_1793624744346",
+      "token": "3360176e30366061c3eedf4330e60ba476773bbc21a4a024b9adc3e7f90a2c06",
+      "userId": "u_test_buyer_1793624740854",
+      "email": "normalbuyer@test.dev",
+      "expiresAt": 1793625644346,
+      "used": true,
+      "createdAt": "2026-11-02T13:05:44.346Z",
+      "updatedAt": "2026-11-02T13:05:48.942Z"
     }
   ]
 }

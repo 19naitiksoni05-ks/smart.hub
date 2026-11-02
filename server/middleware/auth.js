@@ -8,6 +8,21 @@ function hashApiKey(rawKey) {
   return crypto.createHash('sha256').update(rawKey.trim()).digest('hex');
 }
 
+function parseCookies(req) {
+  const list = {};
+  const cookieHeader = req.headers && req.headers.cookie;
+  if (cookieHeader) {
+    cookieHeader.split(';').forEach(c => {
+      const parts = c.split('=');
+      const name = parts.shift().trim();
+      if (name) {
+        list[name] = decodeURIComponent(parts.join('='));
+      }
+    });
+  }
+  return list;
+}
+
 function resolveAuthContext(req) {
   // 1. Check custom X-API-Key header
   const apiKeyHeader = req.headers['x-api-key'];
@@ -23,12 +38,13 @@ function resolveAuthContext(req) {
     }
   }
 
-  // 2. Extract token from Authorization header or query parameter
+  // 2. Extract token from Authorization header, Cookie, or query parameter
   let token = req.headers['authorization'];
   if (token && token.startsWith('Bearer ')) {
     token = token.slice(7).trim();
-  } else if (!token) {
-    token = req.headers['x-auth-token'] || req.query.token || req.query.apiKey;
+  } else {
+    const cookies = parseCookies(req);
+    token = cookies['smarthub_token'] || req.headers['x-auth-token'] || req.query.token;
   }
 
   if (token) {
@@ -49,11 +65,11 @@ function resolveAuthContext(req) {
     // Verify standard JWT token
     try {
       const decoded = jwt.verify(token, JWT_SECRET);
-      let user = db.findById('users', decoded.id);
+      let user = db.findOne('users', u => u.id === decoded.id || (decoded.email && u.email && u.email.toLowerCase() === decoded.email.toLowerCase()));
       if (user) {
         return { user, authType: 'jwt' };
       }
-      // If user not in local cold-start memory, use verified JWT claims directly
+      // If user not in local memory, use verified JWT claims directly
       if (decoded && decoded.id) {
         user = {
           id: decoded.id,
@@ -61,6 +77,7 @@ function resolveAuthContext(req) {
           username: decoded.username || ('@' + (decoded.email ? decoded.email.split('@')[0] : 'user')),
           email: decoded.email || '',
           role: decoded.role || 'buyer',
+          walletBalance: Number(decoded.walletBalance) || 0,
           avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(decoded.id)}&backgroundColor=ff5b36`
         };
         return { user, authType: 'jwt' };
@@ -70,31 +87,7 @@ function resolveAuthContext(req) {
     }
   }
 
-  // 3. Fallback header for simulated sessions in development / local storage
-  const fallbackUserId = req.headers['x-user-id'];
-  const fallbackUserEmail = req.headers['x-user-email'];
-  const fallbackUserName = req.headers['x-user-name'] ? decodeURIComponent(req.headers['x-user-name']) : null;
-
-  if (fallbackUserId || fallbackUserEmail) {
-    let user = fallbackUserId ? db.findById('users', fallbackUserId) : null;
-    if (!user && fallbackUserEmail) {
-      user = db.findOne('users', u => u.email && u.email.toLowerCase() === String(fallbackUserEmail).toLowerCase().trim());
-    }
-    if (!user && (fallbackUserId || fallbackUserName)) {
-      user = {
-        id: fallbackUserId || ('u_' + Date.now()),
-        email: fallbackUserEmail || '',
-        name: fallbackUserName || (fallbackUserEmail ? fallbackUserEmail.split('@')[0] : 'Creator'),
-        username: '@' + (fallbackUserName || (fallbackUserEmail ? fallbackUserEmail.split('@')[0] : 'user')).toLowerCase().replace(/\s+/g, '_'),
-        role: 'buyer',
-        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(fallbackUserId || 'user')}&backgroundColor=ff5b36`
-      };
-    }
-    if (user) {
-      return { user, authType: 'dev_header' };
-    }
-  }
-
+  // Unauthenticated - no client header forgery permitted
   return null;
 }
 
